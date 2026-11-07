@@ -13,7 +13,7 @@ const nodeMap={};
 class FakeElement{
   constructor(id){this.id=id;this.textContent="";this.value="";this.max="";this.disabled=false;this.handlers={};}
   addEventListener(name,fn){this.handlers[name]=fn;}
-  dispatch(name){assert.equal(typeof this.handlers[name],"function",name+" listener missing");this.handlers[name]();}
+  dispatch(name){assert.equal(typeof this.handlers[name],"function",name+" listener missing");this.handlers[name].call(this);}
 }
 function get(id){
   if(!nodeMap[id])nodeMap[id]=new FakeElement(id);
