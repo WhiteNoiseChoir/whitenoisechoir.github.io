@@ -1,56 +1,214 @@
 <!doctype html>
-<html lang="en"><head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
-<title>iPhone Continuous Audio Loop Check — WhiteNoiseChoir</title>
+<meta name="theme-color" content="#0c1718">
+<title>Continuous Audio Loop Test — WhiteNoiseChoir</title>
 <style>
-:root{color-scheme:dark;font-family:system-ui,-apple-system,sans-serif;background:#0c1718;color:#e9f3ef}
-*{box-sizing:border-box}
-body{margin:0;padding:clamp(18px,5vw,45px);max-width:710px;margin-inline:auto;line-height:1.65}
-a{color:#a5e5c8}h1{font-size:clamp(25px,5vw,38px);line-height:1.15;margin:20px 0}
-p{color:#bcd3c7}button{background:#afe6cd;color:#103027;border:0;padding:14px 23px;border-radius:12px;min-height:48px;font-size:16px;font-weight:700;margin-right:10px;cursor:pointer}
-button:disabled{opacity:.4;cursor:default}
-#state{padding:18px;background:#1d3731;border:1px solid #38604e;border-radius:15px;min-height:110px;margin-top:15px}
-small{color:#a2bfaf}#status{font-weight:600}code{color:#acf2cf}
-</style></head><body>
+:root{color-scheme:dark;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:#0c1718;color:#e9f3ef}
+*{box-sizing:border-box}body{margin:0;padding:clamp(17px,5vw,38px);max-width:760px;margin-inline:auto;line-height:1.55}
+a{color:#a5e5c8}h1{font-size:clamp(27px,5vw,38px);line-height:1.15;margin:24px 0 12px;letter-spacing:-.04em}
+h2{font-size:17px;margin:0 0 10px}.intro{color:#b6d0c2;margin-bottom:22px}
+.panel{border:1px solid #35574b;border-radius:18px;background:#172c29;padding:clamp(17px,4vw,25px);margin:16px 0}
+label{display:block;color:#c9e2d3;font-weight:650;font-size:13px;margin:0 0 8px}
+select{background:#0d201d;color:#e6f5ea;border:1px solid #5c816e;border-radius:10px;padding:12px;width:100%;min-height:46px;font-size:15px}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin:14px 0}
+button{background:#aee7c9;color:#102b20;border:0;padding:12px 18px;border-radius:11px;min-height:46px;font-size:15px;font-weight:750;cursor:pointer}
+button.secondary{background:#28463b;color:#d6f1e2;border:1px solid #4f7862}
+button:disabled{opacity:.43;cursor:default}
+#status{font-weight:650;min-height:24px;color:#c5efda}
+#modeDisplay{font-size:13px;color:#a8caba;margin-top:7px}
+.seek-wrap{margin-top:20px}
+.seek-labels{display:flex;align-items:baseline;justify-content:space-between;gap:12px;font-variant-numeric:tabular-nums}
+.seek-labels strong{font-size:20px}
+#seek{display:block;width:100%;accent-color:#b5f1d4;height:38px;touch-action:pan-y;cursor:pointer}
+#seek:disabled{opacity:.4}
+#rangeNote{color:#9abca9;font-size:12px;margin:5px 0 14px}
+.presets{display:flex;gap:8px;flex-wrap:wrap}
+.presets button{font-size:12px;padding:9px 12px;min-height:44px;flex:1}
+#detail{color:#a7c4b4;font-size:13px;min-height:20px;margin-top:14px}
+#counter{font-variant-numeric:tabular-nums;color:#bde9d0;font-size:13px;margin-top:7px}
+ol{color:#c4d7cd;padding-left:22px}
+li{margin:7px 0}
+.foot{font-size:12px;color:#96b4a4}
+@media(max-width:420px){.presets button{flex-basis:calc(50% - 8px)}.seek-labels strong{font-size:17px}}
+</style>
+</head>
+<body>
 <a href="/">← WhiteNoiseChoir</a>
-<h1>iPhone background loop check</h1>
-<p>This diagnostic loops a <strong>12-second</strong> white-noise section using a pre-generated native audio playlist. It lets you test the same mechanism used for the 10-minute masters without waiting ten minutes.</p>
-<p>1. Tap <strong>Play</strong>. 2. Lock your iPhone screen for 40–60 seconds. 3. The sound should keep playing, without requiring you to unlock. 4. Tap <strong>Stop</strong> when finished.</p>
-<div><button id="play">▶ Play</button><button id="stop" disabled>■ Stop</button></div>
-<div id="state">
-  <div id="status" aria-live="polite">Ready</div>
-  <div>Mode: <strong id="mode">Not checked</strong></div>
-  <div>Audio timeline: <strong id="elapsed">0:00</strong></div>
-  <div><small id="detail">Audio begins only after a user tap.</small></div>
-</div>
-<p><small>Do not use this page as a medical or infant sound-level test. Physical audio volume is determined by your speaker and device settings. iOS may still interrupt playback for a phone call or other system event.</small></p>
+<h1>Continuous playback test</h1>
+<p class="intro">Skip straight to the end of a loop. You no longer need to wait 10 or 20 minutes to test playback on your iPhone.</p>
+<section class="panel" aria-label="Test player">
+  <label for="testMode">Choose test</label>
+  <select id="testMode">
+    <option value="quick">Quick loop — 12-second recording, 20-minute stream</option>
+    <option value="production">Production loop — 10-minute recording, continuous stream</option>
+  </select>
+  <div class="actions">
+    <button id="play" type="button">▶ Play</button>
+    <button id="stop" class="secondary" disabled type="button">■ Stop</button>
+  </div>
+  <div id="status" role="status" aria-live="polite">Ready. Choose a test and tap Play.</div>
+  <div id="modeDisplay">This test prefers native HLS on Safari; other browsers use MP3 fallback.</div>
+  <div class="seek-wrap">
+    <div class="seek-labels">
+      <label for="seek">Jump to any point</label>
+      <strong id="position">0:00 / 20:00</strong>
+    </div>
+    <input id="seek" type="range" min="0" max="1200" value="0" step="1" disabled aria-label="Scrub the audio timeline">
+    <div id="rangeNote">Drag the slider towards 19:55 to test the end of the 20-minute stream.</div>
+    <div class="presets">
+      <button id="beforeLoop" class="secondary" type="button" disabled>Jump to 0:10</button>
+      <button id="tenMinute" class="secondary" type="button" disabled>Jump to 9:55</button>
+      <button id="nearEnd" class="secondary" type="button" disabled>Jump to 19:55</button>
+    </div>
+  </div>
+  <div id="counter">Source-loop boundaries passed: 0</div>
+  <div id="detail">Audio starts only after a tap. Seeking may take a moment while Safari buffers the requested segment.</div>
+</section>
+<section class="panel">
+  <h2>How to test in under a minute</h2>
+  <ol>
+    <li>Select <strong>Production loop</strong> and press <strong>Play</strong>.</li>
+    <li>Tap <strong>Jump to 9:55</strong>. Listen for 10–15 seconds to check that the sound continues beyond 10:00.</li>
+    <li>For the quick test, select <strong>Quick loop</strong> and jump to <strong>19:55</strong>. Listen to whether it restarts at the end of the playlist.</li>
+    <li>You can also lock the iPhone screen before crossing either boundary.</li>
+  </ol>
+  <p class="foot">The production HLS stream contains 7 days of audio in its native playlist. This test slider deliberately shows only its first 20 minutes, because the relevant boundaries are at 10:00 and 20:00. The 20-minute quick test is a separate short stream.</p>
+</section>
+<p class="foot">This page is for playback QA, not a medical or infant sound-level test. Phone calls and iOS system interruptions may still stop playback. A working seek test does not independently prove reliable overnight lock-screen audio.</p>
 <script>
 (function(){
 "use strict";
-var a=null,active=false;
-var $=function(s){return document.getElementById(s)};
-function clock(secs){secs=Math.floor(secs||0);return Math.floor(secs/60)+":"+String(secs%60).padStart(2,"0")}
-function setStatus(s){$("status").textContent=s}
-$("play").onclick=function(){
-  if(active)return;
+var audio=null,active=false,isSeeking=false,pendingSeek=null,lastTime=0,loopCount=0,mode="quick",nativeStream=false;
+var $=function(id){return document.getElementById(id)};
+function clock(value){
+  var n=Math.max(0,Math.floor(Number(value)||0));
+  return Math.floor(n/60)+":"+String(n%60).padStart(2,"0");
+}
+function status(text){$("status").textContent=text}
+function isHLSAvailable(){
   var probe=document.createElement("audio");
-  var nativeHLS=!!(probe.canPlayType&&probe.canPlayType("application/vnd.apple.mpegurl"));
-  a=new Audio();
-  a.src=nativeHLS?"audio/continuous/quick/continuous.m3u8?v=continuous-hls-v1-20261107":"audio/white-noise.mp3?v=color-master-v1-20261107";
-  a.loop=true;a.preload="auto";
-  $("mode").textContent=nativeHLS?"Native HLS: 12-second segments repeated for 20 minutes":"MP3 fallback: 10-minute native loop";
-  a.addEventListener("timeupdate",function(){if(active)$("elapsed").textContent=clock(a.currentTime)});
-  a.addEventListener("ended",function(){if(active)setStatus("Stopped unexpectedly at media end")});
-  a.addEventListener("error",function(){if(active)setStatus("Media error — this browser may not support native HLS")});
-  try{if(navigator.audioSession)navigator.audioSession.type="playback"}catch(e){}
-  active=true;$("play").disabled=true;$("stop").disabled=false;
-  a.play().then(function(){setStatus("Playing — lock the screen; do not touch the phone for 40–60 seconds")}).catch(function(e){active=false;$("play").disabled=false;$("stop").disabled=true;setStatus("Playback error: "+e.message)});
-};
-$("stop").onclick=function(){
-  active=false;if(a){a.pause();a.removeAttribute("src");a.load();a=null}
-  $("play").disabled=false;$("stop").disabled=true;setStatus("Stopped by user");
-};
+  return !!(probe.canPlayType&&(probe.canPlayType("application/vnd.apple.mpegurl")||probe.canPlayType("application/x-mpegURL")));
+}
+function limit(){
+  var cap=(!nativeStream?600:1200);
+  if(audio&&Number.isFinite(audio.duration)&&audio.duration>0)cap=Math.min(cap,Math.floor(audio.duration));
+  return Math.max(1,cap);
+}
+function refreshControls(){
+  var cap=limit(),range=$("seek"),current=audio&&Number.isFinite(audio.currentTime)?audio.currentTime:0;
+  range.max=String(cap);
+  if(!isSeeking){
+    range.value=String(Math.min(cap,Math.max(0,Math.floor(current))));
+    $("position").textContent=clock(current)+" / "+clock(cap);
+  }
+  $("nearEnd").disabled=!active||cap<=600;
+  $("tenMinute").disabled=!active||cap<598;
+  $("beforeLoop").disabled=!active;
+}
+function updateCounters(){
+  if(!audio||!active)return;
+  var current=Number(audio.currentTime)||0,cycle=mode==="quick"&&nativeStream?12:600;
+  var observed=Math.floor(current/cycle);
+  loopCount=Math.max(loopCount,observed);
+  if(current<lastTime-2&&!isSeeking&&audio.loop){
+    status("Native audio returned to the start of its playlist.");
+  }else if(observed>Math.floor(lastTime/cycle)&&!isSeeking){
+    status("Audio passed a source-loop boundary and is still playing.");
+  }
+  lastTime=current;
+  $("counter").textContent="Source-loop boundaries passed: "+loopCount;
+  refreshControls();
+}
+function applySeek(seconds){
+  if(!audio||!active){status("Tap Play first, then move the slider.");return}
+  var cap=limit(),target=Math.min(Math.max(0,Number(seconds)||0),Math.max(0,cap-.5));
+  pendingSeek=target;
+  if(audio.readyState<1){status("Loading audio timeline. Seek will start when ready.");return}
+  try{
+    audio.currentTime=target;
+    pendingSeek=null;lastTime=target;
+    $("detail").textContent="Seeking to "+clock(target)+". Wait for the sound to continue after the boundary.";
+    status("Seeking to "+clock(target)+"…");
+  }catch(err){
+    status("Safari has not made this position seekable yet; retry after loading.");
+    $("detail").textContent=err&&err.message?err.message:"Seek not available.";
+  }
+  refreshControls();
+}
+function performPendingSeek(){refreshControls();if(pendingSeek!==null)applySeek(pendingSeek)}
+function chooseMode(){
+  mode=$("testMode").value;
+  var quick=mode==="quick";
+  $("beforeLoop").textContent=quick?"Jump to 0:10":"Jump to 0:10";
+  $("rangeNote").textContent=quick?
+    "Drag towards 19:55 to test the end of the 20-minute stream.":
+    "Drag towards 9:55 to test the real 10-minute master boundary (the stream itself continues for 7 days).";
+  nativeStream=isHLSAvailable();
+  refreshControls();
+}
+function stop(){
+  active=false;pendingSeek=null;isSeeking=false;
+  if(audio){audio.pause();audio.removeAttribute("src");audio.load();audio=null}
+  $("play").disabled=false;$("stop").disabled=true;$("testMode").disabled=false;
+  $("seek").disabled=true;refreshControls();
+  status("Stopped by user.");
+}
+$("testMode").addEventListener("change",chooseMode);
+$("play").addEventListener("click",function(){
+  if(active)return;
+  chooseMode();
+  var quick=mode==="quick";
+  var src=nativeStream?(quick?
+    "audio/continuous/quick/continuous.m3u8?v=continuous-hls-v1-20261107":
+    "audio/continuous/white-noise/continuous.m3u8?v=continuous-hls-v1-20261107"):
+    "audio/white-noise.mp3?v=color-master-v1-20261107";
+  audio=new Audio();
+  audio.src=src;audio.loop=true;audio.preload="auto";
+  audio.addEventListener("loadedmetadata",performPendingSeek);
+  audio.addEventListener("durationchange",performPendingSeek);
+  audio.addEventListener("seeked",function(){
+    lastTime=Number(audio.currentTime)||0;
+    $("detail").textContent="Position reached: "+clock(lastTime)+". Keep listening across the loop boundary.";
+    status("Playing from "+clock(lastTime)+".");
+    refreshControls();
+  });
+  audio.addEventListener("timeupdate",updateCounters);
+  audio.addEventListener("ended",function(){if(active)status("Media ended. Check whether native looping resumes.")});
+  audio.addEventListener("error",function(){if(active)status("Audio loading error. Check the connection or Safari HLS support.")});
+  try{if(navigator.audioSession&&"type" in navigator.audioSession)navigator.audioSession.type="playback"}catch(err){}
+  active=true;lastTime=0;loopCount=0;pendingSeek=null;isSeeking=false;
+  $("play").disabled=true;$("stop").disabled=false;$("testMode").disabled=true;$("seek").disabled=false;
+  $("modeDisplay").textContent=nativeStream?
+    (quick?"Native HLS, ~12-second source repeated in a 20-minute playlist":
+      "Native HLS, 10-minute source repeated inside a 7-day playlist"):
+    "MP3 fallback, 10-minute file (not native HLS).";
+  refreshControls();
+  audio.play().then(function(){
+    if(active)status("Playing. Use the slider or jump buttons to skip ahead.");
+  }).catch(function(err){
+    status("Playback error: "+(err&&err.message?err.message:"Unable to play"));
+    active=false;audio=null;$("play").disabled=false;$("stop").disabled=true;$("testMode").disabled=false;$("seek").disabled=true;refreshControls();
+  });
+});
+$("stop").addEventListener("click",stop);
+$("seek").addEventListener("input",function(){
+  isSeeking=true;
+  $("position").textContent=clock(this.value)+" / "+clock(limit());
+  $("detail").textContent="Selected "+clock(this.value)+". Release the slider to jump.";
+});
+$("seek").addEventListener("change",function(){
+  isSeeking=false;
+  applySeek(this.value);
+});
+$("beforeLoop").addEventListener("click",function(){applySeek(mode==="quick"&&nativeStream?10:10)});
+$("tenMinute").addEventListener("click",function(){applySeek(595)});
+$("nearEnd").addEventListener("click",function(){applySeek(1195)});
+window.addEventListener("pageshow",refreshControls);
+chooseMode();
 })();
 </script>
 </body></html>
