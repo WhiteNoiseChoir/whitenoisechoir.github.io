@@ -19,7 +19,28 @@
     "license": "CC0-1.0",
     "file": "audio/rain-on-window-real.mp3",
     "preview_sha256": "420241e1a32aa70ff1956cb8dc1ca1b64c577d06a881475ce09a11ef5ae6941b",
-    "derived_duration_seconds": 54
+    "derived_duration_seconds": 600,
+    "derived_from_signature_mp3": "signature/audio/rain-window.mp3",
+    "approved_signature_sha256": "b77b2d020776e75e4ab37c7345081e8a058b2a8bdd3190c6e3effda20a294212",
+    "production_master_sha256": "99879a374a43429cbc61fb018d4ab8b1d34558219e7571820d0ae55c57f69117",
+    "processing": "10-minute arrangement of one-minute approved recording: 5s segment crossfades + 6s seamless wrap",
+    "long_master_listening_status": "PENDING_IPHONE_LOOP_REVIEW"
+  },
+  {
+    "id": "fireplace-real",
+    "title": "Fireplace",
+    "creator": "visionear",
+    "source": "https://freesound.org/people/visionear/sounds/501417/",
+    "preview_url": "https://cdn.freesound.org/previews/501/501417_10869493-hq.mp3",
+    "license": "CC0-1.0",
+    "file": "audio/fireplace-real.mp3",
+    "preview_sha256": "69d441a20d166e54c0976bbcabd15b98a8979937c4eecbf5986ebcfbd34c423b",
+    "derived_duration_seconds": 600,
+    "derived_from_signature_mp3": "signature/audio/fireplace.mp3",
+    "approved_signature_sha256": "05ef121e522af14fbf895c4cc3d9375fd0aaa69ff24ca2aeeba8ee1b998501f7",
+    "production_master_sha256": "907d262e40ca114ae80c22bd9719088bbe9f2d579971be2e9c7cd7d45df213e5",
+    "processing": "10-minute arrangement of one-minute approved recording: 5s segment crossfades + 6s seamless wrap",
+    "long_master_listening_status": "PENDING_IPHONE_LOOP_REVIEW"
   },
   {
     "id": "heavy-rain-real",
