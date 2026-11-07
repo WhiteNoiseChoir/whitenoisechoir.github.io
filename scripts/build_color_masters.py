@@ -152,8 +152,16 @@ def verify(path: Path, alpha: float):
     rms_dbfs = db(level)
     pk_dbfs = db(pk)
     crest = pk_dbfs - rms_dbfs
-    slope_freq, pxx = welch(mono[::4], fs=SR/4, nperseg=8192)
-    valid = (slope_freq>=110) & (slope_freq<=5000) & (pxx>1e-18)
+    # No naive [::4] decimation: it aliases high-frequency white/pink energy
+    # and falsely flattens the measured spectrum. Analyze 80 s at native rate.
+    spectral_sample = np.concatenate([
+        mono[0*SR:20*SR],
+        mono[180*SR:200*SR],
+        mono[360*SR:380*SR],
+        mono[570*SR:590*SR],
+    ])
+    slope_freq, pxx = welch(spectral_sample, fs=SR, nperseg=16384)
+    valid = (slope_freq>=110) & (slope_freq<=6000) & (pxx>1e-18)
     slope = float(np.polyfit(np.log10(slope_freq[valid]),
                             10*np.log10(pxx[valid]),1)[0])
     window = SR // 4
