@@ -22,14 +22,14 @@
 <script>
 (()=>{"use strict";
 const el=id=>document.getElementById(id),player=el("audio");
-let tracks=[],active=null;player.volume=.35;
-function key(t){return "wnc_signature_qa_v1_"+t.id}
+let tracks=[],active=null,buildVersion="batch-01";player.volume=.35;
+function key(t){return "wnc_signature_"+buildVersion+"_qa_"+t.id}
 function get(t){try{return JSON.parse(localStorage.getItem(key(t)))||{rating:"",notes:""}}catch{return {rating:"",notes:""}}}
 function save(t,obj){try{localStorage.setItem(key(t),JSON.stringify(obj))}catch(e){el("loadstatus").textContent="Không thể lưu trên thiết bị này"}}
 function info(msg){el("dockstatus").textContent=msg}
 function refresh(){el("dockplay").textContent=player.paused?"▶":"❚❚";document.querySelectorAll(".listen").forEach(b=>{b.textContent=active&&b.dataset.id===active.id&&!player.paused?"❚❚ Tạm dừng":"▶ Nghe thử"});document.querySelectorAll(".item").forEach(d=>d.classList.toggle("selected",!!active&&d.dataset.id===active.id))}
 async function choose(t){if(active&&active.id===t.id){if(player.paused){try{await player.play();info("Đang phát · lặp lại")}catch(e){info("Không phát được: "+e.message)}}else{player.pause();info("Đã tạm dừng")}refresh();return}
-player.pause();active=t;player.src=t.file;player.load();el("dockname").textContent=t.title;el("docksub").textContent="Mẫu 60 giây · phát lặp";el("dock").classList.add("on");info("Đang tải âm thanh...");
+player.pause();active=t;player.src=t.file+"?v="+encodeURIComponent(buildVersion);player.load();el("dockname").textContent=t.title;el("docksub").textContent="Mẫu 60 giây · phát lặp";el("dock").classList.add("on");info("Đang tải âm thanh...");
 try{await player.play();info("Đang phát · lặp lại");if("mediaSession" in navigator){try{navigator.mediaSession.metadata=new MediaMetadata({title:t.title,artist:"WhiteNoiseChoir • Signature QA",album:"Signature Collection"});navigator.mediaSession.setActionHandler("pause",()=>{player.pause();refresh()});navigator.mediaSession.setActionHandler("play",()=>player.play().catch(()=>{}))}catch(e){}}}catch(e){info("Không thể tải mẫu âm thanh: "+e.message)}
 refresh()}
 function text(tag,cls,content){let node=document.createElement(tag);if(cls)node.className=cls;node.textContent=content;return node}
@@ -51,6 +51,6 @@ el("stop").onclick=()=>{player.pause();player.currentTime=0;info("Đã dừng");
 function feedback(){return {collection:"Signature Batch 01",date:new Date().toISOString(),tracks:tracks.map(t=>({id:t.id,title:t.title,...get(t)}))}}
 el("export").onclick=()=>{const blob=new Blob([JSON.stringify(feedback(),null,2)],{type:"application/json"});const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download="WhiteNoiseChoir_Signature_Review.json";a.click();setTimeout(()=>URL.revokeObjectURL(url),2000)};
 el("copy").onclick=()=>{navigator.clipboard?.writeText(JSON.stringify(feedback(),null,2)).then(()=>{el("loadstatus").textContent="Đã copy đánh giá"}).catch(()=>{el("loadstatus").textContent="Trình duyệt chặn copy; dùng nút Tải đánh giá"})};
-fetch("manifest.json",{cache:"no-store"}).then(r=>{if(!r.ok)throw Error("manifest HTTP "+r.status);return r.json()}).then(d=>{tracks=d.tracks||[];tracks.forEach(addCard);el("count").textContent=tracks.length;el("pass").textContent=tracks.filter(t=>t.qa?.technical_status==="PASS").length;el("loadstatus").textContent="Đã tải "+tracks.length+" bản nghe thử. Vui lòng đánh giá thực tế bằng tai nghe và iPhone."}).catch(e=>{el("loadstatus").textContent="Chưa có bản build hoàn chỉnh: "+e.message});
+fetch("manifest.json",{cache:"no-store"}).then(r=>{if(!r.ok)throw Error("manifest HTTP "+r.status);return r.json()}).then(d=>{buildVersion=d.version||"batch-01";tracks=d.tracks||[];tracks.forEach(addCard);el("count").textContent=tracks.length;el("pass").textContent=tracks.filter(t=>t.qa?.technical_status==="PASS").length;el("loadstatus").textContent="Đã tải "+tracks.length+" bản nghe thử. Vui lòng đánh giá thực tế bằng tai nghe và iPhone."}).catch(e=>{el("loadstatus").textContent="Chưa có bản build hoàn chỉnh: "+e.message});
 })();
 </script></body></html>
