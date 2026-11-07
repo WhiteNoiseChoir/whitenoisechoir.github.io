@@ -1,0 +1,21 @@
+name: Player Loop and Sleep Timer Smoke Tests
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'index.html'
+      - 'scripts/test_player_smoke.cjs'
+      - '.github/workflows/player_smoke.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  player-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run playback and timer tests on Node 22
+        run: |
+          node --version
+          node scripts/test_player_smoke.cjs
