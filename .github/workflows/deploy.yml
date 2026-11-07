@@ -30,14 +30,14 @@ jobs:
         run: |
           python scripts/generate_audio.py
           python scripts/import_cc0.py
-          test "$(find dist/audio -name '*.mp3' | wc -l)" -eq 31
+          test "$(find dist/audio -name '*.mp3' | wc -l)" -eq 25
           test -s dist/audio/cc0-sources.json
       - name: Publish audio to main branch for GitHub Pages
         run: |
           mkdir -p audio
           cp -f dist/audio/*.mp3 audio/
           cp -f dist/audio/cc0-sources.json audio/
-          find audio -maxdepth 1 -type f -name '*-synth.mp3' ! -name 'cabin-hum-synth.mp3' -delete
+          rm -f audio/box-fan-synth.mp3 audio/rain-wash-synth.mp3 audio/heavy-rain-synth.mp3 audio/ocean-swell-synth.mp3 audio/waterfall-synth.mp3
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -A audio/
