@@ -1,0 +1,27 @@
+name: Native HLS 10-Minute Boundary Decoder QA
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/test_hls_transport.py'
+      - '.github/workflows/hls_decode_smoke.yml'
+      - 'audio/continuous/**'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  test-boundary:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install FFmpeg if missing
+        run: |
+          if ! command -v ffmpeg >/dev/null; then
+            sudo apt-get update -qq
+            sudo apt-get install -y ffmpeg
+          fi
+      - name: Validate Python and decode across the 10-minute source boundary
+        run: |
+          python -m py_compile scripts/test_hls_transport.py
+          python -u scripts/test_hls_transport.py
