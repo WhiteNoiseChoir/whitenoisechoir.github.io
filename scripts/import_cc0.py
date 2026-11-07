@@ -30,6 +30,8 @@ SOURCES=[
  ("fireplace-real","Fireplace Crackling","visionear","https://freesound.org/people/visionear/sounds/501417/","https://cdn.freesound.org/previews/501/501417_10869493-hq.mp3"),
  ("forest-birds-real","Forest Birds","NightVoice","https://freesound.org/people/NightVoice/sounds/123999/","https://cdn.freesound.org/previews/123/123999_362645-hq.mp3")
 ]
+ACTIVE={"box-fan-real","rain-on-window-real","heavy-rain-real","ocean-waves-real","waterfall-real"}
+SOURCES=[entry for entry in SOURCES if entry[0] in ACTIVE]
 def run(cmd,**kwargs):
     r=subprocess.run(cmd,capture_output=True,**kwargs)
     if r.returncode:
@@ -38,10 +40,10 @@ def run(cmd,**kwargs):
 
 def download(url):
     last=None
-    for i in range(3):
+    for i in range(2):
         try:
             req=Request(url,headers={"User-Agent":"Mozilla/5.0 (compatible; WhiteNoiseChoir/1.0; CC0 audio archival)","Accept":"audio/*,*/*"})
-            with urlopen(req,timeout=35) as response:
+            with urlopen(req,timeout=18) as response:
                 raw=response.read(30_000_000)
             if len(raw)<40000: raise ValueError("Audio file too short")
             return raw
@@ -87,7 +89,7 @@ def process(entry):
 
 if __name__=="__main__":
     results={}
-    with ThreadPoolExecutor(max_workers=3) as executor:
+    with ThreadPoolExecutor(max_workers=5) as executor:
         todo={executor.submit(process,e):e[0] for e in SOURCES}
         for f in as_completed(todo):
             result=f.result()
