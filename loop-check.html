@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>iPhone Continuous Audio Loop Check — WhiteNoiseChoir</title>
+<style>
+:root{color-scheme:dark;font-family:system-ui,-apple-system,sans-serif;background:#0c1718;color:#e9f3ef}
+*{box-sizing:border-box}
+body{margin:0;padding:clamp(18px,5vw,45px);max-width:710px;margin-inline:auto;line-height:1.65}
+a{color:#a5e5c8}h1{font-size:clamp(25px,5vw,38px);line-height:1.15;margin:20px 0}
+p{color:#bcd3c7}button{background:#afe6cd;color:#103027;border:0;padding:14px 23px;border-radius:12px;min-height:48px;font-size:16px;font-weight:700;margin-right:10px;cursor:pointer}
+button:disabled{opacity:.4;cursor:default}
+#state{padding:18px;background:#1d3731;border:1px solid #38604e;border-radius:15px;min-height:110px;margin-top:15px}
+small{color:#a2bfaf}#status{font-weight:600}code{color:#acf2cf}
+</style></head><body>
+<a href="/">← WhiteNoiseChoir</a>
+<h1>iPhone background loop check</h1>
+<p>This diagnostic loops a <strong>12-second</strong> white-noise section using a pre-generated native audio playlist. It lets you test the same mechanism used for the 10-minute masters without waiting ten minutes.</p>
+<p>1. Tap <strong>Play</strong>. 2. Lock your iPhone screen for 40–60 seconds. 3. The sound should keep playing, without requiring you to unlock. 4. Tap <strong>Stop</strong> when finished.</p>
+<div><button id="play">▶ Play</button><button id="stop" disabled>■ Stop</button></div>
+<div id="state">
+  <div id="status" aria-live="polite">Ready</div>
+  <div>Mode: <strong id="mode">Not checked</strong></div>
+  <div>Audio timeline: <strong id="elapsed">0:00</strong></div>
+  <div><small id="detail">Audio begins only after a user tap.</small></div>
+</div>
+<p><small>Do not use this page as a medical or infant sound-level test. Physical audio volume is determined by your speaker and device settings. iOS may still interrupt playback for a phone call or other system event.</small></p>
+<script>
+(function(){
+"use strict";
+var a=null,active=false;
+var $=function(s){return document.getElementById(s)};
+function clock(secs){secs=Math.floor(secs||0);return Math.floor(secs/60)+":"+String(secs%60).padStart(2,"0")}
+function setStatus(s){$("status").textContent=s}
+$("play").onclick=function(){
+  if(active)return;
+  var probe=document.createElement("audio");
+  var nativeHLS=!!(probe.canPlayType&&probe.canPlayType("application/vnd.apple.mpegurl"));
+  a=new Audio();
+  a.src=nativeHLS?"audio/continuous/quick/continuous.m3u8?v=continuous-hls-v1-20261107":"audio/white-noise.mp3?v=color-master-v1-20261107";
+  a.loop=true;a.preload="auto";
+  $("mode").textContent=nativeHLS?"Native HLS: 12-second segments repeated for 20 minutes":"MP3 fallback: 10-minute native loop";
+  a.addEventListener("timeupdate",function(){if(active)$("elapsed").textContent=clock(a.currentTime)});
+  a.addEventListener("ended",function(){if(active)setStatus("Stopped unexpectedly at media end")});
+  a.addEventListener("error",function(){if(active)setStatus("Media error — this browser may not support native HLS")});
+  try{if(navigator.audioSession)navigator.audioSession.type="playback"}catch(e){}
+  active=true;$("play").disabled=true;$("stop").disabled=false;
+  a.play().then(function(){setStatus("Playing — lock the screen; do not touch the phone for 40–60 seconds")}).catch(function(e){active=false;$("play").disabled=false;$("stop").disabled=true;setStatus("Playback error: "+e.message)});
+};
+$("stop").onclick=function(){
+  active=false;if(a){a.pause();a.removeAttribute("src");a.load();a=null}
+  $("play").disabled=false;$("stop").disabled=true;setStatus("Stopped by user");
+};
+})();
+</script>
+</body></html>
