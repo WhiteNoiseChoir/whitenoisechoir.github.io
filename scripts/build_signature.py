@@ -11,6 +11,8 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 import hashlib, json, math, subprocess, tempfile, time
 import numpy as np
 from scipy.signal import welch
+# The manual full build uses the same mastering and EBU R128 QA as the isolated remaster.
+from remaster_signature import FIXES, remaster, ebu_r128
 
 SR=44100
 DURATION=60
@@ -19,6 +21,11 @@ OUT=Path("signature/audio")
 OUT.mkdir(parents=True,exist_ok=True)
 ROOT=Path("signature")
 LICENSE="https://creativecommons.org/publicdomain/zero/1.0/"
+# Lock remaster sources by bytes so a changed online preview cannot silently alter quality.
+PINNED_REMASTER_SOURCES={
+    "rain-window":"420241e1a32aa70ff1956cb8dc1ca1b64c577d06a881475ce09a11ef5ae6941b",
+    "fireplace":"69d441a20d166e54c0976bbcabd15b98a8979937c4eecbf5986ebcfbd34c423b",
+}
 COLORS=[
   ("white","White Noise",0.0,"Original algorithm","White noise: approximately flat power spectral density."),
   ("pink","Pink Noise",1.0,"Original algorithm","Pink noise: approximately 1/f power spectral density."),
@@ -106,16 +113,30 @@ def download(url):
 def build_field(entry):
     id,title,author,landing,url,description=entry
     original=download(url)
+    source_sha=hashlib.sha256(original).hexdigest()
+    if id in PINNED_REMASTER_SOURCES and source_sha!=PINNED_REMASTER_SOURCES[id]:
+        raise RuntimeError(f"{id}: original preview checksum changed; require manual source review")
     with tempfile.TemporaryDirectory() as td:
         path=Path(td)/"source.mp3"
         path.write_bytes(original)
         decoded=ffmpeg_decode(path)
     x=normalize(continuous_loop(decoded))
     dest=encode(id,x)
+    extra={}
+    if id in FIXES:
+        # Recreate v1 from pinned recording before v2 compression.
+        # NEVER remaster a previously remastered MP3.
+        v1_sha=hashlib.sha256(dest.read_bytes()).hexdigest()
+        v1_pcm=ffmpeg_decode(dest,seconds=DURATION+1)
+        if len(v1_pcm)<DURATION*SR:
+            raise RuntimeError(f"{id}: short intermediate before mastering")
+        dest=encode(id,remaster(v1_pcm[:DURATION*SR],FIXES[id]))
+        extra={"mastering_revision":"signature-remaster-v2",
+               "mastering_settings":FIXES[id],"previous_file_sha256":v1_sha}
     return {"id":id,"title":title,"type":"field_recording","author":author,
       "source_page":landing,"preview_url":url,"license":"CC0-1.0","license_url":LICENSE,
-      "description":description,"source_preview_sha256":hashlib.sha256(original).hexdigest(),
-      "file":"audio/"+dest.name,"file_sha256":hashlib.sha256(dest.read_bytes()).hexdigest()}
+      "description":description,"source_preview_sha256":source_sha,
+      "file":"audio/"+dest.name,"file_sha256":hashlib.sha256(dest.read_bytes()).hexdigest(),**extra}
 
 def qa(path,expected_alpha=None):
     # QA based on decoded final MP3, not internal uncompressed float only.
@@ -143,12 +164,25 @@ def qa(path,expected_alpha=None):
     if pk<=.003:errors.append("very_low_level")
     if quiet>=4:errors.append("unexpected_silence_windows")
     if jump_ratio>6:errors.append("loop_transition_needs_review")
+    crest=peak_db-rms_db
+    integrated_lufs=None
+    true_peak_dbtp=None
+    if path.stem in FIXES:
+        integrated_lufs,true_peak_dbtp=ebu_r128(path)
+        if rms_db < -32 or rms_db > -22:errors.append("rms_outside_audition_range")
+        if crest > 25:errors.append("crest_factor_too_high")
+        if peak_db > -3:errors.append("peak_headroom_too_low")
+        if true_peak_dbtp > -1:errors.append("true_peak_headroom_too_low")
+        if not (-38 <= integrated_lufs <= -18):errors.append("integrated_loudness_outside_audition_range")
     if expected_alpha is not None:
         target=-10*expected_alpha
         if abs(slope-target)>7:errors.append("spectrum_slope_outside_tolerance")
     return {"duration_seconds":round(len(x)/SR,3),"sample_rate":SR,"channels":2,
       "codec":"mp3","bitrate_kbps":192,"rms_dbfs":round(rms_db,2),
-      "sample_peak_dbfs":round(peak_db,2),"spectral_slope_db_per_decade":round(slope,2),
+      "sample_peak_dbfs":round(peak_db,2),"crest_factor_db":round(crest,2),
+      **({"integrated_loudness_lufs":round(integrated_lufs,1),
+          "true_peak_dbtp":round(true_peak_dbtp,1)} if integrated_lufs is not None else {}),
+      "spectral_slope_db_per_decade":round(slope,2),
       "quiet_windows_250ms_below_minus65dbfs":quiet,
       "loop_boundary_jump_vs_typical_adjacent_diff":round(jump_ratio,3),
       "technical_status":"PASS" if not errors else "REVIEW",
@@ -178,14 +212,16 @@ def run():
         by_id={r["id"]:r for r in field_records}
         records.extend(by_id[row[0]] for row in FIELD)
     payload={"collection":"WhiteNoiseChoir Signature Collection — Audition Beta",
-      "version":"batch-01","duration_seconds":DURATION,
+      "version":"batch-01-rebuild-03","duration_seconds":DURATION,
       "purpose":"quality audition, not final long masters","tracks":records,
       "automated_qa_only":True,
-      "qa_caveat":"QA is technical, not listening approval. Sources can have sudden noises or repeat audibly."}
+      "qa_caveat":"QA is technical, not listening approval. V2 rain/fireplace remasters are regenerated from pinned original previews; do not assume perceptual approval."}
     (ROOT/"manifest.json").write_text(json.dumps(payload,indent=2,ensure_ascii=False)+"\n",encoding="utf8")
     summaries={"total":len(records),"technical_passes":sum(r["qa"]["technical_status"]=="PASS" for r in records),
       "technical_review":sum(r["qa"]["technical_status"]!="PASS" for r in records),
-      "human_approved":0,"mean_rms_dbfs":round(float(np.mean([r["qa"]["rms_dbfs"] for r in records])),2)}
+      "human_approved":0,"mean_rms_dbfs":round(float(np.mean([r["qa"]["rms_dbfs"] for r in records])),2),
+      "review_tracks":[r["id"] for r in records if r["qa"]["technical_status"]!="PASS"],
+      "revision":"manual-full-rebuild-with-v2-remaster"}
     (ROOT/"quality-summary.json").write_text(json.dumps(summaries,indent=2)+"\n",encoding="utf8")
     print("QA_SUMMARY",json.dumps(summaries),flush=True)
     if len(records)!=10:raise AssertionError("Need exactly 10 QA sources")
