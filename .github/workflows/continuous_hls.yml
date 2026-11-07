@@ -1,0 +1,71 @@
+name: Build iOS Continuous Listening HLS Streams
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/build_continuous_hls.py'
+      - '.github/workflows/continuous_hls.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: whitenoisechoir-continuous-hls
+  cancel-in-progress: false
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout approved source masters
+        uses: actions/checkout@v4
+      - name: Configure Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install stream authoring tools
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y ffmpeg
+      - name: Syntax check
+        run: python -m py_compile scripts/build_continuous_hls.py
+      - name: Convert and QA five native continuous streams
+        run: python -u scripts/build_continuous_hls.py
+      - name: Validate continuous playlist duration and transport structure
+        run: |
+          python - <<'PY'
+          import json,re,hashlib
+          from pathlib import Path
+          m=json.loads(Path('audio/continuous/manifest.json').read_text())
+          names={'white-noise','pink-noise','brown-noise','rain-on-window-real','fireplace-real'}
+          assert set(m['applies_to'])==names
+          assert len(m['records'])==5
+          for v in m['records']:
+              p=Path(v['playlist_file'])
+              src=p.read_text()
+              assert src.startswith('#EXTM3U\n') and src.rstrip().endswith('#EXT-X-ENDLIST'),p
+              assert '#EXT-X-PLAYLIST-TYPE:VOD' in src and '#EXT-X-DISCONTINUITY' in src,p
+              assert src.count('#EXT-X-DISCONTINUITY')==v['repeated_cycles']-1,(p,v)
+              assert src.count('#EXTINF:')==v['repeated_cycles']*v['segment_count_per_10_minute_cycle'],p
+              assert v['native_stream_duration_hours']>=168,p
+              assert v['source_cycle_seconds']>=599.5,p
+              assert hashlib.sha256(p.read_bytes()).hexdigest()==v['playlist_sha256'],p
+              chunks=list(p.parent.glob('part_*.ts'))
+              assert len(chunks)==v['segment_count_per_10_minute_cycle'],p
+              assert all(q.stat().st_size>100000 for q in chunks),p
+              print(v['id'],'cycles',v['repeated_cycles'],'hours',v['native_stream_duration_hours'])
+          q=Path(m['manual_fast_test_file'])
+          assert q.exists() and q.read_text().count('#EXT-X-DISCONTINUITY')>=30
+          print('PASS: five independent 7-day browser-native HLS streams and 12-second fast-loop test')
+          PY
+      - name: Publish streams, not original MP3s
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A audio/continuous/
+          if git diff --cached --quiet; then
+            echo "HLS artifacts are already current"
+          else
+            git commit -m "Publish five iOS native 7-day HLS continuous-playback streams"
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
