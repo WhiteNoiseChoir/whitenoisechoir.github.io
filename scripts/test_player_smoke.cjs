@@ -6,7 +6,7 @@ const matches=[...html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/g)];
 assert.equal(matches.length,1,"Expected one inline player script");
 new vm.Script(matches[0][1],{filename:"index.html:inline-script"});
 
-let now=Date.UTC(2026,10,7,0,0,0), id=1;
+let now=Date.UTC(2026,10,7,0,0,0), id=1, emulateNativeHLS=false, blockNativeHLS=false;
 const timerFns=new Map(),intervalFns=new Map(),documentEvents={},windowEvents={},audioInstances=[];
 const elements={};
 function element(tag="div"){
@@ -30,7 +30,8 @@ const window={addEventListener(name,fn){windowEvents[name]=fn}};
 class FakeAudio{
   constructor(src){this.src=src;this.paused=true;this.volume=1;this.loop=false;this.handlers={};audioInstances.push(this)}
   addEventListener(name,fn){this.handlers[name]=fn}
-  play(){this.paused=false;return Promise.resolve()}
+  canPlayType(type){return emulateNativeHLS&&type.includes("mpegurl")?"maybe":""}
+  play(){if(blockNativeHLS&&this.src&&this.src.includes(".m3u8"))return Promise.reject(new Error("HLS blocked"));this.paused=false;return Promise.resolve()}
   pause(){this.paused=true}
   removeAttribute(attr){if(attr==="src")this.src=""}
   load(){}
@@ -100,5 +101,35 @@ const flush=()=>new Promise(resolve=>setImmediate(resolve));
     assert.ok(audio.src.includes(id+".mp3?v=color-master-v1-20261107"),"Must bust stale 72s source cache for "+label);
     assert.ok(audio.loop,"Native loop remains enabled for "+label);
   }
-  console.log("PASS: native loops, 21 sounds, 45 mixes, absolute timer, mixer headroom, 3 ten-minute colored-noise cache versions");
+  // Simulate a native HLS-capable iPhone: the media playlist should not end
+  // at the 600-second MP3 source boundary, even with the page hidden.
+  emulateNativeHLS=true;
+  get("timer").value="0";
+  card("White Noise").children[3].onclick();
+  await flush();
+  let stream=audioInstances[audioInstances.length-1];
+  assert.ok(stream.src.includes("audio/continuous/white-noise/continuous.m3u8?v=continuous-hls-v1"),stream.src);
+  assert.ok(stream.loop,"HLS playlist end retains native loop for exceptionally long sessions");
+  stream.currentTime=600;
+  document.hidden=true;stream.handlers.timeupdate();
+  assert.equal(stream.paused,false,"At minute 10 and with timer off, stream must still be playing");
+  assert.equal(get("timerInfo").textContent,"Timer off · continuous playback");
+  document.hidden=false;
+  for(const name of ["Pink Noise","Brown Noise","Rain on Window (Real Recording)","Fireplace (Real Recording)"]){
+    card(name).children[3].onclick();
+    await flush();
+    const x=audioInstances[audioInstances.length-1];
+    assert.ok(x.src.includes("audio/continuous/") && x.src.includes(".m3u8"),name+" must use native HLS");
+  }
+  // If a browser advertises HLS but refuses the source, immediately fall back
+  // to the original MP3 without leaving the play button stuck.
+  blockNativeHLS=true;
+  card("White Noise").children[3].onclick();
+  await flush();
+  await flush();
+  const mp3fallback=audioInstances[audioInstances.length-1];
+  assert.ok(mp3fallback.src.includes("white-noise.mp3"),"Failed HLS must fall back to MP3");
+  assert.ok(mp3fallback.loop,"Fallback MP3 should loop");
+  blockNativeHLS=false;
+  console.log("PASS: 21 sounds, 45 mixes, 10-minute HLS source boundaries, lock-screen-safe native streams, MP3 fallback, timer and mixer");
 })().catch(e=>{console.error(e);process.exit(1)});
