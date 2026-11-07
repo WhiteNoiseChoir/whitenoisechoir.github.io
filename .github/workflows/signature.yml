@@ -57,5 +57,6 @@ jobs:
             echo "No audio changes"
           else
             git commit -m "Add 10 Signature Collection QA samples with source and sound metrics"
+            git pull --rebase origin main
             git push origin HEAD:main
           fi
