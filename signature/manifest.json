@@ -1,6 +1,6 @@
 {
   "collection": "WhiteNoiseChoir Signature Collection — Audition Beta",
-  "version": "batch-01",
+  "version": "batch-01-remaster-02",
   "duration_seconds": 60,
   "purpose": "quality audition, not final long masters",
   "tracks": [
@@ -97,26 +97,31 @@
       "description": "Rain hitting a window, possibly with storm ambience.",
       "source_preview_sha256": "420241e1a32aa70ff1956cb8dc1ca1b64c577d06a881475ce09a11ef5ae6941b",
       "file": "audio/rain-window.mp3",
-      "file_sha256": "10b112f26f2ca7a8121ef247e99f869284aa3c6c74a8ddeafe754198ac09c392",
+      "file_sha256": "b77b2d020776e75e4ab37c7345081e8a058b2a8bdd3190c6e3effda20a294212",
       "qa": {
-        "duration_seconds": 60,
+        "duration_seconds": 60.0,
         "sample_rate": 44100,
         "channels": 2,
         "codec": "mp3",
         "bitrate_kbps": 192,
-        "rms_dbfs": -35.68,
-        "sample_peak_dbfs": -3.51,
-        "spectral_slope_db_per_decade": -13.04,
-        "quiet_windows_250ms_below_minus65dbfs": 4,
-        "loop_boundary_jump_vs_typical_adjacent_diff": 0.229,
-        "technical_status": "REVIEW",
-        "flags": [
-          "unexpected_silence_windows",
-          "rms_level_too_low_relative_to_collection"
-        ],
+        "rms_dbfs": -28.53,
+        "sample_peak_dbfs": -7.73,
+        "spectral_slope_db_per_decade": -14.55,
+        "quiet_windows_250ms_below_minus65dbfs": 1,
+        "loop_boundary_jump_vs_typical_adjacent_diff": 0.738,
+        "technical_status": "PASS",
+        "flags": [],
         "listening_status": "PENDING_HUMAN_REVIEW",
-        "note": "A measured PASS does not prove perceptual sound quality or a seamless long-duration listening experience. Requires gain/crest-factor remaster before release; do not auto-approve."
-      }
+        "note": "Dynamic-range remaster from the same original source. Automated technical results are not a listening approval."
+      },
+      "mastering_revision": "signature-remaster-v2",
+      "mastering_settings": {
+        "ratio": 5.5,
+        "threshold_dbfs": -46,
+        "target_rms_dbfs": -28.2,
+        "peak_ceiling_dbfs": -7.0
+      },
+      "previous_file_sha256": "10b112f26f2ca7a8121ef247e99f869284aa3c6c74a8ddeafe754198ac09c392"
     },
     {
       "id": "heavy-rain",
@@ -250,25 +255,31 @@
       "description": "Real indoor fireplace with transient crackling.",
       "source_preview_sha256": "69d441a20d166e54c0976bbcabd15b98a8979937c4eecbf5986ebcfbd34c423b",
       "file": "audio/fireplace.mp3",
-      "file_sha256": "faacedb18850470870432acb2f86b0030dd230d18858a221d95b4fb20029a30e",
+      "file_sha256": "05ef121e522af14fbf895c4cc3d9375fd0aaa69ff24ca2aeeba8ee1b998501f7",
       "qa": {
-        "duration_seconds": 60,
+        "duration_seconds": 60.0,
         "sample_rate": 44100,
         "channels": 2,
         "codec": "mp3",
         "bitrate_kbps": 192,
-        "rms_dbfs": -45.13,
-        "sample_peak_dbfs": -3.75,
-        "spectral_slope_db_per_decade": -10.11,
+        "rms_dbfs": -29.51,
+        "sample_peak_dbfs": -6.99,
+        "spectral_slope_db_per_decade": -14.05,
         "quiet_windows_250ms_below_minus65dbfs": 0,
-        "loop_boundary_jump_vs_typical_adjacent_diff": 0.079,
-        "technical_status": "REVIEW",
-        "flags": [
-          "rms_level_too_low_relative_to_collection"
-        ],
+        "loop_boundary_jump_vs_typical_adjacent_diff": 0.375,
+        "technical_status": "PASS",
+        "flags": [],
         "listening_status": "PENDING_HUMAN_REVIEW",
-        "note": "A measured PASS does not prove perceptual sound quality or a seamless long-duration listening experience. Requires gain/crest-factor remaster before release; do not auto-approve."
-      }
+        "note": "Dynamic-range remaster from the same original source. Automated technical results are not a listening approval."
+      },
+      "mastering_revision": "signature-remaster-v2",
+      "mastering_settings": {
+        "ratio": 8.0,
+        "threshold_dbfs": -49,
+        "target_rms_dbfs": -29.2,
+        "peak_ceiling_dbfs": -7.0
+      },
+      "previous_file_sha256": "faacedb18850470870432acb2f86b0030dd230d18858a221d95b4fb20029a30e"
     },
     {
       "id": "forest-rain",
@@ -302,5 +313,5 @@
     }
   ],
   "automated_qa_only": true,
-  "qa_caveat": "QA is technical, not listening approval. Sources can have sudden noises or repeat audibly. Sound-level consistency check: the rain-window and fireplace samples require a new dynamics/gain master."
+  "qa_caveat": "Two former level outliers remastered and rechecked. Automated PASS does not indicate human listening approval."
 }

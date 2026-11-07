@@ -1,12 +1,10 @@
 {
   "total": 10,
-  "technical_passes": 8,
-  "technical_review": 2,
+  "technical_passes": 10,
+  "technical_review": 0,
   "human_approved": 0,
-  "mean_rms_dbfs": -29.09,
-  "review_tracks": [
-    "rain-window",
-    "fireplace"
-  ],
-  "review_reason": "RMS level mismatch / quiet windows; source or mastering requires revision"
+  "mean_rms_dbfs": -26.82,
+  "review_tracks": [],
+  "revision": "dynamic-range-remaster-02",
+  "note": "Technical PASS means no measured issues in these checks; listening QA remains pending on all 10."
 }
