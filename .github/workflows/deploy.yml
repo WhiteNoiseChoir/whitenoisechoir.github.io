@@ -35,8 +35,15 @@ jobs:
       - name: Publish audio to main branch for GitHub Pages
         run: |
           mkdir -p audio
-          cp -f dist/audio/*.mp3 audio/
-          cp -f dist/audio/cc0-sources.json audio/
+          # Keep the separately approved 10-minute Rain on Window master intact.
+          # The CC0 import batch only owns the four other legacy field recordings.
+          for asset in dist/audio/*.mp3; do
+            case "$(basename "$asset")" in
+              rain-on-window-real.mp3|fireplace-real.mp3) echo "Preserving production master: $asset" ;;
+              *) cp -f "$asset" audio/ ;;
+            esac
+          done
+          # Preserve production-master provenance in cc0-sources.json, managed separately.
           rm -f audio/box-fan-synth.mp3 audio/rain-wash-synth.mp3 audio/heavy-rain-synth.mp3 audio/ocean-swell-synth.mp3 audio/waterfall-synth.mp3
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
