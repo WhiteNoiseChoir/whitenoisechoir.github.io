@@ -93,5 +93,12 @@ const flush=()=>new Promise(resolve=>setImmediate(resolve));
   assert.ok(maxGains.reduce((a,b)=>a+b,0)<=.85,"Two-layer mix must not exceed configured maximum sum");
   assert.equal(get("timerInfo").textContent,"Timer off · continuous playback");
 
-  console.log("PASS: native loops, 21 sounds, 45 mixes, deadline recheck, iPhone-friendly audio gesture and two-layer headroom");
+  for(const [label,id] of [["White Noise","white-noise"],["Pink Noise","pink-noise"],["Brown Noise","brown-noise"]]){
+    card(label).children[3].onclick();
+    await flush();
+    const audio=audioInstances[audioInstances.length-1];
+    assert.match(audio.src,new RegExp(id+"\\\\.mp3\\\\?v=color-master-v1-20261107"),"Must bust stale 72s source cache for "+label);
+    assert.ok(audio.loop,"Native loop remains enabled for "+label);
+  }
+  console.log("PASS: native loops, 21 sounds, 45 mixes, absolute timer, mixer headroom, 3 ten-minute colored-noise cache versions");
 })().catch(e=>{console.error(e);process.exit(1)});
