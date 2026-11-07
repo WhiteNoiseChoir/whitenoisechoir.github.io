@@ -1,17 +1,18 @@
-name: Deploy WhiteNoiseChoir
+name: Build WhiteNoiseChoir Audio Library
 on:
   push:
     branches: [main]
+    paths:
+      - 'scripts/**'
+      - '.github/workflows/deploy.yml'
   workflow_dispatch:
 permissions:
   contents: write
-  pages: write
-  id-token: write
 concurrency:
-  group: github-pages
+  group: whitenoisechoir-audio-build
   cancel-in-progress: true
 jobs:
-  build:
+  build-and-publish-audio:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout source
@@ -25,37 +26,24 @@ jobs:
           python -m pip install numpy scipy
           sudo apt-get update -qq
           sudo apt-get install -y ffmpeg
-          ffmpeg -version
-      - name: Build static website with 20 sound files
+      - name: Generate original noise textures and import CC0 field recordings
         run: |
-          mkdir -p dist
-          cp index.html robots.txt sitemap.xml .nojekyll dist/
           python scripts/generate_audio.py
-          test "$(find dist/audio -name '*.mp3' | wc -l)" -eq 20
-      - name: Sync generated MP3s into repository
+          python scripts/import_cc0.py
+          test "$(find dist/audio -name '*.mp3' | wc -l)" -eq 31
+          test -s dist/audio/cc0-sources.json
+      - name: Publish audio to main branch for GitHub Pages
         run: |
           mkdir -p audio
           cp -f dist/audio/*.mp3 audio/
+          cp -f dist/audio/cc0-sources.json audio/
+          find audio -maxdepth 1 -type f -name '*-synth.mp3' ! -name 'cabin-hum-synth.mp3' -delete
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add audio/
+          git add -A audio/
           if git diff --cached --quiet; then
-            echo "Audio files already up to date"
+            echo "Library assets already current"
           else
-            git commit -m "Add 20 generated original MP3 sound tracks"
+            git commit -m "Replace generic noise imitations with verified CC0 ambience recordings"
             git push origin HEAD:main
           fi
-      - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: dist
-  deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-      - name: Deploy GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
