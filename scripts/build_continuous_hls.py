@@ -49,7 +49,7 @@ def run_ffmpeg(master,where):
         "ffmpeg","-hide_banner","-loglevel","error","-nostdin","-y",
         "-i",str(master),"-vn","-map","0:a:0","-ar","44100","-ac","2",
         "-c:a","aac","-b:a",f"{BITRATE}k",
-        "-f","hls","-hls_time","60",
+        "-f","hls","-hls_time","65",
         "-hls_segment_type","mpegts","-hls_list_size","0",
         "-hls_playlist_type","vod",
         "-hls_segment_filename",str(segment),str(where/"source.m3u8")
