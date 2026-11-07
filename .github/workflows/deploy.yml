@@ -23,14 +23,13 @@ jobs:
           python-version: '3.11'
       - name: Install audio dependencies
         run: |
-          python -m pip install numpy scipy
+          python -m pip install numpy
           sudo apt-get update -qq
           sudo apt-get install -y ffmpeg
-      - name: Generate original noise textures and import CC0 field recordings
+      - name: Import distinct CC0 field recordings and verify five audio files
         run: |
-          python scripts/generate_audio.py
           python scripts/import_cc0.py
-          test "$(find dist/audio -name '*.mp3' | wc -l)" -eq 25
+          test "$(find dist/audio -name '*.mp3' | wc -l)" -eq 5
           test -s dist/audio/cc0-sources.json
       - name: Publish audio to main branch for GitHub Pages
         run: |
