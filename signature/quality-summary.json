@@ -5,6 +5,6 @@
   "human_approved": 0,
   "mean_rms_dbfs": -26.82,
   "review_tracks": [],
-  "revision": "dynamic-range-remaster-02",
-  "note": "Technical PASS means no measured issues in these checks; listening QA remains pending on all 10."
+  "revision": "dynamic-range-remaster-02-loudness-audit-01",
+  "note": "Final encoded MP3 RMS, EBU R128 LUFS, true peak, and crest factor measured for remastered tracks. Human listening approval remains pending."
 }
