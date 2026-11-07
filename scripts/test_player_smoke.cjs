@@ -97,7 +97,7 @@ const flush=()=>new Promise(resolve=>setImmediate(resolve));
     card(label).children[3].onclick();
     await flush();
     const audio=audioInstances[audioInstances.length-1];
-    assert.match(audio.src,new RegExp(id+"\\\\.mp3\\\\?v=color-master-v1-20261107"),"Must bust stale 72s source cache for "+label);
+    assert.ok(audio.src.includes(id+".mp3?v=color-master-v1-20261107"),"Must bust stale 72s source cache for "+label);
     assert.ok(audio.loop,"Native loop remains enabled for "+label);
   }
   console.log("PASS: native loops, 21 sounds, 45 mixes, absolute timer, mixer headroom, 3 ten-minute colored-noise cache versions");
