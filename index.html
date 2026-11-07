@@ -108,7 +108,7 @@ button{touch-action:manipulation}
 <div class="player"><div class="eyebrow center">Your sound is ready</div><h2 id="playingTitle">Pure White Noise</h2><div class="muted center">Continuous audio · original synthesis</div><div class="wave" id="wave" aria-hidden="true"></div><div class="transport"><button class="smallbtn" id="prev" aria-label="Previous sound"><svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor"><path d="M6 5h2v14H6zM19 5v14L9 12z"/></svg></button><button class="bigbtn" id="play" aria-label="Play white noise">▶</button><button class="smallbtn" id="next" aria-label="Next sound"><svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor"><path d="M16 5h2v14h-2zM5 5v14l10-7z"/></svg></button></div><div class="status" id="status" role="status" aria-live="polite">Ready to play</div><div id="timerInfo" class="timerhint" aria-live="off">Timer off · continuous playback</div><div class="settings"><label>Volume <input type="range" id="volume" min="0" max="100" value="28" aria-label="Volume"></label><label>Timer <select id="timer"><option value="0">Off</option><option value="900">15 min</option><option value="1800">30 min</option><option value="3600">1 hour</option><option value="7200">2 hours</option><option value="14400">4 hours</option><option value="28800">8 hours</option><option value="43200">12 hours</option></select></label><button class="thinbtn" id="dark">☾ Dark screen</button></div></div></section>
 <section class="section" id="sounds"><h2>Explore sounds</h2><p class="desc">21 sounds: original colored noise, six CC0 field recordings and clearly labeled synthetic ambience experiments. White, Pink and Brown Noise now have original 10-minute DSP masters; Rain on Window and Fireplace have 10-minute natural-recording arrangements. Every recording has its own source file.</p><input id="search" class="search" aria-label="Search sounds" placeholder="Search sounds: rain, fan, brown noise..."><div class="filters" id="filters"></div><div class="cards" id="cards"></div></section>
 <section class="section" id="mixes"><h2>Sound mixes for every moment</h2><p class="desc">45 curated presets combining our original sound textures. Each preset can be played without a separate download.</p><div class="mixes" id="mixlist"></div></section>
-<section class="section" id="about"><h2>White Noise, Your Way</h2><p class="desc">White noise has equal power per unit bandwidth. Pink and brown noise emphasize lower frequencies in different ways. Choose the sound that you find comfortable. Our sounds are not medical treatments. Natural recordings are marked CC0; other ambient experiments are marked Synthetic. Start at low volume and avoid placing a speaker close to a sleeping infant.</p><p class="desc">Background playback and lock-screen controls depend on your browser and operating system. The Sleep Timer uses the device clock; iOS may delay stopping audio while the browser is suspended, so it is not a safety cutoff. Dark screen mode only blacks out this webpage.</p></section></main>
+<section class="section" id="about"><h2>White Noise, Your Way</h2><p class="desc">White noise has equal power per unit bandwidth. Pink and brown noise emphasize lower frequencies in different ways. Choose the sound that you find comfortable. Our sounds are not medical treatments. Natural recordings are marked CC0; other ambient experiments are marked Synthetic. Start at low volume and avoid placing a speaker close to a sleeping infant.</p><p class="desc">For compatible browsers, our long sound masters use a native continuous audio stream; other browsers use MP3 looping. The sound should continue until Pause/Stop or the selected sleep timer. Background playback depends on iOS and the browser, and system interruptions can still stop audio. The timer uses the device clock; iOS may delay stopping audio while suspended, so it is not a safety cutoff. Dark screen mode only blacks out this webpage.</p></section></main>
 <footer class="container footer">© WhiteNoiseChoir · Public beta · Original noise synthesis and six licensed CC0 field recordings · 45 sound mixes. <a href="sources.html">Recording sources &amp; licenses</a>. No YouTube audio is used. Keep the volume comfortable.</footer>
 <div class="dock" id="dock"><div class="container"><div class="album">≋</div><div class="dockname"><strong id="docktitle">White Noise</strong><small id="dockstatus">Ready</small></div><button id="dockplay" aria-label="Play or pause">▶</button><button id="dockdark" aria-label="Dark screen">☾</button></div></div>
 <div class="black" id="black"><strong id="blacktitle">White Noise</strong><button id="blackplay">Play / Pause</button><button id="blackexit">Exit dark screen</button><p>Dark screen is a visual mode. Actual phone-lock playback may be interrupted by browser restrictions.</p></div>
@@ -174,28 +174,62 @@ function createFallback(id,gain){
 }
 async function playTracks(ids,name){
   reset();var token=playGeneration;activeIds=ids.slice();setName(name);status("Starting audio...");
-  // Native HTMLMediaElement playback has better odds of continuing with the iPhone screen off.
-  // Do not schedule JS-based crossfades at MP3 boundaries: hidden-page timers can be suspended.
+  // iOS WebKit may suspend JS before a 10-minute MP3 can be restarted.
+  // Where the browser supports native HLS, play a pre-authored continuous
+  // 7-day media timeline so the OS decoder, not an ended-event script, advances
+  // through the source's 10-minute boundaries. MP3 is the fallback elsewhere.
+  try{if(navigator.audioSession&&"type" in navigator.audioSession){navigator.audioSession.type="playback"}}catch(e){}
+  var streamIDs=["white-noise","pink-noise","brown-noise","rain-on-window-real","fireplace-real"];
+  var anyHLS=false;
   var result=await Promise.all(ids.map(async function(id,i){
-    var versioned=(id==="rain-on-window-real"||id==="fireplace-real")?"?v=long-master-v1-20261107":(["white-noise","pink-noise","brown-noise"].indexOf(id)!==-1?"?v=color-master-v1-20261107":"");var url="audio/"+id+".mp3"+versioned;
-    var audio=new Audio(url);audio.loop=true;audio.preload="auto";
+    var versioned=(id==="rain-on-window-real"||id==="fireplace-real")?"?v=long-master-v1-20261107":(["white-noise","pink-noise","brown-noise"].indexOf(id)!==-1?"?v=color-master-v1-20261107":"");
+    var mp3url="audio/"+id+".mp3"+versioned;
+    var audio=new Audio();
+    var canHLS=typeof audio.canPlayType==="function"&&!!(audio.canPlayType("application/vnd.apple.mpegurl")||audio.canPlayType("application/x-mpegURL"));
+    var usingHLS=canHLS&&streamIDs.indexOf(id)!==-1;
+    var triedMP3=false;
+    var switching=false;
+    if(usingHLS)anyHLS=true;
+    audio.src=usingHLS?"audio/continuous/"+id+"/continuous.m3u8?v=continuous-hls-v1-20261107":mp3url;
+    audio.loop=true;audio.preload="auto";
     audio.volume=Math.min(1,layerGain(i,ids.length)*Number($("volume").value)/100);
     audio.addEventListener("timeupdate",checkSleepTimer);
     audio.addEventListener("ended",function(){
       if(token!==playGeneration||!isPlaying||checkSleepTimer())return;
-      // Backup for browsers that ignore loop=true; usual repetition is native.
-      audio.currentTime=0;audio.play().catch(function(){status("Loop could not resume; tap Play")});
+      // This should only run after the entire native stream (7 days) on HLS.
+      // Non-HLS browsers keep the original native looping MP3 behaviour.
+      audio.currentTime=0;audio.play().catch(function(){status("Playback interrupted; tap Play to retry")});
     });
     audio.addEventListener("error",function(){
-      if(token!==playGeneration||!isPlaying)return;
-      reset();status("Recording interrupted. No synthetic replacement was used.");
+      if(token!==playGeneration||!isPlaying||switching)return;
+      if(usingHLS&&!triedMP3){
+        triedMP3=true;switching=true;usingHLS=false;
+        audio.src=mp3url;audio.loop=true;
+        status("Native stream unavailable; trying original MP3");
+        audio.play().then(function(){
+          switching=false;if(token===playGeneration)status("Playing MP3 fallback");
+        }).catch(function(){
+          switching=false;if(token===playGeneration){reset();status("Stream unavailable. Tap Play to retry.")};
+        });
+        return;
+      }
+      reset();status("Recording interrupted. Tap Play to retry.");
     });
     try{
       await audio.play();
       if(token!==playGeneration){audio.pause();audio.removeAttribute("src");return false}
       playerItems[i]=audio;return true;
     }catch(e){
-      audio.pause();if(token!==playGeneration)return false;
+      if(token!==playGeneration){audio.pause();return false}
+      if(usingHLS){
+        // Initial HLS URL/MIME errors fall back without changing original files.
+        usingHLS=false;triedMP3=true;audio.src=mp3url;
+        try{
+          await audio.play();
+          if(token!==playGeneration){audio.pause();audio.removeAttribute("src");return false}
+          playerItems[i]=audio;return true;
+        }catch(e2){audio.pause()}
+      }else{audio.pause()}
       if(id.endsWith("-real"))return false;
       return createFallback(id,layerGain(i,ids.length));
     }
@@ -203,7 +237,7 @@ async function playTracks(ids,name){
   if(token!==playGeneration)return;
   if(result.some(function(ok){return !ok})){reset();status("Recording unavailable. Try another sound.");return}
   isPlaying=true;updateButtons();
-  status(fallback.length?"Playing synthesized fallback":ids.some(function(id){return id.endsWith("-real")})?"Playing CC0 field recording":"Playing synthesized MP3 loop");
+  status(fallback.length?"Playing synthesized fallback":anyHLS?"Playing native continuous audio stream":ids.some(function(id){return id.endsWith("-real")})?"Playing CC0 field recording":"Playing synthesized MP3 loop");
   armSleepTimer();
   if("mediaSession" in navigator){
     try{
