@@ -1,10 +1,6 @@
 name: Build Signature Collection (QA Only)
+# Full 10-track rebuild is deliberately manual: never overwrite audition remasters on push.
 on:
-  push:
-    branches: [main]
-    paths:
-      - 'scripts/build_signature.py'
-      - '.github/workflows/signature.yml'
   workflow_dispatch:
 permissions:
   contents: write
