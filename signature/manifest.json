@@ -9,13 +9,13 @@
       "title": "White Noise",
       "type": "synthesized_color_noise",
       "author": "Original algorithm",
-      "spectral_exponent_alpha": 0.0,
+      "spectral_exponent_alpha": 0,
       "description": "White noise: approximately flat power spectral density.",
       "license": "original_dsp",
       "file": "audio/white.mp3",
       "file_sha256": "7c5bf5483fc750a6ef7cc59dffefed4f342a3b1f481631967cc17524be4cda2a",
       "qa": {
-        "duration_seconds": 60.0,
+        "duration_seconds": 60,
         "sample_rate": 44100,
         "channels": 2,
         "codec": "mp3",
@@ -36,13 +36,13 @@
       "title": "Pink Noise",
       "type": "synthesized_color_noise",
       "author": "Original algorithm",
-      "spectral_exponent_alpha": 1.0,
+      "spectral_exponent_alpha": 1,
       "description": "Pink noise: approximately 1/f power spectral density.",
       "license": "original_dsp",
       "file": "audio/pink.mp3",
       "file_sha256": "0eaef4360af3eeb00c48e6b7ad4418cc657461f3a293e355646be5a868b329c6",
       "qa": {
-        "duration_seconds": 60.0,
+        "duration_seconds": 60,
         "sample_rate": 44100,
         "channels": 2,
         "codec": "mp3",
@@ -63,13 +63,13 @@
       "title": "Brown Noise",
       "type": "synthesized_color_noise",
       "author": "Original algorithm",
-      "spectral_exponent_alpha": 2.0,
+      "spectral_exponent_alpha": 2,
       "description": "Brown noise: approximately 1/f² power spectral density.",
       "license": "original_dsp",
       "file": "audio/brown.mp3",
       "file_sha256": "a154719986dbddec0c1a572b48fa9474baf9eae52a0822366404a8b6a73ce4b1",
       "qa": {
-        "duration_seconds": 60.0,
+        "duration_seconds": 60,
         "sample_rate": 44100,
         "channels": 2,
         "codec": "mp3",
@@ -99,7 +99,7 @@
       "file": "audio/rain-window.mp3",
       "file_sha256": "10b112f26f2ca7a8121ef247e99f869284aa3c6c74a8ddeafe754198ac09c392",
       "qa": {
-        "duration_seconds": 60.0,
+        "duration_seconds": 60,
         "sample_rate": 44100,
         "channels": 2,
         "codec": "mp3",
@@ -111,10 +111,11 @@
         "loop_boundary_jump_vs_typical_adjacent_diff": 0.229,
         "technical_status": "REVIEW",
         "flags": [
-          "unexpected_silence_windows"
+          "unexpected_silence_windows",
+          "rms_level_too_low_relative_to_collection"
         ],
         "listening_status": "PENDING_HUMAN_REVIEW",
-        "note": "A measured PASS does not prove perceptual sound quality or a seamless long-duration listening experience."
+        "note": "A measured PASS does not prove perceptual sound quality or a seamless long-duration listening experience. Requires gain/crest-factor remaster before release; do not auto-approve."
       }
     },
     {
@@ -131,7 +132,7 @@
       "file": "audio/heavy-rain.mp3",
       "file_sha256": "f3bf2be9dfb7b76f10c3fb7dabc7098f923f658906a41ab4de98d64c4b752bdf",
       "qa": {
-        "duration_seconds": 60.0,
+        "duration_seconds": 60,
         "sample_rate": 44100,
         "channels": 2,
         "codec": "mp3",
@@ -161,7 +162,7 @@
       "file": "audio/ocean.mp3",
       "file_sha256": "524f492deb67f9028f98fd702918ed9ef56661a7ee05b914e0b8955fb0e19375",
       "qa": {
-        "duration_seconds": 60.0,
+        "duration_seconds": 60,
         "sample_rate": 44100,
         "channels": 2,
         "codec": "mp3",
@@ -191,7 +192,7 @@
       "file": "audio/box-fan.mp3",
       "file_sha256": "2aa81dcbc12fe925118878d8309216259b422a0966843ea10c9bb7123306db07",
       "qa": {
-        "duration_seconds": 60.0,
+        "duration_seconds": 60,
         "sample_rate": 44100,
         "channels": 2,
         "codec": "mp3",
@@ -221,7 +222,7 @@
       "file": "audio/air-conditioner.mp3",
       "file_sha256": "5ec14377625f82f6fe54b5f93a7dc9383c7376f89efcb4dbc19ed157aad881ce",
       "qa": {
-        "duration_seconds": 60.0,
+        "duration_seconds": 60,
         "sample_rate": 44100,
         "channels": 2,
         "codec": "mp3",
@@ -251,7 +252,7 @@
       "file": "audio/fireplace.mp3",
       "file_sha256": "faacedb18850470870432acb2f86b0030dd230d18858a221d95b4fb20029a30e",
       "qa": {
-        "duration_seconds": 60.0,
+        "duration_seconds": 60,
         "sample_rate": 44100,
         "channels": 2,
         "codec": "mp3",
@@ -261,10 +262,12 @@
         "spectral_slope_db_per_decade": -10.11,
         "quiet_windows_250ms_below_minus65dbfs": 0,
         "loop_boundary_jump_vs_typical_adjacent_diff": 0.079,
-        "technical_status": "PASS",
-        "flags": [],
+        "technical_status": "REVIEW",
+        "flags": [
+          "rms_level_too_low_relative_to_collection"
+        ],
         "listening_status": "PENDING_HUMAN_REVIEW",
-        "note": "A measured PASS does not prove perceptual sound quality or a seamless long-duration listening experience."
+        "note": "A measured PASS does not prove perceptual sound quality or a seamless long-duration listening experience. Requires gain/crest-factor remaster before release; do not auto-approve."
       }
     },
     {
@@ -281,7 +284,7 @@
       "file": "audio/forest-rain.mp3",
       "file_sha256": "0acf8c5eea0b156a7b25166045827ba9e9567895e4868e7335e2ddafc1122104",
       "qa": {
-        "duration_seconds": 60.0,
+        "duration_seconds": 60,
         "sample_rate": 44100,
         "channels": 2,
         "codec": "mp3",
@@ -299,5 +302,5 @@
     }
   ],
   "automated_qa_only": true,
-  "qa_caveat": "QA is technical, not listening approval. Sources can have sudden noises or repeat audibly."
+  "qa_caveat": "QA is technical, not listening approval. Sources can have sudden noises or repeat audibly. Sound-level consistency check: the rain-window and fireplace samples require a new dynamics/gain master."
 }
