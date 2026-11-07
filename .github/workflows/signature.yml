@@ -1,0 +1,61 @@
+name: Build Signature Collection (QA Only)
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/build_signature.py'
+      - '.github/workflows/signature.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: whitenoisechoir-signature-qa
+  cancel-in-progress: false
+jobs:
+  sound-quality-lab:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install ffmpeg and signal-analysis libraries
+        run: |
+          python -m pip install --disable-pip-version-check numpy scipy
+          sudo apt-get update -qq
+          sudo apt-get install -y ffmpeg
+      - name: Create ten 60-second audition samples and technical QA manifests
+        run: python -u scripts/build_signature.py
+      - name: Verify all ten unique outputs
+        run: |
+          test "$(find signature/audio -maxdepth 1 -name '*.mp3' | wc -l)" -eq 10
+          test -s signature/manifest.json
+          test -s signature/quality-summary.json
+          python - <<'PY'
+          from pathlib import Path
+          import json
+          m=json.loads(Path("signature/manifest.json").read_text())
+          tracks=m["tracks"]
+          assert len(tracks)==10
+          assert len({a["id"] for a in tracks})==10
+          assert sum(a["type"]=="field_recording" for a in tracks)==7
+          for item in tracks:
+              p=Path("signature")/item["file"]
+              assert p.exists() and p.stat().st_size>300000, p
+              assert item.get("qa",{}).get("duration_seconds",0)>59.5
+          print("Ten sound audition files verified. Human approval remains pending.")
+          PY
+      - name: Commit audition MP3s, sources and technical QA
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add signature/audio/*.mp3 signature/manifest.json signature/quality-summary.json
+          if git diff --cached --quiet; then
+            echo "No audio changes"
+          else
+            git commit -m "Add 10 Signature Collection QA samples with source and sound metrics"
+            git push origin HEAD:main
+          fi
