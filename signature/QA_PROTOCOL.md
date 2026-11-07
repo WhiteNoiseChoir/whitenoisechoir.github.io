@@ -15,6 +15,12 @@ Each 60-second stereo 44.1 kHz MP3 at 192 kbps is decoded after encoding to veri
 4. No prolonged unexpected digital silence;
 5. Loop-boundary sample jump relative to ordinary adjacent-sample changes is estimated;
 6. Power-spectrum slopes of white / pink / brown are checked against 0 / -10 / -20 dB per decade, tolerance ±7.
+7. Crest factor = decoded MP3 sample peak minus overall RMS (both dBFS), reported for each audition sample. Rain on Window and Fireplace must remain at or below 25 dB.
+8. For Rain on Window and Fireplace, FFmpeg EBU R128 measures **integrated loudness (LUFS)** and **true peak (dBTP)** on the *encoded MP3*: acceptance ranges are −38 to −18 LUFS and true peak ≤ −1 dBTP. Their RMS must remain within −32 to −22 dBFS; unexpected 250 ms silent windows, clipping, and boundary jumps continue to be checked.
+9. SHA-256 values of all ten final MP3s must agree with the manifest. A prior v2 remaster is **audited without re-encoding**; only recognized v1 input hashes may be remastered. Full ten-track builds are manual-only and regenerate the two remasters from hash-pinned original field recordings.
+
+LUFS and RMS characterize delivered digital audio, **not the physical sound-pressure level** at a person's ear. They do not establish volume safety for infants or children.
+
 
 These checks are useful but **do not prove** correct sound identity, naturalness, comfort or a gapless MP3 loop on iOS. A technical PASS is not an editorial approval.
 
