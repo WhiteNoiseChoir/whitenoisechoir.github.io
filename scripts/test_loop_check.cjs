@@ -45,9 +45,9 @@ vm.runInNewContext(source,{
 });
 const flush=()=>new Promise(resolve=>setImmediate(resolve));
 (async()=>{
-  assert.equal(get("seek").disabled,false,"The seek slider must have been initialized in a usable state after playback");
   // Quick HLS: drag directly to the end of the 20-minute stream.
   get("play").dispatch("click");await flush();
+  assert.equal(get("seek").disabled,false,"Slider must be enabled after Play");
   assert.ok(created[0].src.includes("/quick/continuous.m3u8"),"Quick HLS must use original short-loop playlist");
   assert.equal(get("seek").max,"1200","Quick stream: first twenty minutes seekable");
   get("seek").value="1195";get("seek").dispatch("input");get("seek").dispatch("change");
