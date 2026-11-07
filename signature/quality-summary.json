@@ -1,7 +1,12 @@
 {
   "total": 10,
-  "technical_passes": 9,
-  "technical_review": 1,
+  "technical_passes": 8,
+  "technical_review": 2,
   "human_approved": 0,
-  "mean_rms_dbfs": -29.09
+  "mean_rms_dbfs": -29.09,
+  "review_tracks": [
+    "rain-window",
+    "fireplace"
+  ],
+  "review_reason": "RMS level mismatch / quiet windows; source or mastering requires revision"
 }
