@@ -3,7 +3,8 @@ on:
   push:
     branches: [main]
     paths:
-      - 'scripts/**'
+      - 'scripts/import_cc0.py'
+      - 'scripts/generate_audio.py'
       - '.github/workflows/deploy.yml'
   workflow_dispatch:
 permissions:
