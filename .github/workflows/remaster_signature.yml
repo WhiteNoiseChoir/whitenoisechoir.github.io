@@ -27,7 +27,9 @@ jobs:
           python -m pip install --disable-pip-version-check numpy scipy
           sudo apt-get update -qq
           sudo apt-get install -y ffmpeg
-      - name: Remaster only Rain on Window and Fireplace
+      - name: Syntax-check full rebuild and isolated remaster
+        run: python -m py_compile scripts/build_signature.py scripts/remaster_signature.py
+      - name: Audit existing v2 or remaster only pinned v1 Rain and Fireplace
         run: python -u scripts/remaster_signature.py
       - name: Verify all ten files and manifest checksums
         run: |
@@ -39,12 +41,22 @@ jobs:
           assert len(m["tracks"])==10 and s["total"]==10
           assert s["technical_passes"]+s["technical_review"]==10
           assert s["human_approved"]==0
+          assert s["technical_passes"]==10 and s["technical_review"]==0, s
+          original={"rain-window","fireplace"}
           for t in m["tracks"]:
               p=root/t["file"]
               assert p.is_file() and p.stat().st_size>300000,p
               assert hashlib.sha256(p.read_bytes()).hexdigest()==t["file_sha256"],t["id"]
               assert t["qa"]["duration_seconds"]>=59.5,t["id"]
-          print("Validated all 10 MP3 files; only 2 require a remaster revision.")
+              if t["id"] in original:
+                  q=t["qa"]
+                  assert q["technical_status"]=="PASS" and not q["flags"],t["id"]
+                  assert -32 <= q["rms_dbfs"] <= -22,t["id"]
+                  assert q["crest_factor_db"] <= 25,t["id"]
+                  assert -38 <= q["integrated_loudness_lufs"] <= -18,t["id"]
+                  assert q["true_peak_dbtp"] <= -1,t["id"]
+                  assert t["mastering_revision"]=="signature-remaster-v2",t["id"]
+          print("All 10 source hashes valid; two v2 masters passed RMS, LUFS, true-peak and crest audits.")
           PY
       - name: Commit new versions of two audio files and updated QA
         run: |
@@ -54,7 +66,7 @@ jobs:
           if git diff --cached --quiet; then
             echo "No differences"
           else
-            git commit -m "Improve Rain on Window and Fireplace dynamics; update measured QA"
+            git commit -m "Audit Signature remasters with EBU R128 LUFS, true peak and crest measurements"
             git pull --rebase origin main
             git push origin HEAD:main
           fi
