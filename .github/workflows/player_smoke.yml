@@ -4,6 +4,8 @@ on:
     branches: [main]
     paths:
       - 'index.html'
+      - 'loop-check.html'
+      - 'scripts/test_loop_check.cjs'
       - 'scripts/test_player_smoke.cjs'
       - '.github/workflows/player_smoke.yml'
   workflow_dispatch:
@@ -19,3 +21,4 @@ jobs:
         run: |
           node --version
           node scripts/test_player_smoke.cjs
+          node scripts/test_loop_check.cjs
