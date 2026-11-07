@@ -8,7 +8,7 @@ This is a deterministic *dynamic-range remaster*, not a replacement source:
 Never auto-approve human listening QA. Keep all other eight MP3s unchanged.
 """
 from pathlib import Path
-import hashlib, json, math, subprocess
+import hashlib, json, math, re, subprocess
 import numpy as np
 from scipy.ndimage import uniform_filter1d, maximum_filter1d
 from scipy.signal import welch
@@ -19,6 +19,11 @@ MANIFEST = ROOT / "manifest.json"
 SUMMARY = ROOT / "quality-summary.json"
 SR=44100
 N=60*SR
+# Only an original v1 asset may be remastered. Never repeatedly compress a v2 master.
+ORIGINAL_V1_SHA256 = {
+    "rain-window": "10b112f26f2ca7a8121ef247e99f869284aa3c6c74a8ddeafe754198ac09c392",
+    "fireplace": "faacedb18850470870432acb7d18858a221d95b4fb20029a30e",
+}
 FIXES = {
     "rain-window": {"ratio": 5.5, "threshold_dbfs": -46, "target_rms_dbfs": -28.2, "peak_ceiling_dbfs": -7.0},
     "fireplace": {"ratio": 8.0, "threshold_dbfs": -49, "target_rms_dbfs": -29.2, "peak_ceiling_dbfs": -7.0},
@@ -71,7 +76,19 @@ def remaster(x,cfg):
     if pk>ceiling:x*=ceiling/pk
     return x
 
-def qa(x):
+def ebu_r128(path):
+    # Analyze the FINAL encoded MP3 with FFmpeg's EBU R128 meter, not the PCM intermediate.
+    cmd=["ffmpeg","-hide_banner","-nostats","-nostdin","-i",str(path),
+         "-filter:a","ebur128=peak=true","-f","null","-"]
+    p=subprocess.run(cmd,capture_output=True,text=True)
+    if p.returncode: raise RuntimeError("EBU R128 analysis failed: "+p.stderr[-700:])
+    integrated=re.search(r"Integrated loudness:\s*I:\s*([-+]?\d+(?:\.\d+)?)\s*LUFS",p.stderr)
+    true_peak=re.search(r"True peak:\s*Peak:\s*([-+]?\d+(?:\.\d+)?)\s*dBFS",p.stderr)
+    if not integrated or not true_peak:
+        raise ValueError("Missing EBU R128 final summary; refuse incomplete loudness QA")
+    return float(integrated.group(1)),float(true_peak.group(1))
+
+def qa(x,path):
     n=len(x);s=x.mean(axis=1)
     frame=SR//4
     windows=x[:(n//frame)*frame].reshape(-1,frame,2).astype(np.float64)
@@ -85,14 +102,23 @@ def qa(x):
     loop_ratio=boundary/adjacent
     actual_rms=rms_db(x)
     pk=peak_db(x)
+    crest=pk-actual_rms
+    lufs,true_peak=ebu_r128(path)
     flags=[]
     if n<59.5*SR:flags.append("duration_too_short")
     if pk>=-0.05:flags.append("sample_clipping")
     if actual_rms < -32:flags.append("rms_level_too_low_relative_to_collection")
+    if actual_rms > -22:flags.append("rms_level_too_high_relative_to_collection")
+    if crest > 25:flags.append("crest_factor_too_high")
+    if pk > -3:flags.append("peak_headroom_too_low")
+    if true_peak > -1:flags.append("true_peak_headroom_too_low")
+    if lufs < -38 or lufs > -18:flags.append("integrated_loudness_outside_audition_range")
     if silences>=4:flags.append("unexpected_silence_windows")
     if loop_ratio>6:flags.append("loop_transition_needs_review")
     return dict(duration_seconds=round(n/SR,3),sample_rate=SR,channels=2,codec="mp3",
       bitrate_kbps=192,rms_dbfs=round(actual_rms,2),sample_peak_dbfs=round(pk,2),
+      crest_factor_db=round(crest,2),integrated_loudness_lufs=round(lufs,1),
+      true_peak_dbtp=round(true_peak,1),
       spectral_slope_db_per_decade=round(slope,2),
       quiet_windows_250ms_below_minus65dbfs=silences,
       loop_boundary_jump_vs_typical_adjacent_diff=round(loop_ratio,3),
@@ -103,26 +129,44 @@ def qa(x):
 def main():
     manifest=json.loads(MANIFEST.read_text(encoding="utf-8"))
     records={r["id"]:r for r in manifest["tracks"]}
+    # Audit every existing file before any processing, including the eight untouched tracks.
+    for row in manifest["tracks"]:
+        audio=ROOT/row["file"]
+        if not audio.is_file() or hashlib.sha256(audio.read_bytes()).hexdigest()!=row["file_sha256"]:
+            raise RuntimeError("Audio file/manifest checksum mismatch: "+row["id"])
     for id,cfg in FIXES.items():
         row=records[id]
         path=ROOT/row["file"]
-        if not path.is_file():raise FileNotFoundError(path)
-        old_sha=hashlib.sha256(path.read_bytes()).hexdigest()
+        old_sha=row["file_sha256"]
         before=ffdecode(path)
-        raw_after=remaster(before,cfg)
-        # Decode *encoded* MP3 to measure actual delivered audio.
-        ffencode(path,raw_after)
-        after=ffdecode(path)
-        new_qa=qa(after)
+        if row.get("mastering_revision")=="signature-remaster-v2":
+            # Existing v2 is already remastered; audit, DO NOT re-compress/re-encode.
+            after=before
+            action="AUDIT_EXISTING_V2"
+        else:
+            if old_sha!=ORIGINAL_V1_SHA256[id]:
+                raise RuntimeError(f"Refusing to remaster unrecognized {id} source {old_sha}")
+            raw_after=remaster(before,cfg)
+            ffencode(path,raw_after)
+            after=ffdecode(path)
+            row["mastering_revision"]="signature-remaster-v2"
+            row["mastering_settings"]=cfg
+            row["previous_file_sha256"]=old_sha
+            row["file_sha256"]=hashlib.sha256(path.read_bytes()).hexdigest()
+            action="REMASTERED_FROM_PINNED_V1"
+        new_qa=qa(after,path)
         row["qa"]=new_qa
-        row["file_sha256"]=hashlib.sha256(path.read_bytes()).hexdigest()
-        row["mastering_revision"]="signature-remaster-v2"
-        row["mastering_settings"]=cfg
-        row["previous_file_sha256"]=old_sha
-        print("REMASTER_QA",json.dumps({"id":id,"before_rms_dbfs":round(rms_db(before),2),
-              "after_rms_dbfs":new_qa["rms_dbfs"],"before_peak_dbfs":round(peak_db(before),2),
-              "after_peak_dbfs":new_qa["sample_peak_dbfs"],
-              "status":new_qa["technical_status"],"flags":new_qa["flags"]}),flush=True)
+        print("REMASTER_QA",json.dumps({"id":id,"action":action,
+              "before_rms_dbfs":round(rms_db(before),2),"after_rms_dbfs":new_qa["rms_dbfs"],
+              "sample_peak_dbfs":new_qa["sample_peak_dbfs"],
+              "crest_factor_db":new_qa["crest_factor_db"],
+              "integrated_loudness_lufs":new_qa["integrated_loudness_lufs"],
+              "true_peak_dbtp":new_qa["true_peak_dbtp"],
+              "quiet_windows_250ms_below_minus65dbfs":new_qa["quiet_windows_250ms_below_minus65dbfs"],
+              "sha256":row["file_sha256"],"status":new_qa["technical_status"],
+              "flags":new_qa["flags"]}),flush=True)
+        if new_qa["technical_status"]!="PASS":
+            raise RuntimeError(f"{id} failed technical QA; do not publish audio")
     # Reconcile summary exclusively from the track manifest after reprocessing.
     all_tracks=manifest["tracks"]
     failures=[r for r in all_tracks if r["qa"]["technical_status"]!="PASS"]
@@ -130,8 +174,9 @@ def main():
        "technical_review":len(failures),"human_approved":0,
        "mean_rms_dbfs":round(sum(r["qa"]["rms_dbfs"] for r in all_tracks)/len(all_tracks),2),
        "review_tracks":[r["id"] for r in failures],
-       "revision":"dynamic-range-remaster-02",
-       "note":"Technical PASS means no measured issues in these checks; listening QA remains pending on all 10."}
+       "revision":"dynamic-range-remaster-02-loudness-audit-01",
+       "note":"Final encoded MP3 RMS, EBU R128 LUFS, true peak, and crest factor measured for remastered tracks. Human listening approval remains pending."}
+    # Preserve version: audios are byte-identical after a successful v2 audit.
     manifest["version"]="batch-01-remaster-02"
     manifest["qa_caveat"]="Two former level outliers remastered and rechecked. Automated PASS does not indicate human listening approval."
     MANIFEST.write_text(json.dumps(manifest,ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
