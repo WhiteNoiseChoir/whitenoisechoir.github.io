@@ -169,3 +169,33 @@
 @media(max-width:400px){.batch18-comparison-grid{grid-template-columns:1fr}.batch18-choice{min-height:auto}.batch18-compare,.batch18-provenance{padding:15px}}
 
 .batch18-hub-compare{margin:28px 0;padding:18px;border:1px solid #365a49;border-radius:14px;background:#182d27}.batch18-hub-compare h2{margin-top:0}.batch18-hub-compare p{line-height:1.7;color:#acc8b8}
+
+/* Natural field-recording Sound Pages — approved source, honest loop disclosure */
+.field-audio-hero{display:flex;flex-wrap:wrap;align-items:center;gap:9px;margin:17px 0 23px}
+.field-audio-hero>span{border:1px solid #416d58;background:#17372d;color:#d3ead9;border-radius:30px;padding:8px 12px;font-size:11px;line-height:1.45}
+.field-audio-hero .field-audio-tag{background:#2a5940;border-color:#6a9b7b;color:#f0faed;font-weight:750}
+.field-audio-hero strong{font-size:14px;color:#eaf7ed}
+.field-explain{border:1px solid #345744;border-radius:17px;background:linear-gradient(155deg,#142e28,#102422);padding:clamp(17px,3vw,28px);margin:29px 0}
+.field-explain h2,.field-comparison h2,.field-faq-box h2{margin:11px 0 15px;line-height:1.2;font-size:clamp(23px,3vw,31px)}
+.field-explain h3{margin:22px 0 9px;color:#e0f3e7;font-size:18px}
+.field-explain p,.field-related p{font-size:14px;line-height:1.75;color:#bbd4c5}
+.field-comparison,.field-faq-box{border:1px solid #345b49;border-radius:17px;background:#132a25;padding:clamp(17px,3vw,26px);margin:27px 0}
+.field-comparison>p{color:#b8d5c3;font-size:13px;line-height:1.75}
+.field-choice-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px;margin:18px 0}
+.field-choice{min-width:0;display:flex;flex-direction:column;gap:8px;border:1px solid #476f58;border-radius:12px;background:#1e3a30;padding:15px;min-height:119px;color:#e9f8eb}
+.field-choice:hover{text-decoration:none;background:#2b5040}
+.field-choice strong{font-size:15px}
+.field-choice small{font-size:12px;color:#b9d8c4;line-height:1.55}
+.field-choice.is-active,.field-choice[aria-current=true]{background:#b8eacb;border-color:#b8eacb;color:#143b26}
+.field-choice.is-active small,.field-choice[aria-current=true] small{color:#234b37}
+.field-audio-status{font-size:12px;font-weight:700;color:#d4eede}
+.field-detail-links{font-size:12px}
+.field-faq-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.field-faq{background:#19332a;border:1px solid #3a614d;border-radius:12px;padding:16px}
+.field-faq summary{font-size:14px;color:#e7f8ec;font-weight:750;line-height:1.55;cursor:pointer}
+.field-faq p{font-size:13px;color:#b6d4c3;line-height:1.65;margin:13px 0 0}
+.field-related{border-top:1px solid #345543;padding:18px 0 0;margin:24px 0}
+.field-related h2{margin:10px 0}
+.field-related p.field-disclosure{color:#b7c5b8;font-size:12px}
+@media(max-width:600px){.field-faq-grid{grid-template-columns:1fr}}
+@media(max-width:430px){.field-choice-grid{grid-template-columns:1fr}.field-choice{min-height:0}.field-audio-hero{gap:7px}.field-audio-hero>span{padding:7px 10px}.field-explain,.field-comparison,.field-faq-box{padding:17px}}

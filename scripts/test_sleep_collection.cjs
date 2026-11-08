@@ -50,7 +50,7 @@ const words=stripped.split(" ").filter(Boolean).length;
 assert.ok(words>=650&&words<1800,"Substantive but intent-specific text: "+words);
 const sitemap=read("sitemap.xml"), loc=[...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map(x=>x[1]);
 assert.equal(loc.filter(x=>x===url).length,1,"Preserve existing sitemap canonical");
-assert.equal(loc.length,13,"No new indexable URL or broad index release");
+assert.equal(loc.length,15,"Two separately reviewed field recordings added; adult collection unchanged");
 assert.ok(read("collections/index.html").includes("6 playable sounds · listen instantly"),"Collection card updated");
 const css=read("assets/library.css");
 assert.match(css,/\.sleep-sound-grid\{/);
