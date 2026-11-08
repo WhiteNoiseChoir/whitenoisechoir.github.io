@@ -14,6 +14,9 @@ on:
       - 'audio-tools/**'
       - 'sitemap.xml'
       - 'scripts/test_library_structure.cjs'
+      - 'scripts/test_relaxing_collection.cjs'
+      - 'scripts/test_relaxing_browser.cjs'
+      - 'scripts/test_batch18_pages.cjs'
       - 'scripts/test_browser_navigation.cjs'
       - 'loop-check.html'
       - 'scripts/test_loop_check.cjs'
@@ -34,6 +37,8 @@ jobs:
           node scripts/test_player_smoke.cjs
           node scripts/test_loop_check.cjs
           node scripts/test_library_structure.cjs
+          node scripts/test_relaxing_collection.cjs
+          node scripts/test_batch18_pages.cjs
       - name: Browser navigation & persistent playback regression
         run: |
           npm install --no-save --no-package-lock playwright
@@ -41,3 +46,4 @@ jobs:
           SERVER_PID=$!
           trap 'kill $SERVER_PID || true' EXIT
           node scripts/test_browser_navigation.cjs
+          node scripts/test_relaxing_browser.cjs
