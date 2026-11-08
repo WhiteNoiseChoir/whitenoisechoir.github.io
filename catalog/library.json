@@ -1,0 +1,402 @@
+{
+  "version": "2026-11-08-catalog-v1",
+  "editorial_note": "Technical QA does not equal listening approval; planned items have no fake audio.",
+  "categories": [
+    {
+      "slug": "noise-colors",
+      "title": "Noise Colors",
+      "desc": "White, pink, brown and other noise colors",
+      "planned": [
+        "Green Noise",
+        "Grey Noise"
+      ]
+    },
+    {
+      "slug": "fan-noise",
+      "title": "Fan & Ventilation",
+      "desc": "Fan and ventilation textures",
+      "planned": [
+        "Ceiling Fan",
+        "Tower Fan",
+        "Oscillating Fan",
+        "Exhaust Fan",
+        "Air Purifier Fan"
+      ]
+    },
+    {
+      "slug": "rain",
+      "title": "Rain & Thunder",
+      "desc": "Rain and weather recordings",
+      "planned": [
+        "Light Rain",
+        "Rain on Tent",
+        "Rain on Metal Roof",
+        "Rain on Car Roof",
+        "Distant Thunder",
+        "Thunderstorm"
+      ]
+    },
+    {
+      "slug": "water",
+      "title": "Water & Ocean",
+      "desc": "Ocean, river and water sounds",
+      "planned": [
+        "Gentle Ocean Waves",
+        "Heavy Ocean Waves",
+        "River",
+        "Creek",
+        "Fountain",
+        "Lake Waves"
+      ]
+    },
+    {
+      "slug": "wind-weather",
+      "title": "Wind & Weather",
+      "desc": "Wind and weather ambiance",
+      "planned": [
+        "Wind Through Trees",
+        "Coastal Wind",
+        "Howling Wind",
+        "Snowstorm"
+      ]
+    },
+    {
+      "slug": "nature",
+      "title": "Forest & Wildlife",
+      "desc": "Birds, insects and forest ambiences",
+      "planned": [
+        "Crickets",
+        "Cicadas",
+        "Frogs",
+        "Rainforest",
+        "Night Forest",
+        "Morning Birds"
+      ]
+    },
+    {
+      "slug": "fire",
+      "title": "Fire & Warmth",
+      "desc": "Fireplace and natural fire crackle",
+      "planned": [
+        "Campfire",
+        "Wood Stove",
+        "Bonfire"
+      ]
+    },
+    {
+      "slug": "transportation",
+      "title": "Transportation",
+      "desc": "Travel cabins and rhythmic transportation hum",
+      "planned": [
+        "Train Cabin",
+        "Train on Tracks",
+        "Car Interior",
+        "Car Rain",
+        "Ship Cabin"
+      ]
+    },
+    {
+      "slug": "household",
+      "title": "Household & Mechanical",
+      "desc": "Steady household machines",
+      "planned": [
+        "Washing Machine",
+        "Clothes Dryer",
+        "Dishwasher",
+        "Refrigerator Hum",
+        "Vacuum Cleaner"
+      ]
+    },
+    {
+      "slug": "urban",
+      "title": "Urban & Indoor",
+      "desc": "City and indoor atmospheres",
+      "planned": [
+        "Coffee Shop",
+        "Library",
+        "Office",
+        "City Rain",
+        "Distant Traffic"
+      ]
+    },
+    {
+      "slug": "hums-drones",
+      "title": "Static, Hums & Drones",
+      "desc": "Low rumble and continuous textures",
+      "planned": [
+        "Deep Drone",
+        "Radio Static",
+        "Tape Hiss",
+        "Vinyl Crackle",
+        "Electrical Hum"
+      ]
+    },
+    {
+      "slug": "gentle-sounds",
+      "title": "Gentle & Soothing",
+      "desc": "Soft rhythmic sound textures",
+      "planned": [
+        "Gentle Shushing",
+        "Soft Heartbeat",
+        "Cat Purring",
+        "Gentle Breathing"
+      ]
+    }
+  ],
+  "sounds": [
+    {
+      "id": "white-noise",
+      "title": "White Noise",
+      "cat": "noise-colors",
+      "status": "approved",
+      "desc": "Broadband original white noise",
+      "slug": "white-noise"
+    },
+    {
+      "id": "pink-noise",
+      "title": "Pink Noise",
+      "cat": "noise-colors",
+      "status": "approved",
+      "desc": "Original lower-weighted pink noise",
+      "slug": "pink-noise"
+    },
+    {
+      "id": "brown-noise",
+      "title": "Brown Noise",
+      "cat": "noise-colors",
+      "status": "approved",
+      "desc": "Original low-frequency-weighted brown noise",
+      "slug": "brown-noise"
+    },
+    {
+      "id": "blue-noise",
+      "title": "Blue Noise",
+      "cat": "noise-colors",
+      "status": "dsp-review",
+      "desc": "Bright synthetic noise spectrum",
+      "slug": "blue-noise"
+    },
+    {
+      "id": "violet-noise",
+      "title": "Violet Noise",
+      "cat": "noise-colors",
+      "status": "dsp-review",
+      "desc": "High-frequency-weighted synthetic noise",
+      "slug": "violet-noise"
+    },
+    {
+      "id": "soft-white-noise",
+      "title": "Soft White Noise",
+      "cat": "noise-colors",
+      "status": "dsp-review",
+      "desc": "A softer white noise variation",
+      "slug": "soft-white-noise"
+    },
+    {
+      "id": "deep-brown-noise",
+      "title": "Deep Brown Noise",
+      "cat": "noise-colors",
+      "status": "dsp-review",
+      "desc": "A low-heavy variation of brown noise",
+      "slug": "deep-brown-noise"
+    },
+    {
+      "id": "warm-pink-noise",
+      "title": "Warm Pink Noise",
+      "cat": "noise-colors",
+      "status": "dsp-review",
+      "desc": "A warmer pink noise variation",
+      "slug": "warm-pink-noise"
+    },
+    {
+      "id": "mid-noise",
+      "title": "Neutral Mid Noise",
+      "cat": "noise-colors",
+      "status": "dsp-review",
+      "desc": "Synthetic mid-frequency noise",
+      "slug": "neutral-mid-noise"
+    },
+    {
+      "id": "desk-fan-synth",
+      "title": "Desk Fan — Synthetic",
+      "cat": "fan-noise",
+      "status": "dsp-review",
+      "desc": "A simulated desk fan, not a field recording",
+      "slug": "desk-fan"
+    },
+    {
+      "id": "box-fan-real",
+      "title": "Box Fan — Field Recording",
+      "cat": "fan-noise",
+      "status": "short-review",
+      "desc": "A short CC0 fan recording awaiting a longer replacement review",
+      "slug": "box-fan"
+    },
+    {
+      "id": "rain-on-window-real",
+      "title": "Rain on Window",
+      "cat": "rain",
+      "status": "arranged",
+      "desc": "A ten-minute arrangement from shorter CC0 rainfall material",
+      "slug": "rain-on-window"
+    },
+    {
+      "id": "heavy-rain-real",
+      "title": "Heavy Rain",
+      "cat": "rain",
+      "status": "short-review",
+      "desc": "A short CC0 heavy rain recording awaiting a longer version review",
+      "slug": "heavy-rain"
+    },
+    {
+      "id": "ocean-waves-real",
+      "title": "Ocean Waves",
+      "cat": "water",
+      "status": "short-review",
+      "desc": "A short CC0 ocean recording awaiting a longer version review",
+      "slug": "ocean-waves"
+    },
+    {
+      "id": "waterfall-real",
+      "title": "Waterfall",
+      "cat": "water",
+      "status": "short-review",
+      "desc": "A short CC0 waterfall recording awaiting a longer version review",
+      "slug": "waterfall"
+    },
+    {
+      "id": "shower-synth",
+      "title": "Shower — Synthetic",
+      "cat": "water",
+      "status": "dsp-review",
+      "desc": "Simulated shower sound created with DSP",
+      "slug": "shower"
+    },
+    {
+      "id": "wind-synth",
+      "title": "Gentle Wind — Synthetic",
+      "cat": "wind-weather",
+      "status": "dsp-review",
+      "desc": "Simulated wind texture created with DSP",
+      "slug": "gentle-wind"
+    },
+    {
+      "id": "fireplace-real",
+      "title": "Fireplace",
+      "cat": "fire",
+      "status": "arranged",
+      "desc": "A ten-minute arrangement from shorter CC0 fireplace material",
+      "slug": "fireplace"
+    },
+    {
+      "id": "cabin-hum-synth",
+      "title": "Airplane Cabin — Synthetic",
+      "cat": "transportation",
+      "status": "dsp-review",
+      "desc": "Simulated airplane-cabin hum created with DSP",
+      "slug": "airplane-cabin"
+    },
+    {
+      "id": "air-conditioner-synth",
+      "title": "Air Conditioner — Synthetic",
+      "cat": "household",
+      "status": "dsp-review",
+      "desc": "Simulated air-conditioner sound created with DSP",
+      "slug": "air-conditioner"
+    },
+    {
+      "id": "low-rumble",
+      "title": "Low Rumble",
+      "cat": "hums-drones",
+      "status": "dsp-review",
+      "desc": "Steady synthetic low-frequency rumble",
+      "slug": "low-rumble"
+    }
+  ],
+  "collec": [
+    {
+      "slug": "white-noise-for-sleep",
+      "title": "White Noise for Sleep",
+      "desc": "Steady noise textures for bedtime",
+      "ids": [
+        "white-noise",
+        "pink-noise",
+        "brown-noise",
+        "soft-white-noise"
+      ]
+    },
+    {
+      "slug": "baby-sleep-sounds",
+      "title": "Baby Sleep Sounds",
+      "desc": "Soft sound choices with infant listening cautions",
+      "ids": [
+        "soft-white-noise",
+        "pink-noise",
+        "rain-on-window-real"
+      ]
+    },
+    {
+      "slug": "deep-sleep-sounds",
+      "title": "Deep Sleep Sounds",
+      "desc": "Consistent low-distraction sounds",
+      "ids": [
+        "brown-noise",
+        "deep-brown-noise",
+        "box-fan-real"
+      ]
+    },
+    {
+      "slug": "relaxing-sounds",
+      "title": "Relaxing Sounds",
+      "desc": "Rain, nature and gentle environmental ambiance",
+      "ids": [
+        "rain-on-window-real",
+        "fireplace-real",
+        "ocean-waves-real",
+        "wind-synth"
+      ]
+    },
+    {
+      "slug": "focus-sounds",
+      "title": "Focus & Study Sounds",
+      "desc": "Steady backgrounds for reading and work",
+      "ids": [
+        "pink-noise",
+        "warm-pink-noise",
+        "desk-fan-synth",
+        "mid-noise"
+      ]
+    },
+    {
+      "slug": "noise-masking",
+      "title": "Noise Masking Sounds",
+      "desc": "Continuous noise textures for masking distractions",
+      "ids": [
+        "white-noise",
+        "brown-noise",
+        "desk-fan-synth",
+        "air-conditioner-synth"
+      ]
+    },
+    {
+      "slug": "pet-calming-sounds",
+      "title": "Gentle Sounds for Pets",
+      "desc": "Lower-distraction environmental audio for pets",
+      "ids": [
+        "soft-white-noise",
+        "rain-on-window-real",
+        "wind-synth"
+      ]
+    }
+  ],
+  "planned_audio_tools": [
+    "Speaker Water Eject",
+    "Frequency Generator",
+    "Frequency Sweep",
+    "Speaker Test",
+    "Headphone Test",
+    "Bass Test",
+    "Stereo Test",
+    "Binaural Beat Generator"
+  ]
+}
