@@ -62,7 +62,7 @@ def make_cycle(src,duration,out):
         for name,offset,seconds in slices:
             target=t/(name+".flac")
             run(["ffmpeg","-hide_banner","-loglevel","error","-nostdin","-y",
-                 "-ss",str(offset),"-i",str(src),"-t",str(seconds),
+                 "-i",str(src),"-ss",str(offset),"-t",str(seconds),
                  "-ac","2","-ar","44100","-c:a","flac",str(target)])
         filt=(
           f"[1:a][2:a]acrossfade=d={overlap}:c1=tri:c2=tri[seam];"
@@ -73,22 +73,31 @@ def make_cycle(src,duration,out):
              "-filter_complex",filt,"-map","[out]",
              "-ar","44100","-ac","2","-c:a","flac",str(out)])
     media(out,out.name,duration)
-def download(url,dest):
- req=urllib.request.Request(url,headers={"User-Agent":"WhiteNoiseChoirCC0Review/1.0 (audio provenance audit; Freesound attribution retained)","Accept":"audio/mpeg,*/*"})
- with urllib.request.urlopen(req,timeout=120) as r,open(dest,"wb") as w:
-  ctype=r.headers.get("content-type","")
-  while True:
-   chunk=r.read(1024*1024)
-   if not chunk:break
-   w.write(chunk)
- if dest.stat().st_size<250000:raise RuntimeError("Preview file too small for sound, likely blocked "+url)
- fmt=probe(dest)
- if fmt["codec"]!="mp3":raise RuntimeError(f"Unexpected HQ preview codec: {fmt}")
- return fmt,ctype
+def download(url,dest,byte_cap=None):
+    # We only need the first 605 seconds of a >20-minute field source.
+    # Avoid fetching the remaining 15-45 minutes of public HQ preview audio.
+    headers={"User-Agent":"WhiteNoiseChoirCC0Review/1.0 (audio provenance audit; Freesound attribution retained)","Accept":"audio/mpeg,*/*"}
+    if byte_cap:headers["Range"]=f"bytes=0-{byte_cap-1}"
+    req=urllib.request.Request(url,headers=headers)
+    with urllib.request.urlopen(req,timeout=100) as r,open(dest,"wb") as w:
+        ctype=r.headers.get("content-type","")
+        remaining=byte_cap
+        while True:
+            take=1024*1024 if remaining is None else min(1024*1024,remaining)
+            if take<=0:break
+            chunk=r.read(take)
+            if not chunk:break
+            w.write(chunk)
+            if remaining is not None:remaining-=len(chunk)
+    if dest.stat().st_size<250000:raise RuntimeError("Preview file too small for sound, likely blocked "+url)
+    fmt=probe(dest)
+    if fmt["codec"]!="mp3":raise RuntimeError(f"Unexpected HQ preview codec: {fmt}")
+    return fmt,ctype
 def render(config,root):
  with tempfile.TemporaryDirectory(prefix="rain-qa-") as td:
   tmp=Path(td);src=tmp/"preview.mp3"
-  incoming,ctype=download(config["source_preview"],src)
+  byte_cap=20_000_000 if config["source_duration_seconds"]>605.5 else None
+  incoming,ctype=download(config["source_preview"],src,byte_cap)
   if incoming["duration_seconds"]<25:raise RuntimeError("HQ preview shorter than 25s; not using fake extension")
   original_preview_seconds=incoming["duration_seconds"]
   if original_preview_seconds>605.5:
@@ -121,7 +130,7 @@ def render(config,root):
   final_mean,final_peak=stats(dest)
   if final_peak>-5.5:raise RuntimeError(f"Unsafe sample peak: {final_peak}")
   if final_mean<-55:raise RuntimeError(f"Unexpectedly quiet master: {final_mean}")
-  return dict(config,review_status="PENDING_OWNER_LISTENING",publication_status="REVIEW_ONLY_NOT_IN_PRODUCTION",downloaded_preview_codec=incoming["codec"],downloaded_preview_bitrate_kbps=round(incoming["bitrate"]/1000,2),downloaded_preview_duration_seconds=round(original_preview_seconds,3),downloaded_preview_sha256=sha(src),independent_source_seconds=round(min(original_preview_seconds,source_window_seconds),3),arrangement=variant,repetitions_approx=repetitions,duration_seconds=round(final["duration_seconds"],3),output_codec=final["codec"],sample_rate=final["sample_rate"],channels=final["channels"],output_bitrate_kbps=round(final["bitrate"]/1000,1),mean_dbfs=final_mean,peak_dbfs=final_peak,gain_db=round(gain,2),master_sha256=sha(dest),master_bytes=dest.stat().st_size,source_preview_content_type=ctype,technical_status="PASS",limitations=["Original lossless source NOT downloaded; publicly accessible HQ preview is lossy","Review listening needed: source identity, tonality, abrupt events, peak, physical listening comfort, 10min loop"])
+  return dict(config,review_status="PENDING_OWNER_LISTENING",publication_status="REVIEW_ONLY_NOT_IN_PRODUCTION",downloaded_preview_codec=incoming["codec"],downloaded_preview_bitrate_kbps=round(incoming["bitrate"]/1000,2),downloaded_preview_duration_seconds=round(original_preview_seconds,3),downloaded_preview_sha256=sha(src),independent_source_seconds=round(min(original_preview_seconds,source_window_seconds),3),arrangement=variant,repetitions_approx=repetitions,duration_seconds=round(final["duration_seconds"],3),output_codec=final["codec"],sample_rate=final["sample_rate"],channels=final["channels"],output_bitrate_kbps=round(final["bitrate"]/1000,1),mean_dbfs=final_mean,peak_dbfs=final_peak,gain_db=round(gain,2),master_sha256=sha(dest),master_bytes=dest.stat().st_size,source_preview_content_type=ctype,preview_byte_cap=byte_cap,preview_acquisition_note="Only first 20,000,000 bytes of long preview requested; enough for first 605s; FFprobe header duration may report total original preview length, not bytes downloaded." if byte_cap else "Full short preview downloaded",technical_status="PASS",limitations=["Original lossless source NOT downloaded; publicly accessible HQ preview is lossy","Review listening needed: source identity, tonality, abrupt events, peak, physical listening comfort, 10min loop"])
 def main():
  report=[]
  for cfg in CONFIG:
