@@ -25,6 +25,7 @@ on:
       - 'scripts/test_noise_colors_editorial.cjs'
       - 'scripts/test_noise_colors_browser.cjs'
       - 'scripts/test_batch18_pages.cjs'
+      - 'scripts/test_device_environment_editorial.cjs'
       - 'scripts/test_browser_navigation.cjs'
       - 'loop-check.html'
       - 'scripts/test_loop_check.cjs'
@@ -51,6 +52,7 @@ jobs:
           node scripts/test_field_sound_pages.cjs
           node scripts/test_noise_colors_editorial.cjs
           node scripts/test_batch18_pages.cjs
+          node scripts/test_device_environment_editorial.cjs
       - name: Browser navigation & persistent playback regression
         run: |
           npm install --no-save --no-package-lock playwright
