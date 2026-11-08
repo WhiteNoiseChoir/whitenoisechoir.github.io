@@ -1,0 +1,53 @@
+name: Build Rain & Thunder Preview Auditions
+on:
+  push:
+    branches: ["feature/rain-first-wave-review-20261108"]
+    paths:
+      - ".github/workflows/rain_preview_review.yml"
+      - "scripts/build_rain_preview_review.py"
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  build-private-review:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - name: Inspect public CC0 Freesound previews and render three isolated 10-minute audition masters
+        run: |
+          command -v ffmpeg
+          command -v ffprobe
+          python3 scripts/build_rain_preview_review.py
+      - name: Verify three reviewed MP3 containers and provenance manifest
+        run: |
+          python3 - <<'PY'
+          import json,hashlib,pathlib,subprocess
+          p=pathlib.Path('signature/rain-review')
+          j=json.loads((p/'manifest.json').read_text())
+          assert j['status']=='REVIEW_ONLY_PENDING_OWNER'
+          assert len(j['tracks'])==3
+          assert {x['id'] for x in j['tracks']}=={'light-rain-review','rain-tin-roof-review','distant-thunder-review'}
+          for x in j['tracks']:
+              f=p/(x['id']+'.mp3')
+              assert f.exists()
+              assert hashlib.sha256(f.read_bytes()).hexdigest()==x['master_sha256']
+              assert 599<=x['duration_seconds']<=601
+              assert x['peak_dbfs']<=-5.5
+              assert x['review_status']=='PENDING_OWNER_LISTENING'
+              assert x['publication_status']=='REVIEW_ONLY_NOT_IN_PRODUCTION'
+              assert x['downloaded_preview_bitrate_kbps']<=200
+              print("QA_OK",x['id'],x['master_bytes'],x['duration_seconds'])
+          PY
+      - name: Commit only three noindex review MP3s and their honest provenance manifest
+        env:
+          GITHUB_REF_NAME: ${{ github.ref_name }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add signature/rain-review/light-rain-review.mp3 signature/rain-review/rain-tin-roof-review.mp3 signature/rain-review/distant-thunder-review.mp3 signature/rain-review/manifest.json
+          git commit -m "Review assets: three real CC0 rain/thunder preview-derived 10-minute auditions (no production)" || exit 1
+          git push origin "HEAD:${GITHUB_REF_NAME}"

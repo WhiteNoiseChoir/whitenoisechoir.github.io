@@ -1,0 +1,46 @@
+#!/usr/bin/env node
+"use strict";
+/* First-wave review is deliberately isolated from the released sound catalog. */
+const fs=require("node:fs"),assert=require("node:assert/strict");
+const f=p=>fs.readFileSync(p,"utf8"),j=p=>JSON.parse(f(p));
+const root="signature/rain-review",page=f(root+"/index.html"),catalog=j("catalog/library.json"),planned=j("catalog/planned-sounds.json").planned;
+const sitemap=f("sitemap.xml"),home=f("index.html"),review=j(root+"/manifest.json");
+const ids=["light-rain-review","rain-tin-roof-review","distant-thunder-review"];
+const expected=["NEW-01","NEW-02","NEW-06"];
+assert.match(page,/<meta name="robots" content="noindex,nofollow">/,"review hidden from indexing");
+assert.ok(page.includes("Chưa")||page.includes("chưa lên production"),"review status clearly disclosed");
+assert.ok(page.includes("Freesound")&&page.includes("128")&&page.includes("nén"),"lossy source disclosed");
+assert.ok(page.includes("Tua đến 9:55"),"quick endpoint audition");
+assert.ok(page.includes('id="copy"'),"owner can copy verdicts");
+assert.ok(!sitemap.includes("rain-review"),"no review page in sitemap");
+assert.ok(!home.includes("rain-review"),"no player ingestion");
+assert.equal(catalog.sounds.length,22,"22 deployed sources unchanged");
+assert.ok(!catalog.sounds.some(x=>ids.includes(x.id)),"no audition IDs in catalog");
+assert.equal(planned.length,70,"planned registry untouched");
+for(const id of ids)assert.ok(page.includes('data-select="'+id+'"'),"review page has "+id);
+assert.equal(review.status,"REVIEW_ONLY_PENDING_OWNER");
+assert.equal(review.tracks.length,3);
+for(let i=0;i<ids.length;i++){
+ const track=review.tracks[i];
+ assert.equal(track.id,ids[i]);
+ assert.equal(track.plan_id,expected[i]);
+ assert.equal(track.publication_status,"REVIEW_ONLY_NOT_IN_PRODUCTION");
+ assert.equal(track.review_status,"PENDING_OWNER_LISTENING");
+ assert.equal(track.source_type,"CC0-1.0");
+ assert.ok(track.source_page.startsWith("https://freesound.org/people/"));
+ assert.ok(track.source_preview.startsWith("https://cdn.freesound.org/previews/"));
+ assert.ok(track.independent_source_seconds>25);
+ assert.ok(track.duration_seconds>=599&&track.duration_seconds<=601);
+ assert.equal(track.output_codec,"mp3");
+ assert.equal(track.channels,2);
+ assert.equal(track.sample_rate,44100);
+ assert.ok(track.peak_dbfs<=-5.5);
+ assert.ok(track.mean_dbfs>-55);
+ assert.equal(track.technical_status,"PASS");
+ const p=root+"/"+ids[i]+".mp3";
+ assert.ok(fs.existsSync(p),"MP3 review asset "+p);
+ assert.ok(fs.statSync(p).size>5_000_000,"review asset is a real 10-min sound "+p);
+ assert.ok(!f("audio/continuous/manifest.json").includes(ids[i]),"no review HLS production change "+ids[i]);
+}
+assert.ok(review.media_quality_policy.includes("does NOT restore"),"transcoding limitation retained");
+console.log("RAIN_FIRST_WAVE_REVIEW_QA_PASS 3 isolated 600s CC0 preview-derived audio files, source labels, noindex, existing catalog protected");
