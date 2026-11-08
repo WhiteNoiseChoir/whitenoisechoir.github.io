@@ -1,0 +1,21 @@
+name: Rain Source Audition — Noindex and Provenance Gate
+on:
+  push:
+    branches: [main, "feature/rain-source-audition-20261108"]
+    paths:
+      - "signature/rain-source-review/**"
+      - "scripts/test_rain_source_audition.cjs"
+      - ".github/workflows/rain_source_review.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  source-audition-qa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify authentic source-only review, noindex and unchanged catalog
+        run: |
+          node scripts/test_rain_source_audition.cjs
+          node scripts/test_library_foundation.cjs
