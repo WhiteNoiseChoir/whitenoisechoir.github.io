@@ -18,7 +18,11 @@ jobs:
         with: {persist-credentials: true}
       - name: Build only three owner-approved 7-day HLS streams and rebuild library list
         run: |
-          command -v ffmpeg && command -v ffprobe
+          if ! command -v ffprobe >/dev/null || ! command -v ffmpeg >/dev/null; then
+            sudo apt-get update -qq
+            sudo apt-get install -y -qq ffmpeg
+          fi
+          ffmpeg -version | head -1
           python3 scripts/build_rain_wave2_production_hls.py
           node scripts/build_sound_library_foundation.cjs --write
       - name: Run integrity, SEO, source attribution and previous-regression QA
