@@ -1,0 +1,25 @@
+name: Listening Readiness - 16 Candidate Audio
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'audio/review-queue-20261108.json'
+      - 'audio/extended-dsp-manifest.json'
+      - 'audio/field-source-audit.json'
+      - 'audio/continuous/manifest.json'
+      - 'signature/field-review/manifest.json'
+      - 'audio/*.mp3'
+      - 'signature/field-review/*.mp3'
+      - 'scripts/check_listening_queue.py'
+      - '.github/workflows/listening_readiness.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify-audio-provenance-and-review-status:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify 16 candidate files and keep unapproved sources off production
+        run: python3 scripts/check_listening_queue.py
