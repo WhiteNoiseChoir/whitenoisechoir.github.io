@@ -29,14 +29,14 @@ for(const s of sounds){
  else assert.ok(page.includes('name="robots" content="noindex,follow"'),"pending sound noindex: "+s.id);
 }
 const sitemap=file("sitemap.xml");const locs=[...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map(x=>new URL(x[1]).pathname);
-assert.equal(locs.length,12,"conservative sitemap after editorial quality gate");
+assert.equal(locs.length,13,"one additional editorially upgraded Relaxing Sounds collection");
 for(const pathname of locs){
  const local=pathname==="/"? "index.html" : pathname.replace(/^\//,"")+"index.html";
  assert.ok(fs.existsSync(local),"sitemap page exists "+local);
  assert.ok(!file(local).includes('name="robots" content="noindex,follow"'),"sitemap must exclude noindex "+local);
 }
 for(const name of ["nature","urban","gentle-sounds","fire","fan-noise"])assert.ok(file("sounds/"+name+"/index.html").includes('noindex,follow'),"do not index low-value single/empty hub "+name);
-for(const slug of ["deep-sleep-sounds","relaxing-sounds","focus-sounds","noise-masking","pet-calming-sounds"])assert.ok(file("collections/"+slug+"/index.html").includes('noindex,follow'),"hold weak collection "+slug);
+for(const slug of ["deep-sleep-sounds","focus-sounds","noise-masking","pet-calming-sounds"])assert.ok(file("collections/"+slug+"/index.html").includes('noindex,follow'),"hold weak collection "+slug);
 new vm.Script(file("assets/persistent-router.js"),{filename:"assets/persistent-router.js"});
 new vm.Script(file("assets/library-player.js"),{filename:"assets/library-player.js"});
 const home=file("index.html");assert.match(home,/window\.WNCBridge\s*=/,"legacy audio engine exports a shared bridge");
@@ -48,4 +48,6 @@ const manifest=JSON.parse(file("audio/continuous/manifest.json"));assert.equal(m
 for(const s of sounds)assert.ok(manifest.applies_to.includes(s.id),"HLS source preserved: "+s.id);
 assert.ok(file("sounds/green-noise/index.html").includes('name="robots" content="noindex,follow"'),"unreviewed Green Noise must not index");
 assert.ok(!locs.includes("/sounds/green-noise/"),"unreviewed Green Noise absent from sitemap");
+assert.ok(!file("collections/relaxing-sounds/index.html").includes('name="robots" content="noindex'),"finished relaxation page must be indexable");
+assert.ok(locs.includes("/collections/relaxing-sounds/"),"finished relaxation page must be in sitemap");
 console.log("PASS: 46 page routing shell, 22 playable sources, 12 hubs, 7 collections, provenance, AudioObject, noindex and sitemap checks");
