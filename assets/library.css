@@ -79,3 +79,74 @@
 @media(max-width:850px){.relax-hero{grid-template-columns:1fr}.relax-hero h1{font-size:clamp(38px,7vw,54px)}}
 @media(max-width:650px){.relax-moment-grid,.relax-next-grid{grid-template-columns:1fr}.relax-section-label{display:block}.relax-section-label p{margin-top:6px}.relax-guide-grid,.relax-faq-grid{grid-template-columns:1fr}}
 @media(max-width:510px){.relax-page{min-width:0}.relax-hero-copy,.relax-player{padding:19px}.relax-card-grid{grid-template-columns:1fr}.relax-card{padding:17px}.relax-card-actions{gap:10px}.relax-hero-chips span{padding:6px 10px}.relax-how,.relax-library,.relax-guide,.relax-faq,.relax-next{margin:32px 0 40px}}
+
+/* Adult sleep intent collection */
+.sleep-collection{max-width:1080px}
+.sleep-collection h2{letter-spacing:-.035em}
+.sleep-collection h3{font-size:17px;line-height:1.4;margin:0}
+.sleep-collection p{line-height:1.72}
+.sleep-hero{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(300px,.9fr);gap:clamp(16px,3vw,30px);align-items:stretch;margin:19px 0 40px}
+.sleep-hero-copy{min-width:0;padding:clamp(22px,4vw,40px);border:1px solid #55748b;border-radius:20px;background:radial-gradient(circle at 95% 10%,#4d647b55,transparent 48%),linear-gradient(145deg,#1c2935,#101f25)}
+.sleep-hero h1{font-size:clamp(35px,5.3vw,62px);line-height:1.07;letter-spacing:-.058em;margin:20px 0}
+.sleep-lead{font-size:clamp(16px,1.7vw,19px);color:#e1eaf2}
+.sleep-hero-note{color:#b6cbd3;font-size:13px}
+.sleep-feature-pills{display:flex;flex-wrap:wrap;gap:8px;margin:22px 0}
+.sleep-feature-pills span{border:1px solid #4e7384;background:#1d3845;border-radius:30px;padding:7px 11px;font-size:11px;color:#c5e0e7}
+.sleep-explore{display:inline-flex;align-items:center;gap:10px;margin-top:4px;color:#c7e5f2;font-size:13px;font-weight:750}
+.sleep-explore span{font-size:18px}
+.sleep-player{min-width:0;margin:0;border-color:#55748b;border-radius:20px;background:linear-gradient(155deg,#263948,#12252b);padding:clamp(20px,3vw,29px)}
+.sleep-player h2{font-size:clamp(25px,3vw,32px);margin:19px 0 11px}
+.sleep-player p{color:#bfd1d9}
+.sleep-player audio{width:100%;max-width:100%;margin:21px 0}
+.sleep-live-line{display:inline-flex;align-items:center;gap:10px;padding:9px 13px;border:1px solid #507a86;background:#193543;border-radius:12px;color:#d6edf2!important;font-size:13px}
+.sleep-live-line::before{content:"";width:7px;height:7px;border-radius:50%;background:#a8d8e1}
+.sleep-player-note{font-size:12px}
+.sleep-quick,.sleep-compare,.sleep-practical,.sleep-faq,.sleep-next{margin:44px 0 57px;scroll-margin-top:20px}
+.sleep-section-head{max-width:800px;margin-bottom:22px}
+.sleep-section-head h2{font-size:clamp(25px,3.7vw,36px);line-height:1.19;margin:12px 0 10px}
+.sleep-section-head p{font-size:14px;color:#bdcfd4}
+.sleep-quick-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.sleep-quick-grid>div{padding:20px;min-width:0;border:1px solid #345869;background:#152a31;border-radius:16px}
+.sleep-quick-grid h3{margin:14px 0 7px;color:#e5f3f5}
+.sleep-quick-grid p{margin:0;color:#b4cbd1;font-size:13px}
+.sleep-step{display:inline-flex;align-items:center;justify-content:center;width:31px;height:31px;border-radius:50%;background:#274657;border:1px solid #558095;color:#cee7ed;font-size:11px;font-weight:800}
+.sleep-group-heading{display:flex;align-items:baseline;justify-content:space-between;gap:16px;border-bottom:1px solid #36535e;margin:28px 0 13px;padding-bottom:10px}
+.sleep-group-heading h3{font-size:19px}
+.sleep-group-heading p{max-width:490px;margin:0;font-size:12px;color:#abc4ca}
+.sleep-sound-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px}
+.sleep-sound-card{display:flex;flex-direction:column;gap:11px;min-width:0;background:#142830;border:1px solid #355461;border-radius:16px;padding:18px}
+.sleep-sound-card:has(.sleep-instant[aria-current=true]){border-color:#b8dee8;background:#1e3d49}
+.sleep-sound-head{display:flex;align-items:center;gap:12px}
+.sleep-sound-head h3{font-size:17px;color:#e3f5f7}
+.sleep-tone-symbol{display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:12px;flex:none;background:#264957;color:#d4edf2;font-size:25px;font-weight:800}
+.sleep-tone-pink .sleep-tone-symbol{background:#493a52;color:#efd5ed}
+.sleep-tone-brown .sleep-tone-symbol{background:#44392e;color:#edd8bb}
+.sleep-sound-tag{color:#a8c5d3!important;font-size:12px!important;margin:2px 0 0}
+.sleep-sound-card>p{color:#b5ccd1;margin:0;font-size:13px;flex:1}
+.sleep-sound-origin{color:#9fbcc4;font-size:11px}
+.sleep-sound-actions{display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding-top:9px}
+.sleep-instant{display:inline-flex;align-items:center;justify-content:center;border:1px solid #6babc1;background:#285169;color:#e6f7fa;border-radius:10px;min-height:44px;padding:10px 13px;font-size:13px;font-weight:750}
+.sleep-instant:hover{text-decoration:none;background:#366b82}
+.sleep-instant.is-active,.sleep-instant[aria-current=true]{border-color:#c6ecf5;background:#bde9f4;color:#163442}
+.sleep-details{font-size:12px;color:#b5e4ef}
+.sleep-compare-note{border-left:3px solid #648da2;background:#192e36;border-radius:0 11px 11px 0;padding:15px 18px;margin-top:23px;font-size:12px;color:#c4d7db;line-height:1.7}
+.sleep-tips-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.sleep-tips-grid>div{border:1px solid #34515e;background:#142a31;border-radius:16px;padding:20px}
+.sleep-tips-grid h3{margin:0 0 7px;color:#e5f2f5}
+.sleep-tips-grid p{margin:0;color:#b3cbd0;font-size:13px}
+.sleep-transparency{margin:24px 0;padding:19px 22px;background:#253239;border:1px solid #60778a;border-radius:15px}
+.sleep-transparency strong{color:#e0edf4;font-size:14px}
+.sleep-transparency p{font-size:13px;color:#b9cdd4;margin:7px 0 0}
+.sleep-faq-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.sleep-faq details{background:#152a31;border:1px solid #365564;border-radius:14px;padding:18px}
+.sleep-faq summary{cursor:pointer;line-height:1.5;font-weight:700;font-size:14px;color:#e4f2f6}
+.sleep-faq details p{font-size:13px;color:#aecbd3;margin:13px 0 0}
+.sleep-next-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px}
+.sleep-next-grid a{display:flex;flex-direction:column;gap:12px;border:1px solid #3b6374;border-radius:16px;background:#1b323d;padding:19px}
+.sleep-next-grid a:hover{text-decoration:none;background:#284858}
+.sleep-next-grid strong{font-size:16px;color:#e4f3f6}
+.sleep-next-grid span{font-size:12px;color:#bbd8df}
+@media(max-width:860px){.sleep-hero{grid-template-columns:1fr}.sleep-hero h1{font-size:clamp(36px,7vw,54px)}}
+@media(max-width:760px){.sleep-sound-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:650px){.sleep-quick-grid,.sleep-next-grid{grid-template-columns:1fr}.sleep-tips-grid,.sleep-faq-grid{grid-template-columns:1fr}.sleep-group-heading{display:block}.sleep-group-heading p{margin-top:7px}}
+@media(max-width:510px){.sleep-collection{min-width:0}.sleep-hero-copy,.sleep-player{padding:19px}.sleep-sound-grid{grid-template-columns:1fr}.sleep-sound-card{padding:17px}.sleep-quick,.sleep-compare,.sleep-practical,.sleep-faq,.sleep-next{margin:33px 0 40px}.sleep-feature-pills span{padding:6px 10px}}

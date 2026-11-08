@@ -16,6 +16,8 @@ on:
       - 'scripts/test_library_structure.cjs'
       - 'scripts/test_relaxing_collection.cjs'
       - 'scripts/test_relaxing_browser.cjs'
+      - 'scripts/test_sleep_collection.cjs'
+      - 'scripts/test_sleep_browser.cjs'
       - 'scripts/test_batch18_pages.cjs'
       - 'scripts/test_browser_navigation.cjs'
       - 'loop-check.html'
@@ -38,6 +40,7 @@ jobs:
           node scripts/test_loop_check.cjs
           node scripts/test_library_structure.cjs
           node scripts/test_relaxing_collection.cjs
+          node scripts/test_sleep_collection.cjs
           node scripts/test_batch18_pages.cjs
       - name: Browser navigation & persistent playback regression
         run: |
@@ -47,3 +50,4 @@ jobs:
           trap 'kill $SERVER_PID || true' EXIT
           node scripts/test_browser_navigation.cjs
           node scripts/test_relaxing_browser.cjs
+          node scripts/test_sleep_browser.cjs
