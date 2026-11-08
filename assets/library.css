@@ -223,3 +223,23 @@
 @media(max-width:790px){.baby-sound-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:650px){.baby-routine-grid,.baby-related-grid,.baby-faq-grid{grid-template-columns:1fr}}
 @media(max-width:520px){.baby-sound-grid{grid-template-columns:1fr}.baby-hero-copy,.baby-safety,.baby-player{padding:19px}.baby-sound-card{padding:17px}.baby-player-wrap,.baby-choices,.baby-routine,.baby-faq,.baby-related{margin:32px 0 40px}.baby-pill-row span{padding:6px 10px}}
+
+/* 13-family sound library expansion foundation; no playback engine changes */
+.wnc-family-tile{min-height:145px;display:flex;flex-direction:column;justify-content:space-between}
+.wnc-family-tile small{display:block;margin-top:12px;line-height:1.6}
+.wnc-family-expansion{margin:40px 0;border-top:1px solid #3a5a49;padding:20px 0 5px}
+.wnc-family-expansion h2{margin-top:11px}
+.wnc-roadmap-details{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:22px}
+.wnc-roadmap-family{min-width:0;background:#152923;border:1px solid #365846;border-radius:13px;padding:0;scroll-margin-top:20px}
+.wnc-roadmap-family summary{cursor:pointer;list-style:none;padding:16px 18px;color:#e7f7ee;font-size:14px;font-weight:740;display:flex;justify-content:space-between;align-items:center;gap:10px}
+.wnc-roadmap-family summary::-webkit-details-marker{display:none}
+.wnc-roadmap-family summary:after{content:"+";color:#c8e6d3;font-size:18px}
+.wnc-roadmap-family[open] summary:after{content:"−"}
+.wnc-roadmap-family summary small{color:#9fbfad;font-size:11px;font-weight:500;text-align:right}
+.wnc-roadmap-inner{border-top:1px solid #345442;padding:4px 18px 14px}
+.wnc-roadmap-inner p{font-size:12px;color:#b9d4c3;line-height:1.8}
+.wnc-roadmap-inner a{text-decoration:underline;text-underline-offset:2px}
+.wnc-roadmap-later{color:#a3bdae!important}
+.wnc-foundation-foot{font-size:12px;line-height:1.8;color:#a8c7b5;margin:24px 0}
+@media(max-width:660px){.wnc-roadmap-details{grid-template-columns:1fr}.wnc-roadmap-family summary{min-height:52px}}
+@media(max-width:350px){.wnc-roadmap-family summary{padding:13px 12px}.wnc-roadmap-inner{padding:6px 12px 14px}.wnc-family-tile{min-height:0}}
