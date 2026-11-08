@@ -20,6 +20,7 @@ LONG={
 }
 SHORT={"box-fan-real","heavy-rain-real","ocean-waves-real","waterfall-real"}
 EXPECTED=LONG | SHORT
+assert len(LONG)==17 and len(SHORT)==4 and len(EXPECTED)==21
 
 
 def rms(values):
