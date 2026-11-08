@@ -35,6 +35,12 @@ function sync(){
  document.querySelectorAll("[data-wnc-status]").forEach(e=>{e.textContent=(s.playing?"Playing: ":s.hasAudio?"Paused: ":"Ready: ")+(s.name||"White Noise")});
  document.querySelectorAll("[data-wnc-page-volume]").forEach(e=>{if(document.activeElement!==e)e.value=s.volume});
  document.querySelectorAll("[data-wnc-page-timer]").forEach(e=>{e.value=s.timer});
+ document.querySelectorAll("[data-wnc-compare]").forEach(a=>{
+  const active=s.activeIds?.length===1&&s.activeIds[0]===a.dataset.wncCompare;
+  a.classList.toggle("is-active",!!active);if(active)a.setAttribute("aria-current","true");else a.removeAttribute("aria-current");
+ });
+ const message=document.querySelector("[data-wnc-compare-status]");
+ if(message)message.textContent=s.playing?"Now playing: "+(s.name||"sound")+". Tap another color to compare.":s.hasAudio?"Paused: "+(s.name||"sound")+".":"Choose a color to compare. Audio never starts automatically.";
 }
 async function bootBridge(){
  if(window.WNCBridge){bridge=window.WNCBridge;sync();return bridge;}
@@ -156,7 +162,8 @@ async function navigate(url,push=true){
 function playOne(id,title){
  if(!bridge){bootBridge().then(b=>{if(b)b.play([id],title)});return}
  const s=bridge.snapshot();if(s.playing&&s.activeIds?.length===1&&s.activeIds[0]===id)bridge.pause();
- else bridge.play([id],title);
+ else if(s.activeIds?.length===1&&s.activeIds[0]===id&&!s.playing)bridge.resume();
+ else bridge.play([id],title,true);
  sync();
 }
 function enhance(main){
@@ -180,6 +187,13 @@ function enhance(main){
     prefs.querySelector(".wnc-dark-action").onclick=()=>{dark.hidden=false};
    }
   }
+ }
+ // Progressive enhancement: comparison links remain normal links without JS.
+ for(const a of main.querySelectorAll("[data-wnc-compare]")){
+  a.addEventListener("click",e=>{
+   if(!bridge||e.defaultPrevented||e.metaKey||e.ctrlKey||e.shiftKey||e.altKey||e.button!==0)return;
+   e.preventDefault();playOne(a.dataset.wncCompare,a.dataset.title||"Noise");sync();
+  });
  }
  // Replace link-only cards with clickable listen buttons plus an independent detail link.
  const cards=[...main.querySelectorAll('a.tile[href^="/sounds/"]')];

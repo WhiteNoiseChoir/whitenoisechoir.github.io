@@ -284,7 +284,19 @@ for(var i=0;i<67;i++){var s=document.createElement("i");s.style.height=(8+Math.a
 $("play").onclick=toggle;$("dockplay").onclick=toggle;$("prev").onclick=function(){choose(-1)};$("next").onclick=function(){choose(1)};$("dark").onclick=function(){dark(true)};$("dockdark").onclick=function(){dark(true)};$("blackexit").onclick=function(){dark(false)};$("blackplay").onclick=toggle;$("search").oninput=render;$("volume").oninput=function(){var v=Number(this.value)/100;playerItems.forEach(function(a,i){a.volume=Math.min(1,v*layerGain(i,activeIds.length))});fallback.forEach(function(f){if(ctx)f.gainNode.gain.setTargetAtTime(v*f.baseGain,ctx.currentTime,.03)})};$("timer").onchange=function(){if(playerItems.length||fallback.length)armSleepTimer();else{expiresAt=0;updateTimerInfo()}};document.addEventListener("visibilitychange",checkSleepTimer);window.addEventListener("focus",checkSleepTimer);window.addEventListener("pageshow",checkSleepTimer);render();renderMixes();
 
 window.WNCBridge={
- play:function(ids,name){return playTracks(ids,name||byId[ids[0]]?.[1]||"Sound")},
+ play:function(ids,name,keepTimer){
+  var deadline=keepTimer&&expiresAt>Date.now()?expiresAt:0,setting=$("timer").value;
+  var result=playTracks(ids,name||byId[ids[0]]?.[1]||"Sound"),token=playGeneration;
+  if(!deadline)return result;
+  return Promise.resolve(result).then(function(){
+    if(token!==playGeneration||!isPlaying)return;
+    $("timer").value=setting;clearTimeout(timerTimeout);clearInterval(interval);timerTimeout=null;interval=null;
+    expiresAt=deadline;updateTimerInfo();if(checkSleepTimer())return;
+    timerTimeout=setTimeout(checkSleepTimer,Math.max(0,deadline-Date.now()));
+    interval=setInterval(checkSleepTimer,15000);
+    if(typeof window.WNCAppSync==="function")window.WNCAppSync();
+  });
+ },
  pause:pause,resume:resume,toggle:toggle,
  stop:function(){reset();status("Stopped");if(typeof window.WNCAppSync==="function")window.WNCAppSync()},
  prepare:function(id){if(byId[id]&&!playerItems.length&&!fallback.length){activeIds=[id];current=rows.findIndex(function(r){return r[0]===id});setName(byId[id][1]);if(typeof window.WNCAppSync==="function")window.WNCAppSync()}},
