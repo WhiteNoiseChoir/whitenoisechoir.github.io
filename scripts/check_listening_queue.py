@@ -38,7 +38,8 @@ approved = queue["state"] == "OWNER_APPROVED_16_DEPLOYED"
 check(queue["state"] in ("TECHNICAL_QA_COMPLETE_HUMAN_LISTENING_INCOMPLETE", "OWNER_APPROVED_16_DEPLOYED"), "Unexpected approval stage")
 check(queue["production_change_authorized_by_listening"] is approved, "Promotion flag inconsistent with owner approval")
 check(len(queue["dsp"]) == 12 and len(queue["cc0_field"]) == 4, "Expected twelve DSP plus four CC0 candidates")
-check(len(hls["records"]) == 22, "Unexpected main-site HLS inventory")
+check(len(hls["records"]) == 25, "Unexpected main-site HLS inventory: 22 original plus approved Rain3")
+check(sum(x["original_source_length_category"] == "10_MINUTE_MASTER_FROM_CC0_PREVIEW" for x in hls["records"]) == 3, "Three Rain3 source length disclosures must be present")
 check(sum(x["original_source_length_category"] == ("APPROVED_CC0_FIELD_RECORDING" if approved else "LEGACY_CC0_SHORT_DEMO") for x in hls["records"]) == 4, "Four CC0 recordings have incorrect production category")
 check(sum(x["original_source_length_category"] == "10_MINUTE_MASTER" for x in hls["records"]) == 18, "Unexpected 10-minute production count")
 
@@ -109,7 +110,8 @@ print("LISTENING_READINESS_GATE_PASS", json.dumps({
     "technical_dsp": 12,
     "technical_cc0_candidates": 4,
     "human_approved": 16 if approved else 0,
-    "main_site_HLS_unchanged": 22,
+    "main_site_HLS_sources": 25,
+    "original_HLS_sources_untouched": 22,
     "flagged_spectral_pairs": sum(len(v) for v in expected.values()) // 2,
     "result": "OWNER_APPROVED_AND_DEPLOYED" if approved else "REVIEW_READY_NOT_PRODUCTION_APPROVED"
 }), flush=True)
