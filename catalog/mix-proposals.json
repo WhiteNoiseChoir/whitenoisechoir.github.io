@@ -38,14 +38,12 @@
       ],
       "required_ids": [
         "rain-tin-roof-real",
-        "NEW-07"
+        "rolling-thunder-real"
       ],
       "readiness": "proposal_only",
       "playable": false,
       "seo_url": null,
-      "missing_sources": [
-        "NEW-07"
-      ],
+      "missing_sources": [],
       "collision": null
     },
     {
@@ -59,14 +57,13 @@
         "Crickets at Night"
       ],
       "required_ids": [
-        "NEW-03",
+        "rain-on-tent-real",
         "NEW-16"
       ],
       "readiness": "proposal_only",
       "playable": false,
       "seo_url": null,
       "missing_sources": [
-        "NEW-03",
         "NEW-16"
       ],
       "collision": null
@@ -82,15 +79,13 @@
         "Gentle Wind"
       ],
       "required_ids": [
-        "NEW-04",
+        "rain-car-roof-real",
         "wind-synth"
       ],
       "readiness": "proposal_only",
       "playable": false,
       "seo_url": null,
-      "missing_sources": [
-        "NEW-04"
-      ],
+      "missing_sources": [],
       "collision": null
     },
     {
@@ -459,14 +454,13 @@
       ],
       "required_ids": [
         "NEW-13",
-        "NEW-07"
+        "rolling-thunder-real"
       ],
       "readiness": "proposal_only",
       "playable": false,
       "seo_url": null,
       "missing_sources": [
-        "NEW-13",
-        "NEW-07"
+        "NEW-13"
       ],
       "collision": null
     },
@@ -526,14 +520,13 @@
       ],
       "required_ids": [
         "NEW-30",
-        "NEW-07"
+        "rolling-thunder-real"
       ],
       "readiness": "proposal_only",
       "playable": false,
       "seo_url": null,
       "missing_sources": [
-        "NEW-30",
-        "NEW-07"
+        "NEW-30"
       ],
       "collision": null
     },
@@ -640,14 +633,13 @@
       ],
       "required_ids": [
         "NEW-50",
-        "NEW-04"
+        "rain-car-roof-real"
       ],
       "readiness": "proposal_only",
       "playable": false,
       "seo_url": null,
       "missing_sources": [
-        "NEW-50",
-        "NEW-04"
+        "NEW-50"
       ],
       "collision": null
     },
@@ -687,15 +679,14 @@
       "required_ids": [
         "NEW-53",
         "NEW-13",
-        "NEW-07"
+        "rolling-thunder-real"
       ],
       "readiness": "proposal_only",
       "playable": false,
       "seo_url": null,
       "missing_sources": [
         "NEW-53",
-        "NEW-13",
-        "NEW-07"
+        "NEW-13"
       ],
       "collision": null
     },

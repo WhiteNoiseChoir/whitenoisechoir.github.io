@@ -1,6 +1,6 @@
 {
-  "version": "2026-11-08-catalog-v4-rain-3-owner-approved",
-  "editorial_note": "25 playable audio sources: original 22 preserved + 3 new owner-approved CC0 preview-derived 10-minute MP3 masters (Light Rain, Rain on Tin Roof, Distant Thunder). New pages are NOINDEX pending editorial SEO signoff. Green Noise still awaits separate owner approval. 45 original mixes unchanged.",
+  "version": "2026-11-09-catalog-v5-rain-wave2-owner-approved",
+  "editorial_note": "28 playable sources: previous 25 preserved; three owner-approved Rain Wave 2 CC0 preview-derived masters added byte-identically. Rain & Thunder is the SEO hub; three new standalone audio pages are noindex,follow. Preserve all 45 live presets and the persistent player. Public HQ MP3 previews are lossy, not source WAVs; duration and repetition disclosed.",
   "categories": [
     {
       "slug": "noise-colors",
@@ -27,8 +27,6 @@
       "title": "Rain & Thunder",
       "desc": "Rain and weather recordings",
       "planned": [
-        "Rain on Tent",
-        "Rain on Car Roof",
         "Thunderstorm"
       ]
     },
@@ -339,6 +337,30 @@
       "status": "listening-approved",
       "desc": "Rural CC0 stereo field recording of distant thunder, arranged as a 10-minute master from roughly 145 seconds of independent source; events repeat.",
       "slug": "distant-thunder"
+    },
+    {
+      "id": "rain-on-tent-real",
+      "title": "Rain on Tent",
+      "cat": "rain",
+      "status": "listening-approved",
+      "desc": "Rain pattering against tent fabric in an Altay Mountains field recording. A 10-minute master repeats approximately 125 seconds of independent source material; hear the textile surface and recurring pattern.",
+      "slug": "rain-on-tent"
+    },
+    {
+      "id": "rain-car-roof-real",
+      "title": "Rain on Car Roof",
+      "cat": "rain",
+      "status": "listening-approved",
+      "desc": "Natural rain heard on a parked vehicle roof. The original mono recording is rendered as dual-mono MP3; about 231 seconds of independent rain recur within the 10-minute master.",
+      "slug": "rain-on-car-roof"
+    },
+    {
+      "id": "rolling-thunder-real",
+      "title": "Rolling Thunder",
+      "cat": "rain",
+      "status": "listening-approved",
+      "desc": "Rolling thunder, wind and heavy rain from a real Baltic Sea storm. The 10-minute master uses approximately 605 seconds from a longer field recording; the 10-minute cycle repeats during continuous listening.",
+      "slug": "rolling-thunder"
     }
   ],
   "collec": [
