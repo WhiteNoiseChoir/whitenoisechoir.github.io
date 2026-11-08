@@ -5,7 +5,6 @@ on:
     paths:
       - 'scripts/build_continuous_hls.py'
       - 'audio/green-noise-master-manifest.json'
-      - '.github/workflows/continuous_hls.yml'
   workflow_dispatch:
 permissions:
   contents: write
@@ -52,7 +51,7 @@ jobs:
               assert src.count('#EXT-X-DISCONTINUITY')==v['repeated_cycles']-1,(p,v)
               assert src.count('#EXTINF:')==v['repeated_cycles']*v['segment_count_per_source_cycle'],p
               assert v['native_stream_duration_hours']>=168,p
-              expected=54 if v['id'] in {'box-fan-real','heavy-rain-real','ocean-waves-real','waterfall-real'} else 600
+              expected=next((r['derived_duration_seconds'] for r in json.loads(Path('audio/cc0-sources.json').read_text()) if r['id']==v['id']),600)
               assert abs(v['source_cycle_seconds']-expected)<1.5,(p,v)
               assert hashlib.sha256(p.read_bytes()).hexdigest()==v['playlist_sha256'],p
               chunks=list(p.parent.glob('part_*.ts'))
