@@ -1,0 +1,392 @@
+{
+  "version": "quality-review-v1-20261108",
+  "purpose": "Production-safe final review: 12 DSP masters and four longer CC0 candidate recordings",
+  "state": "TECHNICAL_QA_COMPLETE_HUMAN_LISTENING_INCOMPLETE",
+  "qa_scope": "Technical manifests and source-page licenses only; NOT a human acoustic or iPhone listening review",
+  "batch": {
+    "dsp": 12,
+    "cc0_field": 4,
+    "total": 16
+  },
+  "site_inventory": {
+    "production_streams": 22,
+    "ten_min_sources": 18,
+    "short_cc0_sources": 4
+  },
+  "audition_url": "https://whitenoisechoir.github.io/signature/listening-approval/",
+  "production_change_authorized_by_listening": false,
+  "spectral_comparison_method": "5 Welch-band features relative to first band; RMSE of dB-band shapes; screening only, NOT perceptual identity; all flagged pairs require listening",
+  "spectral_screening_threshold_db": 7,
+  "dsp": [
+    {
+      "id": "blue-noise",
+      "type": "synthetic_dsp",
+      "file": "audio/blue-noise.mp3",
+      "title": "Blue Noise",
+      "duration_seconds": 600,
+      "source_sha256": "f4b261fbca163e3ade6b058ab960bac1b577f0d429c6d192d2371c01a61f79b6",
+      "technical_status": "PASS",
+      "human_listening": "PENDING",
+      "stereo_mode": "centered_dual_mono",
+      "integrated_loudness_lufs": -24,
+      "spectral_bands_db": [
+        -84.76,
+        -79.83,
+        -75.43,
+        -71.36,
+        -68.16
+      ],
+      "distinctiveness_attention": []
+    },
+    {
+      "id": "violet-noise",
+      "type": "synthetic_dsp",
+      "file": "audio/violet-noise.mp3",
+      "title": "Violet Noise",
+      "duration_seconds": 600,
+      "source_sha256": "da0e161cd6dbb3bb13de14912d4f857c8272b4633131316c94f9e31f96d41d7b",
+      "technical_status": "PASS",
+      "human_listening": "PENDING",
+      "stereo_mode": "centered_dual_mono",
+      "integrated_loudness_lufs": -26,
+      "spectral_bands_db": [
+        -103.86,
+        -94.16,
+        -85.46,
+        -77.37,
+        -70.99
+      ],
+      "distinctiveness_attention": []
+    },
+    {
+      "id": "soft-white-noise",
+      "type": "synthetic_dsp",
+      "file": "audio/soft-white-noise.mp3",
+      "title": "Soft White Noise",
+      "duration_seconds": 600,
+      "source_sha256": "79fdeaf83656dbcc3ec739e3c6dfa326f2c35d8d1181924ec6f56ea40fc04fac",
+      "technical_status": "PASS",
+      "human_listening": "PENDING",
+      "stereo_mode": "centered_dual_mono",
+      "integrated_loudness_lufs": -23.7,
+      "spectral_bands_db": [
+        -62.18,
+        -62.08,
+        -62.12,
+        -63.58,
+        -77.15
+      ],
+      "distinctiveness_attention": []
+    },
+    {
+      "id": "deep-brown-noise",
+      "type": "synthetic_dsp",
+      "file": "audio/deep-brown-noise.mp3",
+      "title": "Deep Brown Noise",
+      "duration_seconds": 600,
+      "source_sha256": "a54a4662cf88f9ca46718e2c41327925e2185e17c9a889e0f5ab82f39aaab816",
+      "technical_status": "PASS",
+      "human_listening": "PENDING",
+      "stereo_mode": "centered_dual_mono",
+      "integrated_loudness_lufs": -25.8,
+      "spectral_bands_db": [
+        -49.34,
+        -59.25,
+        -85.71,
+        -125.73,
+        -136.86
+      ],
+      "distinctiveness_attention": []
+    },
+    {
+      "id": "warm-pink-noise",
+      "type": "synthetic_dsp",
+      "file": "audio/warm-pink-noise.mp3",
+      "title": "Warm Pink Noise",
+      "duration_seconds": 600,
+      "source_sha256": "71e696cc76bdb3ef92062ea85a8b3b33a6e74070a1d527f9c82592bf9b38620b",
+      "technical_status": "PASS",
+      "human_listening": "PENDING",
+      "stereo_mode": "centered_dual_mono",
+      "integrated_loudness_lufs": -25.5,
+      "spectral_bands_db": [
+        -52.64,
+        -57.33,
+        -62.19,
+        -76.13,
+        -108.56
+      ],
+      "distinctiveness_attention": [
+        {
+          "compare_to": "air-conditioner-synth",
+          "spectral_shape_rmse_db": 1.91
+        },
+        {
+          "compare_to": "cabin-hum-synth",
+          "spectral_shape_rmse_db": 4.58
+        }
+      ]
+    },
+    {
+      "id": "mid-noise",
+      "type": "synthetic_dsp",
+      "file": "audio/mid-noise.mp3",
+      "title": "Neutral Mid Noise",
+      "duration_seconds": 600,
+      "source_sha256": "8d1dcda2dea608a3c68caf697bbb22759da92baeb9498414472b32310168c959",
+      "technical_status": "PASS",
+      "human_listening": "PENDING",
+      "stereo_mode": "centered_dual_mono",
+      "integrated_loudness_lufs": -22.9,
+      "spectral_bands_db": [
+        -69.45,
+        -62.92,
+        -61.73,
+        -62.6,
+        -74.44
+      ],
+      "distinctiveness_attention": []
+    },
+    {
+      "id": "low-rumble",
+      "type": "synthetic_dsp",
+      "file": "audio/low-rumble.mp3",
+      "title": "Low Rumble",
+      "duration_seconds": 600,
+      "source_sha256": "0cbd69281f509574ad11bf20060ffcfc3e6019c16e4df2f9e605114575f3870a",
+      "technical_status": "PASS",
+      "human_listening": "PENDING",
+      "stereo_mode": "centered_dual_mono",
+      "integrated_loudness_lufs": -25.8,
+      "spectral_bands_db": [
+        -48.24,
+        -62.7,
+        -103.82,
+        -118.95,
+        -125.71
+      ],
+      "distinctiveness_attention": []
+    },
+    {
+      "id": "desk-fan-synth",
+      "type": "synthetic_dsp",
+      "file": "audio/desk-fan-synth.mp3",
+      "title": "Desk Fan (Synthetic)",
+      "duration_seconds": 600,
+      "source_sha256": "1aee630aa6430ea71dc24cb3b3a58db64d70acb10c20397f45ae96c9589c99e7",
+      "technical_status": "PASS",
+      "human_listening": "PENDING",
+      "stereo_mode": "centered_dual_mono",
+      "integrated_loudness_lufs": -24.2,
+      "spectral_bands_db": [
+        -55.67,
+        -56.7,
+        -59.86,
+        -68.23,
+        -95.5
+      ],
+      "distinctiveness_attention": [
+        {
+          "compare_to": "cabin-hum-synth",
+          "spectral_shape_rmse_db": 4.59
+        }
+      ]
+    },
+    {
+      "id": "air-conditioner-synth",
+      "type": "synthetic_dsp",
+      "file": "audio/air-conditioner-synth.mp3",
+      "title": "Air Conditioner (Synthetic)",
+      "duration_seconds": 600,
+      "source_sha256": "715624197450ff54849dab2c286e3e4390fb6109573feec21e68d5f5f1635d94",
+      "technical_status": "PASS",
+      "human_listening": "PENDING",
+      "stereo_mode": "centered_dual_mono",
+      "integrated_loudness_lufs": -25.4,
+      "spectral_bands_db": [
+        -52.01,
+        -56.44,
+        -62.15,
+        -77.88,
+        -111.42
+      ],
+      "distinctiveness_attention": [
+        {
+          "compare_to": "warm-pink-noise",
+          "spectral_shape_rmse_db": 1.91
+        },
+        {
+          "compare_to": "cabin-hum-synth",
+          "spectral_shape_rmse_db": 6.44
+        }
+      ]
+    },
+    {
+      "id": "cabin-hum-synth",
+      "type": "synthetic_dsp",
+      "file": "audio/cabin-hum-synth.mp3",
+      "title": "Airplane Cabin (Synthetic)",
+      "duration_seconds": 600,
+      "source_sha256": "b1f6566c485a5f8ca08d28c3a5bd023df1cc93ba35d89383763cb0be0d1a933e",
+      "technical_status": "PASS",
+      "human_listening": "PENDING",
+      "stereo_mode": "centered_dual_mono",
+      "integrated_loudness_lufs": -24.7,
+      "spectral_bands_db": [
+        -53.55,
+        -56.25,
+        -60.57,
+        -71.32,
+        -101.6
+      ],
+      "distinctiveness_attention": [
+        {
+          "compare_to": "warm-pink-noise",
+          "spectral_shape_rmse_db": 4.58
+        },
+        {
+          "compare_to": "desk-fan-synth",
+          "spectral_shape_rmse_db": 4.59
+        },
+        {
+          "compare_to": "air-conditioner-synth",
+          "spectral_shape_rmse_db": 6.44
+        }
+      ]
+    },
+    {
+      "id": "wind-synth",
+      "type": "synthetic_dsp",
+      "file": "audio/wind-synth.mp3",
+      "title": "Gentle Wind (Synthetic)",
+      "duration_seconds": 600,
+      "source_sha256": "443be56915a2e07a5ec8098ef4d6874fec5708d2dd3c664ce8411d7521f91926",
+      "technical_status": "PASS",
+      "human_listening": "PENDING",
+      "stereo_mode": "centered_dual_mono",
+      "integrated_loudness_lufs": -27.3,
+      "spectral_bands_db": [
+        -52.62,
+        -58.8,
+        -66.46,
+        -90.77,
+        -125.7
+      ],
+      "distinctiveness_attention": []
+    },
+    {
+      "id": "shower-synth",
+      "type": "synthetic_dsp",
+      "file": "audio/shower-synth.mp3",
+      "title": "Shower (Synthetic)",
+      "duration_seconds": 600,
+      "source_sha256": "b0adce9feda80ff96734a785089e13f6a67ffe04d2c57cd4b39b77fd9e3f90d9",
+      "technical_status": "PASS",
+      "human_listening": "PENDING",
+      "stereo_mode": "centered_dual_mono",
+      "integrated_loudness_lufs": -23.1,
+      "spectral_bands_db": [
+        -99.91,
+        -78.1,
+        -68.78,
+        -66.28,
+        -66.37
+      ],
+      "distinctiveness_attention": []
+    }
+  ],
+  "cc0_field": [
+    {
+      "id": "box-fan-real",
+      "type": "cc0_field_candidate",
+      "file": "signature/field-review/box-fan-real-full.mp3",
+      "title": "Box Fan – Lasko recording",
+      "duration_seconds": 67.52,
+      "independent_source_seconds": 70.52,
+      "source_sha256": "d96f44a10ffa6a55e2ea4fda2f479702b98e83f6721bea141144e408ccfe5971",
+      "license": "CC0-1.0",
+      "source_url": "https://freesound.org/people/ffdm/sounds/824852/",
+      "technical_status": "PASS",
+      "human_listening": "PENDING",
+      "production_policy": "KEEP_LEGACY_54_SECOND_MASTER_UNTIL_LISTENING_APPROVAL",
+      "longer_cc0_research_candidates": []
+    },
+    {
+      "id": "heavy-rain-real",
+      "type": "cc0_field_candidate",
+      "file": "signature/field-review/heavy-rain-real-full.mp3",
+      "title": "Rain – Lluvia 3min Stereo",
+      "duration_seconds": 189.76,
+      "independent_source_seconds": 192.76,
+      "source_sha256": "370e977c3ee40457e8d1a85da2a0b6ca61f3fda5f5f94bcd663fe420827cf127",
+      "license": "CC0-1.0",
+      "source_url": "https://freesound.org/people/MikeNavajas/sounds/681490/",
+      "technical_status": "PASS",
+      "human_listening": "PENDING",
+      "production_policy": "KEEP_LEGACY_54_SECOND_MASTER_UNTIL_LISTENING_APPROVAL",
+      "longer_cc0_research_candidates": [
+        {
+          "url": "https://freesound.org/people/Valerie-Vivegnis/sounds/759545/",
+          "label": "Rainstorm 10 min",
+          "declared_seconds": 597.14,
+          "license": "CC0-1.0",
+          "source_page_checked": true,
+          "actual_media_audited": false
+        }
+      ]
+    },
+    {
+      "id": "ocean-waves-real",
+      "type": "cc0_field_candidate",
+      "file": "signature/field-review/ocean-waves-real-full.mp3",
+      "title": "Waves of Hawaii",
+      "duration_seconds": 89.83,
+      "independent_source_seconds": 92.83,
+      "source_sha256": "7d784a40ca1f6f081cdd14155b224d26cfff539069d2a9e1b1b487aac012ff8d",
+      "license": "CC0-1.0",
+      "source_url": "https://freesound.org/people/florianreichelt/sounds/450755/",
+      "technical_status": "PASS",
+      "human_listening": "PENDING",
+      "production_policy": "KEEP_LEGACY_54_SECOND_MASTER_UNTIL_LISTENING_APPROVAL",
+      "longer_cc0_research_candidates": [
+        {
+          "url": "https://freesound.org/people/hotemogf/sounds/635403/",
+          "label": "West Haven Waves uninterrupted field recording",
+          "declared_seconds": 2719.349,
+          "license": "CC0-1.0",
+          "source_page_checked": true,
+          "actual_media_audited": false
+        },
+        {
+          "url": "https://freesound.org/people/hotemogf/sounds/635404/",
+          "label": "Tampa Ocean Waves",
+          "declared_seconds": 707.004,
+          "license": "CC0-1.0",
+          "source_page_checked": true,
+          "actual_media_audited": false
+        }
+      ]
+    },
+    {
+      "id": "waterfall-real",
+      "type": "cc0_field_candidate",
+      "file": "signature/field-review/waterfall-real-full.mp3",
+      "title": "Waterfall",
+      "duration_seconds": 375.48,
+      "independent_source_seconds": 378.48,
+      "source_sha256": "656dc956ec218f51a115f713d2121755849739a9907d86dea8b05ccb272adac8",
+      "license": "CC0-1.0",
+      "source_url": "https://freesound.org/people/Fabrizio84/sounds/458711/",
+      "technical_status": "PASS",
+      "human_listening": "PENDING",
+      "production_policy": "KEEP_LEGACY_54_SECOND_MASTER_UNTIL_LISTENING_APPROVAL",
+      "longer_cc0_research_candidates": []
+    }
+  ],
+  "promotion_rules": [
+    "Do not treat technical PASS, CI, or this review queue as human listening approval.",
+    "Do not replace any of the four production 54-second CC0 files until representative audio is listened to and explicitly approved.",
+    "Research-only alternatives require pinned license, real-media verification, decoding QA, noise-event review and a new candidate preview.",
+    "Preserve existing iPhone HLS transport, MP3 loop fallback, sleep timer and 45 mixes."
+  ]
+}
