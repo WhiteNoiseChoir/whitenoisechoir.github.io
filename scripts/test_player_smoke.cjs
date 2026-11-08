@@ -50,7 +50,7 @@ globalThis._intervalId=0;globalThis._timerId=0;
 vm.runInContext(matches[0][1],context);
 const flush=()=>new Promise(resolve=>setImmediate(resolve));
 (async()=>{
-  assert.equal(get("cards").children.length,22,"Sound catalog changed unexpectedly");
+  assert.equal(get("cards").children.length,25,"Sound catalog changed unexpectedly");
   assert.equal(get("mixlist").children.length,45,"Mixer preset count changed");
   assert.match(html,/value="28800">8 hours/);
   assert.match(html,/value="43200">12 hours/);
@@ -153,5 +153,5 @@ const flush=()=>new Promise(resolve=>setImmediate(resolve));
   assert.ok(mp3fallback.src.includes("white-noise.mp3"),"Failed HLS must fall back to MP3");
   assert.ok(mp3fallback.loop,"Fallback MP3 should loop");
   blockNativeHLS=false;
-  console.log("PASS: 22 sound IDs, 45 mixes, 13 ten-minute DSP MP3 masters, 22 native HLS paths, fallback MP3, timer and mixer");
+  console.log("PASS: 25 sound IDs, 45 mixes, 13 ten-minute DSP MP3 masters, 25 native HLS paths, fallback MP3, timer and mixer");
 })().catch(e=>{console.error(e);process.exit(1)});

@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "revision": "foundation-v1-20261108",
+  "revision": "rain-first-wave-production-v1-20261108",
   "existing_source_of_truth": "catalog/library.json + audio manifests (not duplicated here)",
-  "disclosure": "All NEW-xx IDs are planning placeholders only. No media, HLS, CC0 license, production sound ID or SEO URL is assigned. Planned is never playable.",
+  "disclosure": "All NEW-xx IDs are project planning IDs. NEW-01, NEW-02, NEW-06 have been promoted to owner-approved audio production as separate IDs and NOINDEX detail pages; remaining 67 are nonplayable concepts. Original lossy CC0 preview provenance must be disclosed, not labeled as lossless.",
   "planned": [
     {
       "plan_id": "NEW-01",
@@ -11,15 +11,23 @@
       "title": "Light Rain",
       "requested_source_type": "Field recording",
       "intent": "Adult sleep",
-      "readiness": "planned",
-      "playable": false,
-      "production_id": null,
-      "audio_path": null,
-      "license": null,
-      "independent_seconds": null,
-      "qa": null,
-      "owner_listening_approval": null,
-      "seo_page": null
+      "readiness": "released_audio_seo_pending",
+      "playable": true,
+      "production_id": "light-rain-real",
+      "audio_path": "/audio/light-rain-real.mp3",
+      "license": "CC0-1.0",
+      "independent_seconds": 605,
+      "qa": {
+        "technical_status": "PASS",
+        "master_sha256": "4ec7b163d6450c01c9d42201861123fc8e9abb97d1c57374c7b27696680f5d4d",
+        "hls": "7DAY_STATIC_VOD",
+        "source": "lossy_preview_derivative",
+        "quality_caveat": null
+      },
+      "owner_listening_approval": "APPROVED_BY_OWNER_2026-11-08",
+      "seo_page": "/sounds/light-rain/",
+      "seo_status": "noindex,follow",
+      "source_page": "https://freesound.org/people/joedeshon/sounds/430765/"
     },
     {
       "plan_id": "NEW-02",
@@ -28,15 +36,23 @@
       "title": "Rain on Tin Roof",
       "requested_source_type": "Field recording",
       "intent": "Adult sleep",
-      "readiness": "planned",
-      "playable": false,
-      "production_id": null,
-      "audio_path": null,
-      "license": null,
-      "independent_seconds": null,
-      "qa": null,
-      "owner_listening_approval": null,
-      "seo_page": null
+      "readiness": "released_audio_seo_pending",
+      "playable": true,
+      "production_id": "rain-tin-roof-real",
+      "audio_path": "/audio/rain-tin-roof-real.mp3",
+      "license": "CC0-1.0",
+      "independent_seconds": 605,
+      "qa": {
+        "technical_status": "PASS",
+        "master_sha256": "b164a70de5b4ef215637ae6b85f23cdb050972b277f246d62eeb98573e797d50",
+        "hls": "7DAY_STATIC_VOD",
+        "source": "lossy_preview_derivative",
+        "quality_caveat": "Very quiet average level relative to transient peaks"
+      },
+      "owner_listening_approval": "APPROVED_BY_OWNER_2026-11-08",
+      "seo_page": "/sounds/rain-on-tin-roof/",
+      "seo_status": "noindex,follow",
+      "source_page": "https://freesound.org/people/archerjosiah/sounds/843483/"
     },
     {
       "plan_id": "NEW-03",
@@ -96,15 +112,23 @@
       "title": "Distant Thunder",
       "requested_source_type": "Field recording",
       "intent": "Adult sleep",
-      "readiness": "planned",
-      "playable": false,
-      "production_id": null,
-      "audio_path": null,
-      "license": null,
-      "independent_seconds": null,
-      "qa": null,
-      "owner_listening_approval": null,
-      "seo_page": null
+      "readiness": "released_audio_seo_pending",
+      "playable": true,
+      "production_id": "distant-thunder-real",
+      "audio_path": "/audio/distant-thunder-real.mp3",
+      "license": "CC0-1.0",
+      "independent_seconds": 145,
+      "qa": {
+        "technical_status": "PASS",
+        "master_sha256": "baefe31e5bde707c09428672690e0fe184769b75bdce32042b0b854357622e78",
+        "hls": "7DAY_STATIC_VOD",
+        "source": "lossy_preview_derivative",
+        "quality_caveat": "Approximately 145 seconds of independent repeated thunder source"
+      },
+      "owner_listening_approval": "APPROVED_BY_OWNER_2026-11-08",
+      "seo_page": "/sounds/distant-thunder/",
+      "seo_status": "noindex,follow",
+      "source_page": "https://freesound.org/people/moxobna/sounds/107518/"
     },
     {
       "plan_id": "NEW-07",

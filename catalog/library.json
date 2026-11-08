@@ -1,6 +1,6 @@
 {
-  "version": "2026-11-08-catalog-v3-owner-approved-audio",
-  "editorial_note": "Owner approved 12 DSP masters and 4 longer natural CC0 records for playback. Audio approval is distinct from individual page editorial/SEO indexing approval.",
+  "version": "2026-11-08-catalog-v4-rain-3-owner-approved",
+  "editorial_note": "25 playable audio sources: original 22 preserved + 3 new owner-approved CC0 preview-derived 10-minute MP3 masters (Light Rain, Rain on Tin Roof, Distant Thunder). New pages are NOINDEX pending editorial SEO signoff. Green Noise still awaits separate owner approval. 45 original mixes unchanged.",
   "categories": [
     {
       "slug": "noise-colors",
@@ -27,11 +27,8 @@
       "title": "Rain & Thunder",
       "desc": "Rain and weather recordings",
       "planned": [
-        "Light Rain",
         "Rain on Tent",
-        "Rain on Metal Roof",
         "Rain on Car Roof",
-        "Distant Thunder",
         "Thunderstorm"
       ]
     },
@@ -318,6 +315,30 @@
       "status": "listening-approved",
       "desc": "Steady synthetic low-frequency rumble",
       "slug": "low-rumble"
+    },
+    {
+      "id": "light-rain-real",
+      "title": "Light Rain",
+      "cat": "rain",
+      "status": "listening-approved",
+      "desc": "Gentle CC0 field rain from a front porch; owner-approved 10-minute arrangement of 605 seconds of preview-derived source material. Soft passing outdoor sounds may be audible.",
+      "slug": "light-rain"
+    },
+    {
+      "id": "rain-tin-roof-real",
+      "title": "Rain on Tin Roof",
+      "cat": "rain",
+      "status": "listening-approved",
+      "desc": "Rain drops on a real metal shed roof; owner-approved 10-minute source-derived MP3. Quiet average bed with higher transients; listen at low volume.",
+      "slug": "rain-on-tin-roof"
+    },
+    {
+      "id": "distant-thunder-real",
+      "title": "Distant Thunder",
+      "cat": "rain",
+      "status": "listening-approved",
+      "desc": "Rural CC0 stereo field recording of distant thunder, arranged as a 10-minute master from roughly 145 seconds of independent source; events repeat.",
+      "slug": "distant-thunder"
     }
   ],
   "collec": [

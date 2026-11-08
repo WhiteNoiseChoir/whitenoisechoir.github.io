@@ -61,6 +61,6 @@ assert.equal(sitemapUrls.length,18,"Measured Shower sound page selectively added
 for(const id of edited){const x=byId[id];if(x.status==="dsp-review")assert.ok(!sitemapUrls.includes("https://whitenoisechoir.github.io/sounds/"+x.slug+"/"),"unreviewed excluded: "+id)}
 const hubs=["noise-colors","fan-noise","rain","water","wind-weather","fire","transportation","household","hums-drones"];
 for(const h of hubs){const doc=file("sounds/"+h+"/index.html");assert.match(doc,/batch18-hub-compare/,"category improved "+h)}
-assert.match(file("sounds/index.html"),/Browse 22 sound sources in 13 families/,"library count accurate");
+assert.match(file("sounds/index.html"),/Browse 25 sound sources in 13 families/,"library count accurate");
 console.log("BATCH18_CONTENT_QA "+JSON.stringify({pages:report.length,reference:batch.reference_pages.length,meanWords:Math.round(report.reduce((a,b)=>a+b.words,0)/report.length),indexable:report.filter(x=>x.indexable).length,sitemap:sitemapUrls.length}));
-console.log("PASS: 18 batch sources, 14 unique detailed pages, 9 hubs, 22 source library, valid MP3/HLS URLs, AudioObject, sitemap and noindex gates");
+console.log("PASS: 18 batch sources, 14 unique detailed pages, 9 hubs, 25 source library, valid MP3/HLS URLs, AudioObject, sitemap and noindex gates");

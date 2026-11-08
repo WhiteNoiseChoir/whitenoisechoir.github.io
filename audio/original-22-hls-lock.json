@@ -1,0 +1,139 @@
+{
+  "version": "continuous-hls-v4-cc0-approved-20261108",
+  "original_count": 22,
+  "policy": "Lock original 22 production media checksums across Rain3 promotion; do not regenerate or change originals",
+  "records": [
+    {
+      "id": "white-noise",
+      "master_sha256": "8f392383ebe22b064346487c76eb929ebc6da71bda6718f63814ec75c2be618b",
+      "playlist_sha256": "1d03b563d4b147b6350a7deb10e0814a46d2baaf5612af1abb7d80464eee66fe",
+      "segment_count_per_source_cycle": 10
+    },
+    {
+      "id": "pink-noise",
+      "master_sha256": "8d334c27486fe49292cd88c2a1403867dc272fc665f88b76ae95d43cd8897a94",
+      "playlist_sha256": "1d03b563d4b147b6350a7deb10e0814a46d2baaf5612af1abb7d80464eee66fe",
+      "segment_count_per_source_cycle": 10
+    },
+    {
+      "id": "brown-noise",
+      "master_sha256": "c78733ed9427e1d8c4dcddf25512868ddae98c250e148484aa486590edcbb2e7",
+      "playlist_sha256": "1d03b563d4b147b6350a7deb10e0814a46d2baaf5612af1abb7d80464eee66fe",
+      "segment_count_per_source_cycle": 10
+    },
+    {
+      "id": "green-noise",
+      "master_sha256": "ede45d2360603ed62f6a0a6f191a5fdab8f4bb50a33d5da6341dff949eb12e06",
+      "playlist_sha256": "1d03b563d4b147b6350a7deb10e0814a46d2baaf5612af1abb7d80464eee66fe",
+      "segment_count_per_source_cycle": 10
+    },
+    {
+      "id": "rain-on-window-real",
+      "master_sha256": "99879a374a43429cbc61fb018d4ab8b1d34558219e7571820d0ae55c57f69117",
+      "playlist_sha256": "1d03b563d4b147b6350a7deb10e0814a46d2baaf5612af1abb7d80464eee66fe",
+      "segment_count_per_source_cycle": 10
+    },
+    {
+      "id": "fireplace-real",
+      "master_sha256": "907d262e40ca114ae80c22bd9719088bbe9f2d579971be2e9c7cd7d45df213e5",
+      "playlist_sha256": "1d03b563d4b147b6350a7deb10e0814a46d2baaf5612af1abb7d80464eee66fe",
+      "segment_count_per_source_cycle": 10
+    },
+    {
+      "id": "blue-noise",
+      "master_sha256": "f4b261fbca163e3ade6b058ab960bac1b577f0d429c6d192d2371c01a61f79b6",
+      "playlist_sha256": "1d03b563d4b147b6350a7deb10e0814a46d2baaf5612af1abb7d80464eee66fe",
+      "segment_count_per_source_cycle": 10
+    },
+    {
+      "id": "violet-noise",
+      "master_sha256": "da0e161cd6dbb3bb13de14912d4f857c8272b4633131316c94f9e31f96d41d7b",
+      "playlist_sha256": "1d03b563d4b147b6350a7deb10e0814a46d2baaf5612af1abb7d80464eee66fe",
+      "segment_count_per_source_cycle": 10
+    },
+    {
+      "id": "soft-white-noise",
+      "master_sha256": "79fdeaf83656dbcc3ec739e3c6dfa326f2c35d8d1181924ec6f56ea40fc04fac",
+      "playlist_sha256": "1d03b563d4b147b6350a7deb10e0814a46d2baaf5612af1abb7d80464eee66fe",
+      "segment_count_per_source_cycle": 10
+    },
+    {
+      "id": "deep-brown-noise",
+      "master_sha256": "a54a4662cf88f9ca46718e2c41327925e2185e17c9a889e0f5ab82f39aaab816",
+      "playlist_sha256": "1d03b563d4b147b6350a7deb10e0814a46d2baaf5612af1abb7d80464eee66fe",
+      "segment_count_per_source_cycle": 10
+    },
+    {
+      "id": "warm-pink-noise",
+      "master_sha256": "71e696cc76bdb3ef92062ea85a8b3b33a6e74070a1d527f9c82592bf9b38620b",
+      "playlist_sha256": "1d03b563d4b147b6350a7deb10e0814a46d2baaf5612af1abb7d80464eee66fe",
+      "segment_count_per_source_cycle": 10
+    },
+    {
+      "id": "mid-noise",
+      "master_sha256": "8d1dcda2dea608a3c68caf697bbb22759da92baeb9498414472b32310168c959",
+      "playlist_sha256": "1d03b563d4b147b6350a7deb10e0814a46d2baaf5612af1abb7d80464eee66fe",
+      "segment_count_per_source_cycle": 10
+    },
+    {
+      "id": "low-rumble",
+      "master_sha256": "0cbd69281f509574ad11bf20060ffcfc3e6019c16e4df2f9e605114575f3870a",
+      "playlist_sha256": "1d03b563d4b147b6350a7deb10e0814a46d2baaf5612af1abb7d80464eee66fe",
+      "segment_count_per_source_cycle": 10
+    },
+    {
+      "id": "desk-fan-synth",
+      "master_sha256": "1aee630aa6430ea71dc24cb3b3a58db64d70acb10c20397f45ae96c9589c99e7",
+      "playlist_sha256": "1d03b563d4b147b6350a7deb10e0814a46d2baaf5612af1abb7d80464eee66fe",
+      "segment_count_per_source_cycle": 10
+    },
+    {
+      "id": "air-conditioner-synth",
+      "master_sha256": "715624197450ff54849dab2c286e3e4390fb6109573feec21e68d5f5f1635d94",
+      "playlist_sha256": "1d03b563d4b147b6350a7deb10e0814a46d2baaf5612af1abb7d80464eee66fe",
+      "segment_count_per_source_cycle": 10
+    },
+    {
+      "id": "cabin-hum-synth",
+      "master_sha256": "b1f6566c485a5f8ca08d28c3a5bd023df1cc93ba35d89383763cb0be0d1a933e",
+      "playlist_sha256": "1d03b563d4b147b6350a7deb10e0814a46d2baaf5612af1abb7d80464eee66fe",
+      "segment_count_per_source_cycle": 10
+    },
+    {
+      "id": "wind-synth",
+      "master_sha256": "443be56915a2e07a5ec8098ef4d6874fec5708d2dd3c664ce8411d7521f91926",
+      "playlist_sha256": "1d03b563d4b147b6350a7deb10e0814a46d2baaf5612af1abb7d80464eee66fe",
+      "segment_count_per_source_cycle": 10
+    },
+    {
+      "id": "shower-synth",
+      "master_sha256": "b0adce9feda80ff96734a785089e13f6a67ffe04d2c57cd4b39b77fd9e3f90d9",
+      "playlist_sha256": "1d03b563d4b147b6350a7deb10e0814a46d2baaf5612af1abb7d80464eee66fe",
+      "segment_count_per_source_cycle": 10
+    },
+    {
+      "id": "box-fan-real",
+      "master_sha256": "d96f44a10ffa6a55e2ea4fda2f479702b98e83f6721bea141144e408ccfe5971",
+      "playlist_sha256": "276f0ef59e458d9fca3ee7e6b7361bbeeefe8490daec57c1bd0bf0b31596875e",
+      "segment_count_per_source_cycle": 2
+    },
+    {
+      "id": "heavy-rain-real",
+      "master_sha256": "370e977c3ee40457e8d1a85da2a0b6ca61f3fda5f5f94bcd663fe420827cf127",
+      "playlist_sha256": "0f845fdaaec6380d5b81cf448b40d06ebeb6c2f92c8f702688f8ef6a1f15f38f",
+      "segment_count_per_source_cycle": 4
+    },
+    {
+      "id": "ocean-waves-real",
+      "master_sha256": "7d784a40ca1f6f081cdd14155b224d26cfff539069d2a9e1b1b487aac012ff8d",
+      "playlist_sha256": "a0ce7b8d61bb0dfa78782b6e4b1b8fab0cce63c828b84929da94b3ee4ded39cf",
+      "segment_count_per_source_cycle": 2
+    },
+    {
+      "id": "waterfall-real",
+      "master_sha256": "656dc956ec218f51a115f713d2121755849739a9907d86dea8b05ccb272adac8",
+      "playlist_sha256": "43e62def47f502280022254e82d63f1527cbbd0624adc91b89d54985c1b723bc",
+      "segment_count_per_source_cycle": 7
+    }
+  ]
+}

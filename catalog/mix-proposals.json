@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "revision": "foundation-v1-20261108",
+  "revision": "rain-first-wave-production-v1-20261108",
   "current_preset_count": 45,
   "legacy_source": "homepage var recipes, unchanged",
   "disclosure": "These are planning-only mixes, never rendered as playable until dependencies and listening QA pass.",
@@ -18,14 +18,12 @@
       ],
       "required_ids": [
         "heavy-rain-real",
-        "NEW-06"
+        "distant-thunder-real"
       ],
       "readiness": "proposal_only",
       "playable": false,
       "seo_url": null,
-      "missing_sources": [
-        "NEW-06"
-      ],
+      "missing_sources": [],
       "collision": null
     },
     {
@@ -39,14 +37,13 @@
         "Rolling Thunder"
       ],
       "required_ids": [
-        "NEW-02",
+        "rain-tin-roof-real",
         "NEW-07"
       ],
       "readiness": "proposal_only",
       "playable": false,
       "seo_url": null,
       "missing_sources": [
-        "NEW-02",
         "NEW-07"
       ],
       "collision": null
@@ -373,15 +370,13 @@
         "Fireplace"
       ],
       "required_ids": [
-        "NEW-02",
+        "rain-tin-roof-real",
         "fireplace-real"
       ],
       "readiness": "proposal_only",
       "playable": false,
       "seo_url": null,
-      "missing_sources": [
-        "NEW-02"
-      ],
+      "missing_sources": [],
       "collision": null
     },
     {
@@ -419,14 +414,13 @@
       ],
       "required_ids": [
         "NEW-29",
-        "NEW-06"
+        "distant-thunder-real"
       ],
       "readiness": "proposal_only",
       "playable": false,
       "seo_url": null,
       "missing_sources": [
-        "NEW-29",
-        "NEW-06"
+        "NEW-29"
       ],
       "collision": null
     },
@@ -510,14 +504,13 @@
       ],
       "required_ids": [
         "NEW-27",
-        "NEW-06"
+        "distant-thunder-real"
       ],
       "readiness": "proposal_only",
       "playable": false,
       "seo_url": null,
       "missing_sources": [
-        "NEW-27",
-        "NEW-06"
+        "NEW-27"
       ],
       "collision": null
     },

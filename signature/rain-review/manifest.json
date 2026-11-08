@@ -1,9 +1,9 @@
 {
   "version": "rain-first-wave-audition-20261108",
-  "status": "REVIEW_ONLY_PENDING_OWNER",
+  "status": "OWNER_APPROVED_3_PROMOTED_TO_PRODUCTION",
   "license_policy": "Three distinct CC0 field recordings; verification source links included; original WAV source is NOT downloaded",
-  "media_quality_policy": "Public Freesound HQ MP3 previews are lossy; source encoding bitrates for the first-20MB partial long previews are not established. The 600-second 192 kbps review MP3 outputs are transcodes and do NOT restore lost information. Lossless original sources and human listening are required before production promotion.",
-  "goal": "Three 10-minute audible differentiated candidates; not 3 new playable production sources",
+  "media_quality_policy": "All three public Freesound HQ previews were MP3/lossy, not source WAV. The exact previously reviewed 600-second MP3 bytes are now owner-approved for playback, despite unknown original source encodings and disclosed Tin Roof low average level / repeated Distant Thunder events. Digital transcoding does NOT restore original quality; a lossless WAV-based remaster would be an independent future task.",
+  "goal": "Three distinct 10-minute owner-approved CC0 MP3 previews have been promoted byte-for-byte to live audio; no new SEO indexed pages",
   "tracks": [
     {
       "plan_id": "NEW-01",
@@ -16,8 +16,8 @@
       "source_duration_seconds": 1455.599,
       "target_mean_dbfs": -30,
       "notes": "Long easy rain from a front porch, first 10 minutes only; faint transient splashes or distant traffic may be present; source reports thunder much later than the selected segment.",
-      "review_status": "PENDING_OWNER_LISTENING",
-      "publication_status": "REVIEW_ONLY_NOT_IN_PRODUCTION",
+      "review_status": "APPROVED_BY_OWNER_2026-11-08",
+      "publication_status": "PROMOTED_TO_PRODUCTION_MP3_BYTE_IDENTICAL",
       "downloaded_preview_codec": "mp3",
       "downloaded_preview_bitrate_kbps": null,
       "downloaded_preview_duration_seconds": 1455.598,
@@ -47,7 +47,8 @@
       "audio_review_flags": [
         "LISTEN_FOR_TRAFFIC_AND_TRANSIENTS"
       ],
-      "preview_bitrate_status": "NOT_MEASURABLE_FROM_TRUNCATED_MP3: ffprobe format bitrate estimates are invalid when the first 20MB of a longer MP3 are downloaded. Stream bitrate not measured."
+      "preview_bitrate_status": "NOT_MEASURABLE_FROM_TRUNCATED_MP3: ffprobe format bitrate estimates are invalid when the first 20MB of a longer MP3 are downloaded. Stream bitrate not measured.",
+      "production_id": "light-rain-real"
     },
     {
       "plan_id": "NEW-02",
@@ -60,8 +61,8 @@
       "source_duration_seconds": 3390.38,
       "target_mean_dbfs": -28,
       "notes": "Recorded inside a tin-roof garden shed. Real metallic roof impacts, 10 contiguous minutes from first part of much longer recording.",
-      "review_status": "PENDING_OWNER_LISTENING",
-      "publication_status": "REVIEW_ONLY_NOT_IN_PRODUCTION",
+      "review_status": "APPROVED_BY_OWNER_2026-11-08",
+      "publication_status": "PROMOTED_TO_PRODUCTION_MP3_BYTE_IDENTICAL",
       "downloaded_preview_codec": "mp3",
       "downloaded_preview_bitrate_kbps": null,
       "downloaded_preview_duration_seconds": 3390.376,
@@ -93,7 +94,8 @@
         "LARGE_CREST_FACTOR_REQUIRES_OWNER_LISTENING",
         "SOURCE_PREVIEW_RANGE_TRUNCATED_VERIFY_HIGH_QUALITY_ORIGINAL"
       ],
-      "preview_bitrate_status": "NOT_MEASURABLE_FROM_TRUNCATED_MP3: ffprobe format bitrate estimates are invalid when the first 20MB of a longer MP3 are downloaded. Stream bitrate not measured."
+      "preview_bitrate_status": "NOT_MEASURABLE_FROM_TRUNCATED_MP3: ffprobe format bitrate estimates are invalid when the first 20MB of a longer MP3 are downloaded. Stream bitrate not measured.",
+      "production_id": "rain-tin-roof-real"
     },
     {
       "plan_id": "NEW-06",
@@ -106,8 +108,8 @@
       "source_duration_seconds": 151.353,
       "target_mean_dbfs": -33,
       "notes": "Rural stereo recording of distant thunder. Its ~151 seconds of source texture repeat with a 5-second crossfade to make a 10-minute audition; thunder events therefore recur, NOT 10 independent minutes.",
-      "review_status": "PENDING_OWNER_LISTENING",
-      "publication_status": "REVIEW_ONLY_NOT_IN_PRODUCTION",
+      "review_status": "APPROVED_BY_OWNER_2026-11-08",
+      "publication_status": "PROMOTED_TO_PRODUCTION_MP3_BYTE_IDENTICAL",
       "downloaded_preview_codec": "mp3",
       "downloaded_preview_bitrate_kbps": 184.53,
       "downloaded_preview_duration_seconds": 151.353,
@@ -137,9 +139,11 @@
       "audio_review_flags": [
         "THUNDER_EVENTS_REPEAT_APPROX_5_TIMES",
         "OWNER_LISTEN_FOR_DISTRACTING_REPETITION"
-      ]
+      ],
+      "production_id": "distant-thunder-real"
     }
   ],
   "review_note": "Technical file QA PASS is not approval of comfort, acoustic distinctiveness, or final lossless production quality. Tin Roof is ~-48.9 dBFS mean, materially quieter than other samples, and must be listened to before release.",
-  "technical_status": "BUILT_FOR_OWNER_REVIEW_WITH_AUDIO_WARNING"
+  "technical_status": "BUILT_FOR_OWNER_REVIEW_WITH_AUDIO_WARNING",
+  "qa_scope": "Owner approved the three MP3s for listening. Post-release locked-screen HLS on a physical iPhone is a separate transport check; new track pages are noindex."
 }

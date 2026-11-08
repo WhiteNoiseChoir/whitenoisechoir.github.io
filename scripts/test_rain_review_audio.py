@@ -5,7 +5,7 @@ from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
 folder=ROOT/"signature/rain-review"
 manifest=json.loads((folder/"manifest.json").read_text(encoding="utf-8"))
-assert manifest["status"]=="REVIEW_ONLY_PENDING_OWNER"
+assert manifest["status"]=="OWNER_APPROVED_3_PROMOTED_TO_PRODUCTION"
 assert len(manifest["tracks"])==3
 expected={"light-rain-review":"NEW-01","rain-tin-roof-review":"NEW-02","distant-thunder-review":"NEW-06"}
 assert {r["id"] for r in manifest["tracks"]}==set(expected)
@@ -28,8 +28,8 @@ def decode(p,offset,seconds):
 for row in manifest["tracks"]:
  ident=row["id"];path=folder/(ident+".mp3")
  assert row["plan_id"]==expected[ident]
- assert row["review_status"]=="PENDING_OWNER_LISTENING"
- assert row["publication_status"]=="REVIEW_ONLY_NOT_IN_PRODUCTION"
+ assert row["review_status"]=="APPROVED_BY_OWNER_2026-11-08"
+ assert row["publication_status"]=="PROMOTED_TO_PRODUCTION_MP3_BYTE_IDENTICAL"
  assert row["technical_status"]=="PASS"
  assert row["source_type"]=="CC0-1.0"
  assert row["real_audio_verified"] is True
@@ -55,12 +55,12 @@ for row in manifest["tracks"]:
  if ident=="distant-thunder-review":
   assert row["repetitions_approx"]>=4
   assert row["independent_source_seconds"]<160
- print("REVIEW_AUDIO_PASS",json.dumps({"id":ident,"seconds":round(dur,3),"bitrate_kbps":round(bit,1),"bytes":path.stat().st_size,"mean_dbfs":row["mean_dbfs"],"peak_dbfs":row["peak_dbfs"],"status":"PENDING_OWNER_LISTENING"}),flush=True)
+ print("REVIEW_AUDIO_PASS",json.dumps({"id":ident,"seconds":round(dur,3),"bitrate_kbps":round(bit,1),"bytes":path.stat().st_size,"mean_dbfs":row["mean_dbfs"],"peak_dbfs":row["peak_dbfs"],"status":"APPROVED_BY_OWNER_2026-11-08"}),flush=True)
 c=json.loads((ROOT/"catalog/library.json").read_text())
-assert len(c["sounds"])==22
+assert len(c["sounds"])==25
 assert not any(r["id"] in {x["id"] for x in c["sounds"]} for r in manifest["tracks"])
 assert len(json.loads((ROOT/"catalog/planned-sounds.json").read_text())["planned"])==70
 sitemap=(ROOT/"sitemap.xml").read_text()
 assert sitemap.count("<loc>")==18
 assert "/signature/rain-review/" not in sitemap
-print("RAIN_REVIEW_AUDIO_QA_PASS: 3 files and 22-source production index protected",flush=True)
+print("RAIN_REVIEW_AUDIO_QA_PASS: 3 files byte-identical to promoted production MP3s; 25-source production index preserved",flush=True)
