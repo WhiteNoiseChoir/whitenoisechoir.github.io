@@ -1,0 +1,73 @@
+name: Build Extended Synthetic Ambient Masters (12 tracks)
+on:
+  push:
+    branches: [main]
+    paths:
+      - scripts/build_extended_dsp.py
+      - .github/workflows/extended_dsp.yml
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: whitenoisechoir-extended-dsp-batch-03
+  cancel-in-progress: false
+jobs:
+  build-and-verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install DSP and MP3 codecs
+        run: |
+          python -m pip install --disable-pip-version-check numpy scipy
+          sudo apt-get update -qq
+          sudo apt-get install -y ffmpeg
+      - name: Compile builder
+        run: python -m py_compile scripts/build_extended_dsp.py
+      - name: Render 12 original 10-minute synthetic tracks and validate final MP3
+        run: python -u scripts/build_extended_dsp.py
+      - name: Independent QA manifest inventory and hash audit
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import json,hashlib
+          data=json.loads(Path('audio/extended-dsp-manifest.json').read_text())
+          expected={'blue-noise','violet-noise','soft-white-noise','deep-brown-noise',
+                    'warm-pink-noise','mid-noise','low-rumble','desk-fan-synth',
+                    'air-conditioner-synth','cabin-hum-synth','wind-synth','shower-synth'}
+          assert data['track_count']==12
+          assert {x['id'] for x in data['tracks']}==expected
+          for x in data['tracks']:
+              f=Path(x['file']); q=x['qa']
+              assert f.exists() and f.stat().st_size>10_000_000,f
+              assert hashlib.sha256(f.read_bytes()).hexdigest()==x['file_sha256'],f
+              assert q['technical_status']=='PASS' and not q['flags'],(f,q)
+              assert 599.8<=q['duration_seconds']<=600.2,(f,q)
+              assert q['channels']==2 and q['sample_rate']==44100 and q['bitrate_kbps']==192,q
+              assert q['true_peak_dbtp']<=-1.5,q
+              print(x['id'],'PASS',q['rms_dbfs'],q['integrated_loudness_lufs'],q['spectral_slope_db_per_decade'])
+          print('PASS: twelve unique original extended synthetic masters')
+          PY
+      - name: Publish exactly 12 MP3 tracks and signed quality manifest
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          tracks=json.loads(Path('audio/extended-dsp-manifest.json').read_text())['tracks']
+          with open('/tmp/publish-extended-synth-paths.txt','w') as f:
+              for t in tracks:f.write(t['file']+'\n')
+              f.write('audio/extended-dsp-manifest.json\n')
+          PY
+          git add --pathspec-from-file=/tmp/publish-extended-synth-paths.txt
+          if git diff --cached --quiet; then
+            echo '12 master files already current'
+          else
+            git commit -m "Publish twelve distinct 10-minute synthetic ambience masters after QA"
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
