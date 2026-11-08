@@ -1,0 +1,19 @@
+name: Research CC0 Long Field Source Previews
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/probe_long_cc0_sources.py'
+      - '.github/workflows/long_cc0_probe.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  inspect-third-party-source-previews:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - name: Probe public previews without modifying production
+        run: |
+          python3 scripts/probe_long_cc0_sources.py
