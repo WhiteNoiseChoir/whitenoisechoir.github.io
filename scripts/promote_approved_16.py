@@ -221,12 +221,6 @@ def update_future_hls_builder():
         s=s.replace(old,new)
     s=s.replace("Expected exactly 21 original player sound sources","Expected exactly 22 player sound sources")
     p.write_text(s,encoding="utf-8")
-    w=Path(".github/workflows/continuous_hls.yml")
-    t=w.read_text(encoding="utf-8")
-    old="expected=54 if v['id'] in {'box-fan-real','heavy-rain-real','ocean-waves-real','waterfall-real'} else 600"
-    new="expected=next((r['derived_duration_seconds'] for r in json.loads(Path('audio/cc0-sources.json').read_text()) if r['id']==v['id']),600)"
-    require(old in t,"HLS workflow expected-length assertion missing")
-    w.write_text(t.replace(old,new),encoding="utf-8")
 
 def main():
     registry=load("audio/cc0-sources.json")
