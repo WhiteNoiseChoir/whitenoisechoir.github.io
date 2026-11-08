@@ -28,10 +28,10 @@ mark{background:#3b694e;color:#e9faed;border-radius:8px;padding:4px 9px}
 </style></head>
 <body>
 <a href="/sounds/rain/">← Rain &amp; Thunder</a>
-<h1>Nghe thử 3 âm mưa &amp; sấm đầu tiên</h1>
-<p><mark>Review only · chưa lên production</mark></p>
+<h1>Nghe thử 3 master mưa &amp; sấm dài 10 phút</h1>
+<p><mark>Master preview 10 phút · CHƯA duyệt production</mark></p>
 <p>Ba bản nghe thử được dựng từ <strong>ba bản ghi âm CC0 độc lập</strong>, không tái sử dụng Heavy Rain hay Rain on Window bằng cách đổi tên. Mỗi bản thử nghiệm dài khoảng 10 phút và lặp tới khi bạn bấm dừng.</p>
-<div class="notice"><strong>Lưu ý chất lượng:</strong> bản thử nghiệm lấy từ public HQ preview của Freesound (MP3 đã nén). MP3 đầu ra 192 kbps là <strong>chuyển mã, không nâng cấp chất lượng gốc</strong>. Để duyệt master production cuối cùng, cần kiểm lại bản nguồn gốc chất lượng cao, thông số, điểm nối, sự dễ chịu khi nghe lâu và iPhone. Bản sấm xa lặp lại các sự kiện từ một nguồn chỉ khoảng 2 phút 31 giây.</div>
+<div class="notice"><strong>Lưu ý chất lượng:</strong> bản thử nghiệm lấy từ public HQ preview của Freesound (MP3 đã nén). MP3 đầu ra 192 kbps là <strong>chuyển mã, không nâng cấp chất lượng gốc</strong>. Để duyệt master production cuối cùng, cần kiểm lại bản nguồn gốc chất lượng cao, thông số, điểm nối, sự dễ chịu khi nghe lâu và iPhone. Bản sấm xa lặp lại các sự kiện từ một nguồn chỉ khoảng 2 phút 31 giây. Tin Roof hiện được gắn cờ vì mức âm trung bình thấp; không tự tăng âm lượng khi chuyển bản.</div>
 <section class="controls" aria-label="Player kiểm thử độc lập">
 <strong id="now">Chọn một âm để bắt đầu</strong>
 <audio id="player" controls loop preload="metadata" playsinline aria-label="Phát bản master nghe thử"></audio>
@@ -52,6 +52,7 @@ mark{background:#3b694e;color:#e9faed;border-radius:8px;padding:4px 9px}
 <h2>02 — Rain on Tin Roof / Mưa trên mái tôn</h2>
 <p>Đặc trưng âm là tiếng nước tác động trên mái kim loại của một căn chòi vườn. Bản gốc dài hơn 56 phút, tách biệt rõ về bề mặt và tiếng va chạm so với Rain on Window.</p>
 <p class="meta">CC0 · archerjosiah · nguồn dài 56:30 · bản preview nén</p>
+<p class="notice"><strong>Cảnh báo QA:</strong> Bản Rain on Tin Roof có mức trung bình khoảng <strong>−48,9 dBFS</strong> trong khi đỉnh khoảng −8 dBFS; nó có thể nghe rất nhỏ nhưng vẫn có tiếng va đập mạnh. Đây là bản cần nghe kiểm định / cân bằng lại trước khi dùng production. Hãy tăng âm lượng từ từ và giảm về mức thấp trước khi đổi sang bản khác.</p>
 <div class="buttons"><button type="button" data-select="rain-tin-roof-review" aria-pressed="false">▶ Nghe Rain on Tin Roof</button><a href="https://freesound.org/people/archerjosiah/sounds/843483/" target="_blank" rel="noopener noreferrer">Nguồn CC0 ↗</a></div>
 </section>
 <section class="card">
@@ -96,7 +97,7 @@ player.addEventListener("loadedmetadata",()=>{if(pending)near()});
 player.addEventListener("error",()=>{message.textContent="File review chưa khả dụng. Không dùng source preview chưa tải để nghiệm thu."});
 document.getElementById("save").onclick=()=>{rec[chosen]={verdict:document.getElementById("verdict").value,notes:document.getElementById("notes").value};try{localStorage.setItem(key,JSON.stringify(rec));}catch(_){}document.getElementById("saveinfo").textContent="Đã lưu tại trình duyệt này (không gửi dữ liệu đi)."};
 document.getElementById("copy").onclick=()=>{const rows=["WhiteNoiseChoir — Rain First Wave QA",...["light-rain-review","rain-tin-roof-review","distant-thunder-review"].map(id=>id+": "+(rec[id]?.verdict||"PENDING")+(rec[id]?.notes?" — "+rec[id].notes:""))];const result=rows.join("\n");if(navigator.clipboard?.writeText){navigator.clipboard.writeText(result).then(()=>document.getElementById("saveinfo").textContent="Đã sao chép báo cáo.").catch(()=>document.getElementById("saveinfo").textContent=result)}else document.getElementById("saveinfo").textContent=result};
-player.volume=.30;choose(chosen);
+player.volume=.25;choose(chosen);
 })();
 </script>
 </body></html>

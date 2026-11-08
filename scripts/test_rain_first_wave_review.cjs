@@ -9,7 +9,7 @@ const ids=["light-rain-review","rain-tin-roof-review","distant-thunder-review"];
 const expected=["NEW-01","NEW-02","NEW-06"];
 assert.match(page,/<meta name="robots" content="noindex,nofollow">/,"review hidden from indexing");
 assert.ok(page.includes("Chưa")||page.includes("chưa lên production"),"review status clearly disclosed");
-assert.ok(page.includes("Freesound")&&page.includes("128")&&page.includes("nén"),"lossy source disclosed");
+assert.ok(page.includes("Freesound")&&page.includes("192")&&page.includes("nén"),"lossy source disclosed");
 assert.ok(page.includes("Tua đến 9:55"),"quick endpoint audition");
 assert.ok(page.includes('id="copy"'),"owner can copy verdicts");
 assert.ok(!sitemap.includes("rain-review"),"no review page in sitemap");
@@ -19,6 +19,9 @@ assert.ok(!catalog.sounds.some(x=>ids.includes(x.id)),"no audition IDs in catalo
 assert.equal(planned.length,70,"planned registry untouched");
 for(const id of ids)assert.ok(page.includes('data-select="'+id+'"'),"review page has "+id);
 assert.equal(review.status,"REVIEW_ONLY_PENDING_OWNER");
+assert.equal(review.technical_status,"BUILT_FOR_OWNER_REVIEW_WITH_AUDIO_WARNING");
+assert.equal(review.tracks.find(x=>x.id==="rain-tin-roof-review").downloaded_preview_bitrate_kbps,null,"Truncated preview bitrate must not be misreported as 47 kbps");
+assert.ok(review.tracks.find(x=>x.id==="rain-tin-roof-review").audio_review_flags.includes("LOW_AVERAGE_LEVEL_MINUS_48_POINT_9_DBFS"));
 assert.equal(review.tracks.length,3);
 for(let i=0;i<ids.length;i++){
  const track=review.tracks[i];
@@ -37,6 +40,8 @@ for(let i=0;i<ids.length;i++){
  assert.ok(track.peak_dbfs<=-5.5);
  assert.ok(track.mean_dbfs>-55);
  assert.equal(track.technical_status,"PASS");
+ assert.equal(track.real_audio_verified,true);
+ assert.ok(track.audio_review_flags.length>0);
  const p=root+"/"+ids[i]+".mp3";
  assert.ok(fs.existsSync(p),"MP3 review asset "+p);
  assert.ok(fs.statSync(p).size>5_000_000,"review asset is a real 10-min sound "+p);

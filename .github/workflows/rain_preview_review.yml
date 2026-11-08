@@ -1,16 +1,11 @@
 name: Build Rain & Thunder Preview Auditions
 on:
-  push:
-    branches: ["feature/rain-first-wave-review-20261108"]
-    paths:
-      - ".github/workflows/rain_preview_review.yml"
-      - "scripts/build_rain_preview_review.py"
   workflow_dispatch:
 permissions:
   contents: write
 jobs:
   build-private-review:
-    if: github.actor != 'github-actions[bot]'
+    if: github.ref_name == 'feature/rain-first-wave-review-20261108' && github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
     timeout-minutes: 40
     steps:
@@ -42,7 +37,7 @@ jobs:
               assert x['peak_dbfs']<=-5.5
               assert x['review_status']=='PENDING_OWNER_LISTENING'
               assert x['publication_status']=='REVIEW_ONLY_NOT_IN_PRODUCTION'
-              assert x['downloaded_preview_bitrate_kbps']<=200
+              assert x['downloaded_preview_bitrate_kbps'] is None or x['downloaded_preview_bitrate_kbps']<=200
               print("QA_OK",x['id'],x['master_bytes'],x['duration_seconds'])
           PY
       - name: Commit only three noindex review MP3s and their honest provenance manifest
@@ -52,5 +47,6 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add signature/rain-review/light-rain-review.mp3 signature/rain-review/rain-tin-roof-review.mp3 signature/rain-review/distant-thunder-review.mp3 signature/rain-review/manifest.json
-          git commit -m "Review assets: three real CC0 rain/thunder preview-derived 10-minute auditions (no production)" || exit 1
+          if git diff --cached --quiet; then echo "Already generated: no asset changes"; exit 0; fi
+          git commit -m "Review assets: three real CC0 rain/thunder preview-derived 10-minute auditions (no production)"
           git push origin "HEAD:${GITHUB_REF_NAME}"
