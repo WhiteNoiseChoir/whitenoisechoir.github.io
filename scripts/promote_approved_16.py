@@ -320,6 +320,12 @@ def main():
     require("continuous-hls-v3-green-20261108" in html,"Main HLS URL version missing")
     html=html.replace("continuous-hls-v3-green-20261108",HLS_VERSION)
     home.write_text(html,encoding="utf-8")
+    # Keep legacy player smoke tests aligned with the approved HLS URL version.
+    smoke=Path("scripts/test_player_smoke.cjs")
+    smoke_source=smoke.read_text(encoding="utf-8")
+    old_version="continuous-hls-v3-green"
+    require(old_version in smoke_source,"Player smoke test URL version target absent")
+    smoke.write_text(smoke_source.replace(old_version,"continuous-hls-v4-cc0-approved"),encoding="utf-8")
 
     # Verify after staging but before GitHub workflow creates a production commit.
     for id,row in approved.items():
