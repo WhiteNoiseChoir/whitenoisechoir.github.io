@@ -22,6 +22,8 @@ on:
       - 'scripts/test_baby_browser.cjs'
       - 'scripts/test_field_sound_pages.cjs'
       - 'scripts/test_field_sound_browser.cjs'
+      - 'scripts/test_noise_colors_editorial.cjs'
+      - 'scripts/test_noise_colors_browser.cjs'
       - 'scripts/test_batch18_pages.cjs'
       - 'scripts/test_browser_navigation.cjs'
       - 'loop-check.html'
@@ -47,6 +49,7 @@ jobs:
           node scripts/test_sleep_collection.cjs
           node scripts/test_baby_collection.cjs
           node scripts/test_field_sound_pages.cjs
+          node scripts/test_noise_colors_editorial.cjs
           node scripts/test_batch18_pages.cjs
       - name: Browser navigation & persistent playback regression
         run: |
@@ -59,3 +62,4 @@ jobs:
           node scripts/test_sleep_browser.cjs
           node scripts/test_baby_browser.cjs
           node scripts/test_field_sound_browser.cjs
+          node scripts/test_noise_colors_browser.cjs
