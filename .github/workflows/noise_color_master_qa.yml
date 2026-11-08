@@ -33,6 +33,6 @@ jobs:
             sudo apt-get update -qq
             sudo apt-get install -y -qq ffmpeg
           fi
-          python3 -m pip install --disable-pip-version-check --quiet numpy
+          python3 -m pip install --disable-pip-version-check --quiet numpy scipy
           python3 scripts/test_noise_color_master.py pink-noise white-noise brown-noise
           python3 scripts/test_green_noise.py
