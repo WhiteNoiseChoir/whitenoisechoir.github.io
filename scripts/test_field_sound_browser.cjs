@@ -18,7 +18,7 @@ const cases=[
    await page.goto(BASE+"/sounds/"+c.slug+"/",{waitUntil:"domcontentloaded"});
    await page.waitForFunction(id=>!!window.WNCBridge&&!!document.querySelector('button[data-wnc-play="'+id+'"]'),c.id,{timeout:30000});
    assert.equal(await page.locator("main .field-choice").count(),4,c.slug+" has 4 A/B choices");
-   assert.equal(await page.locator('main .field-faq details').count(),4,c.slug+" has 4 FAQ details");
+   assert.equal(await page.locator('main details.field-faq').count(),4,c.slug+" has 4 FAQ details");
    assert.equal(await page.locator('audio[data-sound="'+c.id+'"]').getAttribute("controls"),null,"Enhanced player controls active");
    assert.equal(await page.evaluate(()=>window.WNCBridge.snapshot().playing),false,c.slug+" no autoplay");
    assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth+1),true,c.slug+" 390px viewport");
