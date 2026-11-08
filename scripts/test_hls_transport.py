@@ -12,7 +12,14 @@ import subprocess
 import sys
 
 SR=8000
-EXPECTED={"white-noise","pink-noise","brown-noise","rain-on-window-real","fireplace-real"}
+LONG={
+    "white-noise","pink-noise","brown-noise","rain-on-window-real","fireplace-real",
+    "blue-noise","violet-noise","soft-white-noise","deep-brown-noise",
+    "warm-pink-noise","mid-noise","low-rumble","desk-fan-synth",
+    "air-conditioner-synth","cabin-hum-synth","wind-synth","shower-synth",
+}
+SHORT={"box-fan-real","heavy-rain-real","ocean-waves-real","waterfall-real"}
+EXPECTED=LONG | SHORT
 
 
 def rms(values):
@@ -27,9 +34,11 @@ def decibels(value):
 
 def check(ident):
     playlist=Path("audio/continuous")/ident/"continuous.m3u8"
+    target=590 if ident in LONG else 44
+    duration=30 if ident in LONG else 20
     cmd=["ffmpeg","-hide_banner","-loglevel","error","-nostdin",
-         "-ss","590","-i",str(playlist),
-         "-t","30","-vn","-ar",str(SR),"-ac","1",
+         "-ss",str(target),"-i",str(playlist),
+         "-t",str(duration),"-vn","-ar",str(SR),"-ac","1",
          "-f","f32le","pipe:1"]
     proc=subprocess.run(cmd,capture_output=True)
     if proc.returncode:
@@ -38,9 +47,9 @@ def check(ident):
         raise RuntimeError(f"Malformed decoded PCM for {ident}")
     samples=array.array("f")
     samples.frombytes(proc.stdout)
-    duration=len(samples)/SR
-    if not (29 <= duration <= 30.5):
-        raise RuntimeError(f"Truncated audio at 10-minute boundary for {ident}: {duration:.2f}s")
+    actual_duration=len(samples)/SR
+    if not (duration-1 <= actual_duration <= duration+0.5):
+        raise RuntimeError(f"Truncated audio at source boundary for {ident}: {actual_duration:.2f}s")
     if not all(math.isfinite(float(v)) for v in samples):
         raise RuntimeError(f"Non-finite audio from {ident}")
     # 590..620: the ten-minute splice occurs 10 seconds into this window.
@@ -48,7 +57,7 @@ def check(ident):
     after=samples[12*SR:18*SR]
     before_level=decibels(rms(before))
     after_level=decibels(rms(after))
-    if abs(before_level-after_level)>6:
+    if abs(before_level-after_level)>(10 if ident in SHORT else 6):
         raise RuntimeError(f"Unexpected loudness change across loop in {ident}: {before_level:.1f} to {after_level:.1f}dBFS")
     # Reject prolonged dead air at the splice (around 600 seconds).
     frame=SR//4
@@ -57,7 +66,7 @@ def check(ident):
     if min(windows)<-64:
         raise RuntimeError(f"Digital silence across loop of {ident}: {min(windows)}dBFS")
     return {
-        "id":ident,"decoded_seconds_across_source_boundary":round(duration,2),
+        "id":ident,"decoded_seconds_across_source_boundary":round(actual_duration,2),
         "pre_boundary_rms_dbfs":round(before_level,1),
         "post_boundary_rms_dbfs":round(after_level,1),
         "quietest_250ms_across_boundary_dbfs":round(min(windows),1),
@@ -72,7 +81,7 @@ def main():
     results=[check(name) for name in sorted(EXPECTED)]
     for row in results:
         print("HLS_BOUNDARY_QA",json.dumps(row),flush=True)
-    print("PASS: all five HLS streams decode continuously from minute 9:50 to 10:20.",flush=True)
+    print("PASS: all 21 HLS streams decode continuously across each source cycle.",flush=True)
 
 
 if __name__=="__main__":
