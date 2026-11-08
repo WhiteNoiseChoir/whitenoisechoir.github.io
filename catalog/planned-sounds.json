@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "revision": "rain-first-wave-production-v1-20261108",
+  "revision": "2026-11-09-wave2-owner-approved",
   "existing_source_of_truth": "catalog/library.json + audio manifests (not duplicated here)",
   "disclosure": "All NEW-xx IDs are project planning IDs. NEW-01, NEW-02, NEW-06 have been promoted to owner-approved audio production as separate IDs and NOINDEX detail pages; remaining 67 are nonplayable concepts. Original lossy CC0 preview provenance must be disclosed, not labeled as lossless.",
   "planned": [
@@ -61,15 +61,21 @@
       "title": "Rain on Tent",
       "requested_source_type": "Field recording",
       "intent": "Relaxation",
-      "readiness": "planned",
-      "playable": false,
-      "production_id": null,
-      "audio_path": null,
-      "license": null,
-      "independent_seconds": null,
-      "qa": null,
-      "owner_listening_approval": null,
-      "seo_page": null
+      "readiness": "released_audio_seo_pending",
+      "playable": true,
+      "production_id": "rain-on-tent-real",
+      "audio_path": "/audio/rain-on-tent-real.mp3",
+      "license": "CC0-1.0",
+      "independent_seconds": 125,
+      "qa": {
+        "technical_status": "PASS",
+        "master_sha256": "5617e98ca487b42798e5af48bf4674ac8100dcc246eeb1ad392a3a176662d61c",
+        "lossy_preview": true,
+        "source_type": "CC0-1.0"
+      },
+      "owner_listening_approval": "APPROVED_BY_OWNER_2026-11-09",
+      "seo_page": "/sounds/rain-on-tent/",
+      "seo_status": "noindex,follow"
     },
     {
       "plan_id": "NEW-04",
@@ -78,15 +84,21 @@
       "title": "Rain on Car Roof",
       "requested_source_type": "Field recording",
       "intent": "Adult sleep",
-      "readiness": "planned",
-      "playable": false,
-      "production_id": null,
-      "audio_path": null,
-      "license": null,
-      "independent_seconds": null,
-      "qa": null,
-      "owner_listening_approval": null,
-      "seo_page": null
+      "readiness": "released_audio_seo_pending",
+      "playable": true,
+      "production_id": "rain-car-roof-real",
+      "audio_path": "/audio/rain-car-roof-real.mp3",
+      "license": "CC0-1.0",
+      "independent_seconds": 231,
+      "qa": {
+        "technical_status": "PASS",
+        "master_sha256": "ff4f90c58cd3c8e2005aec43a8215b76e242e4bdbc13c19594026cc274c36748",
+        "lossy_preview": true,
+        "source_type": "CC0-1.0"
+      },
+      "owner_listening_approval": "APPROVED_BY_OWNER_2026-11-09",
+      "seo_page": "/sounds/rain-on-car-roof/",
+      "seo_status": "noindex,follow"
     },
     {
       "plan_id": "NEW-05",
@@ -137,15 +149,21 @@
       "title": "Rolling Thunder",
       "requested_source_type": "Field recording",
       "intent": "Relaxation",
-      "readiness": "planned",
-      "playable": false,
-      "production_id": null,
-      "audio_path": null,
-      "license": null,
-      "independent_seconds": null,
-      "qa": null,
-      "owner_listening_approval": null,
-      "seo_page": null
+      "readiness": "released_audio_seo_pending",
+      "playable": true,
+      "production_id": "rolling-thunder-real",
+      "audio_path": "/audio/rolling-thunder-real.mp3",
+      "license": "CC0-1.0",
+      "independent_seconds": 605,
+      "qa": {
+        "technical_status": "PASS",
+        "master_sha256": "80aa0f4ff2366c271c192dbe88b7d9df84edb8a0adce44dc18f96bec77d81eca",
+        "lossy_preview": true,
+        "source_type": "CC0-1.0"
+      },
+      "owner_listening_approval": "APPROVED_BY_OWNER_2026-11-09",
+      "seo_page": "/sounds/rolling-thunder/",
+      "seo_status": "noindex,follow"
     },
     {
       "plan_id": "NEW-08",

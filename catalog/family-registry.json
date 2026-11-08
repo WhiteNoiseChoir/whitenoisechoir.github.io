@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "revision": "rain-first-wave-production-v1-20261108",
+  "revision": "2026-11-09-wave2-owner-approved",
   "source": "User supplied 2026-11-08 full sound library blueprint, reconciled to live production commit 7c52701",
   "count_policy": {
     "existing": 25,
@@ -57,13 +57,13 @@
         "heavy-rain-real",
         "light-rain-real",
         "rain-tin-roof-real",
-        "distant-thunder-real"
+        "distant-thunder-real",
+        "rain-on-tent-real",
+        "rain-car-roof-real",
+        "rolling-thunder-real"
       ],
       "planned_ids": [
-        "NEW-03",
-        "NEW-04",
         "NEW-05",
-        "NEW-07",
         "NEW-25",
         "NEW-26",
         "NEW-27",

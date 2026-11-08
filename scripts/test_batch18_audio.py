@@ -17,7 +17,7 @@ green=load("audio/green-noise-master-manifest.json")
 hls=load("audio/continuous/manifest.json")
 manifest={x["id"]:x for x in extended["tracks"]+colored["tracks"]+natural["masters"]+[green]}
 transport={x["id"]:x for x in hls["records"]}
-assert len(transport)==25
+assert len(transport)==28
 assert len(batch["sound_ids"])==18 and len(set(batch["sound_ids"]))==18
 def execute(cmd):
     p=subprocess.run(cmd,capture_output=True,check=False)

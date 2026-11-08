@@ -3,15 +3,15 @@
 const fs=require("node:fs"),vm=require("node:vm"),assert=require("node:assert/strict");
 const file=p=>fs.readFileSync(p,"utf8");
 const catalog=JSON.parse(file("catalog/library.json")),sounds=catalog.sounds,cats=catalog.categories,collections=catalog.collec;
-assert.equal(sounds.length,25,"22 sound IDs retained");
+assert.equal(sounds.length,28,"22 sound IDs retained");
 assert.equal(cats.length,12,"12 category hubs");
 assert.equal(collections.length,7,"7 collections retained");
-assert.equal(new Set(sounds.map(s=>s.id)).size,25,"unique IDs");
-assert.equal(new Set(sounds.map(s=>s.slug)).size,25,"unique slugs");
+assert.equal(new Set(sounds.map(s=>s.id)).size,28,"unique IDs");
+assert.equal(new Set(sounds.map(s=>s.slug)).size,28,"unique slugs");
 const editoriallyIndexable=new Set(["heavy-rain-real","waterfall-real","blue-noise","violet-noise","shower-synth"]);
 const indexableSound=s=>s.status==="approved"||s.status==="arranged"||editoriallyIndexable.has(s.id);
 const pages=["index.html","sounds/index.html","collections/index.html",...cats.map(c=>"sounds/"+c.slug+"/index.html"),...sounds.map(s=>"sounds/"+s.slug+"/index.html"),...collections.map(c=>"collections/"+c.slug+"/index.html"),"soundscapes/index.html","audio-tools/index.html"];
-assert.equal(pages.length,49,"expected homepage + 45 library pages");
+assert.equal(pages.length,52,"expected homepage + 45 library pages");
 for(const path of pages){
  const html=file(path);
  assert.match(html,/<title>.+<\/title>/,"title: "+path);
@@ -45,10 +45,10 @@ assert.match(home,/function playTracks\(ids,name\)/,"original stream engine pres
 assert.match(file("assets/persistent-router.js"),/history\.pushState/);
 assert.match(file("assets/persistent-router.js"),/new DOMParser/);
 assert.match(file("assets/persistent-router.js"),/replaceWith\(live\)/);
-const manifest=JSON.parse(file("audio/continuous/manifest.json"));assert.equal(manifest.applies_to.length,25);
+const manifest=JSON.parse(file("audio/continuous/manifest.json"));assert.equal(manifest.applies_to.length,28);
 for(const s of sounds)assert.ok(manifest.applies_to.includes(s.id),"HLS source preserved: "+s.id);
 assert.ok(file("sounds/green-noise/index.html").includes('name="robots" content="noindex,follow"'),"unreviewed Green Noise must not index");
 assert.ok(!locs.includes("/sounds/green-noise/"),"unreviewed Green Noise absent from sitemap");
 assert.ok(!file("collections/relaxing-sounds/index.html").includes('name="robots" content="noindex'),"finished relaxation page must be indexable");
 assert.ok(locs.includes("/collections/relaxing-sounds/"),"finished relaxation page must be in sitemap");
-console.log("PASS: 49 page routing shell, 25 playable sources, 12 hubs, 7 collections, provenance, AudioObject, noindex and sitemap checks");
+console.log("PASS: 49 page routing shell, 28 playable sources, 12 hubs, 7 collections, provenance, AudioObject, noindex and sitemap checks");

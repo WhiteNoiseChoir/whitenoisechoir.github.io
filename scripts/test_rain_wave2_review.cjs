@@ -13,8 +13,8 @@ const expected=[
 ];
 assert.equal(manifest.status,"REVIEW_ONLY_PENDING_OWNER");
 assert.equal(manifest.tracks.length,3);
-assert.equal(catalog.sounds.length,25);
-assert.equal(hls.records.length,25);
+assert.equal(catalog.sounds.length,28);
+assert.equal(hls.records.length,28);
 assert.equal((read("sitemap.xml").match(/<loc>/g)||[]).length,18);
 assert.ok(html.includes('name="robots" content="noindex,nofollow"'));
 assert.ok(html.includes("Tua tới 9:55")&&html.includes('id="copy"'));
@@ -47,11 +47,11 @@ for(let i=0;i<expected.length;i++){
  assert.ok(!oldIds.has(id));
  assert.ok(!hls.applies_to.includes(id));
  const item=plans.find(x=>x.plan_id===planId);
- assert.equal(item.readiness,"planned");
- assert.equal(item.playable,false);
- assert.equal(item.production_id,null);
- assert.equal(item.owner_listening_approval,null);
- assert.equal(item.seo_page,null);
+ assert.equal(item.readiness,"released_audio_seo_pending");
+ assert.equal(item.playable,true);
+ assert.equal(item.production_id,["rain-on-tent-real","rain-car-roof-real","rolling-thunder-real"][i]);
+ assert.equal(item.owner_listening_approval,"APPROVED_BY_OWNER_2026-11-09");
+ assert.ok(item.seo_page.startsWith("/sounds/"));
 }
 assert.ok(manifest.media_quality_policy.toLowerCase().includes("lossy"));
 console.log("RAIN_WAVE2_REVIEW_QA_PASS: 3 actual independent CC0 preview-derived 600s MP3 auditions, 25 production IDs untouched, noindex review room, true car-mono source disclosed");
