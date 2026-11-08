@@ -101,6 +101,22 @@ const flush=()=>new Promise(resolve=>setImmediate(resolve));
     assert.ok(audio.src.includes(id+".mp3?v=color-master-v1-20261107"),"Must bust stale 72s source cache for "+label);
     assert.ok(audio.loop,"Native loop remains enabled for "+label);
   }
+  const synthetic=[
+    ["Blue Noise","blue-noise"],["Violet Noise","violet-noise"],
+    ["Soft White Noise","soft-white-noise"],["Deep Brown Noise","deep-brown-noise"],
+    ["Warm Pink Noise","warm-pink-noise"],["Neutral Mid Noise","mid-noise"],
+    ["Low Rumble","low-rumble"],["Desk Fan (Synthetic)","desk-fan-synth"],
+    ["Air Conditioner (Synthetic)","air-conditioner-synth"],
+    ["Airplane Cabin (Synthetic)","cabin-hum-synth"],
+    ["Gentle Wind (Synthetic)","wind-synth"],["Shower (Synthetic)","shower-synth"],
+  ];
+  for(const [label,id] of synthetic){
+    card(label).children[3].onclick();
+    await flush();
+    const player=audioInstances[audioInstances.length-1];
+    assert.ok(player.src.includes(id+".mp3?v=extended-dsp-v1-20261108"),"New master MP3 cache version is required for "+label);
+    assert.ok(player.loop,label+" should retain native fallback looping");
+  }
   // Simulate a native HLS-capable iPhone: the media playlist should not end
   // at the 600-second MP3 source boundary, even with the page hidden.
   emulateNativeHLS=true;
@@ -108,14 +124,19 @@ const flush=()=>new Promise(resolve=>setImmediate(resolve));
   card("White Noise").children[3].onclick();
   await flush();
   let stream=audioInstances[audioInstances.length-1];
-  assert.ok(stream.src.includes("audio/continuous/white-noise/continuous.m3u8?v=continuous-hls-v1"),stream.src);
+  assert.ok(stream.src.includes("audio/continuous/white-noise/continuous.m3u8?v=continuous-hls-v2"),stream.src);
   assert.ok(stream.loop,"HLS playlist end retains native loop for exceptionally long sessions");
   stream.currentTime=600;
   document.hidden=true;stream.handlers.timeupdate();
   assert.equal(stream.paused,false,"At minute 10 and with timer off, stream must still be playing");
   assert.equal(get("timerInfo").textContent,"Timer off · continuous playback");
   document.hidden=false;
-  for(const name of ["Pink Noise","Brown Noise","Rain on Window (Real Recording)","Fireplace (Real Recording)"]){
+  for(const name of [
+    "Pink Noise","Brown Noise","Rain on Window (Real Recording)","Fireplace (Real Recording)",
+    "Box Fan (Real Recording)","Heavy Rain (Real Recording)",
+    "Ocean Waves (Real Recording)","Waterfall (Real Recording)",
+    ...synthetic.map(x=>x[0])
+  ]){
     card(name).children[3].onclick();
     await flush();
     const x=audioInstances[audioInstances.length-1];
@@ -131,5 +152,5 @@ const flush=()=>new Promise(resolve=>setImmediate(resolve));
   assert.ok(mp3fallback.src.includes("white-noise.mp3"),"Failed HLS must fall back to MP3");
   assert.ok(mp3fallback.loop,"Fallback MP3 should loop");
   blockNativeHLS=false;
-  console.log("PASS: 21 sounds, 45 mixes, 10-minute HLS source boundaries, lock-screen-safe native streams, MP3 fallback, timer and mixer");
+  console.log("PASS: 21 sound IDs, 45 mixes, 12 ten-minute DSP MP3 cache versions, 21 native HLS paths, fallback MP3, timer and mixer");
 })().catch(e=>{console.error(e);process.exit(1)});
