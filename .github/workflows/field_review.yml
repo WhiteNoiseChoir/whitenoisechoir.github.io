@@ -1,0 +1,57 @@
+name: Build Four Full-Source CC0 Field Auditions
+on:
+  push:
+    branches: [main]
+    paths:
+      - scripts/build_field_review.py
+      - .github/workflows/field_review.yml
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: whitenoisechoir-field-auditions
+  cancel-in-progress: false
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 24
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install codec and Python dependencies
+        run: |
+          python -m pip install --disable-pip-version-check numpy
+          sudo apt-get update -qq
+          sudo apt-get install -y ffmpeg
+      - name: Build and verify four original-source recordings
+        run: |
+          python -m py_compile scripts/build_field_review.py
+          python -u scripts/build_field_review.py
+      - name: Verify output files, checksums and no unapproved production mutations
+        run: |
+          python - <<'PY'
+          import hashlib,json
+          from pathlib import Path
+          rows=json.loads(Path('signature/field-review/manifest.json').read_text())['records']
+          assert {x['id'] for x in rows}=={'box-fan-real','heavy-rain-real','ocean-waves-real','waterfall-real'}
+          for row in rows:
+              p=Path(row['preview_file'])
+              assert p.is_file() and p.stat().st_size>500_000,p
+              assert hashlib.sha256(p.read_bytes()).hexdigest()==row['sha256']
+              assert row['qa']['status']=='PASS' and not row['qa']['human_approved']
+          print('PASS: four real recording candidates, unapproved, isolated under signature/field-review')
+          PY
+      - name: Commit audition assets only
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add signature/field-review/
+          if git diff --cached --quiet; then
+            echo 'Audition files already current'
+          else
+            git commit -m "Stage longer original CC0 field recordings for listening approval only"
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
