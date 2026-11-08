@@ -1,0 +1,52 @@
+name: Rain Wave 2 Production HLS Builder
+on:
+  push:
+    branches: ["feature/rain-wave2-production-20261109"]
+    paths:
+      - "scripts/build_rain_wave2_production_hls.py"
+      - ".github/workflows/rain_wave2_production_build.yml"
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  build-wave2-hls:
+    if: github.ref_name == 'feature/rain-wave2-production-20261109' && github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with: {persist-credentials: true}
+      - name: Build only three owner-approved 7-day HLS streams and rebuild library list
+        run: |
+          command -v ffmpeg && command -v ffprobe
+          python3 scripts/build_rain_wave2_production_hls.py
+          node scripts/build_sound_library_foundation.cjs --write
+      - name: Run integrity, SEO, source attribution and previous-regression QA
+        run: |
+          node scripts/test_rain_wave2_production.cjs
+          node scripts/test_rain_production_release.cjs
+          node scripts/test_rain_wave2_review.cjs
+          node scripts/test_library_structure.cjs
+          node scripts/test_library_foundation.cjs
+          node scripts/build_sound_library_foundation.cjs
+          node scripts/test_player_smoke.cjs
+          node scripts/test_batch18_pages.cjs
+          node scripts/test_noise_colors_editorial.cjs
+          node scripts/test_device_environment_editorial.cjs
+          node scripts/test_field_sound_pages.cjs
+          node scripts/test_rain_first_wave_review.cjs
+      - name: Validate actual AAC transport across the 10-minute boundaries
+        run: |
+          python3 scripts/test_hls_transport.py
+          python3 scripts/test_batch18_audio.py
+      - name: Commit generated assets only after PASS
+        env:
+          BRANCH: ${{ github.ref_name }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add sounds/index.html audio/continuous/manifest.json
+          git add audio/continuous/rain-on-tent-real/ audio/continuous/rain-car-roof-real/ audio/continuous/rolling-thunder-real/
+          if git diff --cached --quiet; then echo "Nothing generated"; exit 0; fi
+          git commit -m "Rain Wave2: QA-passed 7-day HLS and 28-source sound library"
+          git push origin "HEAD:${BRANCH}"
