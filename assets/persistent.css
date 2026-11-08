@@ -199,3 +199,31 @@
 .field-related p.field-disclosure{color:#b7c5b8;font-size:12px}
 @media(max-width:600px){.field-faq-grid{grid-template-columns:1fr}}
 @media(max-width:430px){.field-choice-grid{grid-template-columns:1fr}.field-choice{min-height:0}.field-audio-hero{gap:7px}.field-audio-hero>span{padding:7px 10px}.field-explain,.field-comparison,.field-faq-box{padding:17px}}
+
+/* Measured noise-color sound pages: accessible static spectrum, not SPL */
+.noise-spectrum-panel,.noise-distinction{margin:28px 0;padding:clamp(16px,3vw,26px);background:linear-gradient(160deg,#172e2d,#112320);border:1px solid #406756;border-radius:17px}
+.noise-spectrum-panel h2,.noise-distinction h2{font-size:clamp(23px,3.1vw,32px);line-height:1.25;letter-spacing:-.03em;margin:13px 0 12px}
+.noise-spectrum-intro,.noise-spectrum-foot,.noise-distinction p{font-size:13px;line-height:1.78;color:#c0d8c7}
+.noise-band-chart{margin:21px 0 17px;border:1px solid #3b5b4d;border-radius:12px;background:#10241f;padding:14px 16px}
+.noise-band-row{display:grid;grid-template-columns:120px minmax(30px,1fr) 88px;gap:11px;align-items:center;min-height:40px}
+.noise-band-row+.noise-band-row{border-top:1px solid #294939}
+.noise-band-label{font-size:12px;color:#cee6d2;white-space:nowrap;font-variant-numeric:tabular-nums}
+.noise-band-meter{display:block;height:11px;overflow:hidden;border-radius:10px;background:#283e35}
+.noise-band-fill{display:block;height:100%;border-radius:10px;background:linear-gradient(90deg,#6fac8d,#acdcc1)}
+.noise-band-level{text-align:right;font-size:11px;font-variant-numeric:tabular-nums;color:#aacbb6;white-space:nowrap}
+.noise-spectrum-foot{margin:13px 0 0;font-size:12px}
+.noise-distinction h3{margin:20px 0 8px;font-size:17px;line-height:1.4;color:#e6f4e8}
+.noise-distinction p{margin:9px 0 13px}
+.noise-distinction .noise-refs{border-top:1px solid #3e6551;padding-top:12px;margin-top:20px;font-size:12px;color:#afd0bc}
+.noise-spectrum-panel a,.noise-distinction a{color:#b9edd0;text-decoration:underline;text-underline-offset:3px}
+.noise-colors-quick-table{width:100%;border-collapse:collapse;font-size:13px}
+.noise-colors-quick-table th,.noise-colors-quick-table td{border-bottom:1px solid #39594a;padding:12px 10px;text-align:left;vertical-align:top;line-height:1.6}
+.noise-colors-quick-table th{color:#d7f3e4;font-weight:750}
+.noise-colors-quick-table td{color:#bad4c5}
+.noise-colors-quick-table a{color:#bde6ca;text-decoration:underline;text-underline-offset:3px}
+.noise-colors-quick-wrap{overflow-x:auto;max-width:100%;border:1px solid #385e49;border-radius:14px;background:#142921;margin:20px 0}
+.noise-colors-measured-guide{margin:24px 0;padding:18px;border:1px solid #446953;border-radius:15px;background:#1b3129}
+.noise-colors-measured-guide h2{margin:8px 0 10px;line-height:1.3}
+.noise-colors-measured-guide p{font-size:13px;line-height:1.75;color:#bdd4c3}
+@media(max-width:600px){.noise-band-row{grid-template-columns:106px minmax(20px,1fr) 78px;gap:7px}.noise-band-label{font-size:11px}.noise-band-level{font-size:10px}.noise-band-chart{padding:10px}.noise-colors-quick-table{min-width:560px}}
+@media(max-width:350px){.noise-band-row{grid-template-columns:94px minmax(20px,1fr) 75px;gap:5px}.noise-band-label{font-size:10px}.noise-band-level{font-size:9px}.noise-spectrum-panel,.noise-distinction{padding:13px}}
