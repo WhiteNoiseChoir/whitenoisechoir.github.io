@@ -1,0 +1,777 @@
+{
+  "schema_version": 1,
+  "revision": "foundation-v1-20261108",
+  "current_preset_count": 45,
+  "legacy_source": "homepage var recipes, unchanged",
+  "disclosure": "These are planning-only mixes, never rendered as playable until dependencies and listening QA pass.",
+  "collision_policy": "Sorted underlying source IDs screen reuse; reversed order is not necessarily equal-volume because legacy mixer uses layer-position gains.",
+  "proposals": [
+    {
+      "id": "MIX-01",
+      "title": "Rainstorm with Distant Thunder",
+      "priority": "P0",
+      "family_id": "rain",
+      "intent": "Adult sleep",
+      "required_names": [
+        "Heavy Rain",
+        "Distant Thunder"
+      ],
+      "required_ids": [
+        "heavy-rain-real",
+        "NEW-06"
+      ],
+      "readiness": "proposal_only",
+      "playable": false,
+      "seo_url": null,
+      "missing_sources": [
+        "NEW-06"
+      ],
+      "collision": null
+    },
+    {
+      "id": "MIX-02",
+      "title": "Tin Roof Rainstorm",
+      "priority": "P0",
+      "family_id": "rain",
+      "intent": "Adult sleep",
+      "required_names": [
+        "Rain on Tin Roof",
+        "Rolling Thunder"
+      ],
+      "required_ids": [
+        "NEW-02",
+        "NEW-07"
+      ],
+      "readiness": "proposal_only",
+      "playable": false,
+      "seo_url": null,
+      "missing_sources": [
+        "NEW-02",
+        "NEW-07"
+      ],
+      "collision": null
+    },
+    {
+      "id": "MIX-03",
+      "title": "Rainy Tent Night",
+      "priority": "P0",
+      "family_id": "rain",
+      "intent": "Relaxation",
+      "required_names": [
+        "Rain on Tent",
+        "Crickets at Night"
+      ],
+      "required_ids": [
+        "NEW-03",
+        "NEW-16"
+      ],
+      "readiness": "proposal_only",
+      "playable": false,
+      "seo_url": null,
+      "missing_sources": [
+        "NEW-03",
+        "NEW-16"
+      ],
+      "collision": null
+    },
+    {
+      "id": "MIX-04",
+      "title": "Rainy Car Interior",
+      "priority": "P0",
+      "family_id": "rain",
+      "intent": "Adult sleep",
+      "required_names": [
+        "Rain on Car Roof",
+        "Gentle Wind"
+      ],
+      "required_ids": [
+        "NEW-04",
+        "wind-synth"
+      ],
+      "readiness": "proposal_only",
+      "playable": false,
+      "seo_url": null,
+      "missing_sources": [
+        "NEW-04"
+      ],
+      "collision": null
+    },
+    {
+      "id": "MIX-05",
+      "title": "Rain + Box Fan",
+      "priority": "P0",
+      "family_id": "rain",
+      "intent": "Adult sleep",
+      "required_names": [
+        "Rain on Window",
+        "Box Fan"
+      ],
+      "required_ids": [
+        "rain-on-window-real",
+        "box-fan-real"
+      ],
+      "readiness": "proposal_only",
+      "playable": false,
+      "seo_url": null,
+      "missing_sources": [],
+      "collision": {
+        "type": "same_sources_different_order",
+        "existing_presets": [
+          "Sleep Fan with Rain"
+        ]
+      }
+    },
+    {
+      "id": "MIX-06",
+      "title": "Rain + Rushing River",
+      "priority": "P0",
+      "family_id": "rain",
+      "intent": "Adult sleep",
+      "required_names": [
+        "Heavy Rain",
+        "Rushing River"
+      ],
+      "required_ids": [
+        "heavy-rain-real",
+        "NEW-08"
+      ],
+      "readiness": "proposal_only",
+      "playable": false,
+      "seo_url": null,
+      "missing_sources": [
+        "NEW-08"
+      ],
+      "collision": null
+    },
+    {
+      "id": "MIX-07",
+      "title": "Rain + Waterfall",
+      "priority": "P0",
+      "family_id": "rain",
+      "intent": "Adult sleep",
+      "required_names": [
+        "Heavy Rain",
+        "Waterfall"
+      ],
+      "required_ids": [
+        "heavy-rain-real",
+        "waterfall-real"
+      ],
+      "readiness": "proposal_only",
+      "playable": false,
+      "seo_url": null,
+      "missing_sources": [],
+      "collision": null
+    },
+    {
+      "id": "MIX-08",
+      "title": "Ocean + Rain",
+      "priority": "P0",
+      "family_id": "ocean",
+      "intent": "Adult sleep",
+      "required_names": [
+        "Ocean Waves",
+        "Heavy Rain"
+      ],
+      "required_ids": [
+        "ocean-waves-real",
+        "heavy-rain-real"
+      ],
+      "readiness": "proposal_only",
+      "playable": false,
+      "seo_url": null,
+      "missing_sources": [],
+      "collision": null
+    },
+    {
+      "id": "MIX-09",
+      "title": "Ocean Breeze",
+      "priority": "P0",
+      "family_id": "ocean",
+      "intent": "Relaxation",
+      "required_names": [
+        "Ocean Waves",
+        "Gentle Wind"
+      ],
+      "required_ids": [
+        "ocean-waves-real",
+        "wind-synth"
+      ],
+      "readiness": "proposal_only",
+      "playable": false,
+      "seo_url": null,
+      "missing_sources": [],
+      "collision": {
+        "type": "same_order",
+        "existing_presets": [
+          "Ocean and Wind"
+        ]
+      }
+    },
+    {
+      "id": "MIX-10",
+      "title": "Campfire + Crickets",
+      "priority": "P0",
+      "family_id": "fire",
+      "intent": "Relaxation",
+      "required_names": [
+        "Campfire",
+        "Crickets at Night"
+      ],
+      "required_ids": [
+        "NEW-14",
+        "NEW-16"
+      ],
+      "readiness": "proposal_only",
+      "playable": false,
+      "seo_url": null,
+      "missing_sources": [
+        "NEW-14",
+        "NEW-16"
+      ],
+      "collision": null
+    },
+    {
+      "id": "MIX-11",
+      "title": "Fireplace + Rain Window",
+      "priority": "P0",
+      "family_id": "fire",
+      "intent": "Relaxation",
+      "required_names": [
+        "Fireplace",
+        "Rain on Window"
+      ],
+      "required_ids": [
+        "fireplace-real",
+        "rain-on-window-real"
+      ],
+      "readiness": "proposal_only",
+      "playable": false,
+      "seo_url": null,
+      "missing_sources": [],
+      "collision": null
+    },
+    {
+      "id": "MIX-12",
+      "title": "Forest Stream + Birds",
+      "priority": "P0",
+      "family_id": "water",
+      "intent": "Relaxation",
+      "required_names": [
+        "Gentle Forest Stream",
+        "Morning Birds"
+      ],
+      "required_ids": [
+        "NEW-09",
+        "NEW-17"
+      ],
+      "readiness": "proposal_only",
+      "playable": false,
+      "seo_url": null,
+      "missing_sources": [
+        "NEW-09",
+        "NEW-17"
+      ],
+      "collision": null
+    },
+    {
+      "id": "MIX-13",
+      "title": "Train Ride in Rain",
+      "priority": "P0",
+      "family_id": "transportation",
+      "intent": "Adult sleep",
+      "required_names": [
+        "Train Cabin",
+        "Heavy Rain"
+      ],
+      "required_ids": [
+        "NEW-22",
+        "heavy-rain-real"
+      ],
+      "readiness": "proposal_only",
+      "playable": false,
+      "seo_url": null,
+      "missing_sources": [
+        "NEW-22"
+      ],
+      "collision": null
+    },
+    {
+      "id": "MIX-14",
+      "title": "Baby Pink + Gentle Shushing",
+      "priority": "P0",
+      "family_id": "gentle-sounds",
+      "intent": "Baby sleep",
+      "required_names": [
+        "Pink Noise",
+        "Gentle Shushing"
+      ],
+      "required_ids": [
+        "pink-noise",
+        "NEW-24"
+      ],
+      "readiness": "proposal_only",
+      "playable": false,
+      "seo_url": null,
+      "missing_sources": [
+        "NEW-24"
+      ],
+      "collision": null
+    },
+    {
+      "id": "MIX-15",
+      "title": "Womb-like + Soft White",
+      "priority": "P0",
+      "family_id": "gentle-sounds",
+      "intent": "Baby sleep",
+      "required_names": [
+        "Womb-like Sound",
+        "Soft White Noise"
+      ],
+      "required_ids": [
+        "NEW-23",
+        "soft-white-noise"
+      ],
+      "readiness": "proposal_only",
+      "playable": false,
+      "seo_url": null,
+      "missing_sources": [
+        "NEW-23"
+      ],
+      "collision": null
+    },
+    {
+      "id": "MIX-16",
+      "title": "Tower Fan + Rain Window",
+      "priority": "P0",
+      "family_id": "rain",
+      "intent": "Adult sleep",
+      "required_names": [
+        "Tower Fan",
+        "Rain on Window"
+      ],
+      "required_ids": [
+        "NEW-18",
+        "rain-on-window-real"
+      ],
+      "readiness": "proposal_only",
+      "playable": false,
+      "seo_url": null,
+      "missing_sources": [
+        "NEW-18"
+      ],
+      "collision": null
+    },
+    {
+      "id": "MIX-17",
+      "title": "Tin Roof Rain + Fireplace",
+      "priority": "P0",
+      "family_id": "rain",
+      "intent": "Relaxation",
+      "required_names": [
+        "Rain on Tin Roof",
+        "Fireplace"
+      ],
+      "required_ids": [
+        "NEW-02",
+        "fireplace-real"
+      ],
+      "readiness": "proposal_only",
+      "playable": false,
+      "seo_url": null,
+      "missing_sources": [
+        "NEW-02"
+      ],
+      "collision": null
+    },
+    {
+      "id": "MIX-18",
+      "title": "River + Campfire",
+      "priority": "P0",
+      "family_id": "water",
+      "intent": "Relaxation",
+      "required_names": [
+        "Rushing River",
+        "Campfire"
+      ],
+      "required_ids": [
+        "NEW-08",
+        "NEW-14"
+      ],
+      "readiness": "proposal_only",
+      "playable": false,
+      "seo_url": null,
+      "missing_sources": [
+        "NEW-08",
+        "NEW-14"
+      ],
+      "collision": null
+    },
+    {
+      "id": "MIX-19",
+      "title": "Lake Rain + Distant Thunder",
+      "priority": "P1",
+      "family_id": "rain",
+      "intent": "Relaxation",
+      "required_names": [
+        "Rain on Lake",
+        "Distant Thunder"
+      ],
+      "required_ids": [
+        "NEW-29",
+        "NEW-06"
+      ],
+      "readiness": "proposal_only",
+      "playable": false,
+      "seo_url": null,
+      "missing_sources": [
+        "NEW-29",
+        "NEW-06"
+      ],
+      "collision": null
+    },
+    {
+      "id": "MIX-20",
+      "title": "Frog Pond Night",
+      "priority": "P1",
+      "family_id": "nature",
+      "intent": "Relaxation",
+      "required_names": [
+        "Frogs at Night",
+        "Pond Ambience"
+      ],
+      "required_ids": [
+        "NEW-43",
+        "NEW-33"
+      ],
+      "readiness": "proposal_only",
+      "playable": false,
+      "seo_url": null,
+      "missing_sources": [
+        "NEW-43",
+        "NEW-33"
+      ],
+      "collision": null
+    },
+    {
+      "id": "MIX-21",
+      "title": "Stormy Ocean",
+      "priority": "P1",
+      "family_id": "ocean",
+      "intent": "Relaxation",
+      "required_names": [
+        "Crashing Ocean Waves",
+        "Rolling Thunder"
+      ],
+      "required_ids": [
+        "NEW-13",
+        "NEW-07"
+      ],
+      "readiness": "proposal_only",
+      "playable": false,
+      "seo_url": null,
+      "missing_sources": [
+        "NEW-13",
+        "NEW-07"
+      ],
+      "collision": null
+    },
+    {
+      "id": "MIX-22",
+      "title": "Snowstorm Cabin",
+      "priority": "P1",
+      "family_id": "wind-weather",
+      "intent": "Adult sleep",
+      "required_names": [
+        "Snowstorm",
+        "Fireplace"
+      ],
+      "required_ids": [
+        "NEW-41",
+        "fireplace-real"
+      ],
+      "readiness": "proposal_only",
+      "playable": false,
+      "seo_url": null,
+      "missing_sources": [
+        "NEW-41"
+      ],
+      "collision": null
+    },
+    {
+      "id": "MIX-23",
+      "title": "Rain on RV + Thunder",
+      "priority": "P1",
+      "family_id": "rain",
+      "intent": "Adult sleep",
+      "required_names": [
+        "Rain on RV",
+        "Distant Thunder"
+      ],
+      "required_ids": [
+        "NEW-27",
+        "NEW-06"
+      ],
+      "readiness": "proposal_only",
+      "playable": false,
+      "seo_url": null,
+      "missing_sources": [
+        "NEW-27",
+        "NEW-06"
+      ],
+      "collision": null
+    },
+    {
+      "id": "MIX-24",
+      "title": "Rain on Clay Jars + Thunder",
+      "priority": "P1",
+      "family_id": "rain",
+      "intent": "Relaxation",
+      "required_names": [
+        "Rain on Clay Jars",
+        "Rolling Thunder"
+      ],
+      "required_ids": [
+        "NEW-30",
+        "NEW-07"
+      ],
+      "readiness": "proposal_only",
+      "playable": false,
+      "seo_url": null,
+      "missing_sources": [
+        "NEW-30",
+        "NEW-07"
+      ],
+      "collision": null
+    },
+    {
+      "id": "MIX-25",
+      "title": "Bamboo Fountain + Birds",
+      "priority": "P1",
+      "family_id": "water",
+      "intent": "Relaxation",
+      "required_names": [
+        "Bamboo Water Fountain",
+        "Morning Birds"
+      ],
+      "required_ids": [
+        "NEW-11",
+        "NEW-17"
+      ],
+      "readiness": "proposal_only",
+      "playable": false,
+      "seo_url": null,
+      "missing_sources": [
+        "NEW-11",
+        "NEW-17"
+      ],
+      "collision": null
+    },
+    {
+      "id": "MIX-26",
+      "title": "Crickets + Wind in Trees",
+      "priority": "P1",
+      "family_id": "nature",
+      "intent": "Relaxation",
+      "required_names": [
+        "Crickets at Night",
+        "Wind Through Trees"
+      ],
+      "required_ids": [
+        "NEW-16",
+        "NEW-38"
+      ],
+      "readiness": "proposal_only",
+      "playable": false,
+      "seo_url": null,
+      "missing_sources": [
+        "NEW-16",
+        "NEW-38"
+      ],
+      "collision": null
+    },
+    {
+      "id": "MIX-27",
+      "title": "Rainy Coffee Shop",
+      "priority": "P1",
+      "family_id": "urban",
+      "intent": "Focus",
+      "required_names": [
+        "Coffee Shop",
+        "Heavy Rain"
+      ],
+      "required_ids": [
+        "NEW-56",
+        "heavy-rain-real"
+      ],
+      "readiness": "proposal_only",
+      "playable": false,
+      "seo_url": null,
+      "missing_sources": [
+        "NEW-56"
+      ],
+      "collision": null
+    },
+    {
+      "id": "MIX-28",
+      "title": "Train in Snowstorm",
+      "priority": "P1",
+      "family_id": "transportation",
+      "intent": "Adult sleep",
+      "required_names": [
+        "Train Cabin",
+        "Snowstorm"
+      ],
+      "required_ids": [
+        "NEW-22",
+        "NEW-41"
+      ],
+      "readiness": "proposal_only",
+      "playable": false,
+      "seo_url": null,
+      "missing_sources": [
+        "NEW-22",
+        "NEW-41"
+      ],
+      "collision": null
+    },
+    {
+      "id": "MIX-29",
+      "title": "Car Ride in Rain",
+      "priority": "P1",
+      "family_id": "transportation",
+      "intent": "Baby sleep",
+      "required_names": [
+        "Car Interior Ride",
+        "Rain on Car Roof"
+      ],
+      "required_ids": [
+        "NEW-50",
+        "NEW-04"
+      ],
+      "readiness": "proposal_only",
+      "playable": false,
+      "seo_url": null,
+      "missing_sources": [
+        "NEW-50",
+        "NEW-04"
+      ],
+      "collision": null
+    },
+    {
+      "id": "MIX-30",
+      "title": "Cat Purring by Fireplace",
+      "priority": "P1",
+      "family_id": "nature",
+      "intent": "Relaxation",
+      "required_names": [
+        "Cat Purring",
+        "Fireplace"
+      ],
+      "required_ids": [
+        "NEW-45",
+        "fireplace-real"
+      ],
+      "readiness": "proposal_only",
+      "playable": false,
+      "seo_url": null,
+      "missing_sources": [
+        "NEW-45"
+      ],
+      "collision": null
+    },
+    {
+      "id": "MIX-31",
+      "title": "Wooden Ship in Storm",
+      "priority": "P2",
+      "family_id": "transportation",
+      "intent": "Relaxation",
+      "required_names": [
+        "Wooden Ship Creaks",
+        "Crashing Ocean Waves",
+        "Rolling Thunder"
+      ],
+      "required_ids": [
+        "NEW-53",
+        "NEW-13",
+        "NEW-07"
+      ],
+      "readiness": "proposal_only",
+      "playable": false,
+      "seo_url": null,
+      "missing_sources": [
+        "NEW-53",
+        "NEW-13",
+        "NEW-07"
+      ],
+      "collision": null
+    },
+    {
+      "id": "MIX-32",
+      "title": "Spaceship Engine Room",
+      "priority": "P2",
+      "family_id": "hums-drones",
+      "intent": "Focus",
+      "required_names": [
+        "Spaceship Engine",
+        "Low Rumble"
+      ],
+      "required_ids": [
+        "NEW-54",
+        "low-rumble"
+      ],
+      "readiness": "proposal_only",
+      "playable": false,
+      "seo_url": null,
+      "missing_sources": [
+        "NEW-54"
+      ],
+      "collision": null
+    },
+    {
+      "id": "MIX-33",
+      "title": "Forest Rain + Birds",
+      "priority": "P2",
+      "family_id": "nature",
+      "intent": "Relaxation",
+      "required_names": [
+        "Tropical Rainforest Rain",
+        "Rainforest Birds"
+      ],
+      "required_ids": [
+        "NEW-26",
+        "NEW-44"
+      ],
+      "readiness": "proposal_only",
+      "playable": false,
+      "seo_url": null,
+      "missing_sources": [
+        "NEW-26",
+        "NEW-44"
+      ],
+      "collision": null
+    },
+    {
+      "id": "MIX-34",
+      "title": "Rainfall + Fan + Fireplace",
+      "priority": "P2",
+      "family_id": "rain",
+      "intent": "Adult sleep",
+      "required_names": [
+        "Rain on Window",
+        "Box Fan",
+        "Fireplace"
+      ],
+      "required_ids": [
+        "rain-on-window-real",
+        "box-fan-real",
+        "fireplace-real"
+      ],
+      "readiness": "proposal_only",
+      "playable": false,
+      "seo_url": null,
+      "missing_sources": [],
+      "collision": null
+    }
+  ]
+}

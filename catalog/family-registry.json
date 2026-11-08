@@ -1,0 +1,331 @@
+{
+  "schema_version": 1,
+  "revision": "foundation-v1-20261108",
+  "source": "User supplied 2026-11-08 full sound library blueprint, reconciled to live production commit 7c52701",
+  "count_policy": {
+    "existing": 22,
+    "planned": 70,
+    "families": 13,
+    "priority_P0": 24,
+    "priority_P1": 27,
+    "priority_P2": 19
+  },
+  "route_policy": "12 existing category URLs plus one virtual Ocean family section in /sounds/; /sounds/ocean-waves/ remains a single-sound page; no redirects, canonical or robots changes.",
+  "families": [
+    {
+      "id": "noise-colors",
+      "title": "Noise Colors",
+      "route": "/sounds/noise-colors/",
+      "route_type": "existing_hub",
+      "description": "Reference noise spectra and deliberately shaped variants",
+      "facets": [
+        "White / Pink / Brown",
+        "Bright colors",
+        "Filtered variations"
+      ],
+      "existing_ids": [
+        "white-noise",
+        "pink-noise",
+        "brown-noise",
+        "green-noise",
+        "blue-noise",
+        "violet-noise",
+        "soft-white-noise",
+        "deep-brown-noise",
+        "warm-pink-noise",
+        "mid-noise"
+      ],
+      "planned_ids": [
+        "NEW-70"
+      ],
+      "seo_policy": "Preserve existing route, canonical and robots state; do not index based on plans"
+    },
+    {
+      "id": "rain",
+      "title": "Rain & Thunder",
+      "route": "/sounds/rain/",
+      "route_type": "existing_hub",
+      "description": "Rain intensity, surface impact and distant thunder",
+      "facets": [
+        "Intensity",
+        "Surface",
+        "Thunder"
+      ],
+      "existing_ids": [
+        "rain-on-window-real",
+        "heavy-rain-real"
+      ],
+      "planned_ids": [
+        "NEW-01",
+        "NEW-02",
+        "NEW-03",
+        "NEW-04",
+        "NEW-05",
+        "NEW-06",
+        "NEW-07",
+        "NEW-25",
+        "NEW-26",
+        "NEW-27",
+        "NEW-28",
+        "NEW-29",
+        "NEW-30"
+      ],
+      "seo_policy": "Preserve existing route, canonical and robots state; do not index based on plans"
+    },
+    {
+      "id": "water",
+      "title": "Rivers & Water",
+      "route": "/sounds/water/",
+      "route_type": "existing_hub",
+      "description": "Streams, falls, fountains and flowing household water",
+      "facets": [
+        "Rivers / Streams",
+        "Falls",
+        "Indoor water",
+        "Fountains"
+      ],
+      "existing_ids": [
+        "waterfall-real",
+        "shower-synth"
+      ],
+      "planned_ids": [
+        "NEW-08",
+        "NEW-09",
+        "NEW-10",
+        "NEW-11",
+        "NEW-31",
+        "NEW-32",
+        "NEW-33",
+        "NEW-34",
+        "NEW-35",
+        "NEW-36"
+      ],
+      "seo_policy": "Preserve existing route, canonical and robots state; do not index based on plans"
+    },
+    {
+      "id": "ocean",
+      "title": "Ocean Waves",
+      "route": "/sounds/#ocean-waves",
+      "route_type": "virtual_family",
+      "description": "Coastal surf and wave intensity without hijacking the existing Ocean Waves Sound Page",
+      "facets": [
+        "Recorded surf",
+        "Gentle waves",
+        "Crashing waves"
+      ],
+      "existing_ids": [
+        "ocean-waves-real"
+      ],
+      "planned_ids": [
+        "NEW-12",
+        "NEW-13"
+      ],
+      "seo_policy": "Do not overwrite /sounds/ocean-waves/ Sound Page; no new indexed route in foundation"
+    },
+    {
+      "id": "fire",
+      "title": "Fire & Warmth",
+      "route": "/sounds/fire/",
+      "route_type": "existing_hub",
+      "description": "Real flame crackle, fireplaces and stoves",
+      "facets": [
+        "Fireplace",
+        "Campfire",
+        "Wood stove"
+      ],
+      "existing_ids": [
+        "fireplace-real"
+      ],
+      "planned_ids": [
+        "NEW-14",
+        "NEW-15",
+        "NEW-37"
+      ],
+      "seo_policy": "Preserve existing route, canonical and robots state; do not index based on plans"
+    },
+    {
+      "id": "fan-noise",
+      "title": "Fans & Ventilation",
+      "route": "/sounds/fan-noise/",
+      "route_type": "existing_hub",
+      "description": "Indoor airflow from distinct physical fans and disclosed DSP approximations",
+      "facets": [
+        "Real fans",
+        "Synthetic fan",
+        "Ventilation"
+      ],
+      "existing_ids": [
+        "desk-fan-synth",
+        "box-fan-real",
+        "air-conditioner-synth"
+      ],
+      "planned_ids": [
+        "NEW-18",
+        "NEW-19",
+        "NEW-49",
+        "NEW-64",
+        "NEW-65"
+      ],
+      "seo_policy": "Preserve existing route, canonical and robots state; do not index based on plans"
+    },
+    {
+      "id": "household",
+      "title": "Household Machines",
+      "route": "/sounds/household/",
+      "route_type": "existing_hub",
+      "description": "Independent recordings of domestic machines rather than renamed noise textures",
+      "facets": [
+        "Laundry",
+        "Kitchen",
+        "Dryer / Hair dryer",
+        "Vacuum"
+      ],
+      "existing_ids": [],
+      "planned_ids": [
+        "NEW-20",
+        "NEW-21",
+        "NEW-46",
+        "NEW-47",
+        "NEW-48"
+      ],
+      "seo_policy": "Preserve existing route, canonical and robots state; do not index based on plans"
+    },
+    {
+      "id": "wind-weather",
+      "title": "Wind & Weather",
+      "route": "/sounds/wind-weather/",
+      "route_type": "existing_hub",
+      "description": "Real outdoor breezes and storms alongside labeled synthetic wind",
+      "facets": [
+        "Gentle",
+        "Forest / Coastal",
+        "Strong weather"
+      ],
+      "existing_ids": [
+        "wind-synth"
+      ],
+      "planned_ids": [
+        "NEW-38",
+        "NEW-39",
+        "NEW-40",
+        "NEW-41",
+        "NEW-66"
+      ],
+      "seo_policy": "Preserve existing route, canonical and robots state; do not index based on plans"
+    },
+    {
+      "id": "nature",
+      "title": "Forest & Wildlife",
+      "route": "/sounds/nature/",
+      "route_type": "existing_hub",
+      "description": "Independently captured insects, birds and living soundscapes",
+      "facets": [
+        "Night wildlife",
+        "Birds",
+        "Rainforest",
+        "Other wildlife"
+      ],
+      "existing_ids": [],
+      "planned_ids": [
+        "NEW-16",
+        "NEW-17",
+        "NEW-42",
+        "NEW-43",
+        "NEW-44",
+        "NEW-45"
+      ],
+      "seo_policy": "Preserve existing route, canonical and robots state; do not index based on plans"
+    },
+    {
+      "id": "transportation",
+      "title": "Transportation",
+      "route": "/sounds/transportation/",
+      "route_type": "existing_hub",
+      "description": "Vehicle cabins, rails and travel environments",
+      "facets": [
+        "Train",
+        "Car",
+        "Aircraft",
+        "Watercraft"
+      ],
+      "existing_ids": [
+        "cabin-hum-synth"
+      ],
+      "planned_ids": [
+        "NEW-22",
+        "NEW-50",
+        "NEW-51",
+        "NEW-52",
+        "NEW-53"
+      ],
+      "seo_policy": "Preserve existing route, canonical and robots state; do not index based on plans"
+    },
+    {
+      "id": "urban",
+      "title": "Urban & Indoor",
+      "route": "/sounds/urban/",
+      "route_type": "existing_hub",
+      "description": "Locations with meaningful human-environment context and speech-safety checks",
+      "facets": [
+        "Coffee shop",
+        "Library",
+        "City / Park",
+        "Traffic"
+      ],
+      "existing_ids": [],
+      "planned_ids": [
+        "NEW-56",
+        "NEW-57",
+        "NEW-58",
+        "NEW-59"
+      ],
+      "seo_policy": "Preserve existing route, canonical and robots state; do not index based on plans"
+    },
+    {
+      "id": "hums-drones",
+      "title": "Hums & Sci-Fi",
+      "route": "/sounds/hums-drones/",
+      "route_type": "existing_hub",
+      "description": "Low-frequency synthetic textures, tape/static and clearly fictional ambiences",
+      "facets": [
+        "Low rumble",
+        "Analog texture",
+        "Sci-fi"
+      ],
+      "existing_ids": [
+        "low-rumble"
+      ],
+      "planned_ids": [
+        "NEW-54",
+        "NEW-55",
+        "NEW-60",
+        "NEW-61",
+        "NEW-62",
+        "NEW-63"
+      ],
+      "seo_policy": "Preserve existing route, canonical and robots state; do not index based on plans"
+    },
+    {
+      "id": "gentle-sounds",
+      "title": "Gentle & Baby",
+      "route": "/sounds/gentle-sounds/",
+      "route_type": "existing_hub",
+      "description": "Soft non-medical sleep textures and gentle sound demonstrations",
+      "facets": [
+        "Shushing",
+        "Womb-like",
+        "Heartbeat",
+        "Gentle textures"
+      ],
+      "existing_ids": [],
+      "planned_ids": [
+        "NEW-23",
+        "NEW-24",
+        "NEW-67",
+        "NEW-68",
+        "NEW-69"
+      ],
+      "seo_policy": "Preserve existing route, canonical and robots state; do not index based on plans"
+    }
+  ]
+}

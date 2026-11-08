@@ -1,15 +1,20 @@
 name: Batch 18 Sound Library Quality Gate
 on:
   push:
-    branches: [main, "feature/batch18-*"]
+    branches: [main, "feature/batch18-*", "feature/sound-library-*"]
     paths:
       - 'sounds/**'
       - 'assets/persistent.css'
       - 'catalog/batch18-20261108.json'
+      - 'catalog/family-registry.json'
+      - 'catalog/planned-sounds.json'
+      - 'catalog/mix-proposals.json'
       - 'scripts/test_batch18_pages.cjs'
       - 'scripts/test_batch18_audio.py'
       - 'scripts/test_batch18_browser.cjs'
       - 'scripts/test_device_environment_editorial.cjs'
+      - 'scripts/test_library_foundation.cjs'
+      - 'scripts/build_sound_library_foundation.cjs'
       - '.github/workflows/batch18_qa.yml'
   workflow_dispatch:
 permissions:
@@ -25,6 +30,8 @@ jobs:
           node scripts/test_batch18_pages.cjs
           node scripts/test_library_structure.cjs
           node scripts/test_device_environment_editorial.cjs
+          node scripts/build_sound_library_foundation.cjs
+          node scripts/test_library_foundation.cjs
       - name: Decode actual 18 source MP3 files and inspect existing HLS
         run: |
           if ! command -v ffprobe >/dev/null || ! command -v ffmpeg >/dev/null; then

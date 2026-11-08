@@ -8,12 +8,18 @@ on:
       - 'assets/persistent.css'
       - 'assets/library.css'
       - 'catalog/library.json'
+      - 'catalog/family-registry.json'
+      - 'catalog/planned-sounds.json'
+      - 'catalog/mix-proposals.json'
       - 'sounds/**'
       - 'collections/**'
       - 'soundscapes/**'
       - 'audio-tools/**'
       - 'sitemap.xml'
       - 'scripts/test_library_structure.cjs'
+      - 'scripts/build_sound_library_foundation.cjs'
+      - 'scripts/test_library_foundation.cjs'
+      - 'scripts/test_library_foundation_browser.cjs'
       - 'scripts/test_relaxing_collection.cjs'
       - 'scripts/test_relaxing_browser.cjs'
       - 'scripts/test_sleep_collection.cjs'
@@ -37,7 +43,7 @@ permissions:
 jobs:
   player-smoke:
     runs-on: ubuntu-latest
-    timeout-minutes: 12
+    timeout-minutes: 16
     steps:
       - uses: actions/checkout@v4
       - name: Run playback and timer tests on Node 22
@@ -46,6 +52,8 @@ jobs:
           node scripts/test_player_smoke.cjs
           node scripts/test_loop_check.cjs
           node scripts/test_library_structure.cjs
+          node scripts/build_sound_library_foundation.cjs
+          node scripts/test_library_foundation.cjs
           node scripts/test_relaxing_collection.cjs
           node scripts/test_sleep_collection.cjs
           node scripts/test_baby_collection.cjs
@@ -65,3 +73,4 @@ jobs:
           node scripts/test_baby_browser.cjs
           node scripts/test_field_sound_browser.cjs
           node scripts/test_noise_colors_browser.cjs
+          node scripts/test_library_foundation_browser.cjs
