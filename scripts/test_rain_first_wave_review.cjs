@@ -47,5 +47,5 @@ for(let i=0;i<ids.length;i++){
  assert.ok(fs.statSync(p).size>5_000_000,"review asset is a real 10-min sound "+p);
  assert.ok(!f("audio/continuous/manifest.json").includes(ids[i]),"no review HLS production change "+ids[i]);
 }
-assert.ok(review.media_quality_policy.includes("does NOT restore"),"transcoding limitation retained");
+assert.match(review.media_quality_policy,/\b(?:do|does) NOT restore\b/,"lossy preview transcoding limitation must be explicit");
 console.log("RAIN_FIRST_WAVE_REVIEW_QA_PASS 3 isolated 600s CC0 preview-derived audio files, source labels, noindex, existing catalog protected");
