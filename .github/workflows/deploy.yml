@@ -1,56 +1,28 @@
-name: Build WhiteNoiseChoir Audio Library
+name: Audit Legacy CC0 Preview Import (Manual, No Promotion)
 on:
-  push:
-    branches: [main]
-    paths:
-      - 'scripts/import_cc0.py'
-      - 'scripts/generate_audio.py'
-      - '.github/workflows/deploy.yml'
   workflow_dispatch:
 permissions:
-  contents: write
-concurrency:
-  group: whitenoisechoir-audio-build
-  cancel-in-progress: true
+  contents: read
 jobs:
-  build-and-publish-audio:
+  audit-original-previews:
     runs-on: ubuntu-latest
+    timeout-minutes: 12
     steps:
-      - name: Checkout source
+      - name: Checkout protected audio masters
         uses: actions/checkout@v4
-      - name: Set up Python
+      - name: Configure Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      - name: Install audio dependencies
+      - name: Install required FFmpeg and numpy
         run: |
-          python -m pip install numpy
+          python -m pip install --disable-pip-version-check numpy
           sudo apt-get update -qq
           sudo apt-get install -y ffmpeg
-      - name: Import distinct CC0 field recordings and verify five audio files
+      - name: Verify older source previews in an isolated directory
         run: |
           python scripts/import_cc0.py
           test "$(find dist/audio -name '*.mp3' | wc -l)" -eq 5
           test -s dist/audio/cc0-sources.json
-      - name: Publish audio to main branch for GitHub Pages
-        run: |
-          mkdir -p audio
-          # Keep the separately approved 10-minute Rain on Window master intact.
-          # The CC0 import batch only owns the four other legacy field recordings.
-          for asset in dist/audio/*.mp3; do
-            case "$(basename "$asset")" in
-              rain-on-window-real.mp3|fireplace-real.mp3) echo "Preserving production master: $asset" ;;
-              *) cp -f "$asset" audio/ ;;
-            esac
-          done
-          # Preserve production-master provenance in cc0-sources.json, managed separately.
-          rm -f audio/box-fan-synth.mp3 audio/rain-wash-synth.mp3 audio/heavy-rain-synth.mp3 audio/ocean-swell-synth.mp3 audio/waterfall-synth.mp3
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -A audio/
-          if git diff --cached --quiet; then
-            echo "Library assets already current"
-          else
-            git commit -m "Replace generic noise imitations with verified CC0 ambience recordings"
-            git push origin HEAD:main
-          fi
+          echo "Audit-only: preview files remain in dist/ and are NOT committed to the production library."
+          echo "Production MP3s may only be replaced through separately QA-gated master workflows."
