@@ -36,6 +36,17 @@ const URL="http://127.0.0.1:8787";
   await page.waitForFunction(()=>window.WNCBridge.snapshot().playing&&window.WNCBridge.snapshot().activeIds[0]==="pink-noise",null,{timeout:20000});
   await page.locator('select[data-wnc-page-timer]').selectOption("900");
   assert.equal(await page.evaluate(()=>window.WNCBridge.snapshot().timer),"900","timer set on sound page");
+  // Pink Noise independently supports instant in-place A/B with Brown and White.
+  const pinkDeadline=await page.evaluate(()=>window.WNCBridge.snapshot().expiresAt);
+  await page.locator('a[data-wnc-compare="white-noise"]').click();
+  await page.waitForFunction(()=>window.WNCBridge.snapshot().playing&&window.WNCBridge.snapshot().activeIds[0]==="white-noise",null,{timeout:20000});
+  assert.equal(page.url().split("?")[0],URL+"/sounds/pink-noise/","Pink A/B keeps its canonical page");
+  assert.ok(Math.abs((await page.evaluate(()=>window.WNCBridge.snapshot().expiresAt))-pinkDeadline)<1500,"Pink A/B preserves the timer deadline");
+  assert.equal(await page.locator('a[data-wnc-compare="white-noise"]').getAttribute("aria-current"),"true","White selection announced to assistive technology");
+  await page.locator('a[data-wnc-compare="pink-noise"]').click();
+  await page.waitForFunction(()=>window.WNCBridge.snapshot().playing&&window.WNCBridge.snapshot().activeIds[0]==="pink-noise",null,{timeout:20000});
+  assert.equal((await page.evaluate(()=>window.WNCBridge.snapshot().timer)),"900","Pink restored with original sleep timer");
+
   await page.locator('main .crumb a[href="/sounds/"]').first().click();
   await page.waitForURL(URL+"/sounds/",{timeout:20000});
   assert.equal(await page.evaluate(()=>window.WNCBridge.snapshot().timer),"900","timer survives navigation");
