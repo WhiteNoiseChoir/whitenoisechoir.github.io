@@ -17,6 +17,10 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
+      - name: Install duration probe
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y ffmpeg
       - name: Fetch checksum-pinned previews and verify original usable durations
         run: |
           python -m py_compile scripts/audit_field_sources.py
