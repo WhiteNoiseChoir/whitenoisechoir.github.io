@@ -1,9 +1,19 @@
 name: Player Loop and Sleep Timer Smoke Tests
 on:
   push:
-    branches: [main]
+    branches: [main, "feature/**"]
     paths:
       - 'index.html'
+      - 'assets/persistent-router.js'
+      - 'assets/persistent.css'
+      - 'assets/library.css'
+      - 'catalog/library.json'
+      - 'sounds/**'
+      - 'collections/**'
+      - 'soundscapes/**'
+      - 'audio-tools/**'
+      - 'sitemap.xml'
+      - 'scripts/test_library_structure.cjs'
       - 'loop-check.html'
       - 'scripts/test_loop_check.cjs'
       - 'scripts/test_player_smoke.cjs'
@@ -22,3 +32,4 @@ jobs:
           node --version
           node scripts/test_player_smoke.cjs
           node scripts/test_loop_check.cjs
+          node scripts/test_library_structure.cjs

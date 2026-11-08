@@ -7,7 +7,7 @@ const $=id=>document.getElementById(id);
 let bridge=null,host=null,homeMain=null,routeMain=document.querySelector("main");
 let homeTemplate=null,initPromise=null,catalog=null,searchState={q:"",cat:"all"},blocked=false;
 const originalHome=!!$("playingTitle");
-if(originalHome)homeMain=routeMain;
+if(originalHome){homeMain=routeMain;homeTemplate=new DOMParser().parseFromString(document.documentElement.outerHTML,"text/html");}
 const mini=document.createElement("aside");
 mini.id="wnc-mini";mini.setAttribute("aria-label","Persistent audio player");
 mini.innerHTML='<div class="wnc-mini-inner"><div class="wnc-mini-info"><strong id="wnc-mini-title">White Noise</strong><small id="wnc-mini-status" aria-live="polite">Ready</small></div><button type="button" id="wnc-mini-toggle" aria-label="Play or pause">▶</button><label class="wnc-mini-volume">Volume <input id="wnc-mini-volume" type="range" min="0" max="100" value="28" aria-label="Volume"></label><label class="wnc-mini-timer">Timer <select id="wnc-mini-timer" aria-label="Sleep timer"><option value="0">Off</option><option value="900">15 min</option><option value="1800">30 min</option><option value="3600">1 hour</option><option value="7200">2 hours</option><option value="14400">4 hours</option><option value="28800">8 hours</option><option value="43200">12 hours</option></select></label><button type="button" id="wnc-mini-dark" aria-label="Dark screen">☾</button><button type="button" id="wnc-mini-stop" aria-label="Stop sound">■</button></div>';
@@ -77,6 +77,8 @@ function setHead(doc){
  }
  const from=doc.querySelector('link[rel="canonical"]'),existing=document.querySelector('link[rel="canonical"]');
  if(existing)existing.remove();if(from)document.head.append(from.cloneNode(true));
+ document.querySelectorAll('head script[type="application/ld+json"]').forEach(node=>node.remove());
+ doc.querySelectorAll('head script[type="application/ld+json"]').forEach(node=>document.head.append(node.cloneNode(true)));
 }
 function installMenu(){
  const h=document.querySelector("header"),n=h&&h.querySelector("nav");
@@ -100,7 +102,7 @@ async function navigate(url,push=true){
   const b=await bootBridge();if(!b){location.assign(url.href);return}
   const path=url.pathname,goHome=path==="/";
   let doc,main;
-  if(goHome&&originalHome&&homeMain){doc=homeTemplate||new DOMParser().parseFromString(document.documentElement.outerHTML,"text/html");main=homeMain}
+  if(goHome&&originalHome&&homeMain){doc=homeTemplate;main=homeMain}
   else{
    const res=await fetch(url.pathname+url.search,{credentials:"same-origin"});
    if(!res.ok||!res.headers.get("content-type")?.includes("text/html"))throw Error("Page unavailable");
@@ -108,9 +110,10 @@ async function navigate(url,push=true){
    main=doc.querySelector("main");if(!main)throw Error("Page main missing");
   }
   // Keep original engine controls alive. It uses Audio() objects not DOM audio.
-  if(!originalHome&&homeMain&&routeMain===homeMain&&host){
+  if(!goHome&&!originalHome&&homeMain&&routeMain===homeMain&&host){
    for(const sel of [".player","#sounds","#mixes"]){const el=homeMain.querySelector(sel);if(el)host.append(el)}
    for(const sel of ["#dock","#black"]){const el=$(sel);if(el)host.append(el)}
+   homeMain.remove();homeMain=null;
   }
   if(goHome&&!originalHome){
    if(!host)throw Error("Player host missing");
@@ -140,7 +143,7 @@ async function navigate(url,push=true){
   const mb=document.querySelector(".wnc-menu-button");if(mb)mb.setAttribute("aria-expanded","false");
   if(goHome)sync();else enhance(main);
   document.querySelectorAll("header nav a").forEach(a=>{const selected=path==="/"?a.getAttribute("href")==="/":path.startsWith(new URL(a.href).pathname);if(selected)a.setAttribute("aria-current","page");else a.removeAttribute("aria-current")});
-  window.scrollTo({top:0,behavior:"instant"});
+  window.scrollTo({top:0,behavior:"auto"});
   const h1=main.querySelector("h1");if(h1){h1.setAttribute("tabindex","-1");h1.focus({preventScroll:true})}
  }catch(err){console.warn("Route navigation fallback",err);location.assign(url.href)}
  finally{blocked=false}
