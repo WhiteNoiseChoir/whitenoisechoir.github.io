@@ -1,0 +1,53 @@
+{
+  "id": "green-noise",
+  "title": "Green Noise",
+  "definition": "WhiteNoiseChoir original Green Noise v1; non-standard name, reproducible mid-band synthesis",
+  "sound_character": "Steady mid-frequency filtered broadband texture, not field-recorded nature",
+  "file": "audio/green-noise.mp3",
+  "file_sha256": "ede45d2360603ed62f6a0a6f191a5fdab8f4bb50a33d5da6341dff949eb12e06",
+  "bytes": 14401453,
+  "algorithm": "independent_original_gaussian_noise_iir_bandpass_3pole_hp_3pole_lp",
+  "seed": 2026110805,
+  "filters": {
+    "highpass_hz": 165,
+    "lowpass_hz": 1550,
+    "order_each": 3,
+    "target_band_hz": [
+      250,
+      1000
+    ],
+    "implementation": "scipy.signal.butter IIR cascaded"
+  },
+  "qa": {
+    "duration_seconds": 600.0,
+    "sample_rate": 44100,
+    "channels": 2,
+    "stereo_mode": "centered_dual_mono",
+    "codec": "mp3",
+    "bitrate_kbps": 192,
+    "measured_rms_dbfs_15s": [
+      -25.8,
+      -25.73,
+      -25.82
+    ],
+    "spectral_density_db_3windows": [
+      {
+        "bass": -75.39,
+        "mid": -57.53,
+        "treble": -90.16
+      },
+      {
+        "bass": -75.65,
+        "mid": -57.36,
+        "treble": -90.19
+      },
+      {
+        "bass": -75.78,
+        "mid": -57.45,
+        "treble": -90.19
+      }
+    ],
+    "technical_status": "PASS",
+    "long_form_human_listening_status": "PENDING_USER_REVIEW"
+  }
+}
