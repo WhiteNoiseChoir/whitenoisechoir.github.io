@@ -24,7 +24,7 @@ const URL="http://127.0.0.1:8787";
   await page.waitForFunction(()=>window.WNCBridge.snapshot().playing&&window.WNCBridge.snapshot().activeIds[0]==="pink-noise",null,{timeout:20000});
   await page.locator('select[data-wnc-page-timer]').selectOption("900");
   assert.equal(await page.evaluate(()=>window.WNCBridge.snapshot().timer),"900","timer set on sound page");
-  await page.locator('a[href="/sounds/"]').first().click();
+  await page.locator('main .crumb a[href="/sounds/"]').first().click();
   await page.waitForURL(URL+"/sounds/",{timeout:20000});
   assert.equal(await page.evaluate(()=>window.WNCBridge.snapshot().timer),"900","timer survives navigation");
   assert.equal(await page.evaluate(()=>window.WNCBridge.snapshot().playing),true,"audio survives library route");
