@@ -9,6 +9,7 @@ on:
       - 'scripts/test_batch18_pages.cjs'
       - 'scripts/test_batch18_audio.py'
       - 'scripts/test_batch18_browser.cjs'
+      - 'scripts/test_device_environment_editorial.cjs'
       - '.github/workflows/batch18_qa.yml'
   workflow_dispatch:
 permissions:
@@ -23,6 +24,7 @@ jobs:
         run: |
           node scripts/test_batch18_pages.cjs
           node scripts/test_library_structure.cjs
+          node scripts/test_device_environment_editorial.cjs
       - name: Decode actual 18 source MP3 files and inspect existing HLS
         run: |
           if ! command -v ffprobe >/dev/null || ! command -v ffmpeg >/dev/null; then

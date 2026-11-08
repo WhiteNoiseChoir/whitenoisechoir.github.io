@@ -12,7 +12,7 @@ const pilot=[
  ["blue-noise",true],["violet-noise",true],["soft-white-noise",false],
  ["deep-brown-noise",false],["warm-pink-noise",false],["mid-noise",false]
 ];
-assert.equal(sitemap.length,17,"Selective 17 URL sitemap");
+assert.equal(sitemap.length,18,"Selective 18 URL sitemap including Shower");
 assert.equal(catalog.sounds.length,22,"Retain 22 sources");
 assert.equal(hls.applies_to.length,22,"Retain all HLS sources");
 const records=[];
@@ -74,7 +74,7 @@ for(const id of existing){const s=byId[id];assert.ok(!read("sounds/"+s.slug+"/in
 const approved=byId["blue-noise"],purple=byId["violet-noise"];
 assert.ok(sitemap.includes(root+"/sounds/"+approved.slug+"/"));
 assert.ok(sitemap.includes(root+"/sounds/"+purple.slug+"/"));
-assert.equal(catalog.sounds.filter(s=>!read("sounds/"+s.slug+"/index.html").includes('name="robots" content="noindex')).length,9,"Exactly nine indexable Sound Pages");
+assert.equal(catalog.sounds.filter(s=>!read("sounds/"+s.slug+"/index.html").includes('name="robots" content="noindex')).length,10,"Exactly ten indexable Sound Pages");
 const hub=read("sounds/noise-colors/index.html");
 assert.equal((hub.match(/class="noise-colors-quick-table"/g)||[]).length,1,"Hub spectrum summary table");
 for(const [id] of pilot)assert.ok(hub.includes('href="/sounds/'+byId[id].slug+'/"'),"Hub links "+id);
@@ -83,4 +83,4 @@ assert.ok(!/<a class="tile" href="\/sounds\/blue-noise\/">[\s\S]*?listening revi
 const css=read("assets/persistent.css");
 assert.ok(css.includes(".noise-band-row{"),"Spectrum CSS");
 assert.ok(css.includes("@media(max-width:350px)"),"Small mobile CSS");
-console.log("NOISE_COLORS_EDITORIAL_QA_PASS "+JSON.stringify({records,sitemap:sitemap.length,indexableSoundPages:9,allSounds:22,unapprovedGreenNoindex:true}));
+console.log("NOISE_COLORS_EDITORIAL_QA_PASS "+JSON.stringify({records,sitemap:sitemap.length,indexableSoundPages:10,allSounds:22,unapprovedGreenNoindex:true}));

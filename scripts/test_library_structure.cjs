@@ -8,7 +8,7 @@ assert.equal(cats.length,12,"12 category hubs");
 assert.equal(collections.length,7,"7 collections retained");
 assert.equal(new Set(sounds.map(s=>s.id)).size,22,"unique IDs");
 assert.equal(new Set(sounds.map(s=>s.slug)).size,22,"unique slugs");
-const editoriallyIndexable=new Set(["heavy-rain-real","waterfall-real","blue-noise","violet-noise"]);
+const editoriallyIndexable=new Set(["heavy-rain-real","waterfall-real","blue-noise","violet-noise","shower-synth"]);
 const indexableSound=s=>s.status==="approved"||s.status==="arranged"||editoriallyIndexable.has(s.id);
 const pages=["index.html","sounds/index.html","collections/index.html",...cats.map(c=>"sounds/"+c.slug+"/index.html"),...sounds.map(s=>"sounds/"+s.slug+"/index.html"),...collections.map(c=>"collections/"+c.slug+"/index.html"),"soundscapes/index.html","audio-tools/index.html"];
 assert.equal(pages.length,46,"expected homepage + 45 library pages");
@@ -30,7 +30,7 @@ for(const s of sounds){
  else assert.ok(page.includes('name="robots" content="noindex,follow"'),"pending sound noindex: "+s.id);
 }
 const sitemap=file("sitemap.xml");const locs=[...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map(x=>new URL(x[1]).pathname);
-assert.equal(locs.length,17,"field source and separately measured Blue/Violet Noise pages passed editorial gates");
+assert.equal(locs.length,18,"field, Noise Colors and Shower editorial releases passed their gates");
 for(const pathname of locs){
  const local=pathname==="/"? "index.html" : pathname.replace(/^\//,"")+"index.html";
  assert.ok(fs.existsSync(local),"sitemap page exists "+local);

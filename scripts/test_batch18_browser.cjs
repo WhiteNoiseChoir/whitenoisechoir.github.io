@@ -22,6 +22,13 @@ const byId=Object.fromEntries(catalog.sounds.map(s=>[s.id,s]));
     assert.ok(overflow<=1,"no horizontal overflow for "+id+": "+overflow);
     assert.equal(await page.locator('button[data-wnc-play="'+id+'"]').count(),1,"real player control "+id);
     assert.ok((await page.locator('main .batch18-choice').count())>=3,"interactive comparisons "+id);
+    if(["desk-fan","air-conditioner","airplane-cabin","low-rumble","gentle-wind","shower"].includes(s.slug)){
+      assert.equal(await page.locator("main .noise-band-row").count(),5,s.slug+" measured spectrum");
+      assert.equal(await page.locator("main details.brown-faq").count(),5,s.slug+" topic FAQs");
+      await page.setViewportSize({width:320,height:740});
+      assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth+1),s.slug+" mobile 320px no overflow");
+      await page.setViewportSize({width:390,height:844});
+    }
   }
   await page.goto(ROOT+"/sounds/blue-noise/",{waitUntil:"domcontentloaded"});
   await page.waitForFunction(()=>window.WNCBridge&&document.querySelector('button[data-wnc-play="blue-noise"]'));
@@ -38,7 +45,22 @@ const byId=Object.fromEntries(catalog.sounds.map(s=>[s.id,s]));
   await page.waitForURL(ROOT+"/sounds/",{timeout:20000});
   assert.equal((await page.evaluate(()=>window.WNCBridge.snapshot().playing)),true,"playing persists after moving to library");
   assert.equal((await page.evaluate(()=>window.WNCBridge.snapshot().activeIds[0])),"violet-noise","same master source stays active");
+  // New release: one-player Shower -> real Waterfall comparison and timer preservation.
+  await page.goto(ROOT+"/sounds/shower/",{waitUntil:"domcontentloaded"});
+  await page.waitForFunction(()=>window.WNCBridge&&document.querySelector('button[data-wnc-play="shower-synth"]'));
+  assert.equal(await page.evaluate(()=>window.WNCBridge.snapshot().playing),false,"No autoplay on Shower");
+  await page.locator('button[data-wnc-play="shower-synth"]').click();
+  await page.waitForFunction(()=>window.WNCBridge.snapshot().playing&&window.WNCBridge.snapshot().activeIds[0]==="shower-synth",{timeout:20000});
+  await page.locator('select[data-wnc-page-timer]').selectOption("900");
+  const showerDeadline=await page.evaluate(()=>window.WNCBridge.snapshot().expiresAt);
+  await page.locator('a[data-wnc-compare="waterfall-real"]').click();
+  await page.waitForFunction(()=>window.WNCBridge.snapshot().playing&&window.WNCBridge.snapshot().activeIds[0]==="waterfall-real",{timeout:20000});
+  assert.equal(page.url().split("?")[0],ROOT+"/sounds/shower/","Shower A/B stays in-page");
+  assert.ok(Math.abs((await page.evaluate(()=>window.WNCBridge.snapshot().expiresAt))-showerDeadline)<1500,"Shower A/B must preserve timer");
+  await page.locator('main .crumb a[href="/sounds/"]').click();
+  await page.waitForURL(ROOT+"/sounds/",{timeout:20000});
+  assert.equal(await page.evaluate(()=>window.WNCBridge.snapshot().activeIds[0]),"waterfall-real","Shower A/B persists after navigation");
   assert.equal(errors.length,0,"no console errors: "+errors.join("; "));
-  console.log("PASS: 14 distinct responsive deep pages, 14 correct source ID bindings, Brown/Blue/Violet A-B, timer persistence and browser navigation");
+  console.log("PASS: 14 source IDs, 6 measured device/environment charts at 320/390px, Shower->Waterfall and Blue->Violet A/B, timer and navigation persistence");
  }finally{await browser.close()}
 })().catch(err=>{console.error(err);process.exit(1)});

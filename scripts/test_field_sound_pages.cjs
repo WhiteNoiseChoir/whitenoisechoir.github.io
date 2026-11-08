@@ -17,7 +17,7 @@ const examples=[
 const all=library.sounds;
 assert.equal(all.length,22);
 const sitemap=[...read("sitemap.xml").matchAll(/<loc>([^<]+)<\/loc>/g)].map(x=>x[1]);
-assert.equal(sitemap.length,17,"17 URL selective sitemap after Noise Colors phase");
+assert.equal(sitemap.length,18,"18 URL selective sitemap including Shower phase");
 const report=[];
 for(const [id,slug,iso,indexable] of examples){
  const path="sounds/"+slug+"/index.html",html=read(path),cc=sources[id],stream=streams[id],url=site+"/sounds/"+slug+"/";
@@ -66,7 +66,7 @@ for(const [id,slug,iso,indexable] of examples){
 assert.ok(!sitemap.includes(site+"/sounds/green-noise/"),"unreviewed Green Noise stays excluded");
 const statuses=all.map(s=>({id:s.id,noindex:read("sounds/"+s.slug+"/index.html").includes('name="robots" content="noindex,follow"')}));
 const indexable=statuses.filter(x=>!x.noindex);
-assert.equal(indexable.length,9,"Nine individually approved indexable Sound Pages; others remain noindex");
+assert.equal(indexable.length,10,"Ten individually approved indexable Sound Pages; others remain noindex");
 assert.ok(!statuses.find(x=>x.id==="green-noise").noindex===false,"Green Noise remains noindex");
 assert.ok(read("assets/persistent.css").includes(".field-choice-grid{"),"Shared field page comparison CSS");
 console.log("FIELD_SOUND_EDITORIAL_QA_PASS "+JSON.stringify({pages:report,indexedSoundCount:indexable.length,noindexCount:statuses.length-indexable.length,sitemapUrls:sitemap.length}));
