@@ -1,0 +1,75 @@
+name: Publish Owner-Approved 16-Sound Audio Batch
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/promote_approved_16.py'
+      - '.github/workflows/publish_approved_16.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: whitenoisechoir-publish-approved-16
+  cancel-in-progress: false
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - name: Checkout 16 QA-passed sources and review masters
+        uses: actions/checkout@v4
+      - name: Set up codec
+        run: |
+          if ! command -v ffmpeg >/dev/null || ! command -v ffprobe >/dev/null; then
+            sudo apt-get update -qq
+            sudo apt-get install -y -qq ffmpeg
+          fi
+      - name: Validate release script and record approved sources
+        run: |
+          python3 -m py_compile scripts/promote_approved_16.py
+          python3 -m py_compile scripts/build_continuous_hls.py
+          python3 -u scripts/promote_approved_16.py
+      - name: Validate all 16 source hashes, 22 HLS timelines and all 46 pages
+        run: |
+          python3 scripts/check_listening_queue.py
+          python3 scripts/test_hls_transport.py
+          node scripts/test_player_smoke.cjs
+          node scripts/test_loop_check.cjs
+          node scripts/test_library_structure.cjs
+          node scripts/test_batch18_pages.cjs
+      - name: Revalidate 4 published source provenance and unique lengths
+        run: |
+          python3 - <<'PY'
+          import hashlib,json
+          from pathlib import Path
+          p=Path("audio")
+          fields={x["id"]:x for x in json.loads(Path("signature/field-review/manifest.json").read_text())["records"]}
+          manifest={x["id"]:x for x in json.loads((p/"continuous/manifest.json").read_text())["records"]}
+          expected={"box-fan-real":67.52,"heavy-rain-real":189.76,"ocean-waves-real":89.83,"waterfall-real":375.48}
+          for key,seconds in expected.items():
+              audio=p/(key+".mp3")
+              qa=fields[key]
+              assert hashlib.sha256(audio.read_bytes()).hexdigest()==qa["sha256"],key
+              assert abs(manifest[key]["source_cycle_seconds"]-seconds)<0.75,key
+              assert manifest[key]["original_source_length_category"]=="APPROVED_CC0_FIELD_RECORDING",key
+              assert qa["qa"]["human_approved"] is True,key
+              print("PRODUCTION_APPROVED",key,seconds,qa["sha256"],flush=True)
+          print("PASS: 16 owner-approved sounds, 4 longer source files and source-accurate HLS",flush=True)
+          PY
+      - name: Publish all approved audio and metadata as one atomic Git commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A audio/
+          git add -A catalog/library.json
+          git add -A index.html sources.html
+          git add -A sounds/
+          git add -A signature/field-review/ signature/dsp-review/ signature/listening-approval/
+          git add -A scripts/build_continuous_hls.py
+          if git diff --cached --quiet; then
+            echo "Approved assets already published"
+          else
+            git commit -m "Publish 16 owner-approved sounds and four full-source CC0 production HLS streams"
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
