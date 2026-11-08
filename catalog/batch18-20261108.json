@@ -1,0 +1,90 @@
+{
+  "version": "batch18-20261108",
+  "batch": "Sound Library Batch 18",
+  "scope": "14 substantive sound pages updated; four reference pages preserved",
+  "sound_ids": [
+    "white-noise",
+    "pink-noise",
+    "brown-noise",
+    "green-noise",
+    "blue-noise",
+    "violet-noise",
+    "soft-white-noise",
+    "deep-brown-noise",
+    "warm-pink-noise",
+    "mid-noise",
+    "desk-fan-synth",
+    "air-conditioner-synth",
+    "rain-on-window-real",
+    "wind-synth",
+    "fireplace-real",
+    "shower-synth",
+    "cabin-hum-synth",
+    "low-rumble"
+  ],
+  "reference_pages": [
+    "white-noise",
+    "pink-noise",
+    "brown-noise",
+    "green-noise"
+  ],
+  "editorially_upgraded": [
+    "blue-noise",
+    "violet-noise",
+    "soft-white-noise",
+    "deep-brown-noise",
+    "warm-pink-noise",
+    "mid-noise",
+    "desk-fan-synth",
+    "air-conditioner-synth",
+    "rain-on-window-real",
+    "wind-synth",
+    "fireplace-real",
+    "shower-synth",
+    "cabin-hum-synth",
+    "low-rumble"
+  ],
+  "scope_note": "No new audio masters are created in this batch. Existing MP3 and native HLS assets remain unchanged.",
+  "index_policy": "Preserve prior index/noindex state; do not promote unreviewed synthetic pages",
+  "source_facts": {
+    "field_records": [
+      {
+        "id": "rain-on-window-real",
+        "source_seconds": 60,
+        "master_seconds": 600,
+        "source": "CC0 by ikayuka"
+      },
+      {
+        "id": "fireplace-real",
+        "source_seconds": 60,
+        "master_seconds": 600,
+        "source": "CC0 by visionear"
+      }
+    ],
+    "independent_dsp": [
+      "blue-noise",
+      "violet-noise",
+      "soft-white-noise",
+      "deep-brown-noise",
+      "warm-pink-noise",
+      "mid-noise",
+      "desk-fan-synth",
+      "air-conditioner-synth",
+      "wind-synth",
+      "shower-synth",
+      "cabin-hum-synth",
+      "low-rumble"
+    ]
+  },
+  "required_checks": [
+    "unique page content",
+    "cross-page compare controls",
+    "audio source ID match",
+    "manifest SHA-256",
+    "MP3 decode",
+    "HLS source exists",
+    "noindex intact",
+    "mobile width",
+    "existing smoke tests"
+  ]
+}

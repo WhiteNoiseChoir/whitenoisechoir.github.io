@@ -143,3 +143,29 @@
 .green-band-table b{font-size:16px;color:#d7f8de}
 @media(max-width:850px){.green-reference .brown-compare-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:570px){.green-reference .brown-compare-grid,.green-band-table{grid-template-columns:1fr}}
+
+
+/* Batch 18 — distinct editorial sound pages; shared responsive listening shell. */
+.batch18-page .batch18-player{padding:clamp(18px,3vw,28px);background:linear-gradient(135deg,#1b3530,#112523);border-color:#49755e}
+.batch18-page .batch18-player h2{margin:13px 0 10px}
+.batch18-tags{display:flex;gap:8px;flex-wrap:wrap;margin:15px 0}
+.batch18-tags span{border:1px solid #507f68;border-radius:90px;padding:5px 9px;color:#c9e6d7;font-size:11px}
+.batch18-compare,.batch18-context,.batch18-uses,.batch18-provenance,.batch18-faq{margin:25px 0}
+.batch18-compare,.batch18-provenance{border:1px solid #345d4d;background:#152725;border-radius:16px;padding:clamp(16px,3vw,24px)}
+.batch18-compare h2{margin:9px 0 12px}
+.batch18-compare p,.batch18-context p,.batch18-uses p,.batch18-provenance p{line-height:1.75;color:#accbbb}
+.batch18-comparison-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(175px,1fr));gap:10px;margin:18px 0 14px}
+.batch18-choice{display:flex;flex-direction:column;justify-content:space-between;gap:10px;background:#1a3530;color:#daf0e2;border:1px solid #486c5a;border-radius:13px;padding:15px;min-height:110px}
+.batch18-choice:hover{background:#24463b;color:#e8fff0;text-decoration:none}
+.batch18-choice.is-active,.batch18-choice[aria-current="true"]{background:#315844;border-color:#abe9c3;box-shadow:inset 0 0 0 1px #abe9c3}
+.batch18-choice strong{font-size:14px}.batch18-choice small{line-height:1.5;color:#b1cdbb;font-size:11px}
+.batch18-context h3{font-size:17px;line-height:1.3;margin:20px 0 6px}
+.batch18-links{display:flex;flex-wrap:wrap;gap:9px;margin:15px 0}
+.batch18-links a{display:inline-flex;align-items:center;min-height:37px;padding:8px 12px;border:1px solid #53745f;border-radius:10px;font-size:12px}
+.batch18-page .wnc-facts{margin-top:18px}
+.batch18-page a:focus-visible{outline:2px solid #b6ebce;outline-offset:3px}
+.batch18-provenance p{margin:10px 0}
+@media(max-width:630px){.batch18-comparison-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.batch18-choice{min-height:126px;padding:12px}}
+@media(max-width:400px){.batch18-comparison-grid{grid-template-columns:1fr}.batch18-choice{min-height:auto}.batch18-compare,.batch18-provenance{padding:15px}}
+
+.batch18-hub-compare{margin:28px 0;padding:18px;border:1px solid #365a49;border-radius:14px;background:#182d27}.batch18-hub-compare h2{margin-top:0}.batch18-hub-compare p{line-height:1.7;color:#acc8b8}
