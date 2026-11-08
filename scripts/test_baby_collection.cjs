@@ -66,7 +66,7 @@ const words=plain.split(" ").filter(Boolean).length;
 assert.ok(words>=720&&words<1800,"Informative but focused parent guide words="+words);
 const loc=[...read("sitemap.xml").matchAll(/<loc>([^<]+)<\/loc>/g)].map(x=>x[1]);
 assert.equal(loc.filter(x=>x===url).length,1,"Existing canonical in sitemap exactly once");
-assert.equal(loc.length,15,"Two separately reviewed field recordings added; baby collection unchanged");
+assert.equal(loc.length,17,"Noise Colors editorial indexing added; baby collection remains unchanged");
 assert.match(read("collections/index.html"),/3 playable sounds · safety first/);
 const css=read("assets/library.css");
 assert.match(css,/\.baby-sound-grid\{/);

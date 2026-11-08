@@ -29,7 +29,8 @@ for(const id of edited){
  const canon=html.match(/<link rel="canonical" href="([^"]+)"/)?.[1];
  assert.equal(canon,"https://whitenoisechoir.github.io/sounds/"+s.slug+"/",p+" canonical");
  assert.ok(!canonicalSet.has(canon),p+" duplicate canonical");canonicalSet.add(canon);
- const expectedIndex=s.status==="approved"||s.status==="arranged";
+ const reviewedNoiseColor=new Set(["blue-noise","violet-noise"]);
+ const expectedIndex=s.status==="approved"||s.status==="arranged"||reviewedNoiseColor.has(id);
  assert.equal(html.includes('name="robots" content="noindex,follow"'),!expectedIndex,p+" index remains unchanged");
  const schemaParts=[...html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)].map(x=>JSON.parse(x[1]));
  assert.equal(schemaParts.length,1,p+" valid JSON-LD count");
@@ -56,7 +57,7 @@ for(const id of edited){
  report.push({id,path:p,words:wordCount,indexable:expectedIndex,compare:compare.length});
 }
 const sitemap=file("sitemap.xml"),sitemapUrls=[...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map(x=>x[1]);
-assert.equal(sitemapUrls.length,15,"Only two editorially upgraded field recordings additionally added to sitemap");
+assert.equal(sitemapUrls.length,17,"Only two measured Blue/Violet Noise pages additionally added to sitemap");
 for(const id of edited){const x=byId[id];if(x.status==="dsp-review")assert.ok(!sitemapUrls.includes("https://whitenoisechoir.github.io/sounds/"+x.slug+"/"),"unreviewed excluded: "+id)}
 const hubs=["noise-colors","fan-noise","rain","water","wind-weather","fire","transportation","household","hums-drones"];
 for(const h of hubs){const doc=file("sounds/"+h+"/index.html");assert.match(doc,/batch18-hub-compare/,"category improved "+h)}
