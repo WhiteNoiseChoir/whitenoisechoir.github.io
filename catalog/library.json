@@ -324,13 +324,14 @@
     {
       "slug": "white-noise-for-sleep",
       "title": "White Noise for Sleep",
-      "desc": "Steady noise textures for bedtime",
+      "desc": "Steady, original white, pink and brown noise textures for adult bedtime listening",
       "ids": [
         "white-noise",
         "pink-noise",
         "brown-noise",
         "soft-white-noise",
-        "green-noise"
+        "warm-pink-noise",
+        "deep-brown-noise"
       ]
     },
     {
