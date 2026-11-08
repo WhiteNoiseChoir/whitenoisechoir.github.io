@@ -2,7 +2,7 @@
   "version": "rain-first-wave-audition-20261108",
   "status": "REVIEW_ONLY_PENDING_OWNER",
   "license_policy": "Three distinct CC0 field recordings; verification source links included; original WAV source is NOT downloaded",
-  "media_quality_policy": "128 kbps HQ MP3 preview (as served) is lossy. Output is 192 kbps MP3 for device testing only; this transcoding does NOT restore lost information. Re-approval of lossless original is required before final master promotion.",
+  "media_quality_policy": "Public Freesound HQ MP3 previews are lossy; source encoding bitrates for the first-20MB partial long previews are not established. The 600-second 192 kbps review MP3 outputs are transcodes and do NOT restore lost information. Lossless original sources and human listening are required before production promotion.",
   "goal": "Three 10-minute audible differentiated candidates; not 3 new playable production sources",
   "tracks": [
     {
