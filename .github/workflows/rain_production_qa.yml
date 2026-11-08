@@ -15,6 +15,9 @@ on:
       - "scripts/test_batch18_pages.cjs"
       - "scripts/test_library_foundation.cjs"
       - "scripts/test_library_structure.cjs"
+      - "scripts/test_rain_first_wave_review.cjs"
+      - "scripts/test_rain_review_audio.py"
+      - "signature/rain-review/**"
       - "scripts/test_rain_production_browser.cjs"
       - "scripts/test_hls_transport.py"
       - ".github/workflows/rain_production_qa.yml"
@@ -30,6 +33,7 @@ jobs:
       - name: Existing catalog and HLS file integrity
         run: |
           node scripts/test_rain_production_release.cjs
+          node scripts/test_rain_first_wave_review.cjs
           node scripts/test_player_smoke.cjs
           node scripts/test_library_structure.cjs
           node scripts/build_sound_library_foundation.cjs
@@ -44,6 +48,7 @@ jobs:
             sudo apt-get update -qq
             sudo apt-get install -y -qq ffmpeg
           fi
+          python3 scripts/test_rain_review_audio.py
           python3 scripts/test_hls_transport.py
           python3 scripts/test_batch18_audio.py
       - name: Mobile 320/390 persistent playback and new source pages
@@ -53,4 +58,5 @@ jobs:
           server_pid=$!
           trap 'kill $server_pid || true' EXIT
           node scripts/test_rain_production_browser.cjs
+          node scripts/test_rain_review_browser.cjs
           node scripts/test_library_foundation_browser.cjs
