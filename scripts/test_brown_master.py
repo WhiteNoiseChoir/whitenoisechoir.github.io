@@ -91,5 +91,7 @@ def main():
 if __name__=="__main__":
     try:main()
     except Exception as e:
+        import traceback
+        traceback.print_exc()
         print("FAIL BROWN_MASTER_QA",repr(e),file=sys.stderr)
         sys.exit(1)
