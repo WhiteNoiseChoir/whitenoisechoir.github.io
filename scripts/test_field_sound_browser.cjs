@@ -32,7 +32,7 @@ const cases=[
    assert.equal(page.url().split("?")[0],BASE+"/sounds/"+c.slug+"/",c.slug+" A/B stays on source page");
    assert.equal(await other.getAttribute("aria-current"),"true",c.slug+" selected source marked accessible");
    assert.ok(Math.abs((await page.evaluate(()=>window.WNCBridge.snapshot().expiresAt))-deadline)<1500,c.slug+" timer deadline preserved");
-   await page.locator('main a.field-detail-links a[href="/sounds/'+c.next+'/"]').first().click();
+   await page.locator('main p.field-detail-links a[href="/sounds/'+c.next+'/"]').first().click();
    await page.waitForURL(BASE+"/sounds/"+c.next+"/",{timeout:20000});
    assert.equal(await page.evaluate(()=>window.WNCBridge.snapshot().playing),true,c.slug+" audio persists on link navigation");
    assert.deepEqual(await page.evaluate(()=>window.WNCBridge.snapshot().activeIds),[c.other],c.slug+" current audio preserved across page");
