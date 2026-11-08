@@ -1,0 +1,35 @@
+name: Audit 4 Original CC0 Field Sources
+on:
+  push:
+    branches: [main]
+    paths:
+      - scripts/audit_field_sources.py
+      - .github/workflows/field_source_audit.yml
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Fetch checksum-pinned previews and verify original usable durations
+        run: |
+          python -m py_compile scripts/audit_field_sources.py
+          python -u scripts/audit_field_sources.py
+      - name: Publish audit document only — never alter audio
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add audio/field-source-audit.json
+          if git diff --cached --quiet; then
+            echo 'Audit already current'
+          else
+            git commit -m "Document true accessible source lengths for 4 unapproved CC0 demos"
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
