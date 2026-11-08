@@ -287,6 +287,7 @@ window.WNCBridge={
  play:function(ids,name){return playTracks(ids,name||byId[ids[0]]?.[1]||"Sound")},
  pause:pause,resume:resume,toggle:toggle,
  stop:function(){reset();status("Stopped");if(typeof window.WNCAppSync==="function")window.WNCAppSync()},
+ prepare:function(id){if(byId[id]&&!playerItems.length&&!fallback.length){activeIds=[id];current=rows.findIndex(function(r){return r[0]===id});setName(byId[id][1]);if(typeof window.WNCAppSync==="function")window.WNCAppSync()}},
  setVolume:function(value){var el=$("volume");el.value=Math.max(0,Math.min(100,Number(value)||0));if(el.oninput)el.oninput.call(el);if(typeof window.WNCAppSync==="function")window.WNCAppSync()},
  setTimer:function(value){var el=$("timer");el.value=String(value);if(el.onchange)el.onchange.call(el);if(typeof window.WNCAppSync==="function")window.WNCAppSync()},
  snapshot:function(){return {activeIds:activeIds.slice(),playing:isPlaying,name:playingName,hasAudio:playerItems.length>0||fallback.length>0,volume:Number($("volume").value),timer:String($("timer").value),expiresAt:expiresAt}},

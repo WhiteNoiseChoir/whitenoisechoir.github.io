@@ -10,7 +10,7 @@ const originalHome=!!$("playingTitle");
 if(originalHome){homeMain=routeMain;homeTemplate=new DOMParser().parseFromString(document.documentElement.outerHTML,"text/html");}
 const mini=document.createElement("aside");
 mini.id="wnc-mini";mini.setAttribute("aria-label","Persistent audio player");
-mini.innerHTML='<div class="wnc-mini-inner"><div class="wnc-mini-info"><strong id="wnc-mini-title">White Noise</strong><small id="wnc-mini-status" aria-live="polite">Ready</small></div><button type="button" id="wnc-mini-toggle" aria-label="Play or pause">▶</button><label class="wnc-mini-volume">Volume <input id="wnc-mini-volume" type="range" min="0" max="100" value="28" aria-label="Volume"></label><label class="wnc-mini-timer">Timer <select id="wnc-mini-timer" aria-label="Sleep timer"><option value="0">Off</option><option value="900">15 min</option><option value="1800">30 min</option><option value="3600">1 hour</option><option value="7200">2 hours</option><option value="14400">4 hours</option><option value="28800">8 hours</option><option value="43200">12 hours</option></select></label><button type="button" id="wnc-mini-dark" aria-label="Dark screen">☾</button><button type="button" id="wnc-mini-stop" aria-label="Stop sound">■</button></div>';
+mini.innerHTML='<div class="wnc-mini-inner"><div class="wnc-mini-info"><strong id="wnc-mini-title">White Noise</strong><small id="wnc-mini-status" aria-live="polite">Ready</small></div><button type="button" id="wnc-mini-toggle" aria-label="Play or pause">▶</button><label class="wnc-mini-volume">Volume <input id="wnc-mini-volume" type="range" min="0" max="100" value="28" aria-label="Volume"></label><label class="wnc-mini-timer">Timer <select id="wnc-mini-timer" aria-label="Sleep timer"><option value="0">Off</option><option value="900">15 min</option><option value="1800">30 min</option><option value="3600">1 hour</option><option value="7200">2 hours</option><option value="14400">4 hours</option><option value="28800">8 hours</option><option value="43200">12 hours</option></select></label><button type="button" id="wnc-mini-options" aria-label="Volume and timer settings" aria-expanded="false">⚙</button><button type="button" id="wnc-mini-dark" aria-label="Dark screen">☾</button><button type="button" id="wnc-mini-stop" aria-label="Stop sound">■</button></div>';
 document.body.append(mini);
 const dark=document.createElement("div");dark.id="wnc-screen-dark";dark.hidden=true;
 dark.innerHTML='<strong id="wnc-screen-title">WhiteNoiseChoir</strong><p>Dark screen mode. System lock-screen playback still depends on your device.</p><button type="button" id="wnc-screen-toggle">Pause / Play</button><button type="button" id="wnc-screen-exit">Exit dark screen</button>';
@@ -33,6 +33,8 @@ function sync(){
   b.setAttribute("aria-label",active?"Pause "+(b.dataset.title||"audio"):"Play "+(b.dataset.title||"audio"));
  });
  document.querySelectorAll("[data-wnc-status]").forEach(e=>{e.textContent=(s.playing?"Playing: ":s.hasAudio?"Paused: ":"Ready: ")+(s.name||"White Noise")});
+ document.querySelectorAll("[data-wnc-page-volume]").forEach(e=>{if(document.activeElement!==e)e.value=s.volume});
+ document.querySelectorAll("[data-wnc-page-timer]").forEach(e=>{e.value=s.timer});
 }
 async function bootBridge(){
  if(window.WNCBridge){bridge=window.WNCBridge;sync();return bridge;}
@@ -141,9 +143,12 @@ async function navigate(url,push=true){
   if(push)history.pushState({wnc:true},"",routePath(url));
   document.body.classList.remove("wnc-menu-open");
   const mb=document.querySelector(".wnc-menu-button");if(mb)mb.setAttribute("aria-expanded","false");
-  if(goHome)sync();else enhance(main);
+  if(goHome){
+   const requested=url.searchParams.get("sound");if(requested&&(!bridge.snapshot().hasAudio)&&typeof bridge.prepare==="function")bridge.prepare(requested);
+   sync();
+  }else enhance(main);
   document.querySelectorAll("header nav a").forEach(a=>{const selected=path==="/"?a.getAttribute("href")==="/":path.startsWith(new URL(a.href).pathname);if(selected)a.setAttribute("aria-current","page");else a.removeAttribute("aria-current")});
-  window.scrollTo({top:0,behavior:"auto"});
+  if(url.hash){const target=document.getElementById(decodeURIComponent(url.hash.slice(1)));if(target)target.scrollIntoView({block:"start",behavior:"auto"});else window.scrollTo({top:0,behavior:"auto"})}else window.scrollTo({top:0,behavior:"auto"});
   const h1=main.querySelector("h1");if(h1){h1.setAttribute("tabindex","-1");h1.focus({preventScroll:true})}
  }catch(err){console.warn("Route navigation fallback",err);location.assign(url.href)}
  finally{blocked=false}
@@ -167,6 +172,12 @@ function enhance(main){
     const btn=document.createElement("button");btn.type="button";btn.className="wnc-primary";btn.dataset.wncPlay=id;btn.dataset.title=title;btn.textContent="▶ Listen";btn.onclick=()=>playOne(id,title);
     const hint=document.createElement("span");hint.dataset.wncStatus="1";hint.className="wnc-play-hint";hint.textContent="Start playback, then keep browsing.";
     row.append(btn,hint);audio.after(row);
+    const prefs=document.createElement("div");prefs.className="wnc-page-settings";
+    prefs.innerHTML='<label>Volume <input type="range" min="0" max="100" aria-label="Volume" data-wnc-page-volume></label><label>Sleep timer <select data-wnc-page-timer aria-label="Sleep timer"><option value="0">Off</option><option value="900">15 minutes</option><option value="1800">30 minutes</option><option value="3600">1 hour</option><option value="7200">2 hours</option><option value="14400">4 hours</option><option value="28800">8 hours</option><option value="43200">12 hours</option></select></label><button type="button" class="wnc-dark-action">☾ Dark screen</button>';
+    row.after(prefs);
+    prefs.querySelector("[data-wnc-page-volume]").oninput=e=>{bridge.setVolume(e.target.value);sync()};
+    prefs.querySelector("[data-wnc-page-timer]").onchange=e=>{bridge.setTimer(e.target.value);sync()};
+    prefs.querySelector(".wnc-dark-action").onclick=()=>{dark.hidden=false};
    }
   }
  }
@@ -213,6 +224,7 @@ function installEvents(){
  $("wnc-mini-volume").oninput=e=>{bridge?.setVolume(e.target.value);sync()};
  $("wnc-mini-timer").onchange=e=>{bridge?.setTimer(e.target.value);sync()};
  $("wnc-mini-dark").onclick=()=>{dark.hidden=false};
+ $("wnc-mini-options").onclick=()=>{const open=document.body.classList.toggle("wnc-mini-expanded");$("wnc-mini-options").setAttribute("aria-expanded",String(open))};
  $("wnc-screen-exit").onclick=()=>{dark.hidden=true};
  $("wnc-screen-toggle").onclick=()=>{bridge?.toggle();sync()};
  document.addEventListener("click",e=>{
