@@ -35,8 +35,10 @@ def decibels(value):
 
 def check(ident):
     playlist=Path("audio/continuous")/ident/"continuous.m3u8"
-    target=590 if ident in LONG else 44
-    duration=30 if ident in LONG else 20
+    rows = json.loads(Path("audio/continuous/manifest.json").read_text())["records"]
+    source = next(x for x in rows if x["id"] == ident)
+    target = max(0, int(round(source["source_cycle_seconds"])) - 10)
+    duration = 30
     cmd=["ffmpeg","-hide_banner","-loglevel","error","-nostdin",
          "-ss",str(target),"-i",str(playlist),
          "-t",str(duration),"-vn","-ar",str(SR),"-ac","1",
@@ -53,7 +55,7 @@ def check(ident):
         raise RuntimeError(f"Truncated audio at source boundary for {ident}: {actual_duration:.2f}s")
     if not all(math.isfinite(float(v)) for v in samples):
         raise RuntimeError(f"Non-finite audio from {ident}")
-    # 590..620: the ten-minute splice occurs 10 seconds into this window.
+    # The selected source splice occurs about 10 seconds into this window.
     before=samples[2*SR:8*SR]
     after=samples[12*SR:18*SR]
     before_level=decibels(rms(before))
@@ -67,7 +69,7 @@ def check(ident):
     if min(windows)<-64:
         raise RuntimeError(f"Digital silence across loop of {ident}: {min(windows)}dBFS")
     return {
-        "id":ident,"decoded_seconds_across_source_boundary":round(actual_duration,2),
+        "id":ident,"source_cycle_seconds":source["source_cycle_seconds"],"decoded_seconds_across_source_boundary":round(actual_duration,2),
         "pre_boundary_rms_dbfs":round(before_level,1),
         "post_boundary_rms_dbfs":round(after_level,1),
         "quietest_250ms_across_boundary_dbfs":round(min(windows),1),
