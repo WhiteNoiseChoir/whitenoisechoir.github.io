@@ -1,0 +1,52 @@
+#!/usr/bin/env node
+"use strict";
+const {chromium}=require("playwright"),fs=require("node:fs"),assert=require("node:assert/strict");
+const URL="http://127.0.0.1:8787";
+(async()=>{
+ const chromePath=["/usr/bin/google-chrome","/usr/bin/google-chrome-stable","/usr/bin/chromium"].find(p=>fs.existsSync(p));
+ const browser=await chromium.launch({headless:true,executablePath:chromePath,args:["--no-sandbox","--autoplay-policy=no-user-gesture-required"]});
+ try{
+  const page=await browser.newPage({viewport:{width:390,height:844},reducedMotion:"reduce"});
+  const errors=[];page.on("pageerror",e=>errors.push(String(e)));
+  await page.goto(URL+"/sounds/brown-noise/",{waitUntil:"domcontentloaded"});
+  await page.waitForFunction(()=>window.WNCBridge && document.querySelector('button[data-wnc-play="brown-noise"]'),null,{timeout:30000});
+  assert.equal(await page.locator('audio[data-sound="brown-noise"]').getAttribute("controls"),null,"global player replaces native page controls");
+  await page.locator('button[data-wnc-play="brown-noise"]').click();
+  await page.waitForFunction(()=>window.WNCBridge?.snapshot().playing===true,null,{timeout:25000});
+  const initial=await page.evaluate(()=>window.WNCBridge.snapshot());
+  assert.deepEqual(initial.activeIds,["brown-noise"]);
+  await page.locator('a[href="/sounds/pink-noise/"]').first().click();
+  await page.waitForURL(URL+"/sounds/pink-noise/",{timeout:20000});
+  const afterNav=await page.evaluate(()=>window.WNCBridge.snapshot());
+  assert.equal(afterNav.playing,true,"Brown Noise keeps playing while navigating");
+  assert.deepEqual(afterNav.activeIds,["brown-noise"],"audio source preserved across route");
+  await page.locator('button[data-wnc-play="pink-noise"]').click();
+  await page.waitForFunction(()=>window.WNCBridge.snapshot().playing&&window.WNCBridge.snapshot().activeIds[0]==="pink-noise",null,{timeout:20000});
+  await page.locator('select[data-wnc-page-timer]').selectOption("900");
+  assert.equal(await page.evaluate(()=>window.WNCBridge.snapshot().timer),"900","timer set on sound page");
+  await page.locator('a[href="/sounds/"]').first().click();
+  await page.waitForURL(URL+"/sounds/",{timeout:20000});
+  assert.equal(await page.evaluate(()=>window.WNCBridge.snapshot().timer),"900","timer survives navigation");
+  assert.equal(await page.evaluate(()=>window.WNCBridge.snapshot().playing),true,"audio survives library route");
+  await page.locator("#wnc-library-search").fill("pink");
+  const shown=await page.locator('main .wnc-sound-card:visible').count();
+  assert.ok(shown>0&&shown<10,"library search filters visible sound cards, count="+shown);
+  await page.locator('a.logo[href="/"]').click();
+  await page.waitForURL(URL+"/",{timeout:20000});
+  assert.equal(await page.evaluate(()=>window.WNCBridge.snapshot().playing),true,"audio persists when opening homepage");
+  assert.ok(await page.locator("#playingTitle").count()===1,"home player mounted");
+  assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth+1),true,"no horizontal overflow at 390px");
+  await page.locator(".wnc-menu-button").click();
+  assert.equal(await page.locator(".wnc-menu-button").getAttribute("aria-expanded"),"true","mobile menu opens");
+  await page.locator('a[href="/collections/"]').first().click();
+  await page.waitForURL(URL+"/collections/",{timeout:20000});
+  assert.equal(await page.evaluate(()=>window.WNCBridge.snapshot().playing),true,"audio survives homepage to collection");
+  await page.locator("#wnc-mini-options").click();
+  assert.equal(await page.locator("#wnc-mini-options").getAttribute("aria-expanded"),"true","mobile timer/volume settings expand");
+  assert.equal(await page.locator("#wnc-mini-timer").isVisible(),true,"mobile sleep timer accessible");
+  const idDuplicates=await page.evaluate(()=>{const all=[...document.querySelectorAll("[id]")].map(e=>e.id);return all.filter((x,i)=>all.indexOf(x)!==i)});
+  assert.equal(idDuplicates.length,0,"no duplicate element IDs: "+idDuplicates.join(","));
+  assert.equal(errors.length,0,"browser script errors: "+errors.join("; "));
+  console.log("PASS: mobile library deep link, listen, persistent Brown/Pink audio, timer, search, homepage navigation, menu, mobile controls, no duplicate IDs");
+ }finally{await browser.close()}
+})().catch(e=>{console.error(e);process.exit(1)});
