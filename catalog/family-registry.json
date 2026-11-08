@@ -1,14 +1,15 @@
 {
   "schema_version": 1,
-  "revision": "foundation-v1-20261108",
+  "revision": "rain-first-wave-production-v1-20261108",
   "source": "User supplied 2026-11-08 full sound library blueprint, reconciled to live production commit 7c52701",
   "count_policy": {
-    "existing": 22,
-    "planned": 70,
+    "existing": 25,
+    "planned": 67,
     "families": 13,
     "priority_P0": 24,
     "priority_P1": 27,
-    "priority_P2": 19
+    "priority_P2": 19,
+    "released_from_plan": 3
   },
   "route_policy": "12 existing category URLs plus one virtual Ocean family section in /sounds/; /sounds/ocean-waves/ remains a single-sound page; no redirects, canonical or robots changes.",
   "families": [
@@ -53,15 +54,15 @@
       ],
       "existing_ids": [
         "rain-on-window-real",
-        "heavy-rain-real"
+        "heavy-rain-real",
+        "light-rain-real",
+        "rain-tin-roof-real",
+        "distant-thunder-real"
       ],
       "planned_ids": [
-        "NEW-01",
-        "NEW-02",
         "NEW-03",
         "NEW-04",
         "NEW-05",
-        "NEW-06",
         "NEW-07",
         "NEW-25",
         "NEW-26",

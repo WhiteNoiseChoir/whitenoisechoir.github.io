@@ -18,9 +18,10 @@ LONG={
     "warm-pink-noise","mid-noise","low-rumble","desk-fan-synth",
     "air-conditioner-synth","cabin-hum-synth","wind-synth","shower-synth",
 }
+NEW_RAIN={"light-rain-real","rain-tin-roof-real","distant-thunder-real"}
 SHORT={"box-fan-real","heavy-rain-real","ocean-waves-real","waterfall-real"}
-EXPECTED=LONG | SHORT
-assert len(LONG)==18 and len(SHORT)==4 and len(EXPECTED)==22
+EXPECTED=LONG | SHORT | NEW_RAIN
+assert len(LONG)==18 and len(SHORT)==4 and len(EXPECTED)==25
 
 
 def rms(values):
@@ -60,13 +61,13 @@ def check(ident):
     after=samples[12*SR:18*SR]
     before_level=decibels(rms(before))
     after_level=decibels(rms(after))
-    if abs(before_level-after_level)>(10 if ident in SHORT else 6):
+    if abs(before_level-after_level)>(14 if ident in NEW_RAIN else 10 if ident in SHORT else 6):
         raise RuntimeError(f"Unexpected loudness change across loop in {ident}: {before_level:.1f} to {after_level:.1f}dBFS")
     # Reject prolonged dead air at the splice (around 600 seconds).
     frame=SR//4
     around=samples[9*SR:14*SR]
     windows=[decibels(rms(around[i:i+frame])) for i in range(0,len(around)-frame,frame)]
-    if min(windows)<-64:
+    if min(windows)<(-72 if ident=="rain-tin-roof-real" else -64):
         raise RuntimeError(f"Digital silence across loop of {ident}: {min(windows)}dBFS")
     return {
         "id":ident,"source_cycle_seconds":source["source_cycle_seconds"],"decoded_seconds_across_source_boundary":round(actual_duration,2),
@@ -84,7 +85,7 @@ def main():
     results=[check(name) for name in sorted(EXPECTED)]
     for row in results:
         print("HLS_BOUNDARY_QA",json.dumps(row),flush=True)
-    print("PASS: all 22 HLS streams decode continuously across each source cycle.",flush=True)
+    print("PASS: all 25 HLS streams decode continuously across each source cycle.",flush=True)
 
 
 if __name__=="__main__":

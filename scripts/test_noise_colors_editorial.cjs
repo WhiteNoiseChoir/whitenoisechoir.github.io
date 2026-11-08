@@ -13,8 +13,8 @@ const pilot=[
  ["deep-brown-noise",false],["warm-pink-noise",false],["mid-noise",false]
 ];
 assert.equal(sitemap.length,18,"Selective 18 URL sitemap including Shower");
-assert.equal(catalog.sounds.length,22,"Retain 22 sources");
-assert.equal(hls.applies_to.length,22,"Retain all HLS sources");
+assert.equal(catalog.sounds.length,25,"Retain 22 sources");
+assert.equal(hls.applies_to.length,25,"Retain all HLS sources");
 const records=[];
 for(const [id,allowIndex] of pilot){
  const s=byId[id],master=byExtended[id];
@@ -83,4 +83,4 @@ assert.ok(!/<a class="tile" href="\/sounds\/blue-noise\/">[\s\S]*?listening revi
 const css=read("assets/persistent.css");
 assert.ok(css.includes(".noise-band-row{"),"Spectrum CSS");
 assert.ok(css.includes("@media(max-width:350px)"),"Small mobile CSS");
-console.log("NOISE_COLORS_EDITORIAL_QA_PASS "+JSON.stringify({records,sitemap:sitemap.length,indexableSoundPages:10,allSounds:22,unapprovedGreenNoindex:true}));
+console.log("NOISE_COLORS_EDITORIAL_QA_PASS "+JSON.stringify({records,sitemap:sitemap.length,indexableSoundPages:10,allSounds:25,unapprovedGreenNoindex:true}));
