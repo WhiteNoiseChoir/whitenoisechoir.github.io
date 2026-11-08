@@ -1,0 +1,39 @@
+name: Rain Production HLS Builder (three owner-approved sources)
+on:
+  push:
+    branches: ["feature/rain-first-wave-production-20261108"]
+    paths:
+      - "scripts/build_rain_production_hls.py"
+      - ".github/workflows/build_rain_production_hls.yml"
+      - "audio/light-rain-real.mp3"
+      - "audio/rain-tin-roof-real.mp3"
+      - "audio/distant-thunder-real.mp3"
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  build-three-hls:
+    if: github.ref_name == 'feature/rain-first-wave-production-20261108' && github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 32
+    steps:
+      - uses: actions/checkout@v4
+        with: {persist-credentials: true}
+      - name: Generate three static 7day native iPhone HLS transports without changing old 22
+        run: |
+          if ! command -v ffmpeg >/dev/null; then
+            sudo apt-get update -qq
+            sudo apt-get install -y -qq ffmpeg
+          fi
+          python3 scripts/build_rain_production_hls.py
+      - name: Commit additional HLS assets and 25-source manifest only
+        env:
+          BRANCH: ${{ github.ref_name }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add audio/continuous/manifest.json
+          git add audio/continuous/light-rain-real/ audio/continuous/rain-tin-roof-real/ audio/continuous/distant-thunder-real/
+          if git diff --cached --quiet; then echo "Nothing changed"; exit 0; fi
+          git commit -m "HLS: three approved rain/thunder masters, seven-day static native streams"
+          git push origin "HEAD:${BRANCH}"
