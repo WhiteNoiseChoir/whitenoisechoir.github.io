@@ -19,8 +19,11 @@ jobs:
           persist-credentials: true
       - name: Inspect public CC0 Freesound previews and render three isolated 10-minute audition masters
         run: |
-          command -v ffmpeg
-          command -v ffprobe
+          if ! command -v ffprobe >/dev/null || ! command -v ffmpeg >/dev/null; then
+            sudo apt-get update -qq
+            sudo apt-get install -y -qq ffmpeg
+          fi
+          ffmpeg -version | head -n 1
           python3 scripts/build_rain_preview_review.py
       - name: Verify three reviewed MP3 containers and provenance manifest
         run: |
