@@ -47,6 +47,24 @@ const URL="http://127.0.0.1:8787";
   await page.waitForFunction(()=>window.WNCBridge.snapshot().playing&&window.WNCBridge.snapshot().activeIds[0]==="pink-noise",null,{timeout:20000});
   assert.equal((await page.evaluate(()=>window.WNCBridge.snapshot().timer)),"900","Pink restored with original sleep timer");
 
+
+  // White Noise is an independent technical sound page, not a second sound machine.
+  await page.locator('main .brown-fine-link a[href="/sounds/white-noise/"]').first().click();
+  await page.waitForURL(URL+"/sounds/white-noise/",{timeout:20000});
+  assert.match(await page.title(),/White Noise Sound — Listen, Spectrum & Compare/,"White Noise has a distinct technical title");
+  assert.ok(await page.locator('main .white-spectrum').count()===1,"Dedicated White Noise spectral explanation");
+  assert.ok(await page.locator('main .wnc-facts dd').count()>=7,"Measured White Noise master provenance");
+  const whiteDeadline=await page.evaluate(()=>window.WNCBridge.snapshot().expiresAt);
+  await page.locator('a[data-wnc-compare="white-noise"]').click();
+  await page.waitForFunction(()=>window.WNCBridge.snapshot().playing&&window.WNCBridge.snapshot().activeIds[0]==="white-noise",null,{timeout:20000});
+  assert.equal(page.url().split("?")[0],URL+"/sounds/white-noise/","White A/B retains technical URL");
+  assert.equal(await page.locator('a[data-wnc-compare="white-noise"]').getAttribute("aria-current"),"true","White active choice accessible");
+  await page.locator('a[data-wnc-compare="brown-noise"]').click();
+  await page.waitForFunction(()=>window.WNCBridge.snapshot().playing&&window.WNCBridge.snapshot().activeIds[0]==="brown-noise",null,{timeout:20000});
+  assert.ok(Math.abs((await page.evaluate(()=>window.WNCBridge.snapshot().expiresAt))-whiteDeadline)<1500,"White A/B keeps timer deadline");
+  await page.locator('a[data-wnc-compare="white-noise"]').click();
+  await page.waitForFunction(()=>window.WNCBridge.snapshot().playing&&window.WNCBridge.snapshot().activeIds[0]==="white-noise",null,{timeout:20000});
+  assert.equal((await page.evaluate(()=>window.WNCBridge.snapshot().timer)),"900","White Noise timer retained");
   await page.locator('main .crumb a[href="/sounds/"]').first().click();
   await page.waitForURL(URL+"/sounds/",{timeout:20000});
   assert.equal(await page.evaluate(()=>window.WNCBridge.snapshot().timer),"900","timer survives navigation");
