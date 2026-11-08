@@ -43,7 +43,7 @@
         "loop_boundary_jump_vs_decimated_adjacent": 0.21,
         "technical_status": "PASS",
         "flags": [],
-        "listening_approval": "PENDING_REAL_DEVICE_REVIEW",
+        "listening_approval": "APPROVED_BY_OWNER",
         "label_validity": "Synthetic DSP; no field recording represented"
       }
     },
@@ -84,7 +84,7 @@
         "loop_boundary_jump_vs_decimated_adjacent": 1.307,
         "technical_status": "PASS",
         "flags": [],
-        "listening_approval": "PENDING_REAL_DEVICE_REVIEW",
+        "listening_approval": "APPROVED_BY_OWNER",
         "label_validity": "Synthetic DSP; no field recording represented"
       }
     },
@@ -125,7 +125,7 @@
         "loop_boundary_jump_vs_decimated_adjacent": 0.16,
         "technical_status": "PASS",
         "flags": [],
-        "listening_approval": "PENDING_REAL_DEVICE_REVIEW",
+        "listening_approval": "APPROVED_BY_OWNER",
         "label_validity": "Synthetic DSP; no field recording represented"
       }
     },
@@ -166,7 +166,7 @@
         "loop_boundary_jump_vs_decimated_adjacent": 0.055,
         "technical_status": "PASS",
         "flags": [],
-        "listening_approval": "PENDING_REAL_DEVICE_REVIEW",
+        "listening_approval": "APPROVED_BY_OWNER",
         "label_validity": "Synthetic DSP; no field recording represented"
       }
     },
@@ -207,7 +207,7 @@
         "loop_boundary_jump_vs_decimated_adjacent": 0.104,
         "technical_status": "PASS",
         "flags": [],
-        "listening_approval": "PENDING_REAL_DEVICE_REVIEW",
+        "listening_approval": "APPROVED_BY_OWNER",
         "label_validity": "Synthetic DSP; no field recording represented"
       }
     },
@@ -248,7 +248,7 @@
         "loop_boundary_jump_vs_decimated_adjacent": 0.178,
         "technical_status": "PASS",
         "flags": [],
-        "listening_approval": "PENDING_REAL_DEVICE_REVIEW",
+        "listening_approval": "APPROVED_BY_OWNER",
         "label_validity": "Synthetic DSP; no field recording represented"
       }
     },
@@ -289,7 +289,7 @@
         "loop_boundary_jump_vs_decimated_adjacent": 0.045,
         "technical_status": "PASS",
         "flags": [],
-        "listening_approval": "PENDING_REAL_DEVICE_REVIEW",
+        "listening_approval": "APPROVED_BY_OWNER",
         "label_validity": "Synthetic DSP; no field recording represented"
       }
     },
@@ -330,7 +330,7 @@
         "loop_boundary_jump_vs_decimated_adjacent": 0.14,
         "technical_status": "PASS",
         "flags": [],
-        "listening_approval": "PENDING_REAL_DEVICE_REVIEW",
+        "listening_approval": "APPROVED_BY_OWNER",
         "label_validity": "Synthetic DSP; no field recording represented"
       }
     },
@@ -371,7 +371,7 @@
         "loop_boundary_jump_vs_decimated_adjacent": 0.244,
         "technical_status": "PASS",
         "flags": [],
-        "listening_approval": "PENDING_REAL_DEVICE_REVIEW",
+        "listening_approval": "APPROVED_BY_OWNER",
         "label_validity": "Synthetic DSP; no field recording represented"
       }
     },
@@ -412,7 +412,7 @@
         "loop_boundary_jump_vs_decimated_adjacent": 0.026,
         "technical_status": "PASS",
         "flags": [],
-        "listening_approval": "PENDING_REAL_DEVICE_REVIEW",
+        "listening_approval": "APPROVED_BY_OWNER",
         "label_validity": "Synthetic DSP; no field recording represented"
       }
     },
@@ -453,7 +453,7 @@
         "loop_boundary_jump_vs_decimated_adjacent": 0.025,
         "technical_status": "PASS",
         "flags": [],
-        "listening_approval": "PENDING_REAL_DEVICE_REVIEW",
+        "listening_approval": "APPROVED_BY_OWNER",
         "label_validity": "Synthetic DSP; no field recording represented"
       }
     },
@@ -494,12 +494,12 @@
         "loop_boundary_jump_vs_decimated_adjacent": 0.094,
         "technical_status": "PASS",
         "flags": [],
-        "listening_approval": "PENDING_REAL_DEVICE_REVIEW",
+        "listening_approval": "APPROVED_BY_OWNER",
         "label_validity": "Synthetic DSP; no field recording represented"
       }
     }
   ],
-  "human_approval": "PENDING; technical QA does not prove sound labels are perceptually accurate or pleasant",
+  "human_approval": "APPROVED_BY_OWNER_FOR_AUDIO_PUBLICATION_2026_11_08",
   "preserves": [
     "white-noise",
     "pink-noise",

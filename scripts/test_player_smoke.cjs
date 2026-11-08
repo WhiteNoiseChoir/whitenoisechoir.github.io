@@ -125,7 +125,7 @@ const flush=()=>new Promise(resolve=>setImmediate(resolve));
   card("White Noise").children[3].onclick();
   await flush();
   let stream=audioInstances[audioInstances.length-1];
-  assert.ok(stream.src.includes("audio/continuous/white-noise/continuous.m3u8?v=continuous-hls-v3-green"),stream.src);
+  assert.ok(stream.src.includes("audio/continuous/white-noise/continuous.m3u8?v=continuous-hls-v4-cc0-approved"),stream.src);
   assert.ok(stream.loop,"HLS playlist end retains native loop for exceptionally long sessions");
   stream.currentTime=600;
   document.hidden=true;stream.handlers.timeupdate();

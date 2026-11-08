@@ -1,6 +1,6 @@
 {
   "version": "field-full-source-review-20261108",
-  "status": "AUDITION_ONLY_NO_MAIN_SITE_ASSET_REPLACEMENT",
+  "status": "OWNER_APPROVED_AND_PUBLISHED",
   "records": [
     {
       "id": "box-fan-real",
@@ -25,9 +25,9 @@
         "bitrate_kbps": 192,
         "status": "PASS",
         "flags": [],
-        "human_approved": false
+        "human_approved": true
       },
-      "listening_status": "PENDING_USER_APPROVAL"
+      "listening_status": "APPROVED_BY_OWNER_PUBLISHED"
     },
     {
       "id": "heavy-rain-real",
@@ -52,9 +52,9 @@
         "bitrate_kbps": 192,
         "status": "PASS",
         "flags": [],
-        "human_approved": false
+        "human_approved": true
       },
-      "listening_status": "PENDING_USER_APPROVAL"
+      "listening_status": "APPROVED_BY_OWNER_PUBLISHED"
     },
     {
       "id": "ocean-waves-real",
@@ -79,9 +79,9 @@
         "bitrate_kbps": 192,
         "status": "PASS",
         "flags": [],
-        "human_approved": false
+        "human_approved": true
       },
-      "listening_status": "PENDING_USER_APPROVAL"
+      "listening_status": "APPROVED_BY_OWNER_PUBLISHED"
     },
     {
       "id": "waterfall-real",
@@ -106,9 +106,9 @@
         "bitrate_kbps": 192,
         "status": "PASS",
         "flags": [],
-        "human_approved": false
+        "human_approved": true
       },
-      "listening_status": "PENDING_USER_APPROVAL"
+      "listening_status": "APPROVED_BY_OWNER_PUBLISHED"
     }
   ]
 }

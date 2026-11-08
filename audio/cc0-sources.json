@@ -8,7 +8,12 @@
     "license": "CC0-1.0",
     "file": "audio/box-fan-real.mp3",
     "preview_sha256": "81d762a382973e02aef36024ef3444acef94e83e534bbb4dbc78716c5a2c5a79",
-    "derived_duration_seconds": 54
+    "derived_duration_seconds": 67.52,
+    "production_master_sha256": "d96f44a10ffa6a55e2ea4fda2f479702b98e83f6721bea141144e408ccfe5971",
+    "independent_source_duration_seconds": 70.52,
+    "source_material_used_seconds": 67.52,
+    "processing": "original complete source preview, simple linear level scaling and 3s loop splice; no repetition or extra synthetic noise",
+    "production_status": "OWNER_APPROVED_FIELD_RECORDING"
   },
   {
     "id": "rain-on-window-real",
@@ -51,7 +56,12 @@
     "license": "CC0-1.0",
     "file": "audio/heavy-rain-real.mp3",
     "preview_sha256": "ea6704c33c5abb8c3c21e4fc0c96f949d153fed8f7c64e727344cdb0c796cc55",
-    "derived_duration_seconds": 54
+    "derived_duration_seconds": 189.76,
+    "production_master_sha256": "370e977c3ee40457e8d1a85da2a0b6ca61f3fda5f5f94bcd663fe420827cf127",
+    "independent_source_duration_seconds": 192.76,
+    "source_material_used_seconds": 189.76,
+    "processing": "original complete source preview, simple linear level scaling and 3s loop splice; no repetition or extra synthetic noise",
+    "production_status": "OWNER_APPROVED_FIELD_RECORDING"
   },
   {
     "id": "ocean-waves-real",
@@ -62,7 +72,12 @@
     "license": "CC0-1.0",
     "file": "audio/ocean-waves-real.mp3",
     "preview_sha256": "093587b74547445a3f4fd83a64c7b8947c92f1b19fbdc5e9e901788a9795f73b",
-    "derived_duration_seconds": 54
+    "derived_duration_seconds": 89.83,
+    "production_master_sha256": "7d784a40ca1f6f081cdd14155b224d26cfff539069d2a9e1b1b487aac012ff8d",
+    "independent_source_duration_seconds": 92.83,
+    "source_material_used_seconds": 89.83,
+    "processing": "original complete source preview, simple linear level scaling and 3s loop splice; no repetition or extra synthetic noise",
+    "production_status": "OWNER_APPROVED_FIELD_RECORDING"
   },
   {
     "id": "waterfall-real",
@@ -73,6 +88,11 @@
     "license": "CC0-1.0",
     "file": "audio/waterfall-real.mp3",
     "preview_sha256": "e49f6e3e8acb0c3f587b041a9fe0436d694eef8afec07b7aedbe50080c5d439f",
-    "derived_duration_seconds": 54
+    "derived_duration_seconds": 375.48,
+    "production_master_sha256": "656dc956ec218f51a115f713d2121755849739a9907d86dea8b05ccb272adac8",
+    "independent_source_duration_seconds": 378.48,
+    "source_material_used_seconds": 375.48,
+    "processing": "original complete source preview, simple linear level scaling and 3s loop splice; no repetition or extra synthetic noise",
+    "production_status": "OWNER_APPROVED_FIELD_RECORDING"
   }
 ]

@@ -43,7 +43,7 @@ ALL=COLORS | GREEN | NATURE | EXTENDED | LEGACY_CC0
 assert len(ALL)==22
 DAYS=7
 BITRATE=192
-HLS_VERSION="continuous-hls-v3-green-20261108"
+HLS_VERSION="continuous-hls-v4-cc0-approved-20261108"
 
 
 def sha(path):
@@ -56,11 +56,12 @@ def sha(path):
 
 def run_ffmpeg(master,where):
     segment=where/"part_%03d.ts"
+    hls_time="60" if master.stem in LEGACY_CC0 else "65"
     cmd=[
         "ffmpeg","-hide_banner","-loglevel","error","-nostdin","-y",
         "-i",str(master),"-vn","-map","0:a:0","-ar","44100","-ac","2",
         "-c:a","aac","-b:a",f"{BITRATE}k",
-        "-f","hls","-hls_time","65",
+        "-f","hls","-hls_time",hls_time,
         "-hls_segment_type","mpegts","-hls_list_size","0",
         "-hls_playlist_type","vod",
         "-hls_segment_filename",str(segment),str(where/"source.m3u8")
@@ -184,11 +185,11 @@ def main():
             "source_license":row["license"],
             "source_page":row["source"],
             "source_preview_sha256":row["preview_sha256"],
-            "source_editorial_status":"LEGACY_54_SECOND_DEMO_PENDING_LONG_RECORDING",
+            "source_editorial_status":row.get("production_status","LEGACY_54_SECOND_DEMO_PENDING_LONG_RECORDING"),
         }
         originals.append((original,file))
     if {e["id"] for e,_ in originals}!=ALL or len(originals)!=len(ALL):
-        raise RuntimeError("Expected exactly 21 original player sound sources")
+        raise RuntimeError("Expected exactly 22 player sound sources")
     HLS_ROOT.mkdir(parents=True,exist_ok=True)
     report=[]
     for e,master in originals:
@@ -196,7 +197,7 @@ def main():
         with tempfile.TemporaryDirectory(dir=HLS_ROOT) as td:
             temp=Path(td)
             run_ffmpeg(master,temp)
-            expected=54 if ident in LEGACY_CC0 else 600
+            expected=float(next(r["derived_duration_seconds"] for r in registry if r["id"]==ident)) if ident in LEGACY_CC0 else 600
             chunks=parse_playlist(temp/"source.m3u8", expected_seconds=expected)
             verify_transport(temp/chunks[0][0])
             cycles, duration=build_loop(chunks,temp/"continuous.m3u8")
@@ -219,15 +220,15 @@ def main():
                 "playlist_sha256":sha(target/"continuous.m3u8"),
                 "segment_count_per_source_cycle":len(chunks),
                 "source_cycle_seconds":round(sum(d for _,d in chunks),3),
-                "original_source_length_category":"LEGACY_CC0_SHORT_DEMO" if ident in LEGACY_CC0 else "10_MINUTE_MASTER",
+                "original_source_length_category":("APPROVED_CC0_FIELD_RECORDING" if e.get("source_editorial_status")=="OWNER_APPROVED_FIELD_RECORDING" else "LEGACY_CC0_SHORT_DEMO") if ident in LEGACY_CC0 else "10_MINUTE_MASTER",
                 "source_license":e.get("source_license",e.get("license","original_dsp")),
                 "source_page":e.get("source_page"),
-                "editorial_status":e.get("source_editorial_status","PENDING_NEW_BATCH_HUMAN_REVIEW" if ident in (EXTENDED|GREEN) else "PREVIOUSLY_REVIEWED"),
+                "editorial_status":e.get("source_editorial_status","OWNER_APPROVED_FOR_AUDIO" if ident in EXTENDED and e.get("qa",{}).get("listening_approval")=="APPROVED_BY_OWNER" else "PENDING_NEW_BATCH_HUMAN_REVIEW" if ident in (EXTENDED|GREEN) else "PREVIOUSLY_REVIEWED"),
                 "repeated_cycles":cycles,
                 "native_stream_duration_hours":round(duration/3600,2),
                 "audio_codec":"AAC-LC in MPEG-TS",
                 "sample_rate":44100,"channels":2,"bitrate_kbps":BITRATE,
-                "long_form_listening_status":"PENDING_IPHONE_LOCK_SCREEN_REVIEW",
+                "long_form_listening_status":"OWNER_APPROVED_LISTENING" if (ident in EXTENDED and e.get("qa",{}).get("listening_approval")=="APPROVED_BY_OWNER") or e.get("source_editorial_status")=="OWNER_APPROVED_FIELD_RECORDING" else "PENDING_IPHONE_LOCK_SCREEN_REVIEW",
                 "notes":"iOS native HLS avoids JS-driven track restarts at source boundaries. Short CC0 sources are not misrepresented as ten minutes of independent material. No claim of perfectly seamless or literally infinite streaming.",
             })
             print("HLS_OK",json.dumps(report[-1]),flush=True)
@@ -256,7 +257,7 @@ def main():
         "browser_policy":"Use HLS if the audio element advertises native application/vnd.apple.mpegurl support; otherwise use the original looping MP3.",
         "not_an_infinite_stream":"A static GitHub Pages site cannot issue an unbounded server-generated HLS stream. The element also has loop=true at the playlist end.",
         "manual_fast_test_file":"audio/continuous/quick/continuous.m3u8",
-        "source_length_disclosure":"18 independently produced/arranged 10-minute masters; 4 short 54-second CC0 demos. HLS changes transport continuity, not source recording length.",
+        "source_length_disclosure":"18 produced or arranged 10-minute masters and 4 owner-approved natural CC0 recordings with actual lengths 67.52, 189.76, 89.83 and 375.48 seconds. Source cycles repeat.",
         "records":report,
     }
     (HLS_ROOT/"manifest.json").write_text(json.dumps(summary,indent=2)+"\n",encoding="utf-8")

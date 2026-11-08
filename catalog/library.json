@@ -1,6 +1,6 @@
 {
-  "version": "2026-11-08-catalog-v2-green-noise",
-  "editorial_note": "Technical QA does not equal listening approval; planned items have no fake audio.",
+  "version": "2026-11-08-catalog-v3-owner-approved-audio",
+  "editorial_note": "Owner approved 12 DSP masters and 4 longer natural CC0 records for playback. Audio approval is distinct from individual page editorial/SEO indexing approval.",
   "categories": [
     {
       "slug": "noise-colors",
@@ -179,7 +179,7 @@
       "id": "blue-noise",
       "title": "Blue Noise",
       "cat": "noise-colors",
-      "status": "dsp-review",
+      "status": "listening-approved",
       "desc": "Bright synthetic noise spectrum",
       "slug": "blue-noise"
     },
@@ -187,7 +187,7 @@
       "id": "violet-noise",
       "title": "Violet Noise",
       "cat": "noise-colors",
-      "status": "dsp-review",
+      "status": "listening-approved",
       "desc": "High-frequency-weighted synthetic noise",
       "slug": "violet-noise"
     },
@@ -195,7 +195,7 @@
       "id": "soft-white-noise",
       "title": "Soft White Noise",
       "cat": "noise-colors",
-      "status": "dsp-review",
+      "status": "listening-approved",
       "desc": "A softer white noise variation",
       "slug": "soft-white-noise"
     },
@@ -203,7 +203,7 @@
       "id": "deep-brown-noise",
       "title": "Deep Brown Noise",
       "cat": "noise-colors",
-      "status": "dsp-review",
+      "status": "listening-approved",
       "desc": "A low-heavy variation of brown noise",
       "slug": "deep-brown-noise"
     },
@@ -211,7 +211,7 @@
       "id": "warm-pink-noise",
       "title": "Warm Pink Noise",
       "cat": "noise-colors",
-      "status": "dsp-review",
+      "status": "listening-approved",
       "desc": "A warmer pink noise variation",
       "slug": "warm-pink-noise"
     },
@@ -219,7 +219,7 @@
       "id": "mid-noise",
       "title": "Neutral Mid Noise",
       "cat": "noise-colors",
-      "status": "dsp-review",
+      "status": "listening-approved",
       "desc": "Synthetic mid-frequency noise",
       "slug": "neutral-mid-noise"
     },
@@ -227,7 +227,7 @@
       "id": "desk-fan-synth",
       "title": "Desk Fan — Synthetic",
       "cat": "fan-noise",
-      "status": "dsp-review",
+      "status": "listening-approved",
       "desc": "A simulated desk fan, not a field recording",
       "slug": "desk-fan"
     },
@@ -235,8 +235,8 @@
       "id": "box-fan-real",
       "title": "Box Fan — Field Recording",
       "cat": "fan-noise",
-      "status": "short-review",
-      "desc": "A short CC0 fan recording awaiting a longer replacement review",
+      "status": "listening-approved",
+      "desc": "Owner-approved CC0 field recording; 1 minute 8 seconds of independently recorded sound, looped continuously",
       "slug": "box-fan"
     },
     {
@@ -251,31 +251,31 @@
       "id": "heavy-rain-real",
       "title": "Heavy Rain",
       "cat": "rain",
-      "status": "short-review",
-      "desc": "A short CC0 heavy rain recording awaiting a longer version review",
+      "status": "listening-approved",
+      "desc": "Owner-approved CC0 field recording; 3 minutes 10 seconds of independently recorded sound, looped continuously",
       "slug": "heavy-rain"
     },
     {
       "id": "ocean-waves-real",
       "title": "Ocean Waves",
       "cat": "water",
-      "status": "short-review",
-      "desc": "A short CC0 ocean recording awaiting a longer version review",
+      "status": "listening-approved",
+      "desc": "Owner-approved CC0 field recording; 1 minute 30 seconds of independently recorded sound, looped continuously",
       "slug": "ocean-waves"
     },
     {
       "id": "waterfall-real",
       "title": "Waterfall",
       "cat": "water",
-      "status": "short-review",
-      "desc": "A short CC0 waterfall recording awaiting a longer version review",
+      "status": "listening-approved",
+      "desc": "Owner-approved CC0 field recording; 6 minutes 15 seconds of independently recorded sound, looped continuously",
       "slug": "waterfall"
     },
     {
       "id": "shower-synth",
       "title": "Shower — Synthetic",
       "cat": "water",
-      "status": "dsp-review",
+      "status": "listening-approved",
       "desc": "Simulated shower sound created with DSP",
       "slug": "shower"
     },
@@ -283,7 +283,7 @@
       "id": "wind-synth",
       "title": "Gentle Wind — Synthetic",
       "cat": "wind-weather",
-      "status": "dsp-review",
+      "status": "listening-approved",
       "desc": "Simulated wind texture created with DSP",
       "slug": "gentle-wind"
     },
@@ -299,7 +299,7 @@
       "id": "cabin-hum-synth",
       "title": "Airplane Cabin — Synthetic",
       "cat": "transportation",
-      "status": "dsp-review",
+      "status": "listening-approved",
       "desc": "Simulated airplane-cabin hum created with DSP",
       "slug": "airplane-cabin"
     },
@@ -307,7 +307,7 @@
       "id": "air-conditioner-synth",
       "title": "Air Conditioner — Synthetic",
       "cat": "household",
-      "status": "dsp-review",
+      "status": "listening-approved",
       "desc": "Simulated air-conditioner sound created with DSP",
       "slug": "air-conditioner"
     },
@@ -315,7 +315,7 @@
       "id": "low-rumble",
       "title": "Low Rumble",
       "cat": "hums-drones",
-      "status": "dsp-review",
+      "status": "listening-approved",
       "desc": "Steady synthetic low-frequency rumble",
       "slug": "low-rumble"
     }
