@@ -43,21 +43,36 @@ def media(p,title,duration):
  if abs(duration-if_duration)>1.0:raise RuntimeError(f"{title} length {if_duration} != expected {duration}")
  return data
 def make_cycle(src,duration,out):
- """Build continuous cycle with 5s overlap, yielding exactly duration seconds.
- Last sample of output comes from source t~5; first sample is from t=5;
- seamless adjacent samples across the native MP3 loop point.
- """
- overlap=5
- filters=(
- f"[0:a]aresample=44100,asplit=3[body0][tail0][head0];"
- f"[body0]atrim=start={overlap}:end={duration},asetpts=PTS-STARTPTS[body];"
- f"[tail0]atrim=start={duration}:end={duration+overlap},asetpts=PTS-STARTPTS[tail];"
- f"[head0]atrim=start=0:end={overlap},asetpts=PTS-STARTPTS[head];"
- f"[tail][head]acrossfade=d={overlap}:c1=tri:c2=tri[seam];"
- "[body][seam]concat=n=2:v=0:a=1[out]"
- )
- run(["ffmpeg","-hide_banner","-loglevel","error","-nostdin","-y","-i",str(src),"-filter_complex",filters,"-map","[out]","-ac","2","-ar","44100","-c:a","flac",str(out)])
- media(out,out.name,duration)
+    """Build a 600s loop from three *separately decoded* PCM sections.
+
+    This avoids building a huge split-filter graph from an hour-long input.
+    Output y[0..duration-5] = source[5..duration], and y[duration-5..duration]
+    crossfades source[duration..duration+5] into source[0..5].
+    The ending then meets the adjacent source point at t=5, without
+    a hard jump or a silence fade on native MP3 loop.
+    """
+    overlap=5
+    with tempfile.TemporaryDirectory(prefix="rain-seam-") as td:
+        t=Path(td)
+        slices=[
+          ("body",overlap,duration-overlap),
+          ("tail",duration,overlap),
+          ("head",0,overlap),
+        ]
+        for name,offset,seconds in slices:
+            target=t/(name+".flac")
+            run(["ffmpeg","-hide_banner","-loglevel","error","-nostdin","-y",
+                 "-ss",str(offset),"-i",str(src),"-t",str(seconds),
+                 "-ac","2","-ar","44100","-c:a","flac",str(target)])
+        filt=(
+          f"[1:a][2:a]acrossfade=d={overlap}:c1=tri:c2=tri[seam];"
+          "[0:a][seam]concat=n=2:v=0:a=1[out]"
+        )
+        run(["ffmpeg","-hide_banner","-loglevel","error","-nostdin","-y",
+             "-i",str(t/"body.flac"),"-i",str(t/"tail.flac"),"-i",str(t/"head.flac"),
+             "-filter_complex",filt,"-map","[out]",
+             "-ar","44100","-ac","2","-c:a","flac",str(out)])
+    media(out,out.name,duration)
 def download(url,dest):
  req=urllib.request.Request(url,headers={"User-Agent":"WhiteNoiseChoirCC0Review/1.0 (audio provenance audit; Freesound attribution retained)","Accept":"audio/mpeg,*/*"})
  with urllib.request.urlopen(req,timeout=120) as r,open(dest,"wb") as w:
@@ -83,7 +98,7 @@ def render(config,root):
    source_window_seconds=605
    repetitions=0
   else:
-   length=int(math.floor(min(incoming["duration_seconds"]-5.5,145)))
+   length=int(math.floor(min(incoming["duration_seconds"]-5.5,570)))
    if length<25:raise RuntimeError("Not enough short source for crossfade")
    short=tmp/"short-cycle.flac"
    make_cycle(src,length,short)
