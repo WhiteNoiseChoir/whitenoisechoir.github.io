@@ -150,3 +150,76 @@
 @media(max-width:760px){.sleep-sound-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:650px){.sleep-quick-grid,.sleep-next-grid{grid-template-columns:1fr}.sleep-tips-grid,.sleep-faq-grid{grid-template-columns:1fr}.sleep-group-heading{display:block}.sleep-group-heading p{margin-top:7px}}
 @media(max-width:510px){.sleep-collection{min-width:0}.sleep-hero-copy,.sleep-player{padding:19px}.sleep-sound-grid{grid-template-columns:1fr}.sleep-sound-card{padding:17px}.sleep-quick,.sleep-compare,.sleep-practical,.sleep-faq,.sleep-next{margin:33px 0 40px}.sleep-feature-pills span{padding:6px 10px}}
+
+/* Baby Sleep Sounds: caregiver-first, low-stimulus visual language */
+.baby-page{max-width:1080px}
+.baby-page h2{letter-spacing:-.035em}
+.baby-page h3{font-size:17px;line-height:1.4;margin:0}
+.baby-page p{line-height:1.72}
+.baby-hero{display:grid;grid-template-columns:minmax(0,1.02fr) minmax(0,.98fr);gap:clamp(14px,3vw,26px);align-items:stretch;margin:20px 0 45px}
+.baby-hero-copy{background:radial-gradient(circle at 90% 15%,#335c5055,transparent 52%),linear-gradient(155deg,#1d3432,#101f22);border:1px solid #4d776a;border-radius:20px;min-width:0;padding:clamp(23px,4vw,38px)}
+.baby-hero h1{font-size:clamp(36px,5.6vw,65px);line-height:1.04;letter-spacing:-.06em;margin:18px 0 22px}
+.baby-hero-lead{font-size:clamp(16px,1.7vw,19px);color:#e0f2e8}
+.baby-hero-detail{font-size:13px;color:#bbd2c7}
+.baby-pill-row{display:flex;flex-wrap:wrap;gap:8px;margin:21px 0}
+.baby-pill-row span{font-size:11px;border:1px solid #56776a;background:#204237;color:#d7ebde;padding:7px 11px;border-radius:30px}
+.baby-jump{display:inline-flex;align-items:center;gap:10px;font-weight:750;font-size:13px;margin-top:4px}
+.baby-jump span{font-size:18px}
+.baby-safety{min-width:0;background:#282c24;border:1px solid #858363;border-radius:20px;padding:clamp(19px,3vw,27px)}
+.baby-safety-tag{display:inline-flex;background:#464b33;border:1px solid #858e67;border-radius:30px;padding:6px 12px;font-weight:800;font-size:11px;color:#f0f4d8}
+.baby-safety h2{font-size:clamp(24px,2.9vw,32px);line-height:1.24;margin:17px 0 16px;color:#f1f5e5}
+.baby-safety-list{counter-reset:baby;list-style:none;margin:0;padding:0}
+.baby-safety-list li{margin:0;padding:13px 0 14px 32px;border-top:1px solid #565c44;position:relative;font-size:13px;line-height:1.7;color:#d6decb}
+.baby-safety-list li:before{counter-increment:baby;content:counter(baby);position:absolute;left:0;top:13px;font-size:12px;font-weight:900;color:#dce7c1}
+.baby-safety-list strong{color:#f2f5e6}
+.baby-safety-cite{font-size:11px;color:#d6e0c8;margin:16px 0 0}
+.baby-safety-cite a{color:#d4f2d9;text-decoration:underline;text-underline-offset:3px}
+.baby-player-wrap,.baby-choices,.baby-routine,.baby-faq,.baby-related{margin:38px 0 52px;scroll-margin-top:20px}
+.baby-section-title{max-width:780px;margin:0 0 20px}
+.baby-section-title h2{font-size:clamp(25px,3.8vw,35px);line-height:1.25;margin:12px 0}
+.baby-section-title p{font-size:14px;color:#bcd3c6}
+.baby-player{margin:0;background:linear-gradient(145deg,#182e2a,#11221f);border:1px solid #517962;border-radius:19px;padding:clamp(20px,3vw,29px)}
+.baby-player-copy h3{font-size:20px;margin:14px 0 6px;color:#e4f5e8}
+.baby-player-copy p{font-size:13px;color:#b9d2c3}
+.baby-player audio{width:100%;max-width:100%}
+.baby-live-status{display:inline-flex;align-items:center;gap:10px;border:1px solid #567e6a;border-radius:11px;background:#1e4031;padding:10px 13px;color:#e0f2e7!important;font-size:12px}
+.baby-live-status:before{content:"";width:7px;height:7px;background:#a5d2b8;flex:none;border-radius:50%}
+.baby-player-caution{font-size:12px;color:#bad2c1}
+.baby-sound-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px}
+.baby-sound-card{display:flex;flex-direction:column;gap:12px;background:#152b26;border:1px solid #3b6150;border-radius:16px;padding:20px;min-width:0}
+.baby-sound-card:has(.baby-compare[aria-current=true]){background:#1e4134;border-color:#acdcc0}
+.baby-sound-header{display:flex;gap:12px;align-items:center}
+.baby-sound-header h3{font-size:17px;color:#e6f6ed}
+.baby-sound-symbol{display:inline-flex;align-items:center;justify-content:center;flex:none;width:43px;height:43px;border-radius:12px;background:#2b5747;color:#d2efe1;font-weight:800;font-size:25px}
+.baby-tone-pink .baby-sound-symbol{background:#514254;color:#f2ddea}
+.baby-tone-rain .baby-sound-symbol{background:#2d4d60;color:#cde3ed}
+.baby-sound-summary{font-size:12px;color:#a8cab6;margin:3px 0 0}
+.baby-sound-card>p{font-size:13px;color:#b5cdbd;margin:0;flex:1}
+.baby-sound-origin{font-size:11px;color:#9dbfab}
+.baby-sound-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:auto;padding-top:8px}
+.baby-compare{min-height:44px;display:inline-flex;align-items:center;justify-content:center;border:1px solid #86bd9c;border-radius:10px;padding:11px 14px;background:#2a5a40;color:#f0faef;font-size:13px;font-weight:800}
+.baby-compare:hover{text-decoration:none;background:#3b6d4d}
+.baby-compare.is-active,.baby-compare[aria-current=true]{background:#c4efd3;border-color:#c4efd3;color:#173525}
+.baby-sound-details{font-size:12px;color:#b0e5c5}
+.baby-choice-foot{background:#172d26;border-left:3px solid #8bb59c;border-radius:0 12px 12px 0;padding:14px 18px;font-size:12px;color:#c1d7c9;margin:22px 0 0}
+.baby-routine-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px}
+.baby-routine-grid>div{border:1px solid #375849;background:#142c25;border-radius:16px;padding:20px;min-width:0}
+.baby-step{display:inline-flex;width:31px;height:31px;border:1px solid #5e8973;background:#26503b;color:#d1ebdc;border-radius:50%;align-items:center;justify-content:center;font-size:11px;font-weight:800}
+.baby-routine-grid h3{margin:14px 0 7px;color:#e9f5e9}
+.baby-routine-grid p{margin:0;font-size:13px;color:#b9d0c2}
+.baby-technical{margin:22px 0;background:#22372f;border:1px solid #536f60;border-radius:15px;padding:20px}
+.baby-technical strong{font-size:14px;color:#e7f4e7}
+.baby-technical p{font-size:13px;color:#bfcfc1;margin:8px 0 0}
+.baby-faq-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}
+.baby-faq details{background:#142d26;border:1px solid #3e5f4e;border-radius:15px;padding:18px}
+.baby-faq summary{font-weight:750;cursor:pointer;line-height:1.6;color:#e4f2e6;font-size:14px}
+.baby-faq details p{font-size:13px;margin:12px 0 0;color:#b7cdbd}
+.baby-related-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px}
+.baby-related-grid a{display:flex;flex-direction:column;gap:12px;border-radius:16px;border:1px solid #436d57;background:#19352a;padding:20px}
+.baby-related-grid a:hover{text-decoration:none;background:#28543c}
+.baby-related-grid strong{font-size:15px;color:#e8f5ea}
+.baby-related-grid span{font-size:12px;color:#bfdbc8}
+@media(max-width:850px){.baby-hero{grid-template-columns:1fr}.baby-hero h1{font-size:clamp(37px,7vw,56px)}}
+@media(max-width:790px){.baby-sound-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:650px){.baby-routine-grid,.baby-related-grid,.baby-faq-grid{grid-template-columns:1fr}}
+@media(max-width:520px){.baby-sound-grid{grid-template-columns:1fr}.baby-hero-copy,.baby-safety,.baby-player{padding:19px}.baby-sound-card{padding:17px}.baby-player-wrap,.baby-choices,.baby-routine,.baby-faq,.baby-related{margin:32px 0 40px}.baby-pill-row span{padding:6px 10px}}
