@@ -1,0 +1,49 @@
+
+/* Persistent navigation and shared player UX enhancements */
+.wnc-menu-button{display:none;border:1px solid #426855;color:#d5f3df;background:#203a32;border-radius:10px;padding:10px 13px;font:inherit;cursor:pointer}
+.wnc-router-ready .wnc-sound-card{border-radius:14px;min-width:0;display:flex;flex-direction:column;background:#162928;border:1px solid #2c4b40;overflow:hidden}
+.wnc-sound-card a.tile{border:0;background:transparent;border-radius:0;flex:1;min-height:130px}
+.wnc-card-play,.wnc-primary{color:#0c2720;background:#abe5c4;border:0;border-radius:10px;min-height:43px;font:inherit;font-size:13px;font-weight:700;cursor:pointer}
+.wnc-card-play{margin:0 12px 12px}
+.wnc-page-actions{display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:6px 0 17px}
+.wnc-primary{padding:12px 24px;min-width:150px}
+.wnc-play-hint{font-size:12px;line-height:1.5;color:#a6c6b5}
+.wnc-native-fallback-hidden{display:none!important}
+.wnc-search-controls{padding:12px 0 19px}
+.wnc-search-controls label{font-size:13px;font-weight:700;display:block;margin-bottom:10px}
+.wnc-search-controls input{width:min(480px,100%);background:#182b28;color:#eaf8ed;border:1px solid #4a715c;border-radius:12px;padding:13px;font:inherit;font-size:16px}
+.wnc-filter-row{display:flex;gap:8px;overflow-x:auto;padding:13px 0 7px;scrollbar-width:thin}
+.wnc-filter{flex:none;white-space:nowrap;border:1px solid #486753;border-radius:30px;background:#162b27;color:#c5dece;padding:9px 13px;font-size:12px;cursor:pointer}
+.wnc-filter.chosen{background:#b0e4c7;color:#143629;border-color:#b0e4c7}
+.wnc-planned-categories{margin:18px 0 26px;color:#abc5b4;font-size:13px}
+.wnc-planned-categories summary{cursor:pointer;padding:10px 0;font-weight:600}
+.wnc-planned-categories .grid{margin:10px 0}
+.wnc-route-library #dock,.wnc-route-library #black{display:none!important}
+#wnc-mini{position:fixed;z-index:110;left:0;right:0;bottom:0;transform:translateY(120%);transition:transform .15s ease;background:#11231fef;border-top:1px solid #4e785e;backdrop-filter:blur(14px);padding:10px 0 calc(10px + env(safe-area-inset-bottom,0px))}
+.wnc-route-library #wnc-mini.has-track{transform:none}
+.wnc-mini-inner{width:min(1080px,calc(100% - 32px));margin:auto;display:flex;align-items:center;gap:11px}
+.wnc-mini-info{flex:1;min-width:0}
+.wnc-mini-info strong{font-size:14px;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.wnc-mini-info small{color:#a9c9b9;display:block;font-size:11px}
+#wnc-mini button{border:1px solid #4c775e;background:#214936;color:#def7e7;border-radius:10px;min-width:43px;min-height:43px;cursor:pointer}
+#wnc-mini label{color:#bad5c7;font-size:11px;white-space:nowrap}
+#wnc-mini input{vertical-align:middle;accent-color:#a4e4c7;width:92px}
+#wnc-mini select{border:1px solid #4c775e;background:#214936;color:#def7e7;border-radius:9px;min-height:41px;padding:6px}
+#wnc-screen-dark:not([hidden]){position:fixed;inset:0;z-index:500;background:#000;display:flex;flex-direction:column;gap:22px;align-items:center;justify-content:center;padding:24px;text-align:center;color:#d2e6d7}
+#wnc-screen-dark strong{font-size:27px}
+#wnc-screen-dark p{color:#8c9e92;font-size:12px;max-width:300px}
+#wnc-screen-dark button{background:#14221b;border:1px solid #4c715b;color:#d6efde;padding:14px 24px;border-radius:11px;font:inherit}
+.wnc-route-library main{padding-bottom:140px}
+.wnc-route-library .playerbox audio.wnc-native-fallback-hidden{display:none!important}
+@media(max-width:700px){
+ .wnc-router-ready header .wnc-menu-button{display:inline-flex;align-items:center;justify-content:center}
+ .wnc-router-ready header nav,.wnc-router-ready header nav.links{display:none!important;width:100%;flex-basis:100%}
+ .wnc-router-ready.wnc-menu-open header nav,.wnc-router-ready.wnc-menu-open header nav.links{display:flex!important;flex-direction:column;gap:7px}
+ .wnc-router-ready.wnc-menu-open header nav a,.wnc-router-ready.wnc-menu-open header nav.links a{display:block!important;min-height:40px;padding:9px 8px;font-size:13px}
+ .wnc-router-ready header{flex-wrap:wrap!important}
+ .wnc-mini-volume,.wnc-mini-timer{display:none!important}
+ .wnc-mini-inner{gap:8px}
+ #wnc-mini button{min-width:40px;min-height:40px}
+ .wnc-route-library .grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:460px){.wnc-route-library .grid{grid-template-columns:1fr}.wnc-mini-info strong{font-size:12px}.wnc-mini-info small{font-size:10px}.wnc-mini-inner{width:calc(100% - 20px)}}
