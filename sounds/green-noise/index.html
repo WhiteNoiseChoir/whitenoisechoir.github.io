@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Green Noise — Listen to Original Mid-Frequency Sound | WhiteNoiseChoir</title>
+<meta name="description" content="Listen to original Green Noise, a steady mid-frequency sound for relaxation and masking. Compare with white, pink and brown noise, and see how our DSP is built.">
+<meta name="robots" content="noindex,follow">
+<link rel="canonical" href="https://whitenoisechoir.github.io/sounds/green-noise/">
+<meta name="theme-color" content="#0c1718"><link rel="stylesheet" href="/assets/library.css"><link rel="stylesheet" href="/assets/persistent.css">
+<script defer src="/assets/persistent-router.js"></script>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"AudioObject","@id":"https://whitenoisechoir.github.io/sounds/green-noise/#audio","name":"WhiteNoiseChoir Green Noise v1","description":"An independent ten-minute, custom mid-band noise recording using 165 Hz high-pass and 1550 Hz low-pass filters. Green noise is not a standardized acoustic color.","contentUrl":"https://whitenoisechoir.github.io/audio/green-noise.mp3","encodingFormat":"audio/mpeg","duration":"PT10M","isAccessibleForFree":true,"creator":{"@type":"Organization","name":"WhiteNoiseChoir"}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://whitenoisechoir.github.io/"},{"@type":"ListItem","position":2,"name":"Sounds","item":"https://whitenoisechoir.github.io/sounds/"},{"@type":"ListItem","position":3,"name":"Noise Colors","item":"https://whitenoisechoir.github.io/sounds/noise-colors/"},{"@type":"ListItem","position":4,"name":"Green Noise","item":"https://whitenoisechoir.github.io/sounds/green-noise/"}]}]}</script></head><body>
+<header><a href="/" class="logo">◉ WhiteNoiseChoir</a><nav aria-label="Site sections"><a href="/sounds/">Sounds</a><a href="/soundscapes/">Soundscapes</a><a href="/collections/">Collections</a><a href="/audio-tools/">Audio Tools</a></nav></header>
+<main class="green-reference">
+<nav class="crumb" aria-label="Breadcrumb"><a href="/">Home</a><span aria-hidden="true">›</span><a href="/sounds/">Sounds</a><span aria-hidden="true">›</span><a href="/sounds/noise-colors/">Noise Colors</a></nav>
+<span class="kicker">Original mid-band sound · Green Noise v1</span>
+<h1>Green Noise — Listen Online</h1>
+<p class="lede">Green Noise is a popular name for a softer, mid-focused noise texture, but unlike White, Pink or Brown Noise it has <strong>no universally agreed spectral definition</strong>. WhiteNoiseChoir's version is a continuous, original synthesized sound with less deep bass and sharp treble.</p>
+<section class="playerbox brown-hero green-hero" aria-label="Green Noise player">
+ <div class="brown-hero-header"><div><span class="tag">Original DSP · 10-minute master</span><h2>Play Green Noise</h2><p class="muted">Tap Play to start. No autoplay and no account needed.</p></div><span class="brown-symbol" aria-hidden="true">≋</span></div>
+ <audio controls loop preload="none" data-sound="green-noise" data-mp3="/audio/green-noise.mp3" data-hls="/audio/continuous/green-noise/continuous.m3u8" data-title="Green Noise" src="/audio/green-noise.mp3" aria-label="Play original Green Noise"></audio>
+ <p class="wnc-play-hint">Use the shared player for Volume, Sleep Timer and Dark Screen. Audio continues while you browse within WhiteNoiseChoir. Without JavaScript, the MP3 remains playable through native controls.</p>
+ <div class="brown-chips"><span>Independent 10-minute master</span><span>Continuous HLS / MP3</span><span>Sleep timer</span><span>Dark screen</span></div>
+ <p class="green-qa-note">The master passed automated technical QA. Listening-quality approval on real devices is still pending.</p>
+ <a class="brown-fine-link" href="/?sound=green-noise">Open the full sound machine</a>
+</section>
+<section class="brown-compare green-compare" id="compare" aria-labelledby="green-compare-title">
+ <span class="kicker">Audition the differences</span><h2 id="green-compare-title">Green vs Pink, Brown and White Noise</h2>
+ <p>Hear the actual four master files using one persistent player. Each selection changes the playing sound without switching pages or restarting an existing sleep-timer deadline.</p>
+ <div class="brown-compare-grid">
+ <a href="/sounds/green-noise/" data-wnc-compare="green-noise" data-title="Green Noise" class="brown-compare-choice is-active" aria-label="Listen to Green Noise"><strong><i class="dot green"></i>Green Noise</strong><span>Mid-range focused and softly filtered</span><small>Custom band-pass DSP</small></a>
+ <a href="/sounds/pink-noise/" data-wnc-compare="pink-noise" data-title="Pink Noise" class="brown-compare-choice" aria-label="Listen to Pink Noise"><strong><i class="dot pink"></i>Pink Noise</strong><span>Gradual treble reduction across frequencies</span><small>Power ~ 1/f</small></a>
+ <a href="/sounds/brown-noise/" data-wnc-compare="brown-noise" data-title="Brown Noise" class="brown-compare-choice" aria-label="Listen to Brown Noise"><strong><i class="dot brown"></i>Brown Noise</strong><span>Deeper bass, less high-frequency hiss</span><small>Power ~ 1/f²</small></a>
+ <a href="/sounds/white-noise/" data-wnc-compare="white-noise" data-title="White Noise" class="brown-compare-choice" aria-label="Listen to White Noise"><strong><i class="dot white"></i>White Noise</strong><span>Broad, bright hiss across frequencies</span><small>Flat power per Hz</small></a>
+ </div>
+ <p class="brown-now-playing" data-wnc-compare-status aria-live="polite">Select a sound to compare. Audio never autoplays.</p>
+ <p class="muted">The recordings are <strong>not loudness-matched</strong>. A fixed volume percentage does not guarantee equal loudness or hearing safety. Lower the volume when switching.</p>
+ <p class="brown-fine-link">More information: <a href="/sounds/pink-noise/">Pink Noise</a> · <a href="/sounds/brown-noise/">Brown Noise</a> · <a href="/sounds/white-noise/">White Noise</a></p>
+</section>
+<section class="green-spectrum" aria-labelledby="green-spectrum-heading">
+<h2 id="green-spectrum-heading">How WhiteNoiseChoir Green Noise is made</h2>
+<p>We begin with newly generated Gaussian white noise and apply two smooth digital filters: a <strong>third-order high-pass at 165 Hz</strong> and a <strong>third-order low-pass at 1,550 Hz</strong>. The result emphasizes a broad middle region, approximately 250–1,000 Hz, without claiming that these cutoffs define every version of Green Noise.</p>
+<p>This is a <strong>custom audio design, not a medical frequency or a standardized color</strong>. The filters reduce low rumble and high hiss; they do not literally recreate a forest, river or wind recording.</p>
+<h3>Measured frequency-band profile</h3>
+<p class="muted">Band-averaged power spectral density from a 15-second sample of the final decoded MP3. These numbers describe <em>relative digital signal energy</em>, not sound-pressure levels at your ears.</p>
+<div class="green-band-table" role="group" aria-label="Measured Green Noise relative spectrum">
+ <div><strong>Low bass</strong><span>35–105 Hz</span><b>-75.4 dB</b></div>
+ <div class="green-mid"><strong>Midrange</strong><span>300–900 Hz</span><b>-57.5 dB</b></div>
+ <div><strong>High treble</strong><span>4,000–8,000 Hz</span><b>-90.2 dB</b></div>
+</div>
+<p>The difference in average power spectral density is about <strong>17.9 dB</strong> between midrange and low bass, and <strong>32.6 dB</strong> between midrange and high treble in this sample. Further measurements at different points in the master gave comparable results.</p>
+</section>
+<section aria-labelledby="green-use-title"><h2 id="green-use-title">Choosing Green Noise for listening</h2><div class="brown-use-grid">
+<article><h3>Relaxation</h3><p>Try the smoother mid-focused texture when White Noise sounds too sharp or Brown Noise feels too bass-heavy. Individual listening preferences vary.</p><a href="/collections/relaxing-sounds/">Relaxing sounds</a></article>
+<article><h3>Sleep and winding down</h3><p>A steady background may appeal to some listeners, but there is no established evidence that this specific sound improves deep sleep or treats insomnia.</p><a href="/collections/white-noise-for-sleep/">Sleep sounds</a></article>
+<article><h3>Noise masking</h3><p>Mid-focused noise may make some nearby environmental sounds less noticeable, depending on their frequencies. It cannot remove external sounds.</p><a href="/collections/noise-masking/">Masking collection</a></article>
+</div></section>
+<section aria-labelledby="green-source"><h2 id="green-source">Recording provenance & continuous playback</h2>
+<p>This 600-second recording was <strong>generated independently using original DSP</strong> and was not taken from a short clip, third-party field recording or another noise-color master. Its complete 10-minute source repeats during extended listening.</p>
+<dl class="wnc-facts">
+<div><dt>Independent source duration</dt><dd>600 seconds · 10 minutes</dd></div>
+<div><dt>Format and channels</dt><dd>MP3 · 44.1 kHz · 192 kbps · centered stereo</dd></div>
+<div><dt>Synthesis</dt><dd>Seeded Gaussian noise, two cascaded IIR filters</dd></div>
+<div><dt>Reproducible source seed</dt><dd>2026110805</dd></div>
+<div><dt>Measured RMS, three independent windows</dt><dd>-25.80 / -25.73 / -25.82 dBFS</dd></div>
+<div><dt>Transport</dt><dd>Native 7-day static HLS playlist where supported; MP3 loop elsewhere</dd></div>
+<div><dt>Technical status</dt><dd>PASS · waveform, spectral distribution, MP3 hash, HLS 10-minute transition</dd></div>
+<div><dt>Listening approval</dt><dd>Awaiting real-device human review</dd></div>
+</dl>
+<div class="note">Ten minutes describes the <em>master recording</em>, not your listening limit. Native HLS repeats that source through a bounded seven-day playlist; browser/device interruptions remain possible. To test the transition quickly, <a href="/loop-check.html?mode=green">open the Green Noise loop test</a> and seek to 9:55.</div>
+</section>
+<section aria-labelledby="green-faq"><h2 id="green-faq">Green Noise questions</h2>
+<details class="brown-faq"><summary>What frequency is Green Noise?</summary><p>There is no universally standardized frequency for “Green Noise.” Our implementation uses a third-order 165 Hz high-pass and a third-order 1,550 Hz low-pass, so the result emphasizes the middle of the audible spectrum. Other producers may use different filters.</p></details>
+<details class="brown-faq"><summary>Is Green Noise the same as nature sounds?</summary><p>No. Our track is synthetic filtered noise. It may sound softer or somewhat nature-like to some listeners, but it is not a forest, ocean, rain or wind field recording.</p></details>
+<details class="brown-faq"><summary>Can Green Noise help people sleep?</summary><p>Some people prefer a stable mid-frequency sound while winding down; there is no clinically established benefit specific to this Green Noise design. Keep playback at a comfortable volume.</p></details>
+<details class="brown-faq"><summary>What makes this recording distinct from Pink Noise?</summary><p>Pink Noise follows a power distribution near 1/f across a broad range; our Green Noise uses two filters to reduce both low bass and high treble. Try the live comparison above to hear the difference.</p></details>
+<details class="brown-faq"><summary>Will the recording stop at the 10-minute mark?</summary><p>No. The 10-minute master repeats in the shared player, including native HLS where supported. An operating-system interruption or timer can still stop playback.</p></details>
+</section>
+<p class="muted"><a href="/sounds/noise-colors/">Browse Noise Colors</a> · <a href="/sounds/">Full sound library</a> · <a href="/sources.html">Source attribution and licenses</a></p>
+</main><footer>© WhiteNoiseChoir · <a href="/sources.html">Sources and audio licenses</a> · Keep listening volumes comfortable.</footer>
+</body></html>

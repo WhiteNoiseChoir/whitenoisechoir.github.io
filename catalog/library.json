@@ -1,5 +1,5 @@
 {
-  "version": "2026-11-08-catalog-v1",
+  "version": "2026-11-08-catalog-v2-green-noise",
   "editorial_note": "Technical QA does not equal listening approval; planned items have no fake audio.",
   "categories": [
     {
@@ -7,7 +7,6 @@
       "title": "Noise Colors",
       "desc": "White, pink, brown and other noise colors",
       "planned": [
-        "Green Noise",
         "Grey Noise"
       ]
     },
@@ -169,6 +168,14 @@
       "slug": "brown-noise"
     },
     {
+      "id": "green-noise",
+      "title": "Green Noise",
+      "cat": "noise-colors",
+      "status": "dsp-review",
+      "desc": "Original independently synthesized mid-band Green Noise (165 Hz HP / 1,550 Hz LP); listening review pending",
+      "slug": "green-noise"
+    },
+    {
       "id": "blue-noise",
       "title": "Blue Noise",
       "cat": "noise-colors",
@@ -322,7 +329,8 @@
         "white-noise",
         "pink-noise",
         "brown-noise",
-        "soft-white-noise"
+        "soft-white-noise",
+        "green-noise"
       ]
     },
     {

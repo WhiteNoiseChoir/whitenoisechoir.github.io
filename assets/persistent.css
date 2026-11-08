@@ -121,3 +121,25 @@
 .white-reference .white-spectrum{background:#172227;border-color:#567074}
 .white-reference .white-spectrum figcaption{color:#bbd1cf}
 .white-reference .white-technical{margin-top:28px}
+
+/* Green Noise v1: own mid-band design and separate listening-approval status. */
+.green-reference .green-hero{background:linear-gradient(144deg,#1a3d35,#152927);border-color:#568a70}
+.green-reference .green-hero .tag{color:#c2eacb;border-color:#6a9c80}
+.green-reference .green-hero .brown-symbol{color:#81d6a4}
+.green-reference .green-compare{background:#152d27;border-color:#416c55}
+.green-reference .brown-compare-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
+.green-reference .brown-compare-choice.is-active,.green-reference .brown-compare-choice[aria-current=true]{border-color:#9fe7b9;background:#225642;box-shadow:0 0 0 1px #9fe7b9 inset}
+.green-reference .brown-compare-choice .dot.green{background:#77d59b}
+.green-qa-note{font-size:12px;color:#c4dac9;border-left:3px solid #78b797;padding:5px 0 5px 12px}
+.green-spectrum{border:1px solid #3b6152;background:#112823;padding:clamp(17px,3vw,25px);border-radius:16px;margin:27px 0}
+.green-spectrum h2{margin:3px 0 12px}
+.green-spectrum h3{font-size:17px;margin:20px 0 8px}
+.green-spectrum p{color:#b9d5c2;line-height:1.7}
+.green-band-table{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:18px 0}
+.green-band-table div{display:flex;flex-direction:column;gap:8px;border:1px solid #426855;border-radius:12px;padding:15px;background:#1b3430}
+.green-band-table .green-mid{border-color:#9fdfb6;background:#26483a}
+.green-band-table strong{font-size:14px}
+.green-band-table span{font-size:12px;color:#a6c9b4}
+.green-band-table b{font-size:16px;color:#d7f8de}
+@media(max-width:850px){.green-reference .brown-compare-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:570px){.green-reference .brown-compare-grid,.green-band-table{grid-template-columns:1fr}}
