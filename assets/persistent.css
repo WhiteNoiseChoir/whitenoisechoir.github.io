@@ -64,3 +64,6 @@
  .wnc-page-settings label{flex:1 1 42%;min-width:0}
  .wnc-page-settings input[type=range]{width:100%}
 }
+
+/* Hidden search results must stay hidden despite flex card styles. */
+.wnc-sound-card[hidden]{display:none!important}
