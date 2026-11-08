@@ -1,0 +1,37 @@
+name: Rain Master Preview Review QA
+on:
+  push:
+    branches: [main, "feature/rain-first-wave-review-20261108"]
+    paths:
+      - "signature/rain-review/**"
+      - "scripts/test_rain_first_wave_review.cjs"
+      - "scripts/test_rain_review_audio.py"
+      - "scripts/test_rain_review_browser.cjs"
+      - "scripts/rain_review_range_test_server.cjs"
+      - ".github/workflows/rain_review_qa.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  rain-review-qa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify 3 preview masters and production isolation
+        run: |
+          if ! command -v ffprobe >/dev/null || ! command -v ffmpeg >/dev/null; then
+            sudo apt-get update -qq
+            sudo apt-get install -y -qq ffmpeg
+          fi
+          node scripts/test_rain_first_wave_review.cjs
+          node scripts/test_library_foundation.cjs
+          node scripts/test_library_structure.cjs
+          python3 scripts/test_rain_review_audio.py
+      - name: Verify mobile source page, sample playback and the endpoint seek
+        run: |
+          npm install --no-save --no-package-lock playwright
+          node scripts/rain_review_range_test_server.cjs >/tmp/wnc-rain-review.log 2>&1 &
+          pid=$!
+          trap 'kill $pid || true' EXIT
+          node scripts/test_rain_review_browser.cjs
