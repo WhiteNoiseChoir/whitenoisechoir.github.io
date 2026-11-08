@@ -4,6 +4,7 @@ on:
     branches: ["feature/rain-wave2-production-20261109"]
     paths:
       - "scripts/build_rain_wave2_production_hls.py"
+      - "scripts/test_rain_production_release.cjs"
       - ".github/workflows/rain_wave2_production_build.yml"
   workflow_dispatch:
 permissions:

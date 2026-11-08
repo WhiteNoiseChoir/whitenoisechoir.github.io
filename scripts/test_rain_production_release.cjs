@@ -4,12 +4,12 @@ const fs=require("node:fs"),crypto=require("node:crypto"),assert=require("node:a
 const read=p=>fs.readFileSync(p,"utf8"),json=p=>JSON.parse(read(p));
 const catalog=json("catalog/library.json"),plans=json("catalog/planned-sounds.json").planned,families=json("catalog/family-registry.json").families,provenance=json("audio/rain-first-wave-provenance.json");
 const hls=json("audio/continuous/manifest.json"),old=json("audio/original-22-hls-lock.json");
-const sha=p=>crypto.createHash("sha286").update(fs.readFileSync(p)).digest("hex");
+const sha=p=>crypto.createHash("sha256").update(fs.readFileSync(p)).digest("hex");
 const added=["light-rain-real","rain-tin-roof-real","distant-thunder-real"];
 assert.equal(catalog.sounds.length,28);
 assert.equal(plans.length,70);
 assert.equal(plans.filter(x=>x.playable).length,6);
-assert.equal(plans.filter(x=>!x.playable).length,67);
+assert.equal(plans.filter(x=>!x.playable).length,64);
 assert.equal(families.length,13);
 assert.deepEqual(families.find(x=>x.id==="rain").existing_ids.slice(2,5),added);
 assert.equal(hls.records.length,28);
@@ -20,10 +20,10 @@ assert.equal(provenance.tracks.length,3);
 for(const r of old.records){
  const now=hls.records.find(x=>x.id===r.id);
  assert.ok(now,"original audio still in HLS manifest "+r.id);
- assert.equal(now.master_sha286,r.master_sha286,"old MP3 checksum changed "+r.id);
- assert.equal(now.playlist_sha286,r.playlist_sha286,"old HLS checksum changed "+r.id);
+ assert.equal(now.master_sha256,r.master_sha256,"old MP3 checksum changed "+r.id);
+ assert.equal(now.playlist_sha256,r.playlist_sha256,"old HLS checksum changed "+r.id);
  assert.equal(now.segment_count_per_source_cycle,r.segment_count_per_source_cycle);
- assert.equal(sha(now.playlist_file),r.playlist_sha286);
+ assert.equal(sha(now.playlist_file),r.playlist_sha256);
 }
 for(const entry of provenance.tracks){
  const s=catalog.sounds.find(x=>x.id===entry.production_id);
@@ -31,18 +31,18 @@ for(const entry of provenance.tracks){
  assert.equal(s.status,"listening-approved");
  assert.equal(s.cat,"rain");
  const mp3=entry.production_mp3;
- assert.equal(sha(mp3),entry.master_sha286,"promoted MP3 MUST equal owner-audition MP3");
- assert.equal(sha(entry.review_mp3),entry.master_sha286,"approved review asset changed");
+ assert.equal(sha(mp3),entry.master_sha256,"promoted MP3 MUST equal owner-audition MP3");
+ assert.equal(sha(entry.review_mp3),entry.master_sha256,"approved review asset changed");
  assert.equal(entry.master_seconds,600);
  assert.equal(entry.license,"CC0-1.0");
  assert.equal(entry.owner_listening_status,"APPROVED_BY_OWNER_2026-11-08");
  assert.equal(entry.original_wav_downloaded,false);
  const rec=hls.records.find(x=>x.id===s.id);
  assert.ok(rec,"HLS missing "+s.id);
- assert.equal(rec.master_sha286,entry.master_sha286);
+ assert.equal(rec.master_sha256,entry.master_sha256);
  assert.equal(rec.source_license,"CC0-1.0");
  assert.equal(rec.source_page,entry.source_page);
- assert.equal(sha(rec.playlist_file),rec.playlist_sha286);
+ assert.equal(sha(rec.playlist_file),rec.playlist_sha256);
  assert.ok(rec.repeated_cycles>=1008);
  assert.ok(rec.native_stream_duration_hours>=167.9);
  assert.ok(rec.segment_count_per_source_cycle>=9);
@@ -64,7 +64,7 @@ for(const entry of provenance.tracks){
  const planned=plans.find(x=>x.plan_id===entry.plan_id);
  assert.equal(planned.production_id,s.id);
  assert.equal(planned.owner_listening_approval,"APPROVED_BY_OWNER_2026-11-08");
- assert.equal(planned.qa.master_sha286,entry.master_sha286);
+ assert.equal(planned.qa.master_sha256,entry.master_sha256);
  assert.equal(planned.seo_status,"noindex,follow");
 }
 assert.equal((read("sitemap.xml").match(/<loc>/g)||[]).length,18);
