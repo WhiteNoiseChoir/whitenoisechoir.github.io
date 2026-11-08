@@ -38,7 +38,7 @@ button:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px sol
 <label for="track">Chọn bản âm thanh</label>
 <select id="track"></select>
 <p id="kind" class="small"></p>
-<audio id="player" controls preload="metadata" aria-label="Nghe thử âm thanh"></audio>
+<audio id="player" controls loop playsinline preload="metadata" aria-label="Nghe thử âm thanh phát liên tục"></audio>
 <div class="actions">
 <button id="play" type="button">▶ Phát bản chọn</button>
 <button id="near" type="button" class="secondary">Tua gần cuối</button>
@@ -70,7 +70,7 @@ button:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px sol
 <h2>Ưu tiên đối chiếu</h2>
 <p>Phân tích trên manifest phổ tần cho thấy <strong>Warm Pink ↔ Air Conditioner</strong> và <strong>Desk Fan ↔ Airplane Cabin</strong> có cấu trúc phổ khá gần nhau. Điều này chỉ giúp chọn cặp cần nghe, không chứng minh hai âm giống nhau về cảm nhận.</p>
 <p class="notice">Hãy tránh đặt âm lượng loa điện thoại tối đa, đặc biệt khi nghe thử cho trẻ nhỏ. Số đo LUFS/dBFS của file không phải số đo dB SPL tại tai.</p>
-<p class="small">Bản DSP dài 10 phút; bốn ứng viên CC0 chỉ dài khoảng 67–376 giây và chưa phải bản master 10 phút. Nút tua chuyển đến 5 giây cuối để kiểm tra điểm lặp. Khi bản kết thúc, người dùng có thể tua lại từ đầu.</p>
+<p class="small">Bản DSP dài 10 phút; bốn ứng viên CC0 chỉ dài khoảng 67–376 giây và chưa phải bản master 10 phút. Tất cả phát lặp liên tục cho đến khi bạn Pause/Stop. Trên Safari/iPhone, 12 bản DSP ưu tiên HLS native; các bản CC0 dùng MP3 native loop. Nút tua nhảy tới phút 9:55 của bản DSP hoặc 5 giây cuối bản CC0.</p>
 </div>
 <p class="footer"><a href="/signature/dsp-review/">Phòng DSP gốc</a> · <a href="/signature/field-review/">Phòng CC0 gốc</a> · <a href="/loop-check.html">Kiểm thử lặp iPhone</a>. Đây là công cụ kiểm định nội bộ, không phải trang SEO.</p>
 <script>
@@ -100,24 +100,32 @@ var select=document.getElementById("track"),player=document.getElementById("play
 notes=document.getElementById("notes"),message=document.getElementById("message"),
 saveMessage=document.getElementById("save-message"),record={},key="wnc-listening-approval-v1";
 var pendingSeek=false;
+var nativeHLS=!!player.canPlayType("application/vnd.apple.mpegurl");
+player.loop=true;
 try{record=JSON.parse(localStorage.getItem(key)||"{}");}catch(e){record={};}
 tracks.forEach(function(t){var o=document.createElement("option");o.value=t.id;o.textContent=t.name;select.appendChild(o);});
 function selected(){return tracks.find(function(t){return t.id===select.value;});}
 function getVerdict(){var checked=document.querySelector('input[name="verdict"]:checked');return checked?checked.value:"PENDING";}
 function switchTrack(id){
-select.value=id;player.pause();player.src=selected().url;player.load();pendingSeek=false;
+select.value=id;player.pause();
 var t=selected(),r=record[t.id]||{verdict:"PENDING",notes:""};
+var usingHLS=nativeHLS&&t.type==="DSP";
+player.loop=true;
+player.src=usingHLS?"/audio/continuous/"+t.id+"/continuous.m3u8":t.url;
+player.load();pendingSeek=false;
 notes.value=r.notes||"";
 document.querySelectorAll('input[name="verdict"]').forEach(function(input){input.checked=input.value===r.verdict;});
-document.getElementById("kind").textContent=t.type==="DSP"?"DSP tổng hợp — master 10 phút":"CC0 — bản nghe thử đầy đủ nguồn, chưa thay production";
+document.getElementById("kind").textContent=t.type==="DSP"?("DSP tổng hợp — master 10 phút; "+(usingHLS?"HLS native liên tục":"MP3 native loop")):"CC0 — bản nghe thử đầy đủ nguồn, MP3 native loop; chưa thay production";
 document.getElementById("comparison").textContent=pairs[t.id]?"Gợi ý nghe A/B: "+t.name+" ↔ "+tracks.find(function(a){return a.id===pairs[t.id];}).name:"Nghe theo tên gọi, độ dễ chịu, biến thiên và điểm nối.";
 message.textContent="Đã chọn "+t.name;saveMessage.textContent="";
 }
 function play(){player.play().catch(function(){message.textContent="Hãy chạm nút phát trên thanh audio.";});}
 function jump(){
+var t=selected();
 if(player.readyState>=1&&isFinite(player.duration)&&player.duration>8){
-player.currentTime=Math.max(0,player.duration-5);pendingSeek=false;
-message.textContent="Đã tua đến 5 giây cuối: nghe điểm kết thúc và phát lại.";return;
+var at=t.type==="DSP"?Math.min(595,Math.max(0,player.duration-5)):Math.max(0,player.duration-5);
+player.currentTime=at;pendingSeek=false;
+message.textContent=t.type==="DSP"?"Đã tua tới 9:55: nghe tiếp qua phút 10 trên HLS hoặc MP3 loop.":"Đã tua tới 5 giây cuối để kiểm tra vòng lặp MP3.";return;
 }
 pendingSeek=true;message.textContent="Đang tải thời lượng để tua.";player.load();
 }
