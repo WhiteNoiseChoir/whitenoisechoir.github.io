@@ -13,7 +13,7 @@ const BASE="http://127.0.0.1:8787";
   assert.match(await page.title(),/White Noise for Sleep — Listen to 6/);
   assert.equal(await page.locator('audio[data-sound="white-noise"]').getAttribute("controls"),null,"Bridge hides native fallback once active");
   assert.equal(await page.locator("main [data-wnc-compare]").count(),6,"Six instant sound choices");
-  assert.equal(await page.locator('main [data-wnc-compare][aria-current="true"]').count(),0,"No autoplay or active preselection");
+  assert.equal(await page.evaluate(()=>window.WNCBridge.snapshot().playing),false,"No autoplay; the default White Noise chip may be selected but not playing");
   assert.equal(await page.locator("main .sleep-faq details").count(),4,"Four bedtime FAQs");
   assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth+1),true,"No 390px mobile overflow");
   await page.locator('button[data-wnc-play="white-noise"]').click();
