@@ -20,5 +20,9 @@ jobs:
       - uses: actions/checkout@v4
       - name: Validate exact Brown Noise production MP3, waveform and HLS
         run: |
+          if ! command -v ffmpeg >/dev/null || ! command -v ffprobe >/dev/null; then
+            sudo apt-get update -qq
+            sudo apt-get install -y -qq ffmpeg
+          fi
           python3 -m pip install --disable-pip-version-check --quiet numpy
           python3 scripts/test_brown_master.py
