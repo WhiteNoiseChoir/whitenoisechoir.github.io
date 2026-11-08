@@ -65,7 +65,7 @@ jobs:
           git add -A index.html sources.html
           git add -A sounds/
           git add -A signature/field-review/ signature/dsp-review/ signature/listening-approval/
-          git add -A scripts/build_continuous_hls.py
+          git add -A scripts/build_continuous_hls.py scripts/test_player_smoke.cjs
           if git diff --cached --quiet; then
             echo "Approved assets already published"
           else
