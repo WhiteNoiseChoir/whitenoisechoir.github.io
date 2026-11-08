@@ -41,7 +41,7 @@ const cases=[
    assert.equal(page.url().split("?")[0],BASE+"/sounds/"+c.slug+"/",c.slug+" A/B stays in place");
    assert.equal(await link.getAttribute("aria-current"),"true",c.slug+" active A/B is accessible");
    assert.ok(Math.abs((await page.evaluate(()=>window.WNCBridge.snapshot().expiresAt))-deadline)<1500,c.slug+" timer preserved");
-   await page.locator('main .batch18-links a[href="/sounds/'+c.peerSlug+'/"]').first().click();
+   await page.locator('main .batch18-compare p.muted a[href="/sounds/'+c.peerSlug+'/"]').first().click();
    await page.waitForURL(BASE+"/sounds/"+c.peerSlug+"/",{timeout:20000});
    assert.equal(await page.evaluate(()=>window.WNCBridge.snapshot().playing),true,c.slug+" navigation preserves playback");
    assert.deepEqual(await page.evaluate(()=>window.WNCBridge.snapshot().activeIds),[c.peer],c.slug+" navigation source preserved");
