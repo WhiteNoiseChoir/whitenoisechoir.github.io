@@ -41,7 +41,7 @@ for(const id of clicks){
  assert.ok(html.includes('href="/sounds/'+sound.slug+'/" class="sleep-instant" data-wnc-compare="'+id+'"'),"Progressive audio selection: "+id);
  assert.ok(html.includes('class="sleep-details" href="/sounds/'+sound.slug+'/">Sound details</a>'),"Crawlable technical details: "+id);
 }
-for(const phrase of ["Start quietly","Audio does not start automatically","treatment of sleep problems","timer is a convenience","not a guaranteed safety shutoff","ten minutes","sleep timer","44.1 kHz","does not start automatically"]){
+for(const phrase of ["Begin quietly","Audio does not start automatically","treatment of sleep problems","timer is a convenience","not a guaranteed safety shutoff","ten minutes","sleep timer","44.1 kHz","does not start automatically"]){
  assert.ok(html.toLowerCase().includes(phrase.toLowerCase()),"Missing safety/product disclosure: "+phrase);
 }
 assert.equal([...html.matchAll(/<details>/g)].length,4,"Four focused FAQ disclosures");
