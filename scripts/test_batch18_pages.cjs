@@ -56,7 +56,7 @@ for(const id of edited){
  report.push({id,path:p,words:wordCount,indexable:expectedIndex,compare:compare.length});
 }
 const sitemap=file("sitemap.xml"),sitemapUrls=[...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map(x=>x[1]);
-assert.equal(sitemapUrls.length,12,"No new unreviewed index pages promoted");
+assert.equal(sitemapUrls.length,13,"Only the upgraded Relaxing Sounds collection added to sitemap");
 for(const id of edited){const x=byId[id];if(x.status==="dsp-review")assert.ok(!sitemapUrls.includes("https://whitenoisechoir.github.io/sounds/"+x.slug+"/"),"unreviewed excluded: "+id)}
 const hubs=["noise-colors","fan-noise","rain","water","wind-weather","fire","transportation","household","hums-drones"];
 for(const h of hubs){const doc=file("sounds/"+h+"/index.html");assert.match(doc,/batch18-hub-compare/,"category improved "+h)}

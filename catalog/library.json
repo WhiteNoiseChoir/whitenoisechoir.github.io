@@ -356,12 +356,16 @@
     {
       "slug": "relaxing-sounds",
       "title": "Relaxing Sounds",
-      "desc": "Rain, nature and gentle environmental ambiance",
+      "desc": "Curated real-world ambience and steady synthetic textures for unwinding",
       "ids": [
         "rain-on-window-real",
-        "fireplace-real",
         "ocean-waves-real",
-        "wind-synth"
+        "fireplace-real",
+        "heavy-rain-real",
+        "waterfall-real",
+        "wind-synth",
+        "pink-noise",
+        "brown-noise"
       ]
     },
     {
