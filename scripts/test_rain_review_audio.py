@@ -40,7 +40,7 @@ for row in manifest["tracks"]:
  s=next(s for s in js["streams"] if s["codec_type"]=="audio")
  dur=float(js["format"]["duration"])
  assert 599.0<=dur<=601.0,(ident,dur)
- assert s["codec_name"]=="mp3" and s["channels"]==2 and s["sample_rate"]==44100,ident
+ assert s["codec_name"]=="mp3" and s["channels"]==2 and int(s["sample_rate"])==44100,ident
  bit=int(js["format"]["bit_rate"])/1000
  assert 183<bit<202,(ident,bit)
  assert row["peak_dbfs"]<=-5.5
