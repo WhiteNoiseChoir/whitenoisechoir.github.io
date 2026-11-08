@@ -57,10 +57,10 @@ for row in manifest["tracks"]:
   assert row["independent_source_seconds"]<160
  print("REVIEW_AUDIO_PASS",json.dumps({"id":ident,"seconds":round(dur,3),"bitrate_kbps":round(bit,1),"bytes":path.stat().st_size,"mean_dbfs":row["mean_dbfs"],"peak_dbfs":row["peak_dbfs"],"status":"APPROVED_BY_OWNER_2026-11-08"}),flush=True)
 c=json.loads((ROOT/"catalog/library.json").read_text())
-assert len(c["sounds"])==25
+assert len(c["sounds"])==28
 assert not any(r["id"] in {x["id"] for x in c["sounds"]} for r in manifest["tracks"])
 assert len(json.loads((ROOT/"catalog/planned-sounds.json").read_text())["planned"])==70
 sitemap=(ROOT/"sitemap.xml").read_text()
 assert sitemap.count("<loc>")==18
 assert "/signature/rain-review/" not in sitemap
-print("RAIN_REVIEW_AUDIO_QA_PASS: 3 files byte-identical to promoted production MP3s; 25-source production index preserved",flush=True)
+print("RAIN_REVIEW_AUDIO_QA_PASS: 3 first-wave masters byte-identical to approved production MP3s; now 28 catalog sources, first-wave master hashes preserved",flush=True)
