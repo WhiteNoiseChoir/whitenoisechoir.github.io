@@ -29,7 +29,7 @@
   "browser_policy": "Use HLS if the audio element advertises native application/vnd.apple.mpegurl support; otherwise use the original looping MP3.",
   "not_an_infinite_stream": "A static GitHub Pages site cannot issue an unbounded server-generated HLS stream. The element also has loop=true at the playlist end.",
   "manual_fast_test_file": "audio/continuous/quick/continuous.m3u8",
-  "source_length_disclosure": "18 independently produced/arranged 10-minute masters; 4 short 54-second CC0 demos. HLS changes transport continuity, not unique recording length.",
+  "source_length_disclosure": "18 independently produced/arranged 10-minute masters; 4 short 54-second CC0 demos. HLS changes transport continuity, not source recording length.",
   "records": [
     {
       "id": "white-noise",
@@ -85,6 +85,27 @@
       "source_license": "original_dsp",
       "source_page": null,
       "editorial_status": "PREVIOUSLY_REVIEWED",
+      "repeated_cycles": 1008,
+      "native_stream_duration_hours": 168.01,
+      "audio_codec": "AAC-LC in MPEG-TS",
+      "sample_rate": 44100,
+      "channels": 2,
+      "bitrate_kbps": 192,
+      "long_form_listening_status": "PENDING_IPHONE_LOCK_SCREEN_REVIEW",
+      "notes": "iOS native HLS avoids JS-driven track restarts at source boundaries. Short CC0 sources are not misrepresented as ten minutes of independent material. No claim of perfectly seamless or literally infinite streaming."
+    },
+    {
+      "id": "green-noise",
+      "master_file": "audio/green-noise.mp3",
+      "master_sha256": "ede45d2360603ed62f6a0a6f191a5fdab8f4bb50a33d5da6341dff949eb12e06",
+      "playlist_file": "audio/continuous/green-noise/continuous.m3u8",
+      "playlist_sha256": "1d03b563d4b147b6350a7deb10e0814a46d2baaf5612af1abb7d80464eee66fe",
+      "segment_count_per_source_cycle": 10,
+      "source_cycle_seconds": 600.025,
+      "original_source_length_category": "10_MINUTE_MASTER",
+      "source_license": "original_dsp",
+      "source_page": null,
+      "editorial_status": "PENDING_NEW_BATCH_HUMAN_REVIEW",
       "repeated_cycles": 1008,
       "native_stream_duration_hours": 168.01,
       "audio_codec": "AAC-LC in MPEG-TS",
@@ -471,27 +492,6 @@
       "bitrate_kbps": 192,
       "long_form_listening_status": "PENDING_IPHONE_LOCK_SCREEN_REVIEW",
       "notes": "iOS native HLS avoids JS-driven track restarts at source boundaries. Short CC0 sources are not misrepresented as ten minutes of independent material. No claim of perfectly seamless or literally infinite streaming."
-    },
-    {
-      "id": "green-noise",
-      "master_file": "audio/green-noise.mp3",
-      "master_sha256": "ede45d2360603ed62f6a0a6f191a5fdab8f4bb50a33d5da6341dff949eb12e06",
-      "playlist_file": "audio/continuous/green-noise/continuous.m3u8",
-      "playlist_sha256": "1d03b563d4b147b6350a7deb10e0814a46d2baaf5612af1abb7d80464eee66fe",
-      "segment_count_per_source_cycle": 10,
-      "source_cycle_seconds": 600.025,
-      "original_source_length_category": "10_MINUTE_MASTER",
-      "source_license": "original_dsp",
-      "source_page": null,
-      "editorial_status": "PENDING_NEW_BATCH_HUMAN_REVIEW",
-      "repeated_cycles": 1008,
-      "native_stream_duration_hours": 168.01,
-      "audio_codec": "AAC-LC in MPEG-TS",
-      "sample_rate": 44100,
-      "channels": 2,
-      "bitrate_kbps": 192,
-      "long_form_listening_status": "PENDING_IPHONE_LOCK_SCREEN_REVIEW",
-      "notes": "Green noise is a user-defined mid-band spectrum, not a standard noise color. Seven-day HLS repeats the 10-minute independently synthesized master; device playback can still be interrupted."
     }
   ]
 }
