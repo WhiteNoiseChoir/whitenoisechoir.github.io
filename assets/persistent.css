@@ -102,3 +102,12 @@
 .brown-faq p{color:#acc9b7;line-height:1.65;font-size:13px}
 @media(max-width:760px){.brown-compare-grid,.brown-use-grid{grid-template-columns:1fr}.brown-compare-choice{min-height:auto}.brown-symbol{font-size:43px}}
 @media(max-width:450px){.brown-hero{padding:16px}.brown-symbol{font-size:30px}.brown-compare,.brown-spectrum{padding:15px}}
+
+/* Pink Noise: reuses the proven Noise Colors comparison UI with a distinct pink identity. */
+.pink-reference .pink-hero{background:linear-gradient(145deg,#342535,#1a2428);border-color:#8e6782}
+.pink-reference .pink-hero .tag{border-color:#a67d99;color:#f2d5e5}
+.pink-reference .pink-hero .brown-symbol{color:#f3bbd7}
+.pink-reference .pink-compare{background:#251f29;border-color:#6d526c}
+.pink-reference .pink-compare-choice.is-active,.pink-reference .pink-compare-choice[aria-current=true]{border-color:#f2abc9;background:#503346;box-shadow:0 0 0 1px #f2abc9 inset}
+.pink-reference .pink-spectrum{border-color:#645060}
+.pink-reference .pink-spectrum figcaption{color:#c4b6c4}
