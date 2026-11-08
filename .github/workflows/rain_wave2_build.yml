@@ -1,11 +1,5 @@
 name: Rain Thunder Wave2 CC0 Preview Auditions
 on:
-  push:
-    branches: ["feature/rain-wave2-qa-20261108"]
-    paths:
-      - "scripts/build_rain_wave2_review.py"
-      - "scripts/test_rain_wave2_review.cjs"
-      - ".github/workflows/rain_wave2_build.yml"
   workflow_dispatch:
 permissions:
   contents: write

@@ -1,5 +1,5 @@
 {
-  "version": "rain-second-wave-audition-20261108",
+  "version": "rain-second-wave-audition-20261108-qa2",
   "status": "REVIEW_ONLY_PENDING_OWNER",
   "license_policy": "Three different second-wave CC0 field recordings; verification source links included; original WAV source is NOT downloaded",
   "media_quality_policy": "Public Freesound HQ MP3 previews are lossy; actual bitrate varies and the first 20MB of any long preview cannot establish its true full-file bitrate. The 192 kbps audition MP3 is a transcoding step and cannot restore quality. Do not publish without listening approval; original lossless WAV recordings remain separate.",
@@ -24,16 +24,16 @@
       "downloaded_preview_duration_seconds": 131.457,
       "downloaded_preview_sha256": "ef7bc8d03618821108599bfc614c485c6e967d776caf2e13ae4c8f746b0ef78b",
       "independent_source_seconds": 125,
-      "arrangement": "Reused approximately 125s of independent source with 5s circular crossfades; thunder events repeat by design",
+      "arrangement": "Reused approximately 125s of independent source with 5s circular crossfades; recognizable source patterns may repeat",
       "repetitions_approx": 5,
-      "duration_seconds": 600.0,
+      "duration_seconds": 600,
       "output_codec": "mp3",
       "sample_rate": 44100,
       "channels": 2,
-      "output_bitrate_kbps": 192.0,
+      "output_bitrate_kbps": 192,
       "mean_dbfs": -38.8,
       "peak_dbfs": -8.8,
-      "gain_db": -9.0,
+      "gain_db": -9,
       "master_sha256": "5617e98ca487b42798e5af48bf4674ac8100dcc246eeb1ad392a3a176662d61c",
       "master_bytes": 14401453,
       "source_preview_content_type": "audio/mpeg",
@@ -43,6 +43,10 @@
       "limitations": [
         "Original lossless source NOT downloaded; publicly accessible HQ preview is lossy",
         "Review listening needed: source identity, tonality, abrupt events, peak, physical listening comfort, 10min loop"
+      ],
+      "qa_attention": [
+        "Short independently recorded source 125 seconds; rain loops about five cycles",
+        "Quiet mean -38.8 dBFS — check listening at controlled volume"
       ]
     },
     {
@@ -64,16 +68,16 @@
       "downloaded_preview_duration_seconds": 236.811,
       "downloaded_preview_sha256": "1f884646f208b876c98e81383bcb2dec66fb0aca6941a7c53ef318a130f46746",
       "independent_source_seconds": 231,
-      "arrangement": "Reused approximately 231s of independent source with 5s circular crossfades; thunder events repeat by design",
+      "arrangement": "Reused approximately 231s of independent source with 5s circular crossfades; recognizable source patterns may repeat",
       "repetitions_approx": 3,
-      "duration_seconds": 600.0,
+      "duration_seconds": 600,
       "output_codec": "mp3",
       "sample_rate": 44100,
       "channels": 2,
-      "output_bitrate_kbps": 192.0,
+      "output_bitrate_kbps": 192,
       "mean_dbfs": -41.6,
       "peak_dbfs": -19.2,
-      "gain_db": 8.0,
+      "gain_db": 8,
       "master_sha256": "ff4f90c58cd3c8e2005aec43a8215b76e242e4bdbc13c19594026cc274c36748",
       "master_bytes": 14401453,
       "source_preview_content_type": "audio/mpeg",
@@ -83,6 +87,10 @@
       "limitations": [
         "Original lossless source NOT downloaded; publicly accessible HQ preview is lossy",
         "Review listening needed: source identity, tonality, abrupt events, peak, physical listening comfort, 10min loop"
+      ],
+      "qa_attention": [
+        "True original source is mono. Produced stereo is duplicated mono channels, NOT actual stereo recording",
+        "Quiet mean -41.6 dBFS — check gain, audible vehicle roof identity and repetition"
       ]
     },
     {
@@ -106,11 +114,11 @@
       "independent_source_seconds": 605,
       "arrangement": "600s contiguous section with a 5s circular seam; selected from a longer independent field recording",
       "repetitions_approx": 0,
-      "duration_seconds": 600.0,
+      "duration_seconds": 600,
       "output_codec": "mp3",
       "sample_rate": 44100,
       "channels": 2,
-      "output_bitrate_kbps": 192.0,
+      "output_bitrate_kbps": 192,
       "mean_dbfs": -40.5,
       "peak_dbfs": -8.8,
       "gain_db": -0.8,
@@ -123,7 +131,12 @@
       "limitations": [
         "Original lossless source NOT downloaded; publicly accessible HQ preview is lossy",
         "Review listening needed: source identity, tonality, abrupt events, peak, physical listening comfort, 10min loop"
+      ],
+      "qa_attention": [
+        "Near-and-far rolling thunder and wind recorded together; listen for sudden thunder peaks",
+        "Mean -40.5 dBFS versus peak -8.8 dBFS: wide dynamics; avoid high volume"
       ]
     }
-  ]
+  ],
+  "qa_attention": "Technical file QA PASS does not establish perceptual difference, comfort, physical iPhone locked screen looping or production approval."
 }

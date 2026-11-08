@@ -117,7 +117,7 @@ def render(config,root):
    # arrangement of a short source, not 10 minutes of novel events.
    run(["ffmpeg","-hide_banner","-loglevel","error","-nostdin","-y","-stream_loop","8","-i",str(short),"-t","605","-ac","2","-ar","44100","-c:a","flac",str(total)])
    segment=tmp/"cycle.flac";make_cycle(total,600,segment)
-   variant=f"Reused approximately {length}s of independent source with 5s circular crossfades; thunder events repeat by design"
+   variant=f"Reused approximately {length}s of independent source with 5s circular crossfades; recognizable source patterns may repeat"
    source_window_seconds=length
    repetitions=math.ceil(605/length)
   mean,peak=stats(segment)
