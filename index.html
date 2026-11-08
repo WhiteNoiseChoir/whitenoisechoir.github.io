@@ -187,8 +187,9 @@ async function playTracks(ids,name){
   var anyHLS=false;
   var result=await Promise.all(ids.map(async function(id,i){
     var versioned=(id==="rain-on-window-real"||id==="fireplace-real")?"?v=long-master-v1-20261107":
+      (id==="green-noise"?"?v=green-noise-master-v1-20261108":
       (["white-noise","pink-noise","brown-noise"].indexOf(id)!==-1?"?v=color-master-v1-20261107":
-      (expandedDSP.indexOf(id)!==-1?"?v=extended-dsp-v1-20261108":""));
+      (expandedDSP.indexOf(id)!==-1?"?v=extended-dsp-v1-20261108":"")));
     var mp3url="audio/"+id+".mp3"+versioned;
     var audio=new Audio();
     var canHLS=typeof audio.canPlayType==="function"&&!!(audio.canPlayType("application/vnd.apple.mpegurl")||audio.canPlayType("application/x-mpegURL"));
@@ -196,7 +197,7 @@ async function playTracks(ids,name){
     var triedMP3=false;
     var switching=false;
     if(usingHLS)anyHLS=true;
-    audio.src=usingHLS?"audio/continuous/"+id+"/continuous.m3u8?v=continuous-hls-v2-20261108":mp3url;
+    audio.src=usingHLS?"audio/continuous/"+id+"/continuous.m3u8?v=continuous-hls-v3-green-20261108":mp3url;
     audio.loop=true;audio.preload="auto";
     audio.volume=Math.min(1,layerGain(i,ids.length)*Number($("volume").value)/100);
     audio.addEventListener("timeupdate",checkSleepTimer);

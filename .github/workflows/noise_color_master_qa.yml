@@ -6,6 +6,10 @@ on:
       - 'audio/white-noise.mp3'
       - 'audio/pink-noise.mp3'
       - 'audio/brown-noise.mp3'
+      - 'audio/green-noise.mp3'
+      - 'audio/green-noise-master-manifest.json'
+      - 'audio/continuous/green-noise/**'
+      - 'scripts/test_green_noise.py'
       - 'audio/color-master-manifest.json'
       - 'audio/continuous/white-noise/**'
       - 'audio/continuous/pink-noise/**'
@@ -31,3 +35,4 @@ jobs:
           fi
           python3 -m pip install --disable-pip-version-check --quiet numpy
           python3 scripts/test_noise_color_master.py pink-noise white-noise brown-noise
+          python3 scripts/test_green_noise.py

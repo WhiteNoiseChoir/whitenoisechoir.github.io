@@ -26,10 +26,12 @@ import shutil
 ROOT=Path("audio")
 HLS_ROOT=ROOT/"continuous"
 COLOR_MASTER=ROOT/"color-master-manifest.json"
+GREEN_MASTER=ROOT/"green-noise-master-manifest.json"
 NATURE_MASTER=ROOT/"master-manifest.json"
 EXTENDED_MASTER=ROOT/"extended-dsp-manifest.json"
 FIELD_REGISTRY=ROOT/"cc0-sources.json"
 COLORS={"white-noise","pink-noise","brown-noise"}
+GREEN={"green-noise"}
 NATURE={"rain-on-window-real","fireplace-real"}
 EXTENDED={
     "blue-noise","violet-noise","soft-white-noise","deep-brown-noise",
@@ -37,11 +39,11 @@ EXTENDED={
     "air-conditioner-synth","cabin-hum-synth","wind-synth","shower-synth",
 }
 LEGACY_CC0={"box-fan-real","heavy-rain-real","ocean-waves-real","waterfall-real"}
-ALL=COLORS | NATURE | EXTENDED | LEGACY_CC0
-assert len(ALL)==21
+ALL=COLORS | GREEN | NATURE | EXTENDED | LEGACY_CC0
+assert len(ALL)==22
 DAYS=7
 BITRATE=192
-HLS_VERSION="continuous-hls-v2-20261108"
+HLS_VERSION="continuous-hls-v3-green-20261108"
 
 
 def sha(path):
@@ -152,10 +154,10 @@ def parse_quick(path):
 
 def main():
     originals=[]
-    for filename, allowed in ((COLOR_MASTER,COLORS),(NATURE_MASTER,NATURE),
+    for filename, allowed in ((COLOR_MASTER,COLORS),(GREEN_MASTER,GREEN),(NATURE_MASTER,NATURE),
                               (EXTENDED_MASTER,EXTENDED)):
         j=json.loads(filename.read_text(encoding="utf-8"))
-        entries=j["masters"] if filename==NATURE_MASTER else j["tracks"]
+        entries=[j] if filename==GREEN_MASTER else j["masters"] if filename==NATURE_MASTER else j["tracks"]
         for e in entries:
             if e["id"] not in allowed:
                 continue
@@ -220,7 +222,7 @@ def main():
                 "original_source_length_category":"LEGACY_CC0_SHORT_DEMO" if ident in LEGACY_CC0 else "10_MINUTE_MASTER",
                 "source_license":e.get("source_license",e.get("license","original_dsp")),
                 "source_page":e.get("source_page"),
-                "editorial_status":e.get("source_editorial_status","PENDING_NEW_BATCH_HUMAN_REVIEW" if ident in EXTENDED else "PREVIOUSLY_REVIEWED"),
+                "editorial_status":e.get("source_editorial_status","PENDING_NEW_BATCH_HUMAN_REVIEW" if ident in (EXTENDED|GREEN) else "PREVIOUSLY_REVIEWED"),
                 "repeated_cycles":cycles,
                 "native_stream_duration_hours":round(duration/3600,2),
                 "audio_codec":"AAC-LC in MPEG-TS",
@@ -248,13 +250,13 @@ def main():
     (quick_dir/"continuous.m3u8").write_text("\n".join(short_lines)+"\n",encoding="utf-8")
     summary={
         "version":HLS_VERSION,
-        "playlist_type":"static multi-cycle HLS VOD, seven days per track, 21 sound IDs",
+        "playlist_type":"static multi-cycle HLS VOD, seven days per track, 22 sound IDs",
         "applies_to":sorted(ALL),
         "reason":"avoid relying on JS to play another MP3 when iOS Safari is backgrounded or the screen is locked",
         "browser_policy":"Use HLS if the audio element advertises native application/vnd.apple.mpegurl support; otherwise use the original looping MP3.",
         "not_an_infinite_stream":"A static GitHub Pages site cannot issue an unbounded server-generated HLS stream. The element also has loop=true at the playlist end.",
         "manual_fast_test_file":"audio/continuous/quick/continuous.m3u8",
-        "source_length_disclosure":"17 independently produced/arranged 10-minute masters; 4 short 54-second CC0 demos. HLS changes transport continuity, not source recording length.",
+        "source_length_disclosure":"18 independently produced/arranged 10-minute masters; 4 short 54-second CC0 demos. HLS changes transport continuity, not source recording length.",
         "records":report,
     }
     (HLS_ROOT/"manifest.json").write_text(json.dumps(summary,indent=2)+"\n",encoding="utf-8")

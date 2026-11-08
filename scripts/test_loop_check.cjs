@@ -66,15 +66,23 @@ const flush=()=>new Promise(resolve=>setImmediate(resolve));
   assert.equal(created[1].currentTime,1195,"Second shortcut must seek to 19:55");
   get("stop").dispatch("click");
 
+  // Green Noise uses the same 10-minute HLS timeline and seek shortcut.
+  get("testMode").value="green";get("testMode").dispatch("change");
+  get("play").dispatch("click");await flush();
+  assert.ok(created[2].src.includes("/green-noise/continuous.m3u8"),"Green mode uses Green HLS");
+  get("tenMinute").dispatch("click");
+  assert.equal(created[2].currentTime,595,"Green source shortcut seeks to 9:55");
+  get("stop").dispatch("click");
+
   // Chrome/other non-HLS browser: do not expose inaccessible 20-minute target.
   canHLS=false;
   get("testMode").value="quick";get("testMode").dispatch("change");
   get("play").dispatch("click");await flush();
-  assert.ok(created[2].src.includes("white-noise.mp3"),"Without HLS, original MP3 fallback is used");
+  assert.ok(created[3].src.includes("white-noise.mp3"),"Without HLS, original MP3 fallback is used");
   assert.equal(get("seek").max,"600");
   assert.equal(get("nearEnd").disabled,true,"Do not seek beyond MP3's real duration");
   get("tenMinute").dispatch("click");
-  assert.equal(created[2].currentTime,595,"Fallback should still allow 9:55 boundary test");
+  assert.equal(created[3].currentTime,595,"Fallback should still allow 9:55 boundary test");
   get("stop").dispatch("click");
   console.log("PASS: 20-minute slider, 19:55 jump, 9:55 master jump, 7-day stream window and MP3 fallback");
 })().catch(err=>{console.error(err);process.exit(1);});

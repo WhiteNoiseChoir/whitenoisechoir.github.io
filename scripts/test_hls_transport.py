@@ -13,14 +13,14 @@ import sys
 
 SR=8000
 LONG={
-    "white-noise","pink-noise","brown-noise","rain-on-window-real","fireplace-real",
+    "white-noise","pink-noise","brown-noise","green-noise","rain-on-window-real","fireplace-real",
     "blue-noise","violet-noise","soft-white-noise","deep-brown-noise",
     "warm-pink-noise","mid-noise","low-rumble","desk-fan-synth",
     "air-conditioner-synth","cabin-hum-synth","wind-synth","shower-synth",
 }
 SHORT={"box-fan-real","heavy-rain-real","ocean-waves-real","waterfall-real"}
 EXPECTED=LONG | SHORT
-assert len(LONG)==17 and len(SHORT)==4 and len(EXPECTED)==21
+assert len(LONG)==18 and len(SHORT)==4 and len(EXPECTED)==22
 
 
 def rms(values):
@@ -82,7 +82,7 @@ def main():
     results=[check(name) for name in sorted(EXPECTED)]
     for row in results:
         print("HLS_BOUNDARY_QA",json.dumps(row),flush=True)
-    print("PASS: all 21 HLS streams decode continuously across each source cycle.",flush=True)
+    print("PASS: all 22 HLS streams decode continuously across each source cycle.",flush=True)
 
 
 if __name__=="__main__":

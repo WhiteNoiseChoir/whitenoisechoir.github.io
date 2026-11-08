@@ -4,6 +4,7 @@ on:
     branches: [main]
     paths:
       - 'scripts/build_continuous_hls.py'
+      - 'audio/green-noise-master-manifest.json'
       - '.github/workflows/continuous_hls.yml'
   workflow_dispatch:
 permissions:
@@ -28,7 +29,7 @@ jobs:
           sudo apt-get install -y ffmpeg
       - name: Syntax check
         run: python -m py_compile scripts/build_continuous_hls.py
-      - name: Convert and QA 21 native continuous streams
+      - name: Convert and QA 22 native continuous streams
         run: python -u scripts/build_continuous_hls.py
       - name: Validate continuous playlist duration and transport structure
         run: |
@@ -36,13 +37,13 @@ jobs:
           import json,re,hashlib
           from pathlib import Path
           m=json.loads(Path('audio/continuous/manifest.json').read_text())
-          names={'white-noise','pink-noise','brown-noise','rain-on-window-real','fireplace-real',
+          names={'white-noise','pink-noise','brown-noise','green-noise','rain-on-window-real','fireplace-real',
                 'blue-noise','violet-noise','soft-white-noise','deep-brown-noise',
                 'warm-pink-noise','mid-noise','low-rumble','desk-fan-synth',
                 'air-conditioner-synth','cabin-hum-synth','wind-synth','shower-synth',
                 'box-fan-real','heavy-rain-real','ocean-waves-real','waterfall-real'}
           assert set(m['applies_to'])==names
-          assert len(m['records'])==21
+          assert len(m['records'])==22
           for v in m['records']:
               p=Path(v['playlist_file'])
               src=p.read_text()
@@ -60,7 +61,7 @@ jobs:
               print(v['id'],'cycles',v['repeated_cycles'],'hours',v['native_stream_duration_hours'])
           q=Path(m['manual_fast_test_file'])
           assert q.exists() and q.read_text().count('#EXT-X-DISCONTINUITY')>=30
-          print('PASS: all 21 browser-native HLS streams and 12-second fast-loop test')
+          print('PASS: all 22 browser-native HLS streams and 12-second fast-loop test')
           PY
       - name: Publish streams, not original MP3s
         run: |
@@ -70,7 +71,7 @@ jobs:
           if git diff --cached --quiet; then
             echo "HLS artifacts are already current"
           else
-            git commit -m "Publish five iOS native 7-day HLS continuous-playback streams"
+            git commit -m "Publish 22 iOS native 7-day HLS continuous-playback streams"
             git pull --rebase origin main
             git push origin HEAD:main
           fi

@@ -72,6 +72,27 @@ const URL="http://127.0.0.1:8787";
   await page.locator("#wnc-library-search").fill("pink");
   const shown=await page.locator('main .wnc-sound-card:visible').count();
   assert.ok(shown>0&&shown<10,"library search filters visible sound cards, count="+shown);
+
+  // Green Noise is a new, genuinely separate synthesized master with cautious index settings.
+  await page.locator("#wnc-library-search").fill("green");
+  await page.locator('main a[href="/sounds/green-noise/"]').first().click();
+  await page.waitForURL(URL+"/sounds/green-noise/",{timeout:20000});
+  assert.equal(await page.locator('meta[name="robots"]').getAttribute("content"),"noindex,follow","Unreviewed Green Noise must stay noindex");
+  assert.ok(await page.locator('audio[data-sound="green-noise"]').count()===1,"Dedicated Green source available");
+  assert.ok(await page.locator('main .green-spectrum').count()===1,"Green has its own documented spectrum");
+  await page.locator('button[data-wnc-play="green-noise"]').click();
+  await page.waitForFunction(()=>window.WNCBridge?.snapshot().playing&&window.WNCBridge.snapshot().activeIds[0]==="green-noise",null,{timeout:25000});
+  await page.locator('select[data-wnc-page-timer]').selectOption("900");
+  const greenDeadline=await page.evaluate(()=>window.WNCBridge.snapshot().expiresAt);
+  await page.locator('a[data-wnc-compare="pink-noise"]').click();
+  await page.waitForFunction(()=>window.WNCBridge?.snapshot().playing&&window.WNCBridge.snapshot().activeIds[0]==="pink-noise",null,{timeout:25000});
+  assert.equal(page.url().split("?")[0],URL+"/sounds/green-noise/","Green A/B does not change canonical URL");
+  assert.ok(Math.abs((await page.evaluate(()=>window.WNCBridge.snapshot().expiresAt))-greenDeadline)<1500,"Green A/B preserves the exact timer deadline");
+  await page.locator('a[data-wnc-compare="green-noise"]').click();
+  await page.waitForFunction(()=>window.WNCBridge?.snapshot().playing&&window.WNCBridge.snapshot().activeIds[0]==="green-noise",null,{timeout:25000});
+  assert.equal(await page.locator('a[data-wnc-compare="green-noise"]').getAttribute("aria-current"),"true","Green selection accessible");
+  await page.locator('main .crumb a[href="/sounds/"]').first().click();
+  await page.waitForURL(URL+"/sounds/",{timeout:20000});
   await page.locator('a.logo[href="/"]').click();
   await page.waitForURL(URL+"/",{timeout:20000});
   assert.equal(await page.evaluate(()=>window.WNCBridge.snapshot().playing),true,"audio persists when opening homepage");

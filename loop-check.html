@@ -44,7 +44,8 @@ li{margin:7px 0}
   <label for="testMode">Choose test</label>
   <select id="testMode">
     <option value="quick">Quick loop — 12-second recording, 20-minute stream</option>
-    <option value="production">Production loop — 10-minute recording, continuous stream</option>
+    <option value="production">Production loop — White Noise, 10-minute master</option>
+    <option value="green">Green Noise — 10-minute master, continuous stream</option>
   </select>
   <div class="actions">
     <button id="play" type="button">▶ Play</button>
@@ -71,7 +72,7 @@ li{margin:7px 0}
 <section class="panel">
   <h2>How to test in under a minute</h2>
   <ol>
-    <li>Select <strong>Production loop</strong> and press <strong>Play</strong>.</li>
+    <li>Select <strong>Production loop</strong> for White Noise, or <strong>Green Noise</strong>, and press <strong>Play</strong>.</li>
     <li>Tap <strong>Jump to 9:55</strong>. Listen for 10–15 seconds to check that the sound continues beyond 10:00.</li>
     <li>For the quick test, select <strong>Quick loop</strong> and jump to <strong>19:55</strong>. Listen to whether it restarts at the end of the playlist.</li>
     <li>You can also lock the iPhone screen before crossing either boundary.</li>
@@ -162,9 +163,12 @@ $("play").addEventListener("click",function(){
   if(active)return;
   chooseMode();
   var quick=mode==="quick";
+  var green=mode==="green";
   var src=nativeStream?(quick?
     "audio/continuous/quick/continuous.m3u8?v=continuous-hls-v1-20261107":
-    "audio/continuous/white-noise/continuous.m3u8?v=continuous-hls-v1-20261107"):
+    green?"audio/continuous/green-noise/continuous.m3u8?v=continuous-hls-v3-green-20261108":
+    "audio/continuous/white-noise/continuous.m3u8?v=continuous-hls-v3-green-20261108"):
+    green?"audio/green-noise.mp3?v=green-noise-master-v1-20261108":
     "audio/white-noise.mp3?v=color-master-v1-20261107";
   audio=new Audio();
   audio.src=src;audio.loop=true;audio.preload="auto";
@@ -208,6 +212,9 @@ $("beforeLoop").addEventListener("click",function(){applySeek(mode==="quick"&&na
 $("tenMinute").addEventListener("click",function(){applySeek(595)});
 $("nearEnd").addEventListener("click",function(){applySeek(1195)});
 window.addEventListener("pageshow",refreshControls);
+if(typeof location!=="undefined"&&typeof URLSearchParams!=="undefined"){
+  try{if(new URLSearchParams(location.search).get("mode")==="green")$("testMode").value="green"}catch(err){}
+}
 chooseMode();
 })();
 </script>
