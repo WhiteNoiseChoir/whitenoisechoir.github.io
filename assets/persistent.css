@@ -111,3 +111,13 @@
 .pink-reference .pink-compare-choice.is-active,.pink-reference .pink-compare-choice[aria-current=true]{border-color:#f2abc9;background:#503346;box-shadow:0 0 0 1px #f2abc9 inset}
 .pink-reference .pink-spectrum{border-color:#645060}
 .pink-reference .pink-spectrum figcaption{color:#c4b6c4}
+
+/* White Noise technical reference - deliberately distinct from the general sound-machine homepage */
+.white-reference .white-hero{background:linear-gradient(140deg,#2d3e43,#172329);border-color:#7899a0}
+.white-reference .white-hero .tag{border-color:#8eabb0;color:#e4f4f4}
+.white-reference .white-hero .brown-symbol{color:#e4f4ef}
+.white-reference .white-compare{background:#1b2a2d;border-color:#587077}
+.white-reference .brown-compare-choice.is-active,.white-reference .brown-compare-choice[aria-current=true]{border-color:#e4f4ef;background:#375351;box-shadow:0 0 0 1px #e4f4ef inset}
+.white-reference .white-spectrum{background:#172227;border-color:#567074}
+.white-reference .white-spectrum figcaption{color:#bbd1cf}
+.white-reference .white-technical{margin-top:28px}
