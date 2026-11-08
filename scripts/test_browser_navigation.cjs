@@ -20,7 +20,7 @@ const URL="http://127.0.0.1:8787";
   const deadline=await page.evaluate(()=>window.WNCBridge.snapshot().expiresAt);
   await page.locator('a[data-wnc-compare="pink-noise"]').click();
   await page.waitForFunction(()=>window.WNCBridge.snapshot().activeIds[0]==="pink-noise"&&window.WNCBridge.snapshot().playing,null,{timeout:20000});
-  assert.equal(new URL(page.url()).pathname,"/sounds/brown-noise/","A/B keeps comparison page URL");
+  assert.equal(page.url().split("?")[0],URL+"/sounds/brown-noise/","A/B keeps comparison page URL");
   const afterCompare=await page.evaluate(()=>window.WNCBridge.snapshot());
   assert.equal(afterCompare.timer,"900","A/B retains sleep timer selection");
   assert.ok(Math.abs(afterCompare.expiresAt-deadline)<1500,"A/B does not extend timer deadline");
