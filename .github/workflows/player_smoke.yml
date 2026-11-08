@@ -14,6 +14,7 @@ on:
       - 'audio-tools/**'
       - 'sitemap.xml'
       - 'scripts/test_library_structure.cjs'
+      - 'scripts/test_browser_navigation.cjs'
       - 'loop-check.html'
       - 'scripts/test_loop_check.cjs'
       - 'scripts/test_player_smoke.cjs'
@@ -24,7 +25,7 @@ permissions:
 jobs:
   player-smoke:
     runs-on: ubuntu-latest
-    timeout-minutes: 4
+    timeout-minutes: 12
     steps:
       - uses: actions/checkout@v4
       - name: Run playback and timer tests on Node 22
@@ -33,3 +34,10 @@ jobs:
           node scripts/test_player_smoke.cjs
           node scripts/test_loop_check.cjs
           node scripts/test_library_structure.cjs
+      - name: Browser navigation & persistent playback regression
+        run: |
+          npm install --no-save --no-package-lock playwright
+          python3 -m http.server 8787 --bind 127.0.0.1 >/tmp/wnc-http.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill $SERVER_PID || true' EXIT
+          node scripts/test_browser_navigation.cjs
