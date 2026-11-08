@@ -7,6 +7,7 @@ on:
       - "audio/continuous/rain-on-tent-real/**"
       - "audio/continuous/rain-car-roof-real/**"
       - "audio/continuous/rolling-thunder-real/**"
+      - ".github/workflows/rain_wave2_production_qa.yml"
   workflow_dispatch:
 permissions:
   contents: read
@@ -16,6 +17,12 @@ jobs:
     timeout-minutes: 36
     steps:
       - uses: actions/checkout@v4
+      - name: Ensure FFmpeg available for real HLS boundary decoding
+        run: |
+          if ! command -v ffprobe >/dev/null || ! command -v ffmpeg >/dev/null; then
+            sudo apt-get update -qq
+            sudo apt-get install -y -qq ffmpeg
+          fi
       - name: Verify all 28 audio sources, first-wave lock, 45 presets and HLS boundaries
         run: |
           node scripts/test_rain_wave2_production.cjs
