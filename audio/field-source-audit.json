@@ -1,0 +1,71 @@
+{
+  "version": "20261108-field-source-audit-v1",
+  "tracks": [
+    {
+      "id": "box-fan-real",
+      "source_page": "https://freesound.org/people/ffdm/sounds/824852/",
+      "creator": "ffdm",
+      "declared_source_license": "CC0-1.0",
+      "preview_url": "https://cdn.freesound.org/previews/824/824852_17819872-hq.mp3",
+      "pinned_preview_sha256": "81d762a382973e02aef36024ef3444acef94e83e534bbb4dbc78716c5a2c5a79",
+      "preview_bytes": 1613856,
+      "original_page_source_duration_seconds": 70.524,
+      "accessible_preview_duration_seconds": 70.525,
+      "current_public_demo_seconds": 54,
+      "natural_independent_content_from_verified_preview_minutes": 1.18,
+      "is_10_minutes_independent_recording": false,
+      "upgrade_decision": "FIND_LONGER_CC0_SOURCE_BEFORE_10_MIN_MASTER",
+      "editorial_status": "PENDING_HUMAN_LISTENING"
+    },
+    {
+      "id": "heavy-rain-real",
+      "source_page": "https://freesound.org/people/MikeNavajas/sounds/681490/",
+      "creator": "MikeNavajas",
+      "declared_source_license": "CC0-1.0",
+      "preview_url": "https://cdn.freesound.org/previews/681/681490_11463865-hq.mp3",
+      "pinned_preview_sha256": "ea6704c33c5abb8c3c21e4fc0c96f949d153fed8f7c64e727344cdb0c796cc55",
+      "preview_bytes": 4365439,
+      "original_page_source_duration_seconds": 192.758,
+      "accessible_preview_duration_seconds": 192.758,
+      "current_public_demo_seconds": 54,
+      "natural_independent_content_from_verified_preview_minutes": 3.21,
+      "is_10_minutes_independent_recording": false,
+      "upgrade_decision": "REVIEW_LONG_SOURCE_REMASTER",
+      "editorial_status": "PENDING_HUMAN_LISTENING"
+    },
+    {
+      "id": "ocean-waves-real",
+      "source_page": "https://freesound.org/people/florianreichelt/sounds/450755/",
+      "creator": "florianreichelt",
+      "declared_source_license": "CC0-1.0",
+      "preview_url": "https://cdn.freesound.org/previews/450/450755_6253486-hq.mp3",
+      "pinned_preview_sha256": "093587b74547445a3f4fd83a64c7b8947c92f1b19fbdc5e9e901788a9795f73b",
+      "preview_bytes": 2104320,
+      "original_page_source_duration_seconds": 92.833,
+      "accessible_preview_duration_seconds": 92.833,
+      "current_public_demo_seconds": 54,
+      "natural_independent_content_from_verified_preview_minutes": 1.55,
+      "is_10_minutes_independent_recording": false,
+      "upgrade_decision": "FIND_LONGER_CC0_SOURCE_BEFORE_10_MIN_MASTER",
+      "editorial_status": "PENDING_HUMAN_LISTENING"
+    },
+    {
+      "id": "waterfall-real",
+      "source_page": "https://freesound.org/people/Fabrizio84/sounds/458711/",
+      "creator": "Fabrizio84",
+      "declared_source_license": "CC0-1.0",
+      "preview_url": "https://cdn.freesound.org/previews/458/458711_2841496-hq.mp3",
+      "pinned_preview_sha256": "e49f6e3e8acb0c3f587b041a9fe0436d694eef8afec07b7aedbe50080c5d439f",
+      "preview_bytes": 7325528,
+      "original_page_source_duration_seconds": 378.475,
+      "accessible_preview_duration_seconds": 378.476,
+      "current_public_demo_seconds": 54,
+      "natural_independent_content_from_verified_preview_minutes": 6.31,
+      "is_10_minutes_independent_recording": false,
+      "upgrade_decision": "REVIEW_LONG_SOURCE_REMASTER",
+      "editorial_status": "PENDING_HUMAN_LISTENING"
+    }
+  ],
+  "status": "SOURCE_AND_LICENSE_VERIFIED; LONGER_MASTER_NOT_YET_APPROVED",
+  "policy": "Do not manufacture 10min of unique field recording by simply repeating <2min source. Approve replacements by ear before promotion."
+}
