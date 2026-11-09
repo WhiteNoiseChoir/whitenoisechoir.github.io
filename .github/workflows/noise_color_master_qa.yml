@@ -27,6 +27,8 @@ jobs:
     timeout-minutes: 12
     steps:
       - uses: actions/checkout@v4
+      - name: Verify green HLS R2 source (17 MB) and hydrate only in CI workspace
+        run: WNC_REHYDRATE_IDS=green-noise python3 scripts/rehydrate_r2_hls_ci.py
       - name: Verify original Pink, White and Brown MP3 masters and native HLS boundary
         run: |
           if ! command -v ffmpeg >/dev/null || ! command -v ffprobe >/dev/null; then
