@@ -1,0 +1,53 @@
+name: Pond Wildlife CC0 Review Builder (No Production Changes)
+on:
+  push:
+    branches: ['feature/pond-wildlife-review-20261109']
+    paths:
+      - 'scripts/build_pond_wildlife_review.py'
+      - 'scripts/test_pond_wildlife_review.cjs'
+      - 'scripts/test_pond_wildlife_browser.cjs'
+      - 'signature/pond-wildlife-review/index.html'
+      - '.github/workflows/pond_wildlife_build.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  build-two-audition-masters:
+    if: github.ref_name == 'feature/pond-wildlife-review-20261109' && github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - name: Ensure audio dependencies
+        run: |
+          python3 -m py_compile scripts/build_pond_wildlife_review.py
+          ffmpeg -version | head -1
+      - name: Source verification and 600-second nonrepeating review MP3s
+        run: python3 scripts/build_pond_wildlife_review.py
+      - name: Audit source integrity and preservation of 35 production sources and 45 presets
+        run: |
+          node scripts/test_pond_wildlife_review.cjs
+          node scripts/test_water_ocean_wave2_production.cjs
+          node scripts/test_library_foundation.cjs
+          node scripts/test_player_smoke.cjs
+      - name: Mobile browser QA and listening controls
+        run: |
+          npm install --no-save --no-package-lock playwright
+          node scripts/rain_review_range_test_server.cjs >/tmp/pond-wildlife-server.log 2>&1 &
+          pid=$!
+          trap 'kill $pid || true' EXIT
+          node scripts/test_pond_wildlife_browser.cjs
+      - name: Commit ONLY review masters and source manifest after QA
+        env:
+          BRANCH: ${{ github.ref_name }}
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add signature/pond-wildlife-review/pond-spring-review.mp3
+          git add signature/pond-wildlife-review/pond-night-review.mp3
+          git add signature/pond-wildlife-review/manifest.json
+          if git diff --cached --quiet; then echo 'No new review assets'; exit 0; fi
+          git commit -m 'Pond wildlife: independently sourced CC0 audition candidates'
+          git push origin "HEAD:${BRANCH}"
