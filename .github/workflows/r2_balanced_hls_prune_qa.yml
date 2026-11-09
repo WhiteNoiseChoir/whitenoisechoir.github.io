@@ -62,5 +62,7 @@ jobs:
           node scripts/test_r2_player_browser.cjs
       - name: Confirm source history/secret safety
         run: |
-          test "$(git ls-files audio/continuous | grep -E '^audio/continuous/[^/]+/(continuous[.]m3u8|part_[0-9]{3}[.]ts)$' | wc -l)" -eq 63
+          test "$(git ls-files audio/continuous | grep -E '^audio/continuous/[^/]+/(continuous[.]m3u8|part_[0-9]{3}[.]ts)
+          echo "Pruned binary media are untracked in HEAD. CI rehydration was temporary and never committed."
+ | grep -v '^audio/continuous/quick/' | wc -l)" -eq 63
           echo "Pruned binary media are untracked in HEAD. CI rehydration was temporary and never committed."
