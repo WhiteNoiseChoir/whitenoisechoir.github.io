@@ -2,6 +2,7 @@
 """Verify the exact three committed 10-minute review MP3s, not just JSON claims."""
 import array, hashlib, json, math, subprocess, sys
 from pathlib import Path
+from resolve_review_media import resolve_review_media
 ROOT=Path(__file__).resolve().parents[1]
 folder=ROOT/"signature/rain-review"
 manifest=json.loads((folder/"manifest.json").read_text(encoding="utf-8"))
@@ -26,7 +27,7 @@ def decode(p,offset,seconds):
  assert all(math.isfinite(x) for x in a),(p.name,"NaN/inf")
  return math.sqrt(sum(float(x)*x for x in a)/len(a))
 for row in manifest["tracks"]:
- ident=row["id"];path=folder/(ident+".mp3")
+ ident=row["id"];path=resolve_review_media(folder/(ident+".mp3"))
  assert row["plan_id"]==expected[ident]
  assert row["review_status"]=="APPROVED_BY_OWNER_2026-11-08"
  assert row["publication_status"]=="PROMOTED_TO_PRODUCTION_MP3_BYTE_IDENTICAL"
