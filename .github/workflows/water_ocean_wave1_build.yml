@@ -4,6 +4,9 @@ on:
     branches: ["feature/water-ocean-wave1-review-20261109"]
     paths:
       - "scripts/build_water_ocean_wave1_review.py"
+      - "scripts/test_water_ocean_wave1_review.cjs"
+      - "scripts/test_water_ocean_wave1_browser.cjs"
+      - "signature/water-ocean-wave1-review/index.html"
       - ".github/workflows/water_ocean_wave1_build.yml"
   workflow_dispatch:
 permissions:
