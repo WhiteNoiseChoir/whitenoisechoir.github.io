@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "revision": "2026-11-09-wave3-owner-approved",
+  "revision": "2026-11-09-water-ocean-wave1-owner-approved",
   "existing_source_of_truth": "catalog/library.json + audio manifests (not duplicated here)",
   "disclosure": "All NEW-xx IDs are project planning IDs. NEW-01, NEW-02, NEW-06 have been promoted to owner-approved audio production as separate IDs and NOINDEX detail pages; remaining 67 are nonplayable concepts. Original lossy CC0 preview provenance must be disclosed, not labeled as lossless.",
   "planned": [
@@ -180,15 +180,23 @@
       "title": "Rushing River",
       "requested_source_type": "Field recording",
       "intent": "Adult sleep",
-      "readiness": "planned",
-      "playable": false,
-      "production_id": null,
-      "audio_path": null,
-      "license": null,
-      "independent_seconds": null,
-      "qa": null,
-      "owner_listening_approval": null,
-      "seo_page": null
+      "readiness": "released_audio_seo_pending",
+      "playable": true,
+      "production_id": "rushing-river-real",
+      "audio_path": "/audio/rushing-river-real.mp3",
+      "license": "CC0-1.0",
+      "independent_seconds": 605,
+      "qa": {
+        "technical_status": "PASS",
+        "master_sha256": "0a31ea0a5f1337d1a308cb2efb4925751406886ae67cdcbb913cf960cdfbc93f",
+        "source_type": "CC0-1.0",
+        "lossy_preview": true,
+        "hls": "7DAY_STATIC_VOD"
+      },
+      "owner_listening_approval": "APPROVED_BY_OWNER_2026-11-09",
+      "seo_page": "/sounds/rushing-river/",
+      "seo_status": "noindex,follow",
+      "source_page": "https://freesound.org/people/orlandorizo/sounds/864312/"
     },
     {
       "plan_id": "NEW-09",
@@ -197,15 +205,23 @@
       "title": "Gentle Forest Stream",
       "requested_source_type": "Field recording",
       "intent": "Relaxation",
-      "readiness": "planned",
-      "playable": false,
-      "production_id": null,
-      "audio_path": null,
-      "license": null,
-      "independent_seconds": null,
-      "qa": null,
-      "owner_listening_approval": null,
-      "seo_page": null
+      "readiness": "released_audio_seo_pending",
+      "playable": true,
+      "production_id": "forest-stream-real",
+      "audio_path": "/audio/forest-stream-real.mp3",
+      "license": "CC0-1.0",
+      "independent_seconds": 605,
+      "qa": {
+        "technical_status": "PASS",
+        "master_sha256": "343313bfb29811e7a12cf40b00aa81489bd02a1a08986e473e1fedbca4cb9175",
+        "source_type": "CC0-1.0",
+        "lossy_preview": true,
+        "hls": "7DAY_STATIC_VOD"
+      },
+      "owner_listening_approval": "APPROVED_BY_OWNER_2026-11-09",
+      "seo_page": "/sounds/forest-stream/",
+      "seo_status": "noindex,follow",
+      "source_page": "https://freesound.org/people/GirlWithSoundRecorder/sounds/588403/"
     },
     {
       "plan_id": "NEW-10",
@@ -248,15 +264,23 @@
       "title": "Gentle Ocean Waves",
       "requested_source_type": "Field recording",
       "intent": "Adult sleep",
-      "readiness": "planned",
-      "playable": false,
-      "production_id": null,
-      "audio_path": null,
-      "license": null,
-      "independent_seconds": null,
-      "qa": null,
-      "owner_listening_approval": null,
-      "seo_page": null
+      "readiness": "released_audio_seo_pending",
+      "playable": true,
+      "production_id": "gentle-ocean-real",
+      "audio_path": "/audio/gentle-ocean-real.mp3",
+      "license": "CC0-1.0",
+      "independent_seconds": 605,
+      "qa": {
+        "technical_status": "PASS",
+        "master_sha256": "cb0fc41a0721d1fd0c0552bfc8017fa7769a15c4004a9dc4c7bebbeb539d32e1",
+        "source_type": "CC0-1.0",
+        "lossy_preview": true,
+        "hls": "7DAY_STATIC_VOD"
+      },
+      "owner_listening_approval": "APPROVED_BY_OWNER_2026-11-09",
+      "seo_page": "/sounds/gentle-ocean-waves/",
+      "seo_status": "noindex,follow",
+      "source_page": "https://freesound.org/people/Sandy-Ogilvie/sounds/818828/"
     },
     {
       "plan_id": "NEW-13",

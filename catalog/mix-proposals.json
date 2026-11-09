@@ -125,14 +125,12 @@
       ],
       "required_ids": [
         "heavy-rain-real",
-        "NEW-08"
+        "rushing-river-real"
       ],
       "readiness": "proposal_only",
       "playable": false,
       "seo_url": null,
-      "missing_sources": [
-        "NEW-08"
-      ],
+      "missing_sources": [],
       "collision": null
     },
     {
@@ -254,14 +252,13 @@
         "Morning Birds"
       ],
       "required_ids": [
-        "NEW-09",
+        "forest-stream-real",
         "NEW-17"
       ],
       "readiness": "proposal_only",
       "playable": false,
       "seo_url": null,
       "missing_sources": [
-        "NEW-09",
         "NEW-17"
       ],
       "collision": null
@@ -385,14 +382,13 @@
         "Campfire"
       ],
       "required_ids": [
-        "NEW-08",
+        "rushing-river-real",
         "NEW-14"
       ],
       "readiness": "proposal_only",
       "playable": false,
       "seo_url": null,
       "missing_sources": [
-        "NEW-08",
         "NEW-14"
       ],
       "collision": null
