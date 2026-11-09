@@ -54,9 +54,9 @@ button[aria-pressed=true]{background:#cdebd9;color:#0a3321}
 <script>
 (()=>{"use strict";
 const tracks=[
-{id:"rain-on-tent-review",name:"Rain on Tent",url:"./rain-on-tent-review.mp3"},
-{id:"rain-car-roof-review",name:"Rain on Car Roof",url:"./rain-car-roof-review.mp3"},
-{id:"rolling-thunder-review",name:"Rolling Thunder",url:"./rolling-thunder-review.mp3"}];
+{id:"rain-on-tent-review",name:"Rain on Tent",url:"/audio/rain-on-tent-real.mp3"},
+{id:"rain-car-roof-review",name:"Rain on Car Roof",url:"/audio/rain-car-roof-real.mp3"},
+{id:"rolling-thunder-review",name:"Rolling Thunder",url:"/audio/rolling-thunder-real.mp3"}];
 const audio=document.querySelector("#audio"),msg=document.querySelector("#message"),cur=document.querySelector("#current"),verdict=document.querySelector("#verdict"),notes=document.querySelector("#notes"),saved=document.querySelector("#saved");
 let active=tracks[0],pending=false,record={};try{record=JSON.parse(localStorage.getItem("wnc-rain-wave2-review-v1")||"{}")}catch(_){}
 function choose(id){const t=tracks.find(x=>x.id===id);if(!t)return;active=t;pending=false;audio.pause();audio.src=t.url;audio.loop=true;audio.load();cur.textContent=t.name;notes.value=record[id]?.notes||"";verdict.value=record[id]?.verdict||"PENDING";document.querySelectorAll("[data-track]").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.track===id)));msg.textContent="Chọn "+t.name+"; nhấn Phát để nghe."}
