@@ -1,0 +1,36 @@
+name: Water Ocean Wave2 Independent Audition QA (No Production Changes)
+on:
+  push:
+    branches: [main, "feature/water-ocean-wave2-review-20261109"]
+    paths:
+      - "signature/water-ocean-wave2-review/manifest.json"
+      - "scripts/test_water_ocean_wave2_integrity.cjs"
+      - ".github/workflows/water_ocean_wave2_qa.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  qa-two-owner-pending-audition-masters:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - name: Ensure ffprobe and ffmpeg
+        run: |
+          if ! command -v ffmpeg >/dev/null || ! command -v ffprobe >/dev/null; then
+            sudo apt-get update -qq
+            sudo apt-get install -y -qq ffmpeg
+          fi
+      - name: Check MP3 source identity, SHA-256, unresolved bamboo and untouched 33 live sources
+        run: |
+          node scripts/test_water_ocean_wave2_review.cjs
+          node scripts/test_water_ocean_wave2_integrity.cjs
+          node scripts/test_player_smoke.cjs
+          node scripts/test_library_foundation.cjs
+      - name: Verify mobile widths, 9:55 seek, no autoplay and copied verdicts
+        run: |
+          npm install --no-save --no-package-lock playwright
+          node scripts/rain_review_range_test_server.cjs >/tmp/wave2-review-qa.log 2>&1 &
+          pid=$!
+          trap 'kill $pid || true' EXIT
+          node scripts/test_water_ocean_wave2_browser.cjs
