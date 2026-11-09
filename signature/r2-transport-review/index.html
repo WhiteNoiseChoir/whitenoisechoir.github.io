@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>R2 Audio Transport Lab | WhiteNoiseChoir (Review Only)</title>
+<style>
+:root{color-scheme:dark;font:16px/1.5 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#0c1718;color:#ebf4f1}
+*{box-sizing:border-box}body{margin:0;min-height:100dvh;background:radial-gradient(ellipse at top,#16342f,#0c1718 75%)}
+main{max-width:730px;padding:28px 18px 50px;margin:auto}
+h1{font-size:clamp(1.55rem,6vw,2.3rem);line-height:1.2;margin:.35rem 0 1rem}p{color:#c5dad3}
+small,.muted{color:#a1bcb3}.tag{font-size:.72rem;color:#8be1c4;font-weight:700;letter-spacing:.13em;text-transform:uppercase}
+section{border:1px solid #375c53;background:#122725d9;border-radius:16px;padding:20px;margin-top:19px}
+label{display:block;font-weight:650;margin:12px 0 7px}
+select,button{font:inherit;border-radius:9px;min-height:44px}
+select{width:100%;color:#eaf5f1;background:#19352e;border:1px solid #547c72;padding:9px}
+audio{width:100%;display:block;margin:18px auto 10px;min-height:56px}
+.actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+button{color:#eaf7f1;background:#204b40;border:1px solid #5b8174;cursor:pointer;padding:9px;overflow-wrap:anywhere}
+button:focus-visible,select:focus-visible{outline:3px solid #75d6b5;outline-offset:2px}
+button.primary{background:#27725e;border-color:#43a58d;font-weight:750}
+.status{border:1px solid #395a53;padding:12px;border-radius:9px;color:#bdf1db;min-height:50px;word-break:break-word}
+code{word-break:break-all}
+pre{max-height:210px;overflow:auto;white-space:pre-wrap;word-break:break-word;background:#06120f;padding:12px;border:1px solid #395a53;border-radius:9px;font-size:.78rem}
+@media(max-width:355px){main{padding:19px 11px}.actions{grid-template-columns:1fr}section{padding:13px}}
+</style>
+</head>
+<body>
+<main>
+<a href="/" style="color:#9ceecf">← Trở về WhiteNoiseChoir</a>
+<p class="tag">R2 transport lab · QA ONLY · NOINDEX</p>
+<h1>Kiểm thử phát âm thanh từ Cloudflare R2</h1>
+<p>Phòng kiểm thử độc lập, <strong>không thay player production</strong>. Không tự động phát. Trên Safari tương thích HLS, dùng stream 7 ngày; trình duyệt khác dùng MP3 lặp. Âm thanh nguồn đều là bản đã có trong production.</p>
+<section>
+<label for="track">Chọn âm thanh đã được duyệt</label>
+<select id="track">
+<option value="white-noise">Pure White Noise</option>
+<option value="rain-on-window-real">Rain on Window</option>
+<option value="gentle-ocean-real">Gentle Ocean Waves</option>
+</select>
+<p id="mode" class="muted" aria-live="polite">Chưa bắt đầu phát</p>
+<audio id="player" controls playsinline preload="metadata" crossorigin="anonymous" aria-label="Trình phát kiểm thử từ R2"></audio>
+<div class="actions">
+<button class="primary" id="play">▶ Phát / Tạm dừng</button>
+<button id="stop">■ Dừng và về đầu</button>
+<button id="seek">⏩ Tới phút 9:55</button>
+<button id="mp3">Chuyển sang MP3 lặp</button>
+</div>
+<label for="timer">Sleep Timer (kiểm thử)</label>
+<select id="timer"><option value="0">Tắt</option><option value="900">15 phút</option><option value="1800">30 phút</option></select>
+<p id="status" class="status" role="status">Sẵn sàng. Hãy nhấn Phát.</p>
+<p class="muted" style="font-size:.85rem">Nguồn: <code>media.whitenoisechoir.com</code>. Hãy kiểm tra âm thanh khi khóa màn hình iPhone, khả năng chuyển sang phút 10 và nút Dừng. Trình duyệt có thể hoãn Sleep Timer khi ứng dụng bị tạm ngưng.</p>
+</section>
+<section>
+<h2 style="margin:0 0 12px;font-size:1.2rem">Nhật ký kiểm thử</h2>
+<pre id="events">Chưa có sự kiện.</pre>
+<div class="actions">
+<button id="copy">Sao chép báo cáo</button>
+<button id="clear">Xóa nhật ký</button>
+</div>
+<p class="muted" style="font-size:.85rem">Hãy đánh giá bằng tai và thiết bị thật trước khi chúng ta đổi nguồn phát trên trang chủ. Không khẳng định iPhone lock-screen QA chỉ bằng kiểm thử máy tính.</p>
+</section>
+</main>
+<script>
+(function(){
+"use strict";
+const BASE="https://media.whitenoisechoir.com";
+const ids=new Set(["white-noise","rain-on-window-real","gentle-ocean-real"]);
+const $=id=>document.getElementById(id);
+const a=$("player");
+let current="",mode="",deadline=0,events=[],nearEndRequested=false,stopped=false;
+function log(message){
+ const entry=new Date().toLocaleTimeString("vi-VN")+" "+message;
+ events.push(entry);if(events.length>80)events.shift();
+ $("events").textContent=events.join("\n");
+}
+function status(message){$("status").textContent=message;log(message)}
+function hlsSupported(){return !!(a.canPlayType("application/vnd.apple.mpegurl")||a.canPlayType("application/x-mpegURL"))}
+function select(forceMp3){
+ const id=$("track").value;if(!ids.has(id))throw Error("Unknown audio source");
+ a.pause();a.removeAttribute("src");a.load();
+ current=id;mode=(!forceMp3&&hlsSupported())?"hls":"mp3";
+ stopped=false;
+ const path=mode==="hls"?"audio/continuous/"+id+"/continuous.m3u8":"audio/"+id+".mp3";
+ a.loop=mode==="mp3";
+ a.src=BASE+"/"+path;
+ a.load();
+ $("mode").textContent="Transport: "+(mode==="hls"?"Native Safari HLS (7-day playlist)":"MP3 (browser loop)")+" · "+id;
+ nearEndRequested=false;
+ status("Đã chọn "+id+" → "+mode+". Bấm Phát để nghe.");
+}
+async function play(){
+ if(!a.src||current!==$("track").value)select(false);
+ if(a.paused){
+  try{await a.play();status("Đang phát: "+current+" ("+mode+").");}
+  catch(e){status("Không thể phát: "+String(e.message||e)+". Có thể thử MP3 hoặc kiểm tra thiết bị.");}
+ }else{a.pause();status("Đã tạm dừng.");}
+}
+function stop(){
+ stopped=true;a.pause();
+ try{a.currentTime=0}catch(e){}
+ deadline=0;$("timer").value="0";
+ status("Đã dừng theo yêu cầu.");
+}
+$("track").addEventListener("change",()=>select(false));
+$("play").addEventListener("click",play);
+$("stop").addEventListener("click",stop);
+$("mp3").addEventListener("click",()=>{select(true);play()});
+$("seek").addEventListener("click",()=>{
+ try{a.currentTime=595;nearEndRequested=false;status("Đã yêu cầu tua đến 9:55, theo dõi âm qua phút 10.");}
+ catch(e){nearEndRequested=true;status("Chưa có metadata; sẽ tua tới 9:55 khi sẵn sàng.");}
+});
+a.addEventListener("loadedmetadata",()=>{log("Metadata loaded; duration="+a.duration.toFixed(2)+"s");if(nearEndRequested){nearEndRequested=false;try{a.currentTime=595}catch(e){log("Seek error: "+e.message)}}});
+a.addEventListener("playing",()=>log("playing "+current+" "+mode));
+a.addEventListener("waiting",()=>log("waiting/buffering"));
+a.addEventListener("stalled",()=>log("stalled"));
+a.addEventListener("seeked",()=>log("seeked to "+a.currentTime.toFixed(2)+"s"));
+a.addEventListener("ended",()=>log("ended ("+mode+"). MP3 loop is "+a.loop));
+a.addEventListener("error",()=>{
+ const code=a.error?a.error.code:"unknown";log("MEDIA ERROR code="+code+" mode="+mode);
+ if(mode==="hls"&&!stopped){status("HLS gặp lỗi. Đang chuyển sang MP3 trên R2.");select(true)}
+ else status("MP3 trên R2 gặp lỗi. Giữ nguyên production player; ghi lại báo cáo.");
+});
+$("timer").addEventListener("change",()=>{deadline=Number($("timer").value)?Date.now()+Number($("timer").value)*1000:0;log("Sleep timer "+$("timer").value+" seconds")});
+setInterval(()=>{if(deadline&&Date.now()>=deadline){stop();status("Đã dừng theo Sleep Timer (khi trình duyệt còn chạy).")}},1000);
+$("copy").addEventListener("click",async()=>{
+ const data="WhiteNoiseChoir R2 review\n"+location.href+"\nUser agent: "+navigator.userAgent+
+ "\nTransport: "+mode+"\nAudio: "+current+"\nTime: "+a.currentTime+"\nDuration: "+a.duration+
+ "\nLog:\n"+events.join("\n");
+ try{await navigator.clipboard.writeText(data);status("Đã sao chép báo cáo.")}catch(e){status("Không thể sao chép tự động; có thể chọn nhật ký thủ công.")}
+});
+$("clear").addEventListener("click",()=>{events=[];$("events").textContent="Chưa có sự kiện."});
+if("mediaSession" in navigator){
+ try{navigator.mediaSession.setActionHandler("play",()=>{a.play().catch(()=>{})});
+ navigator.mediaSession.setActionHandler("pause",()=>a.pause());
+ navigator.mediaSession.setActionHandler("stop",stop);}
+ catch(e){}
+}
+select(false);
+})();
+</script>
+</body>
+</html>
