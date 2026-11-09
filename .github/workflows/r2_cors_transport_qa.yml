@@ -1,0 +1,32 @@
+name: R2 CORS + Public Byte-Range Transport QA
+
+on:
+  push:
+    branches:
+      - feature/r2-cors-transport-qa-20261109
+    paths:
+      - scripts/test_r2_cors_transport.py
+      - scripts/test_r2_transport_room.cjs
+      - signature/r2-transport-review/index.html
+      - config/r2-media-cors.json
+      - .github/workflows/r2_cors_transport_qa.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify-r2-cors:
+    runs-on: ubuntu-latest
+    timeout-minutes: 22
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Verify noindex review-room JavaScript, immutable approved sources, CORS policy JSON
+        run: node scripts/test_r2_transport_room.cjs
+      - name: Verify cross-origin responses, HTTP Range and MP3/HLS bytes
+        run: python3 scripts/test_r2_cors_transport.py
