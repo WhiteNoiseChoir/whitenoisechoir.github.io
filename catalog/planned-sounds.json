@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "revision": "2026-11-09-water-ocean-wave1-owner-approved",
+  "revision": "2026-11-09-water-ocean-wave2-owner-approved",
   "existing_source_of_truth": "catalog/library.json + audio manifests (not duplicated here)",
   "disclosure": "All NEW-xx IDs are project planning IDs. NEW-01, NEW-02, NEW-06 have been promoted to owner-approved audio production as separate IDs and NOINDEX detail pages; remaining 67 are nonplayable concepts. Original lossy CC0 preview provenance must be disclosed, not labeled as lossless.",
   "planned": [
@@ -230,15 +230,25 @@
       "title": "Bubbling Brook",
       "requested_source_type": "Field recording",
       "intent": "Relaxation",
-      "readiness": "planned",
-      "playable": false,
-      "production_id": null,
-      "audio_path": null,
-      "license": null,
-      "independent_seconds": null,
-      "qa": null,
-      "owner_listening_approval": null,
-      "seo_page": null
+      "readiness": "released_audio_seo_pending",
+      "playable": true,
+      "production_id": "bodetal-brook-real",
+      "audio_path": "/audio/bodetal-brook-real.mp3",
+      "license": "CC0-1.0",
+      "independent_seconds": 605,
+      "qa": {
+        "technical_status": "PASS",
+        "master_sha256": "e3e1bb330426a363842cb93890a40f33049c37a0c4d7351b802428914e4f5725",
+        "source_type": "CC0-1.0",
+        "lossy_preview": true,
+        "hls": "7DAY_STATIC_VOD"
+      },
+      "owner_listening_approval": "APPROVED_BY_OWNER_2026-11-09",
+      "seo_page": "/sounds/bodetal-brook-birds/",
+      "seo_status": "noindex,follow",
+      "source_page": "https://freesound.org/people/Borgory/sounds/651194/",
+      "production_title": "Bodetal Brook & Birds",
+      "source_identity_note": "Approved as Bodetal Brook & Birds: distant stream and birds. The original Bubbling Brook intent is not validated by this recording."
     },
     {
       "plan_id": "NEW-11",
@@ -289,15 +299,25 @@
       "title": "Crashing Ocean Waves",
       "requested_source_type": "Field recording",
       "intent": "Relaxation",
-      "readiness": "planned",
-      "playable": false,
-      "production_id": null,
-      "audio_path": null,
-      "license": null,
-      "independent_seconds": null,
-      "qa": null,
-      "owner_listening_approval": null,
-      "seo_page": null
+      "readiness": "released_audio_seo_pending",
+      "playable": true,
+      "production_id": "crashing-ocean-real",
+      "audio_path": "/audio/crashing-ocean-real.mp3",
+      "license": "CC0-1.0",
+      "independent_seconds": 605,
+      "qa": {
+        "technical_status": "PASS",
+        "master_sha256": "4969a0791d0a7bedfffc79ea5aca581ac3aeb9e23dff5c610f151ef48f7faed1",
+        "source_type": "CC0-1.0",
+        "lossy_preview": true,
+        "hls": "7DAY_STATIC_VOD"
+      },
+      "owner_listening_approval": "APPROVED_BY_OWNER_2026-11-09",
+      "seo_page": "/sounds/crashing-ocean-waves/",
+      "seo_status": "noindex,follow",
+      "source_page": "https://freesound.org/people/Desmond178/sounds/721591/",
+      "production_title": "Crashing Ocean Waves",
+      "source_identity_note": "Independent breaking surf at Wakanui Beach, New Zealand."
     },
     {
       "plan_id": "NEW-14",

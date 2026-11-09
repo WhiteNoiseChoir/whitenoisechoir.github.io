@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "revision": "2026-11-09-water-ocean-wave1-owner-approved",
+  "revision": "2026-11-09-water-ocean-wave2-owner-approved",
   "source": "User supplied 2026-11-08 full sound library blueprint, reconciled to live production commit 7c52701",
   "count_policy": {
     "existing": 25,
@@ -89,10 +89,10 @@
         "waterfall-real",
         "shower-synth",
         "rushing-river-real",
-        "forest-stream-real"
+        "forest-stream-real",
+        "bodetal-brook-real"
       ],
       "planned_ids": [
-        "NEW-10",
         "NEW-11",
         "NEW-31",
         "NEW-32",
@@ -116,11 +116,10 @@
       ],
       "existing_ids": [
         "ocean-waves-real",
-        "gentle-ocean-real"
+        "gentle-ocean-real",
+        "crashing-ocean-real"
       ],
-      "planned_ids": [
-        "NEW-13"
-      ],
+      "planned_ids": [],
       "seo_policy": "Do not overwrite /sounds/ocean-waves/ Sound Page; no new indexed route in foundation"
     },
     {
