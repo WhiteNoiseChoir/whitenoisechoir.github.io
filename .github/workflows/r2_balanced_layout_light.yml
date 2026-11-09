@@ -1,0 +1,34 @@
+name: R2 Balanced Audio - lightweight SEO and 35-source player QA
+
+on:
+  push:
+    branches:
+      - main
+      - feature/r2-balanced-hls-prune-20261109
+    paths:
+      - 'index.html'
+      - 'sounds/**'
+      - 'catalog/**'
+      - 'scripts/test_r2_balanced_layout.cjs'
+      - 'scripts/audit_r2_storage_budget.cjs'
+      - '.github/workflows/r2_balanced_layout_light.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  no-heavy-rehydration:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Validate original 35 MP3s and exact 8 GitHub HLS, 27 R2 HLS, SEO and 45 mixes
+        run: |
+          node scripts/test_r2_balanced_layout.cjs
+          node scripts/audit_r2_storage_budget.cjs
+          node scripts/test_player_smoke.cjs
+          node scripts/test_library_structure.cjs
+          echo 'Lightweight content QA does not download 430 MB of R2 HLS objects.'
