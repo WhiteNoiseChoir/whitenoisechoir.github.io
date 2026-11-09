@@ -1,0 +1,42 @@
+#!/usr/bin/env node
+"use strict";
+const fs=require("node:fs"),vm=require("node:vm"),assert=require("node:assert/strict");
+const page=fs.readFileSync("signature/r2-transport-review/index.html","utf8");
+const main=fs.readFileSync("index.html","utf8");
+const lib=JSON.parse(fs.readFileSync("catalog/library.json","utf8"));
+const hls=JSON.parse(fs.readFileSync("audio/continuous/manifest.json","utf8"));
+const ids=["white-noise","rain-on-window-real","gentle-ocean-real"];
+assert.match(page,/<meta name="robots" content="noindex,nofollow">/);
+assert.match(page,/meta name="viewport"/);
+assert.doesNotMatch(page,/<audio[^>]*\bautoplay\b/);
+assert.match(page,/<audio id="player" controls playsinline/);
+assert.match(page,/BASE="https:\/\/media\.whitenoisechoir\.com"/);
+assert.match(page,/canPlayType\("application\/vnd\.apple\.mpegurl"\)/);
+assert.match(page,/a\.loop=mode==="mp3"/);
+assert.match(page,/a\.currentTime=595/);
+assert.match(page,/navigator\.mediaSession\.setActionHandler/);
+assert.match(page,/id="timer"/);
+assert.match(page,/id="stop"/);
+assert.match(page,/id="copy"/);
+assert.match(page,/@media\(max-width:355px\)/);
+assert.doesNotMatch(page,/\baudio\/[^"']+\.mp3["']/);
+assert.doesNotMatch(page,/R2_ACCESS_KEY_ID|R2_SECRET_ACCESS_KEY|r2\.cloudflarestorage\.com/);
+for(const id of ids){
+ assert.ok(page.includes('value="'+id+'"'),id);
+ assert.ok(lib.sounds.some(x=>x.id===id),id+" not in production catalog");
+ assert.ok(hls.records.some(x=>x.id===id),id+" no live HLS source");
+}
+assert.equal((fs.readFileSync("sitemap.xml","utf8").match(/<loc>/g)||[]).length,18);
+assert.equal(lib.sounds.length,35);
+assert.equal(hls.records.length,35);
+assert.match(main,/function playTracks\(/);
+const scripts=[...page.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/g)];
+assert.equal(scripts.length,1);
+new vm.Script(scripts[0][1],{filename:"r2-transport-review:inline-script"});
+const cors=JSON.parse(fs.readFileSync("config/r2-media-cors.json","utf8"));
+assert.ok(Array.isArray(cors));
+assert.equal(cors.length,1);
+assert.deepEqual(cors[0].AllowedOrigins,["https://whitenoisechoir.github.io","https://whitenoisechoir.com","https://www.whitenoisechoir.com"]);
+assert.deepEqual(cors[0].AllowedMethods,["GET","HEAD"]);
+assert.deepEqual(cors[0].AllowedHeaders,["Range"]);
+console.log("R2_REVIEW_ROOM_STATIC_QA_PASS: 3 approved sources; native Safari HLS and MP3 loop test; noindex; 9:55 seek; sleep timer; production player intact; dashboard CORS JSON valid");
