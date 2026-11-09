@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 "use strict";
+const resolve=require("./resolve_review_media.cjs");
 /* Second-wave review only. It must never change the 25 production audio IDs. */
 const fs=require("node:fs"),crypto=require("node:crypto"),assert=require("node:assert/strict");
 const read=p=>fs.readFileSync(p,"utf8"),json=p=>JSON.parse(read(p));
@@ -39,7 +40,7 @@ for(let i=0;i<expected.length;i++){
  assert.ok(m.peak_dbfs<=-5.5,"safe sample peak");
  assert.ok(m.independent_source_seconds>50&&m.independent_source_seconds<=605);
  assert.equal(m.downloaded_preview_channels,channels,"true source channels must be disclosed, especially car roof mono");
- const audio=root+"/"+id+".mp3";
+ const audio=resolve(root+"/"+id+".mp3");
  assert.ok(fs.existsSync(audio));
  assert.equal(fs.statSync(audio).size,m.master_bytes);
  assert.equal(sha(audio),m.master_sha256);

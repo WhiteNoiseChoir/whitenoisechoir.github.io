@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 "use strict";
+const resolve=require("./resolve_review_media.cjs");
 const fs=require("fs"),crypto=require("crypto"),assert=require("assert/strict"),cp=require("child_process");
 const read=p=>fs.readFileSync(p,"utf8"),json=p=>JSON.parse(read(p)),sha=p=>crypto.createHash("sha256").update(fs.readFileSync(p)).digest("hex");
 const root="signature/rain-wave3-review",m=json(root+"/manifest.json"),html=read(root+"/index.html");
@@ -13,7 +14,7 @@ assert.ok(html.includes('name="robots" content="noindex,nofollow"'));assert.ok(h
 assert.ok(!read("sitemap.xml").includes(root));
 const names=new Set(sound.sounds.map(s=>s.id));
 for(let i=0;i<2;i++){
- const [plan,id,creator,soundId]=expectRows[i],track=m.tracks[i],path=root+"/"+id+".mp3";
+ const [plan,id,creator,soundId]=expectRows[i],track=m.tracks[i],path=resolve(root+"/"+id+".mp3");
  assert.equal(track.id,id);assert.equal(track.plan_id,plan);assert.equal(track.creator,creator);
  assert.equal(track.source_type,"CC0-1.0");assert.ok(track.source_page.includes("/sounds/"+soundId+"/"));
  assert.equal(track.review_status,"PENDING_OWNER_LISTENING");assert.equal(track.publication_status,"REVIEW_ONLY_NOT_IN_PRODUCTION");

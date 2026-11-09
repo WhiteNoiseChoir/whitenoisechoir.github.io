@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 "use strict";
+const resolve=require("./resolve_review_media.cjs");
 const fs=require("node:fs"),crypto=require("node:crypto"),assert=require("node:assert/strict"),cp=require("node:child_process");
 const read=p=>fs.readFileSync(p,"utf8"),j=p=>JSON.parse(read(p)),sha=p=>crypto.createHash("sha256").update(fs.readFileSync(p)).digest("hex");
 const dir="signature/water-ocean-wave2-review",m=j(dir+"/manifest.json"),html=read(dir+"/index.html");
@@ -16,7 +17,7 @@ assert.ok(html.includes("BLOCKED_SOURCE_NOT_VERIFIED")&&html.includes("NEW-11"))
 assert.ok(!read("sitemap.xml").includes(dir));
 const bamboo=plans.find(x=>x.plan_id==="NEW-11");assert.equal(bamboo.playable,false);assert.equal(bamboo.production_id,null);
 for(let i=0;i<rows.length;i++){
- const [plan,id,creator,sourceId]=rows[i],x=m.tracks[i],target=dir+"/"+id+".mp3",p=plans.find(x=>x.plan_id===plan);
+ const [plan,id,creator,sourceId]=rows[i],x=m.tracks[i],target=resolve(dir+"/"+id+".mp3"),p=plans.find(x=>x.plan_id===plan);
  assert.equal(x.plan_id,plan);assert.equal(x.id,id);assert.equal(x.creator,creator);assert.equal(x.source_type,"CC0-1.0");
  assert.ok(x.source_page.endsWith("/sounds/"+sourceId+"/"));assert.equal(x.technical_status,"PASS");
  assert.equal(x.review_status,"PENDING_OWNER_LISTENING");assert.equal(x.publication_status,"REVIEW_ONLY_NOT_IN_PRODUCTION");
