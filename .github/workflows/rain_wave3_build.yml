@@ -1,0 +1,52 @@
+name: Rain Wave 3 CC0 Preview Auditions (Review Only)
+on:
+  push:
+    branches: ["feature/rain-wave3-review-20261109"]
+    paths:
+      - "scripts/build_rain_wave3_review.py"
+      - "scripts/test_rain_wave3_review.cjs"
+      - "scripts/test_rain_wave3_browser.cjs"
+      - ".github/workflows/rain_wave3_build.yml"
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  render-two-cc0-review-masters:
+    if: github.ref_name == 'feature/rain-wave3-review-20261109' && github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 48
+    steps:
+      - uses: actions/checkout@v4
+        with: {persist-credentials: true}
+      - name: Install FFmpeg and ffprobe
+        run: |
+          if ! command -v ffmpeg >/dev/null || ! command -v ffprobe >/dev/null; then
+            sudo apt-get update -qq
+            sudo apt-get install -y -qq ffmpeg
+          fi
+      - name: Build two lossy CC0 previews as review-only 600-second masters
+        run: |
+          python3 -m py_compile scripts/build_rain_wave3_review.py
+          python3 scripts/build_rain_wave3_review.py
+      - name: Check exact media, licenses, existing 28 sounds, 45 presets, and noindex
+        run: |
+          node scripts/test_rain_wave3_review.cjs
+          node scripts/test_player_smoke.cjs
+          node scripts/test_library_foundation.cjs
+      - name: Check review browser, seek, saved verdict and responsive widths
+        run: |
+          npm install --no-save --no-package-lock playwright
+          node scripts/rain_review_range_test_server.cjs > /tmp/wave3-server.log 2>&1 &
+          pid=$!
+          trap 'kill $pid || true' EXIT
+          node scripts/test_rain_wave3_browser.cjs
+      - name: Commit reviewed previews and checksums on feature branch only
+        env:
+          BRANCH: ${{ github.ref_name }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add signature/rain-wave3-review/rain-leaves-review.mp3 signature/rain-wave3-review/rain-lake-review.mp3 signature/rain-wave3-review/manifest.json
+          if git diff --cached --quiet; then echo "Wave3 assets already available"; exit 0; fi
+          git commit -m "Rain Wave3: stage two technical-QA approved CC0 audition MP3s (review only)"
+          git push origin "HEAD:${BRANCH}"
