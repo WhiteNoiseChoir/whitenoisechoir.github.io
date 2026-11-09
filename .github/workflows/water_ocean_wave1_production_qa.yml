@@ -18,6 +18,8 @@ jobs:
     timeout-minutes: 42
     steps:
       - uses: actions/checkout@v4
+      - name: Rehydrate 27 R2-only HLS streams in ephemeral CI with source-pinned byte-for-byte validation
+        run: python3 scripts/rehydrate_r2_hls_ci.py
       - name: Ensure ffmpeg/ffprobe for HLS decoder verification
         run: |
           if ! command -v ffmpeg >/dev/null || ! command -v ffprobe >/dev/null; then
