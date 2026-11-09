@@ -115,19 +115,19 @@ def download(url,dest,byte_cap=None):
     if fmt["codec"]!="mp3":raise RuntimeError(f"Unexpected HQ preview codec: {fmt}")
     return fmt,ctype
 def discover_preview(source_page):
-    """Resolve source dynamically from public Freesound HTML (never guess preview IDs)."""
+    """Resolve HQ preview URLs from Freesound HTML; never invent a numeric ID."""
     import html
-    req=urllib.request.Request(source_page,headers={"User-Agent":"Mozilla/5.0 (compatible; WhiteNoiseChoir source audit)"})
-    with urllib.request.urlopen(req,timeout=65) as resp:
-        page=resp.read(5_000_000).decode("utf-8","replace")
-    page=html.unescape(page).replace(r"\\/","/").replace(r"\\u002F","/")
+    req = urllib.request.Request(source_page, headers={"User-Agent": "Mozilla/5.0 (compatible; WhiteNoiseChoir source audit)"})
+    with urllib.request.urlopen(req, timeout=65) as resp:
+        page = resp.read(5_000_000).decode("utf-8", "replace")
+    page = html.unescape(page).replace(r"\/", "/").replace(r"\u002F", "/")
     if "Creative Commons 0" not in page and "cc0" not in page.lower():
-        raise RuntimeError("CC0 status not found in live source page: "+source_page)
-    urls=re.findall(r"https?://(?:cdn\\.)?freesound\\.org/(?:data/)?previews/\\d+/\\d+_\\d+-hq\\.mp3",page,re.I)
-    urls=list(dict.fromkeys(urls))
+        raise RuntimeError("CC0 status not found in live source page: " + source_page)
+    urls = re.findall(r"https?://(?:cdn\.)?freesound\.org/(?:data/)?previews/\d+/\d+_\d+-hq\.mp3", page, re.I)
+    urls = list(dict.fromkeys(urls))
     if not urls:
-        raise RuntimeError("HQ preview URL cannot be verified for "+source_page)
-    print("SOURCE_PAGE_CC0_AND_HQ_PREVIEW_FOUND "+source_page+" "+urls[0],flush=True)
+        raise RuntimeError("HQ preview URL cannot be verified for " + source_page)
+    print("SOURCE_PAGE_CC0_AND_HQ_PREVIEW_FOUND", source_page, urls[0], flush=True)
     return urls[0]
 
 def render(config,root):
