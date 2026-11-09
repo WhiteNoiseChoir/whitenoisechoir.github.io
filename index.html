@@ -199,56 +199,85 @@ async function playTracks(ids,name){
       (["white-noise","pink-noise","brown-noise"].indexOf(id)!==-1?"?v=color-master-v1-20261107":
       (expandedDSP.indexOf(id)!==-1?"?v=extended-dsp-v1-20261108":"")));
     var approvedFieldIDs=["box-fan-real", "heavy-rain-real", "ocean-waves-real", "waterfall-real"];
-    var mp3url="audio/"+id+".mp3"+(approvedFieldIDs.indexOf(id)!==-1?"?v=cc0-full-approved-20261108":versioned);
+    var localMP3="audio/"+id+".mp3"+(approvedFieldIDs.indexOf(id)!==-1?"?v=cc0-full-approved-20261108":versioned);
+    var localHLS="audio/continuous/"+id+"/continuous.m3u8?v=continuous-hls-v4-cc0-approved-20261108";
+    // One-click emergency rollback: append ?audio_origin=github to this page's URL.
+    // All approved audio remains hosted at the original GitHub Pages relative paths.
+    var forceGitHub=false;
+    try{forceGitHub=typeof location!=="undefined"&&/(?:^|[?&])audio_origin=github(?:&|$)/.test(location.search||"")}catch(e){}
+    var r2base="https://media.whitenoisechoir.com/";
+    var r2MP3=r2base+"audio/"+id+".mp3";
+    var r2HLS=r2base+"audio/continuous/"+id+"/continuous.m3u8";
     var audio=new Audio();
+    audio.crossOrigin="anonymous";
     var canHLS=typeof audio.canPlayType==="function"&&!!(audio.canPlayType("application/vnd.apple.mpegurl")||audio.canPlayType("application/x-mpegURL"));
     var usingHLS=canHLS&&streamIDs.indexOf(id)!==-1;
-    var triedMP3=false;
-    var switching=false;
     if(usingHLS)anyHLS=true;
-    audio.src=usingHLS?"audio/continuous/"+id+"/continuous.m3u8?v=continuous-hls-v4-cc0-approved-20261108":mp3url;
+    // Native 7-day HLS remains first on Safari, including on the backup host.
+    // Other browsers use MP3 with native loop. Every R2 failure has a local
+    // GitHub fallback that never needs JavaScript audio synthesis for real recordings.
+    var candidates=forceGitHub?
+      (usingHLS?[{url:localHLS,kind:"hls"},{url:localMP3,kind:"mp3"}]:[{url:localMP3,kind:"mp3"}]):
+      (usingHLS?[
+        {url:r2HLS,kind:"hls"},{url:localHLS,kind:"hls"},
+        {url:r2MP3,kind:"mp3"},{url:localMP3,kind:"mp3"}
+      ]:[{url:r2MP3,kind:"mp3"},{url:localMP3,kind:"mp3"}]);
+    var candidateIndex=-1,switching=false,errorFallbackInProgress=false,resumeAfterTransportError=0;
     audio.loop=true;audio.preload="auto";
+    // On a host outage, resume close to the previous position when the backup
+    // metadata becomes available. HLS has a 7-day timeline; MP3 is 10 minutes.
+    audio.addEventListener("loadedmetadata",function(){
+      if(!resumeAfterTransportError||candidateIndex<0)return;
+      var desired=candidates[candidateIndex].kind==="hls"?
+        resumeAfterTransportError:resumeAfterTransportError%600;
+      try{
+        if(isFinite(audio.duration)&&audio.duration>2&&desired>1){
+          audio.currentTime=Math.min(desired,audio.duration-1);
+        }
+      }catch(e){}
+    });
     audio.volume=Math.min(1,layerGain(i,ids.length)*Number($("volume").value)/100);
     audio.addEventListener("timeupdate",checkSleepTimer);
     audio.addEventListener("ended",function(){
       if(token!==playGeneration||!isPlaying||checkSleepTimer())return;
-      // This should only run after the entire native stream (7 days) on HLS.
-      // Non-HLS browsers keep the original native looping MP3 behaviour.
       audio.currentTime=0;audio.play().catch(function(){status("Playback interrupted; tap Play to retry")});
     });
-    audio.addEventListener("error",function(){
-      if(token!==playGeneration||!isPlaying||switching)return;
-      if(usingHLS&&!triedMP3){
-        triedMP3=true;switching=true;usingHLS=false;
-        audio.src=mp3url;audio.loop=true;
-        status("Native stream unavailable; trying original MP3");
-        audio.play().then(function(){
-          switching=false;if(token===playGeneration)status("Playing MP3 fallback");
-        }).catch(function(){
-          switching=false;if(token===playGeneration){reset();status("Stream unavailable. Tap Play to retry.")};
-        });
-        return;
-      }
-      reset();status("Recording interrupted. Tap Play to retry.");
-    });
-    try{
-      await audio.play();
-      if(token!==playGeneration){audio.pause();audio.removeAttribute("src");return false}
-      playerItems[i]=audio;return true;
-    }catch(e){
-      if(token!==playGeneration){audio.pause();return false}
-      if(usingHLS){
-        // Initial HLS URL/MIME errors fall back without changing original files.
-        usingHLS=false;triedMP3=true;audio.src=mp3url;
+    async function tryAudioSources(start){
+      switching=true;
+      for(var k=start;k<candidates.length;k++){
+        if(token!==playGeneration){switching=false;audio.pause();return false}
+        candidateIndex=k;
+        audio.src=candidates[k].url;
+        audio.loop=true;
         try{
           await audio.play();
-          if(token!==playGeneration){audio.pause();audio.removeAttribute("src");return false}
-          playerItems[i]=audio;return true;
-        }catch(e2){audio.pause()}
-      }else{audio.pause()}
-      if(id.endsWith("-real"))return false;
-      return createFallback(id,layerGain(i,ids.length));
+          if(token!==playGeneration){audio.pause();audio.removeAttribute("src");switching=false;return false}
+          switching=false;
+          return true;
+        }catch(e){audio.pause()}
+      }
+      switching=false;
+      return false;
     }
+    audio.addEventListener("error",function(){
+      if(token!==playGeneration||!isPlaying||switching||errorFallbackInProgress)return;
+      errorFallbackInProgress=true;
+      resumeAfterTransportError=Math.max(0,Number(audio.currentTime)||0);
+      status("Audio transport interrupted; trying backup source");
+      tryAudioSources(candidateIndex+1).then(function(ok){
+        errorFallbackInProgress=false;
+        if(token!==playGeneration||!isPlaying)return;
+        if(ok){status("Playing via backup audio source");return}
+        reset();status("Audio unavailable. Tap Play to retry.");
+      }).catch(function(){
+        errorFallbackInProgress=false;
+        if(token===playGeneration){reset();status("Audio unavailable. Tap Play to retry.")}
+      });
+    });
+    var ok=await tryAudioSources(0);
+    if(ok){playerItems[i]=audio;return true}
+    if(id.endsWith("-real"))return false;
+    return createFallback(id,layerGain(i,ids.length));
   }));
   if(token!==playGeneration)return;
   if(result.some(function(ok){return !ok})){reset();status("Recording unavailable. Try another sound.");return}

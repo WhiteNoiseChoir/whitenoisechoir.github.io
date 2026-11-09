@@ -1,0 +1,41 @@
+name: R2 Primary Player Cutover - Full Regression QA
+on:
+  push:
+    branches:
+      - feature/r2-player-primary-fallback-20261109
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  regression:
+    runs-on: ubuntu-latest
+    timeout-minutes: 70
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Install FFmpeg if unavailable
+        run: |
+          if ! command -v ffmpeg >/dev/null; then sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg; fi
+      - name: Static player R2 routing, fallback, 35 sources, 45 recipes and timers
+        run: |
+          node scripts/test_player_smoke.cjs
+          node scripts/test_library_foundation.cjs
+          node scripts/test_library_structure.cjs
+          node scripts/test_media_dedup.cjs
+          node scripts/test_r2_transport_room.cjs
+          node scripts/test_rain_production_release.cjs
+          node scripts/test_rain_wave2_production.cjs
+          node scripts/test_rain_wave3_production.cjs
+          node scripts/test_water_ocean_wave1_production.cjs
+          node scripts/test_water_ocean_wave2_production.cjs
+      - name: Decode 35 HLS streams across 10-minute boundary
+        run: python3 scripts/test_hls_transport.py
+      - name: Browser QA on 320/390 mobile and persistent player
+        run: |
+          npm install --no-save --no-package-lock playwright
+          node scripts/rain_review_range_test_server.cjs > /tmp/wnc-r2-player-server.log 2>&1 &
+          pid=$!
+          trap 'kill $pid || true' EXIT
+          node scripts/test_library_foundation_browser.cjs
+          node scripts/test_r2_player_browser.cjs
