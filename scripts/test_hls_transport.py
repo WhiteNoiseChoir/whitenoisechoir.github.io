@@ -23,7 +23,7 @@ SHORT={"box-fan-real","heavy-rain-real","ocean-waves-real","waterfall-real"}
 WAVE2={"rain-on-tent-real","rain-car-roof-real","rolling-thunder-real"}
 WAVE3={"rain-leaves-real","rain-lake-real"}
 WATER_OCEAN={"rushing-river-real","forest-stream-real","gentle-ocean-real"}
-EXPECTED=LONG | SHORT | NEW_RAIN | WAVE2 | WAVE3 | WATER_OCEAN | WATER_OCEAN
+EXPECTED=LONG | SHORT | NEW_RAIN | WAVE2 | WAVE3 | WATER_OCEAN
 assert len(LONG)==18 and len(SHORT)==4 and len(EXPECTED)==33
 
 
