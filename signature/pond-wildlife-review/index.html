@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Pond Wildlife — Candidate Listening Room | WhiteNoiseChoir</title>
+<meta name="description" content="Review-only pond wildlife recordings, not yet approved and not production audio.">
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#0c1718">
+<style>
+:root{font-family:system-ui,-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif;color:#e9f2ee;background:#0c1718;color-scheme:dark}*{box-sizing:border-box}
+body{margin:0;line-height:1.55}header,main,footer{width:min(990px,calc(100% - 28px));margin:auto}
+header,footer{padding:20px 0;border-bottom:1px solid #36574c}footer{border-top:1px solid #36574c;border-bottom:0;color:#bacbc3}
+a{color:#a7e5ca}h1{font-size:clamp(1.6rem,5vw,2.4rem);line-height:1.2}h2{font-size:1.3rem}
+main{padding:22px 0 50px}.tag{display:inline-block;border-radius:18px;padding:5px 11px;background:#23463b;color:#c2f1da;font-size:.85rem}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:15px}
+.card{background:#152a23;border:1px solid #395d4c;border-radius:14px;padding:20px;margin:12px 0}
+.warn{background:#2a261a;border-color:#7b6944}p,small{color:#d2dfd8}small{font-size:.85rem}
+button{font:inherit;cursor:pointer;min-height:44px;border:1px solid #7baa97;border-radius:9px;color:#fff;background:#2a644e;padding:10px 14px}
+button:disabled{opacity:.5;cursor:not-allowed}.row{display:flex;flex-wrap:wrap;gap:10px;margin:12px 0}audio,select,textarea{width:100%}audio{display:block;margin:14px 0}
+label{display:block;margin:15px 0 6px;font-weight:600}select,textarea{color:#fff;background:#10231d;border:1px solid #648a78;padding:10px;border-radius:8px;font:inherit}textarea{min-height:92px}
+button:focus-visible,select:focus-visible,textarea:focus-visible,a:focus-visible{outline:2px solid #bcf7dc;outline-offset:3px}
+@media(max-width:660px){.grid{grid-template-columns:1fr}.card{padding:16px}.row button{flex:1 1 100%}}
+</style></head><body>
+<header><a href="/">WhiteNoiseChoir</a> · <a href="/sounds/">Sound Library</a> · <a href="/sounds/nature/">Nature</a></header>
+<main>
+<span class="tag">POND WILDLIFE · REVIEW ONLY · NOINDEX</span>
+<h1>Nghe thử — Pond Wildlife</h1>
+<p>Hai bản ghi thực địa về hệ sinh thái ao: <strong>tiếng ếch, chim và côn trùng</strong>. Không được mô tả thành tiếng nước chảy, sóng hồ hay đài phun. Chưa có âm thanh nào được duyệt, chưa thêm HLS hoặc preset. Hãy kiểm tra cả phần đầu, giữa, cuối và điểm nối phút 10.</p>
+<div class="grid">
+<article class="card"><h2>01 · Spring Pond Frogs & Birds</h2>
+<p>Ao có tiếng ếch và chim; tác giả công khai có xe chạy ngang, tiếng gió. Bản gốc 24 kHz, chất lượng dải cao bị giới hạn.</p>
+<small>rebelgirl2006_tiger · Freesound CC0 · metadata 10:08 · bản MP3 review từ preview HQ đã nén.</small>
+<div class="row"><button type="button" data-track="pond-spring-review">▶ Nghe Pond Frogs & Birds</button></div>
+<a href="https://freesound.org/people/rebelgirl2006_tiger/sounds/345600/" target="_blank" rel="noopener noreferrer">Nguồn gốc / giấy phép</a>
+</article>
+<article class="card"><h2>02 · Night Forest Pond Frogs & Crickets</h2>
+<p>Ao rừng Trésor, French Guiana vào ban đêm; tiếng ếch, cóc và dế. Thuộc Nature/Wildlife về định danh âm học, không phải tiếng mặt nước.</p>
+<small>felix.blume · Freesound CC0 · metadata 13:11 · 48 kHz stereo original, nhưng review dùng MP3 preview.</small>
+<div class="row"><button type="button" data-track="pond-night-review">▶ Nghe Night Pond</button></div>
+<a href="https://freesound.org/people/felix.blume/sounds/868745/" target="_blank" rel="noopener noreferrer">Nguồn gốc / giấy phép</a>
+</article></div>
+<section class="card"><h2>Phát và kiểm tra vòng lặp</h2>
+<p id="now">Chọn một bản để phát · không autoplay.</p><audio id="audio" controls loop preload="none" playsinline></audio>
+<div class="row"><button id="near" type="button" disabled>Tua đến 09:55</button><button id="stop" type="button">■ Dừng</button></div>
+<p id="progress">00:00 / 10:00</p><p id="status" aria-live="polite">Chưa có bản được chọn</p></section>
+<section class="card"><h2>Phiếu đánh giá bằng tai</h2>
+<label for="verdict">Nguồn đang chọn</label>
+<select id="verdict"><option value="">Chưa đánh giá</option><option value="PASS">Đạt về chất lượng nghe</option><option value="REWORK">Cần chỉnh sửa / đổi tên</option><option value="REJECT">Loại khỏi thư viện</option></select>
+<label for="notes">Ghi chú: tiếng xe / gió / người, tính thư giãn, tính khác biệt và đoạn nối</label>
+<textarea id="notes" placeholder="Ghi lại nhận xét thực tế, không cần dài."></textarea>
+<div class="row"><button id="save" type="button">Lưu đánh giá</button><button id="copy" type="button">Sao chép báo cáo 2 bản</button></div><p id="saved" aria-live="polite">Đánh giá được lưu trên trình duyệt này; bấm Sao chép để gửi cho ChatGPT.</p></section>
+<section class="card warn"><h2>Điều kiện chưa hoàn thành</h2><p>Đây là 2 bản nghiên cứu NEW-33, nhưng <strong>định danh phù hợp hơn có thể là Nature / Pond Wildlife</strong>. Kiểm thử FFmpeg và trình duyệt chỉ chứng minh mặt kỹ thuật; cần nghe thực tế. Không nên nhập chung vào Water & Ocean hoặc cập nhật roadmap release chỉ vì tên có “pond”. Mỗi bản review dài 600 giây từ tối thiểu 605 giây nguồn độc lập nếu pipeline QA đạt.</p><p><a href="./manifest.json">Metadata và SHA-256</a></p></section>
+</main><footer>WhiteNoiseChoir · Review room only · 35 production sounds and 45 presets retained</footer>
+<script>
+(function(){"use strict";
+const names={"pond-spring-review":"Spring Pond Frogs & Birds","pond-night-review":"Night Forest Pond Frogs & Crickets"};
+const ids=Object.keys(names), audio=document.getElementById("audio"),key="wnc-pond-wildlife-owner-review-20261109";
+let active=null;const get=id=>document.getElementById(id),time=n=>{n=Math.floor(n||0);return String(Math.floor(n/60)).padStart(2,"0")+":"+String(n%60).padStart(2,"0")};
+const loadSaved=()=>{try{return JSON.parse(localStorage.getItem(key)||"{}")}catch(e){return {}}};
+function showTime(){get("progress").textContent=time(audio.currentTime)+" / "+time(Number.isFinite(audio.duration)?audio.duration:600)}
+function choose(id){if(!names[id])return;active=id;audio.pause();audio.src="./"+id+".mp3";audio.load();get("near").disabled=true;get("now").textContent="Đang chọn: "+names[id];const saved=loadSaved()[id]||{};get("verdict").value=saved.verdict||"";get("notes").value=saved.notes||"";get("status").textContent="Bản thử; chưa nghiệm thu bằng tai";audio.play().catch(()=>{get("status").textContent="Bấm Play trên thanh âm thanh để bắt đầu."})}
+document.querySelectorAll("[data-track]").forEach(b=>b.addEventListener("click",()=>choose(b.dataset.track)));
+audio.addEventListener("loadedmetadata",()=>{get("near").disabled=!(audio.duration>=599);showTime()});audio.addEventListener("timeupdate",showTime);audio.addEventListener("error",()=>{get("status").textContent="Không tải được âm thanh; cần kiểm tra triển khai."});
+get("near").addEventListener("click",()=>{if(audio.duration>=599){audio.currentTime=Math.min(595,audio.duration-5);showTime()}});
+get("stop").addEventListener("click",()=>{audio.pause();audio.currentTime=0;showTime();get("status").textContent="Đã dừng"});
+get("save").addEventListener("click",()=>{if(!active){get("saved").textContent="Hãy chọn một bản trước.";return}const s=loadSaved();s[active]={verdict:get("verdict").value,notes:get("notes").value};try{localStorage.setItem(key,JSON.stringify(s));get("saved").textContent="Đã lưu đánh giá "+names[active]}catch(e){get("saved").textContent="Không lưu được; hãy sao chép báo cáo."}});
+get("copy").addEventListener("click",()=>{const s=loadSaved();if(active)s[active]={verdict:get("verdict").value,notes:get("notes").value};const out="WHITENOISECHOIR - POND WILDLIFE CANDIDATE REVIEW\n"+ids.map(id=>{let v=s[id]||{};return names[id]+": "+(v.verdict||"CHUA DUYET")+(v.notes?" | "+v.notes:"")}).join("\n")+"\nCategory preference: Nature / Pond Wildlife; no production promotion without explicit approval.";if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(out).then(()=>get("saved").textContent="Đã sao chép báo cáo.").catch(()=>get("saved").textContent=out)}else get("saved").textContent=out});
+})();
+</script></body></html>

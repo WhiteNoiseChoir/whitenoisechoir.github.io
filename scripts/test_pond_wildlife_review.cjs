@@ -1,0 +1,43 @@
+#!/usr/bin/env node
+"use strict";
+const fs=require("node:fs"), assert=require("node:assert/strict"), crypto=require("node:crypto"), cp=require("node:child_process");
+const base="signature/pond-wildlife-review";
+const read=p=>fs.readFileSync(p,"utf8"), json=p=>JSON.parse(read(p)), sha=p=>crypto.createHash("sha256").update(fs.readFileSync(p)).digest("hex");
+const m=json(base+"/manifest.json"), page=read(base+"/index.html");
+const catalog=json("catalog/library.json"), hls=json("audio/continuous/manifest.json"), plans=json("catalog/planned-sounds.json").planned;
+const tracks=[["pond-spring-review","rebelgirl2006_tiger",345600],["pond-night-review","felix.blume",868745]];
+assert.equal(m.status,"REVIEW_ONLY_PENDING_OWNER");
+assert.equal(m.tracks.length,2);assert.equal(catalog.sounds.length,35);
+assert.equal(hls.records.length,35);assert.equal(hls.applies_to.length,35);
+assert.equal(plans.filter(p=>p.playable).length,13);
+assert.equal(plans.filter(p=>!p.playable).length,57);
+assert.equal(plans.find(p=>p.plan_id==="NEW-33").playable,false);
+assert.equal((read("sitemap.xml").match(/<loc>/g)||[]).length,18);
+assert.equal(JSON.parse(read("index.html").split("var recipes=")[1].split("];")[0]+"]").length,45);
+assert.ok(page.includes('name="robots" content="noindex,nofollow"'));
+assert.ok(page.includes('id="copy"')&&page.includes('id="near"'));
+assert.ok(!read("sitemap.xml").includes("pond-wildlife-review"));
+for(let i=0;i<2;i++){
+ const [id,creator,sourceId]=tracks[i],t=m.tracks[i],p=base+"/"+id+".mp3";
+ assert.equal(t.id,id);assert.equal(t.plan_id,"NEW-33");assert.equal(t.creator,creator);
+ assert.equal(t.source_type,"CC0-1.0");assert.ok(t.source_page.endsWith("/sounds/"+sourceId+"/"));
+ assert.ok(t.source_preview.includes(String(sourceId)+"_")&&t.source_preview.includes("-hq.mp3"));
+ assert.equal(t.review_status,"PENDING_OWNER_LISTENING");
+ assert.equal(t.publication_status,"REVIEW_ONLY_NOT_IN_PRODUCTION");
+ assert.equal(t.technical_status,"PASS");
+ assert.ok(t.independent_source_seconds>=605);
+ assert.equal(t.repetitions_approx,0);
+ assert.ok(t.duration_seconds>599&&t.duration_seconds<601);
+ assert.ok(t.peak_dbfs<=-5.5);
+ assert.ok(t.downloaded_preview_duration_seconds>=605.5);
+ assert.equal(t.output_codec,"mp3");
+ assert.equal(t.channels,2);assert.equal(t.sample_rate,44100);
+ assert.ok(fs.statSync(p).size>13_000_000);
+ assert.equal(sha(p),t.master_sha256);
+ const q=JSON.parse(cp.execFileSync("ffprobe",["-v","error","-show_entries","format=duration:stream=codec_name,channels,sample_rate","-of","json",p],{encoding:"utf8"}));
+ assert.ok(Math.abs(Number(q.format.duration)-600)<1);
+ assert.ok(q.streams.some(s=>s.codec_name==="mp3"&&Number(s.channels)===2&&Number(s.sample_rate)===44100));
+ assert.ok(page.includes('data-track="'+id+'"'));
+ console.log("POND_WILDLIFE_REVIEW_QA_PASS "+JSON.stringify({id,sha256:t.master_sha256,seconds:t.duration_seconds,independent:t.independent_source_seconds,preview_kbps:t.downloaded_preview_bitrate_kbps}));
+}
+console.log("POND_WILDLIFE_REVIEW_ALL_2_QA_PASS (35 existing production and 45 presets unchanged; source hearing unapproved)");
