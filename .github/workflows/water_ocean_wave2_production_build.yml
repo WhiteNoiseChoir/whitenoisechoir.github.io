@@ -5,6 +5,7 @@ on:
     paths:
       - "scripts/build_water_ocean_wave2_production_hls.py"
       - "scripts/test_water_ocean_wave2_production.cjs"
+      - "scripts/test_water_ocean_wave2_integrity.cjs"
       - ".github/workflows/water_ocean_wave2_production_build.yml"
   workflow_dispatch:
 permissions:

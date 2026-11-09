@@ -25,7 +25,7 @@ for(let i=0;i<2;i++){
  assert.equal(row.master_sha256,a.sha256);assert.equal(sha(dir+"/"+a.id+".mp3"),a.sha256);
  assert.ok(row.master_bytes>13_000_000);
  assert.ok(row.peak_dbfs<=-9);
- assert.equal(p.playable,true);assert.equal(p.production_id,["bodetal-brook-real","crashing-ocean-real"][i]);assert.equal(p.owner_listening_approval,"APPROVED_BY_OWNER_2026-11-09");assert.equal(p.owner_listening_approval,null);
+ assert.equal(p.playable,true);assert.equal(p.production_id,["bodetal-brook-real","crashing-ocean-real"][i]);assert.equal(p.owner_listening_approval,"APPROVED_BY_OWNER_2026-11-09");
 }
 const partial=review.tracks[1];
 assert.equal(partial.downloaded_preview_bitrate_kbps,null,"Never infer preview bitrate from 45minute header of truncated download");
@@ -40,4 +40,4 @@ assert.ok(!read("sitemap.xml").includes(dir));assert.ok(!read("index.html").incl
 assert.ok(!read("sounds/index.html").includes("wakanui-surf-review"));
 const mainManifest=hls.records.map(x=>x.id);
 assert.ok(!mainManifest.includes("bodetal-brook-review"));assert.ok(!mainManifest.includes("wakanui-surf-review"));
-console.log("WATER_OCEAN_WAVE2_INDEPENDENT_INTEGRITY_PASS 2 owner-pending CC0 masters pinned, 33 old production sources preserved, 45 mixes, partial source bitrate unknown, bamboo unverified.");
+console.log("WATER_OCEAN_WAVE2_INDEPENDENT_INTEGRITY_PASS 2 owner-approved CC0 masters pinned, 33 old production sources preserved, 45 mixes, partial source bitrate unknown, bamboo unverified.");
