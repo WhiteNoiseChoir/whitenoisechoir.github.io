@@ -1,4 +1,4 @@
-name: Build iOS Continuous Listening HLS Streams
+name: Legacy GitHub HLS Builder (DISABLED — use Cloudflare R2)
 on:
   push:
     branches: [main]
@@ -7,12 +7,15 @@ on:
       - 'audio/green-noise-master-manifest.json'
   workflow_dispatch:
 permissions:
-  contents: write
+  contents: read
 concurrency:
   group: whitenoisechoir-continuous-hls
   cancel-in-progress: false
 jobs:
   build:
+    # Prevent accidental 22-stream GitHub Pages re-publishing after R2 cleanup.
+    # Future HLS production must upload verified objects to R2 first.
+    if: ${{ false }}
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
