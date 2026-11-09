@@ -1,3 +1,14 @@
+## Verified migration results — 2026-11-09
+
+- GitHub Actions pilot run 42580141154: SUCCESS. 1 MP3 + 1 playlist + 10 TS segments = 12 objects / 30,285,642 bytes; full R2 GET SHA-256 and public GET Range 206 PASS.
+- GitHub Actions full run 42580411665: SUCCESS. 35 MP3 + 35 HLS 7-day playlists + 325 MPEG-TS segments = **395 objects**, **978,167,562 bytes**, each independently read back from R2 and SHA-256 verified.
+- R2 full pass: 383 new uploads, 12 pilot objects reused without overwrite; all 395 objects verified.
+- Public Range: sampled 8 URLs spanning 2 masters, 2 playlists and 4 TS segments returned byte-exact 206.
+- IMPORTANT: origin request did not receive Access-Control-Allow-Origin; R2 CORS policy is NOT configured. Must fix before switching player.
+- All approved media copied without recoding; original GitHub Pages player, files, Sleep Timer, canonical and sitemap unchanged. No physical iPhone QA performed.
+- The bucket token and GitHub credentials worked, but secret values were never printed.
+
+---
 # WhiteNoiseChoir — Cloudflare R2 staging and migration
 
 Date: 2026-11-09. Status: upload and verification only. The live GitHub Pages player is unchanged.
