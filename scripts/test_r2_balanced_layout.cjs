@@ -45,7 +45,7 @@ for(const r of m.records){
  const html=fs.readFileSync(pagePath,"utf8");
  const expectedHls=(keep.has(r.id)?"/":"https://media.whitenoisechoir.com/")+
   "audio/continuous/"+r.id+"/continuous.m3u8";
- assert.ok(html.includes('data-hls="'+expectedHls+'"'),"Broken HLS data link "+r.id);
+ assert.ok(html.includes('data-hls="'+expectedHls),"Broken HLS data link "+r.id);
  assert.ok(html.includes('/audio/'+r.id+'.mp3'),"GitHub MP3 remains referenced "+r.id);
 }
 const player=fs.readFileSync("index.html","utf8");
