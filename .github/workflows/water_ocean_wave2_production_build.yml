@@ -56,7 +56,7 @@ jobs:
         run: |
           python3 scripts/test_hls_transport.py
           python3 scripts/test_batch18_audio.py
-      - name: Browser: 35 sound catalog, two new players, original player, mobile and reviews
+      - name: "Browser - 35 sound catalog, two new players, original player, mobile and reviews"
         run: |
           npm install --no-save --no-package-lock playwright
           node scripts/rain_review_range_test_server.cjs >/tmp/water-ocean-wave2-production-server.log 2>&1 &
