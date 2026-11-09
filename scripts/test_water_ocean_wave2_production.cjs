@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 "use strict";
+const resolve=require("./resolve_review_media.cjs");
 /* Water/Ocean Wave2: validate two exactly promoted MP3s, original 33 SHA pins,
   intentional noindex pages and 45 untouched presets. No physical-device iPhone claims. */
 const assert=require("node:assert/strict"),fs=require("node:fs"),crypto=require("node:crypto"),cp=require("node:child_process");
@@ -25,7 +26,7 @@ for(let i=0;i<names.length;i++){
  assert.equal(metadata.production_id,id);assert.equal(metadata.plan_id,planId);assert.equal(metadata.master_sha256,track.master_sha256);
  assert.equal(metadata.owner_listening_status,"APPROVED_BY_OWNER_2026-11-09");assert.equal(metadata.license,"CC0-1.0");
  assert.equal(metadata.source_page,track.source_page);assert.equal(metadata.lossless_original_downloaded,false);
- assert.equal(sha(metadata.review_mp3),track.master_sha256);assert.equal(sha(metadata.production_mp3),track.master_sha256);
+ assert.equal(sha(resolve(metadata.review_mp3)),track.master_sha256);assert.equal(sha(metadata.production_mp3),track.master_sha256);
  assert.ok(!oldIds.has(id));assert.equal(sound.title,title);assert.equal(sound.slug,slug);assert.equal(sound.status,"listening-approved");
  assert.equal(p.playable,true);assert.equal(p.production_id,id);assert.equal(p.owner_listening_approval,"APPROVED_BY_OWNER_2026-11-09");assert.equal(p.seo_status,"noindex,follow");
  const rec=hls.records.find(x=>x.id===id);assert.ok(rec,"HLS track missing "+id);
