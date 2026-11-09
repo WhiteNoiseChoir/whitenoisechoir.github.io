@@ -13,8 +13,8 @@ const expected=[
 ];
 assert.equal(manifest.status,"REVIEW_ONLY_PENDING_OWNER");
 assert.equal(manifest.tracks.length,3);
-assert.equal(catalog.sounds.length,28);
-assert.equal(hls.records.length,28);
+assert.equal(catalog.sounds.length,30);
+assert.equal(hls.records.length,30);
 assert.equal((read("sitemap.xml").match(/<loc>/g)||[]).length,18);
 assert.ok(html.includes('name="robots" content="noindex,nofollow"'));
 assert.ok(html.includes("Tua tới 9:55")&&html.includes('id="copy"'));
