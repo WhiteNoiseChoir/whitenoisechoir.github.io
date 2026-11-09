@@ -9,11 +9,11 @@ const ids=["rain-leaves-real","rain-lake-real"];
 assert.equal(prov.status,"OWNER_APPROVED_FOR_AUDIO");
 assert.equal(review.status,"REVIEW_ONLY_PENDING_OWNER","Keep untouched audition manifest as historical QA input");
 assert.equal(prov.tracks.length,2);assert.equal(review.tracks.length,2);
-assert.equal(catalog.sounds.length,30);assert.equal(new Set(catalog.sounds.map(x=>x.id)).size,30);
-assert.equal(hls.records.length,30);assert.equal(hls.applies_to.length,30);
-assert.equal(new Set(hls.applies_to).size,30);assert.equal(families.length,13);
+assert.equal(catalog.sounds.length,33);assert.equal(new Set(catalog.sounds.map(x=>x.id)).size,33);
+assert.equal(hls.records.length,33);assert.equal(hls.applies_to.length,33);
+assert.equal(new Set(hls.applies_to).size,33);assert.equal(families.length,13);
 assert.deepEqual(families.find(x=>x.id==="rain").existing_ids.slice(-2),ids);
-assert.equal(plans.filter(x=>x.playable).length,8);assert.equal(plans.filter(x=>!x.playable).length,62);
+assert.equal(plans.filter(x=>x.playable).length,11);assert.equal(plans.filter(x=>!x.playable).length,59);
 assert.equal(previous.records.length,28);
 for(const x of previous.records){
  const now=hls.records.find(y=>y.id===x.id);assert.ok(now,"original HLS lost: "+x.id);
@@ -48,9 +48,9 @@ for(let i=0;i<ids.length;i++){
  assert.ok(Math.abs(Number(probe.format.duration)-600)<=1);
  assert.ok(probe.streams.some(x=>x.codec_name==="mp3"&&Number(x.channels)===2&&Number(x.sample_rate)===44100));
 }
-assert.equal((read("sounds/index.html").match(/data-wnc-existing-id="/g)||[]).length,30);
-assert.ok(read("index.html").includes("13 families · 30 catalog sources"));
+assert.equal((read("sounds/index.html").match(/data-wnc-existing-id="/g)||[]).length,33);
+assert.ok(read("index.html").includes("13 families · 33 catalog sources"));
 const recipes=JSON.parse(read("index.html").split("var recipes=")[1].split("];")[0]+"]");
 assert.equal(recipes.length,45);
 assert.equal((read("sitemap.xml").match(/<loc>/g)||[]).length,18);
-console.log("RAIN_WAVE3_PRODUCTION_QA_PASS: 30 sources and HLS, original 28 pinned, 2 exact owner-audition MP3, 45 presets, noindex pages, true CC0 licenses");
+console.log("RAIN_WAVE3_PRODUCTION_QA_PASS: 33 sources and HLS, original 28 pinned, 2 exact owner-audition MP3, 45 presets, noindex pages, true CC0 licenses");

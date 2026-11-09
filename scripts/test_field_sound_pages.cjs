@@ -15,7 +15,7 @@ const examples=[
  ["waterfall-real","waterfall","PT6M15S",true],
 ];
 const all=library.sounds;
-assert.equal(all.length,30);
+assert.equal(all.length,33);
 const sitemap=[...read("sitemap.xml").matchAll(/<loc>([^<]+)<\/loc>/g)].map(x=>x[1]);
 assert.equal(sitemap.length,18,"18 URL selective sitemap including Shower phase");
 const report=[];

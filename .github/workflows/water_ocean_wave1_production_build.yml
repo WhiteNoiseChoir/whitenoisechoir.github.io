@@ -1,0 +1,77 @@
+name: Water Ocean Wave 1 Production HLS Builder (Owner Approved)
+on:
+  push:
+    branches: ["feature/water-ocean-wave1-production-20261109"]
+    paths:
+      - "scripts/build_water_ocean_wave1_production_hls.py"
+      - "scripts/test_water_ocean_wave1_production.cjs"
+      - "scripts/test_library_foundation.cjs"
+      - ".github/workflows/water_ocean_wave1_production_build.yml"
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  build-three-approved-native-hls:
+    if: github.ref_name == 'feature/water-ocean-wave1-production-20261109' && github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - name: Ensure FFmpeg, ffprobe
+        run: |
+          if ! command -v ffmpeg >/dev/null || ! command -v ffprobe >/dev/null; then
+            sudo apt-get update -qq
+            sudo apt-get install -y -qq ffmpeg
+          fi
+      - name: Build ONLY 3 owner-approved 7-day HLS; regenerate browse HTML
+        run: |
+          python3 -m py_compile scripts/build_water_ocean_wave1_production_hls.py
+          python3 scripts/build_water_ocean_wave1_production_hls.py
+          node scripts/build_sound_library_foundation.cjs --write
+      - name: Protect 30 existing sound MP3/HLS SHA-256 and audit all 33 source/SEO/45-preset gates
+        run: |
+          node scripts/test_water_ocean_wave1_production.cjs
+          node scripts/test_water_ocean_wave1_review.cjs
+          node scripts/test_rain_wave3_production.cjs
+          node scripts/test_rain_wave3_review.cjs
+          node scripts/test_rain_wave2_production.cjs
+          node scripts/test_rain_production_release.cjs
+          node scripts/test_rain_wave2_review.cjs
+          node scripts/test_rain_first_wave_review.cjs
+          node scripts/test_library_foundation.cjs
+          node scripts/test_library_structure.cjs
+          node scripts/build_sound_library_foundation.cjs
+          node scripts/test_player_smoke.cjs
+          node scripts/test_batch18_pages.cjs
+          node scripts/test_field_sound_pages.cjs
+          node scripts/test_noise_colors_editorial.cjs
+          node scripts/test_device_environment_editorial.cjs
+          python3 scripts/check_listening_queue.py
+          python3 scripts/test_rain_review_audio.py
+      - name: Decode all 33 HLS source loops through 10-minute boundaries and audit legacy 18 MP3s
+        run: |
+          python3 scripts/test_hls_transport.py
+          python3 scripts/test_batch18_audio.py
+      - name: Test mobile routes, player, timer and audition room in Chromium
+        run: |
+          npm install --no-save --no-package-lock playwright
+          node scripts/rain_review_range_test_server.cjs >/tmp/water-ocean-live-qa-server.log 2>&1 &
+          pid=$!
+          trap 'kill $pid || true' EXIT
+          node scripts/test_water_ocean_wave1_production_browser.cjs
+          node scripts/test_rain_production_browser.cjs
+          node scripts/test_library_foundation_browser.cjs
+          node scripts/test_water_ocean_wave1_browser.cjs
+      - name: Commit only generated 3 native HLS streams + refreshed browse library after QA
+        env:
+          BRANCH: ${{ github.ref_name }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add sounds/index.html audio/continuous/manifest.json
+          git add audio/continuous/rushing-river-real/ audio/continuous/forest-stream-real/ audio/continuous/gentle-ocean-real/
+          if git diff --cached --quiet; then echo "No new assets"; exit 0; fi
+          git commit -m "Water Ocean Wave1: QA-approved 7-day native HLS for 3 real CC0 field sources"
+          git push origin "HEAD:${BRANCH}"

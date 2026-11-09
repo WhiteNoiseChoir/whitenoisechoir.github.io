@@ -1,6 +1,6 @@
 {
-  "version": "2026-11-09-catalog-v6-rain-wave3-approved",
-  "editorial_note": "30 playable sources and 45 original presets. Wave 3 owner-approved rain on leaves (605s independent) and rain on lake (343s independent, repeats within 600s). Exact listening-review MP3s promoted byte-identically. Original CC0 HQ previews are lossy MP3, not WAV/FLAC originals. Rain & Thunder remains primary indexable hub; two new sound pages noindex,follow.",
+  "version": "2026-11-09-catalog-v7-water-ocean-wave1-approved",
+  "editorial_note": "33 playable sound sources, 45 existing presets. Three Water & Ocean Wave 1 owner-approved CC0 independent stereo field recordings: Rushing River, Forest Stream and Gentle Ocean Waves. Exactly the audited 600-second MP3 review bytes are released; each uses approximately 605 seconds of independent source with no 60-second repeating short loop. Source Freesound HQ MP3 previews are lossy, not original lossless WAV. New detail pages stay noindex,follow, original Ocean Waves page preserved; sitemap unchanged.",
   "categories": [
     {
       "slug": "noise-colors",
@@ -377,6 +377,30 @@
       "status": "listening-approved",
       "desc": "A natural stereo recording of rain hitting the surface of a small Ontario lake. The approved ten-minute master is assembled from roughly 343 seconds of independently recorded sound and repeats the source approximately twice.",
       "slug": "rain-on-lake"
+    },
+    {
+      "id": "rushing-river-real",
+      "title": "Rushing River",
+      "cat": "water",
+      "status": "listening-approved",
+      "desc": "The real Magdalena River near Los Dinamos, south of Mexico City, was recorded in stereo by orlandorizo with a Zoom H5N. Strong continuous water rush rather than individual gentle drips. Owner-approved 600-second source-derived master from a 605-second unique section; the 10-minute master repeats only in longer listening sessions.",
+      "slug": "rushing-river"
+    },
+    {
+      "id": "forest-stream-real",
+      "title": "Gentle Forest Stream",
+      "cat": "water",
+      "status": "listening-approved",
+      "desc": "A real stereo field recording of the Jadwiżanka stream in Lądek-Zdrój, Poland, originally captured in September 2021. Natural flowing creek water changes irregularly across the soundstage. Owner-approved 600-second source-derived master from a 605-second unique section; the 10-minute master repeats only in longer listening sessions.",
+      "slug": "forest-stream"
+    },
+    {
+      "id": "gentle-ocean-real",
+      "title": "Gentle Ocean Waves",
+      "cat": "water",
+      "status": "listening-approved",
+      "desc": "A real stereo shoreline recording by Sandy-Ogilvie made with a Tascam DR-05x. Waves travel across the stereo field near distant coastal cliffs and occasional gulls are audible. Owner-approved 600-second source-derived master from a 605-second unique section; the 10-minute master repeats only in longer listening sessions.",
+      "slug": "gentle-ocean-waves"
     }
   ],
   "collec": [
