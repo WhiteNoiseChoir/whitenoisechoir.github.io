@@ -20,8 +20,8 @@ const cases=[
  ["wind-synth","gentle-wind",false,"1,400 Hz"],
  ["shower-synth","shower",true,"680 Hz"],
 ];
-assert.equal(library.sounds.length,33);
-assert.equal(hls.applies_to.length,33);
+assert.equal(library.sounds.length,35);
+assert.equal(hls.applies_to.length,35);
 assert.equal(urls.length,18,"Sitemap must contain 18 editorially selected URLs");
 const results=[];
 for(const [id,slug,allowIndex,detail] of cases){
