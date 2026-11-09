@@ -23,7 +23,12 @@ jobs:
       - name: Ensure audio dependencies
         run: |
           python3 -m py_compile scripts/build_pond_wildlife_review.py
+          if ! command -v ffmpeg >/dev/null || ! command -v ffprobe >/dev/null; then
+            sudo apt-get update -qq
+            sudo apt-get install -y -qq ffmpeg
+          fi
           ffmpeg -version | head -1
+          ffprobe -version | head -1
       - name: Source verification and 600-second nonrepeating review MP3s
         run: python3 scripts/build_pond_wildlife_review.py
       - name: Audit source integrity and preservation of 35 production sources and 45 presets
