@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 "use strict";
+const resolve=require("./resolve_review_media.cjs");
 /* Wave3 owner signoff is not a claim of lossless source or physical iPhone QA. */
 const fs=require("node:fs"),crypto=require("node:crypto"),assert=require("node:assert/strict"),cp=require("node:child_process");
 const read=p=>fs.readFileSync(p,"utf8"),json=p=>JSON.parse(read(p)),sha=p=>crypto.createHash("sha256").update(fs.readFileSync(p)).digest("hex");
@@ -26,7 +27,7 @@ for(let i=0;i<ids.length;i++){
  assert.equal(p.source_page,row.source_page);assert.equal(p.license,"CC0-1.0");
  assert.equal(p.owner_listening_status,"APPROVED_BY_OWNER_2026-11-09");
  assert.equal(p.original_lossless_downloaded,false);assert.equal(p.independent_source_used_seconds,row.independent_source_seconds);
- assert.equal(sha(p.review_mp3),row.master_sha256);assert.equal(sha(p.production_mp3),row.master_sha256);
+ assert.equal(sha(resolve(p.review_mp3)),row.master_sha256);assert.equal(sha(p.production_mp3),row.master_sha256);
  assert.equal(snd.status,"listening-approved");assert.equal(snd.cat,"rain");
  assert.equal(plan.playable,true);assert.equal(plan.production_id,id);assert.equal(plan.seo_status,"noindex,follow");
  const record=hls.records.find(x=>x.id===id);assert.ok(record);

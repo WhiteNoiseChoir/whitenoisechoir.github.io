@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 "use strict";
+const resolve=require("./resolve_review_media.cjs");
 /* Independent final Wave 2 integrity/SEO/source-length audit.
    Does not rewrite or approve any user-review audio for production. */
 const fs=require("node:fs"),assert=require("node:assert/strict"),crypto=require("node:crypto");
@@ -22,7 +23,7 @@ for(let i=0;i<2;i++){
  assert.equal(row.review_status,"PENDING_OWNER_LISTENING");
  assert.equal(row.publication_status,"REVIEW_ONLY_NOT_IN_PRODUCTION");
  assert.equal(row.independent_source_seconds,605);assert.equal(row.repetitions_approx,0);
- assert.equal(row.master_sha256,a.sha256);assert.equal(sha(dir+"/"+a.id+".mp3"),a.sha256);
+ assert.equal(row.master_sha256,a.sha256);assert.equal(sha(resolve(dir+"/"+a.id+".mp3")),a.sha256);
  assert.ok(row.master_bytes>13_000_000);
  assert.ok(row.peak_dbfs<=-9);
  assert.equal(p.playable,true);assert.equal(p.production_id,["bodetal-brook-real","crashing-ocean-real"][i]);assert.equal(p.owner_listening_approval,"APPROVED_BY_OWNER_2026-11-09");

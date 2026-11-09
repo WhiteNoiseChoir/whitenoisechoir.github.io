@@ -1,0 +1,63 @@
+name: Approved Review Audio Dedup — Independent QA
+on:
+  push:
+    branches: [main, 'feature/dedup-approved-review-audio-20261109']
+    paths:
+      - 'audio/review-media-dedup.json'
+      - 'scripts/test_media_dedup.cjs'
+      - 'scripts/resolve_review_media.cjs'
+      - 'scripts/resolve_review_media.py'
+      - 'signature/**'
+      - 'scripts/test_*review*'
+      - 'scripts/test_*production*'
+      - '.github/workflows/audio_dedup_qa.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  check-identical-approval-and-playback:
+    runs-on: ubuntu-latest
+    timeout-minutes: 65
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install FFmpeg and verify Python
+        run: |
+          if ! command -v ffprobe >/dev/null || ! command -v ffmpeg >/dev/null; then
+            sudo apt-get update -qq
+            sudo apt-get install -y -qq ffmpeg
+          fi
+          python3 -m py_compile scripts/resolve_review_media.py scripts/check_listening_queue.py scripts/test_rain_review_audio.py
+      - name: Check 17 byte-identical aliases, content integrity, size budget, SEO and HLS/recipe inventory
+        run: node scripts/test_media_dedup.cjs
+      - name: Execute all approved-source and original player checks
+        run: |
+          node scripts/test_rain_first_wave_review.cjs
+          node scripts/test_rain_wave2_review.cjs
+          node scripts/test_rain_wave3_review.cjs
+          node scripts/test_water_ocean_wave1_review.cjs
+          node scripts/test_water_ocean_wave2_review.cjs
+          node scripts/test_water_ocean_wave2_integrity.cjs
+          node scripts/test_rain_production_release.cjs
+          node scripts/test_rain_wave2_production.cjs
+          node scripts/test_rain_wave3_production.cjs
+          node scripts/test_water_ocean_wave1_production.cjs
+          node scripts/test_water_ocean_wave2_production.cjs
+          node scripts/test_library_foundation.cjs
+          node scripts/test_library_structure.cjs
+          node scripts/test_player_smoke.cjs
+          python3 scripts/check_listening_queue.py
+          python3 scripts/test_rain_review_audio.py
+      - name: Decode the 35 existing HLS boundaries
+        run: python3 scripts/test_hls_transport.py
+      - name: Browser QA for all review rooms, 320/390px and 9:55 seek
+        run: |
+          npm install --no-save --no-package-lock playwright
+          node scripts/rain_review_range_test_server.cjs >/tmp/dedup-browser.log 2>&1 &
+          pid=$!
+          trap 'kill $pid || true' EXIT
+          node scripts/test_rain_review_browser.cjs
+          node scripts/test_rain_wave2_browser.cjs
+          node scripts/test_rain_wave3_browser.cjs
+          node scripts/test_water_ocean_wave1_browser.cjs
+          node scripts/test_water_ocean_wave2_browser.cjs
+          node scripts/test_library_foundation_browser.cjs

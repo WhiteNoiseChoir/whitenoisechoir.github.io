@@ -11,6 +11,7 @@ import hashlib
 import json
 import math
 from pathlib import Path
+from resolve_review_media import resolve_review_media
 
 ROOT = Path(__file__).resolve().parent.parent
 
@@ -60,7 +61,7 @@ for item in queue["dsp"]:
     check(item["duration_seconds"] == src["qa"]["duration_seconds"] == 600, ident + " duration changed")
     check(item["file"] == src["file"], ident + " unexpected source filename")
     check(item["spectral_bands_db"] == src["qa"]["spectral_band_amplitude_dbfs"], ident + " spectral data changed")
-    check(digest(ROOT / item["file"]) == item["source_sha256"], ident + " file differs from manifest")
+    check(digest(resolve_review_media(ROOT / item["file"])) == item["source_sha256"], ident + " file differs from manifest")
     check(src["qa"]["stereo_mode"] == "centered_dual_mono", ident + " changed stereo implementation")
     print("DSP_MASTER_PASS", ident, flush=True)
 
@@ -73,7 +74,7 @@ for item in queue["cc0_field"]:
     check(item["production_policy"] == ("APPROVED_FULL_SOURCE_PRODUCTION" if approved else "KEEP_LEGACY_54_SECOND_MASTER_UNTIL_LISTENING_APPROVAL"), ident + " production policy")
     check(item["file"] == src["preview_file"], ident + " candidate path changed")
     check(item["source_sha256"] == src["sha256"], ident + " candidate hash changed")
-    check(digest(ROOT / item["file"]) == item["source_sha256"], ident + " file differs from audition manifest")
+    check(digest(resolve_review_media(ROOT / item["file"])) == item["source_sha256"], ident + " file differs from audition manifest")
     check(src["license"] == item["license"] == audit["declared_source_license"] == "CC0-1.0", ident + " license mismatch")
     check(item["independent_source_seconds"] == src["independent_recording_seconds"], ident + " independent duration mismatch")
     check(item["duration_seconds"] == src["qa"]["seconds"], ident + " candidate duration mismatch")

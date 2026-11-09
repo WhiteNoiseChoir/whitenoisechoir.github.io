@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 "use strict";
+const resolve=require("./resolve_review_media.cjs");
 const fs=require("node:fs"),crypto=require("node:crypto"),assert=require("node:assert/strict");
 const read=p=>fs.readFileSync(p,"utf8"),json=p=>JSON.parse(read(p));
 const catalog=json("catalog/library.json"),plans=json("catalog/planned-sounds.json").planned,families=json("catalog/family-registry.json").families,provenance=json("audio/rain-first-wave-provenance.json");
@@ -32,7 +33,7 @@ for(const entry of provenance.tracks){
  assert.equal(s.cat,"rain");
  const mp3=entry.production_mp3;
  assert.equal(sha(mp3),entry.master_sha256,"promoted MP3 MUST equal owner-audition MP3");
- assert.equal(sha(entry.review_mp3),entry.master_sha256,"approved review asset changed");
+ assert.equal(sha(resolve(entry.review_mp3)),entry.master_sha256,"approved review asset changed");
  assert.equal(entry.master_seconds,600);
  assert.equal(entry.license,"CC0-1.0");
  assert.equal(entry.owner_listening_status,"APPROVED_BY_OWNER_2026-11-08");

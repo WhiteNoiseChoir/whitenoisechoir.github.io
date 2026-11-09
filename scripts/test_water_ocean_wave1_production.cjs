@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 "use strict";
+const resolve=require("./resolve_review_media.cjs");
 /* Water/Ocean Wave 1 promotion: exact owner-approved MP3 bytes, 30-original SHA guard,
    33 total HLS, no SEO cannibalization and no claim of physical iPhone QA. */
 const fs=require("node:fs"),assert=require("node:assert/strict"),crypto=require("node:crypto"),cp=require("node:child_process");
@@ -36,7 +37,7 @@ for(let i=0;i<3;i++){
  assert.equal(p.owner_listening_status,"APPROVED_BY_OWNER_2026-11-09");
  assert.equal(p.license,"CC0-1.0");assert.equal(p.lossless_original_downloaded,false);
  assert.equal(p.source_page,row.source_page);assert.equal(p.independent_source_used_seconds,605);
- assert.equal(sha(p.review_mp3),row.master_sha256);assert.equal(sha(p.production_mp3),row.master_sha256);
+ assert.equal(sha(resolve(p.review_mp3)),row.master_sha256);assert.equal(sha(p.production_mp3),row.master_sha256);
  assert.equal(snd.slug,slug);assert.equal(snd.cat,"water");assert.equal(snd.status,"listening-approved");
  assert.equal(plan.production_id,id);assert.equal(plan.playable,true);assert.equal(plan.seo_status,"noindex,follow");
  assert.equal(plan.owner_listening_approval,"APPROVED_BY_OWNER_2026-11-09");

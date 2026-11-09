@@ -38,7 +38,7 @@ assert.equal(await page.locator("#notes").inputValue(),"Very quiet average level
 assert.equal(await page.locator("#verdict").inputValue(),"REWORK");
 await page.locator('[data-select="distant-thunder-review"]').click();
 await page.waitForFunction(()=>document.querySelector("#player").duration>=599,null,{timeout:30000});
-assert.equal(await page.locator("#player").getAttribute("src"),"./distant-thunder-review.mp3");
+assert.equal(await page.locator("#player").getAttribute("src"),"/audio/distant-thunder-real.mp3");
 assert.equal(errors.length,0,"JavaScript errors: "+errors.join(" | "));
 console.log("RAIN_REVIEW_BROWSER_QA_PASS three actual MP3s, seek 9:55, native loop, no autoplay, mobile widths, notes saved");
 }finally{await browser.close();}

@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 "use strict";
+const resolve=require("./resolve_review_media.cjs");
 /* First-wave review is deliberately isolated from the released sound catalog. */
 const fs=require("node:fs"),assert=require("node:assert/strict");
 const f=p=>fs.readFileSync(p,"utf8"),j=p=>JSON.parse(f(p));
@@ -42,7 +43,7 @@ for(let i=0;i<ids.length;i++){
  assert.equal(track.technical_status,"PASS");
  assert.equal(track.real_audio_verified,true);
  assert.ok(track.audio_review_flags.length>0);
- const p=root+"/"+ids[i]+".mp3";
+ const p=resolve(root+"/"+ids[i]+".mp3");
  assert.ok(fs.existsSync(p),"MP3 review asset "+p);
  assert.ok(fs.statSync(p).size>5_000_000,"review asset is a real 10-min sound "+p);
  assert.ok(!f("audio/continuous/manifest.json").includes(ids[i]),"no review HLS production change "+ids[i]);

@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 "use strict";
+const resolve=require("./resolve_review_media.cjs");
 // New owner-approved sources must be exact audition bytes, old 25 untouched.
 const fs=require("node:fs"),crypto=require("node:crypto"),assert=require("node:assert/strict");
 const txt=p=>fs.readFileSync(p,"utf8"),json=p=>JSON.parse(txt(p));
@@ -28,7 +29,7 @@ for(const old of previous.tracks){
 for(let i=0;i<3;i++){
  const a=provenance.tracks[i],source=review.tracks[i],id=ids[i],catalogRow=catalog.sounds.find(s=>s.id===id),plan=plans.find(p=>p.plan_id===a.plan_id);
  assert.equal(a.production_id,id);assert.equal(a.master_sha256,source.master_sha256);
- assert.equal(hash(a.review_mp3),a.master_sha256,"review master altered "+id);
+ assert.equal(hash(resolve(a.review_mp3)),a.master_sha256,"review master altered "+id);
  assert.equal(hash(a.production_mp3),a.master_sha256,"production master differs from audition "+id);
  assert.equal(a.original_wav_downloaded,false);assert.equal(a.source_preview,"lossy_HQ_MP3_preview_not_WAV");
  assert.equal(a.owner_listening_status,"APPROVED_BY_OWNER_2026-11-09");

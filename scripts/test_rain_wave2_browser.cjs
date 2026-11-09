@@ -35,7 +35,7 @@ try{
  assert.equal(await page.locator("#notes").inputValue(),"Original source is mono; preserve clear car roof identity and evaluate repetition.");
  await page.locator('button[data-track="rolling-thunder-review"]').click();
  await page.waitForFunction(()=>document.querySelector("#audio").duration>=599,null,{timeout:25000});
- assert.equal(await page.locator("#audio").getAttribute("src"),"./rolling-thunder-review.mp3");
+ assert.equal(await page.locator("#audio").getAttribute("src"),"/audio/rolling-thunder-real.mp3");
  assert.equal(errors.length,0,"browser JS errors: "+errors.join(" | "));
  console.log("RAIN_WAVE2_BROWSER_PASS: no autoplay, 3 real 600s MP3, 9:55 seek, owner review local storage, 320/390 widths, noindex");
 }finally{await browser.close()}

@@ -1,0 +1,131 @@
+{
+  "version": "approved-review-dedup-20261109",
+  "baseline_main_sha": "d975d801485c5bac8d54849846d5aaa62cd14643",
+  "status": "IDENTICAL_REVIEW_AND_PRODUCTION_GIT_BLOBS",
+  "purpose": "Deduplicate only byte-identical approved review masters; historical review manifest paths preserved for provenance; accessible rooms use canonical production file URLs",
+  "original_tracked_bytes": 1199044630,
+  "removed_tracked_bytes": 204567082,
+  "expected_tracked_bytes_after": 994477548,
+  "all_35_production_mp3_and_hls_preserved": true,
+  "pairs": [
+    {
+      "review_path": "signature/rain-review/light-rain-review.mp3",
+      "production_path": "audio/light-rain-real.mp3",
+      "sha256": "4ec7b163d6450c01c9d42201861123fc8e9abb97d1c57374c7b27696680f5d4d",
+      "git_blob_sha": "678893b8ad6d0e6f699e0751f0312468d7e22e9f",
+      "bytes": 14401453
+    },
+    {
+      "review_path": "signature/rain-review/rain-tin-roof-review.mp3",
+      "production_path": "audio/rain-tin-roof-real.mp3",
+      "sha256": "b164a70de5b4ef215637ae6b85f23cdb050972b277f246d62eeb98573e797d50",
+      "git_blob_sha": "36fddbfdc10f9d1a42c52159d82f9390ad90a055",
+      "bytes": 14401453
+    },
+    {
+      "review_path": "signature/rain-review/distant-thunder-review.mp3",
+      "production_path": "audio/distant-thunder-real.mp3",
+      "sha256": "baefe31e5bde707c09428672690e0fe184769b75bdce32042b0b854357622e78",
+      "git_blob_sha": "ce89a15143d05bcfa7c650eaf793f816660d8e78",
+      "bytes": 14401453
+    },
+    {
+      "review_path": "signature/rain-wave2-review/rain-on-tent-review.mp3",
+      "production_path": "audio/rain-on-tent-real.mp3",
+      "sha256": "5617e98ca487b42798e5af48bf4674ac8100dcc246eeb1ad392a3a176662d61c",
+      "git_blob_sha": "a5c3967be23317ad5bfc0fb6a05029e9173d4c80",
+      "bytes": 14401453
+    },
+    {
+      "review_path": "signature/rain-wave2-review/rain-car-roof-review.mp3",
+      "production_path": "audio/rain-car-roof-real.mp3",
+      "sha256": "ff4f90c58cd3c8e2005aec43a8215b76e242e4bdbc13c19594026cc274c36748",
+      "git_blob_sha": "d428b72af230657aa463efc5f625a710657bf298",
+      "bytes": 14401453
+    },
+    {
+      "review_path": "signature/rain-wave2-review/rolling-thunder-review.mp3",
+      "production_path": "audio/rolling-thunder-real.mp3",
+      "sha256": "80aa0f4ff2366c271c192dbe88b7d9df84edb8a0adce44dc18f96bec77d81eca",
+      "git_blob_sha": "88c52a3a31f7078813623fb4cfc7eb4e3596c9df",
+      "bytes": 14401453
+    },
+    {
+      "review_path": "signature/rain-wave3-review/rain-leaves-review.mp3",
+      "production_path": "audio/rain-leaves-real.mp3",
+      "sha256": "2bfc87d4c13dfbab09d658f8c120c95ce04c0f7c2a11dc2d442cbc05f3284b0f",
+      "git_blob_sha": "44aa5e03b1551757307407a9f4299e6e9379ab94",
+      "bytes": 14401453
+    },
+    {
+      "review_path": "signature/rain-wave3-review/rain-lake-review.mp3",
+      "production_path": "audio/rain-lake-real.mp3",
+      "sha256": "62fee5a2a974d222ef19a9e0cb43f223ce8e1c1f2c8f53fb190f36682c6c9e55",
+      "git_blob_sha": "850133b1bb00ca80f2019e57df915da4b054ef98",
+      "bytes": 14401453
+    },
+    {
+      "review_path": "signature/water-ocean-wave1-review/rushing-river-review.mp3",
+      "production_path": "audio/rushing-river-real.mp3",
+      "sha256": "0a31ea0a5f1337d1a308cb2efb4925751406886ae67cdcbb913cf960cdfbc93f",
+      "git_blob_sha": "7885fabbed562e0774d377353cb5a631cc6d96e4",
+      "bytes": 14401453
+    },
+    {
+      "review_path": "signature/water-ocean-wave1-review/forest-stream-review.mp3",
+      "production_path": "audio/forest-stream-real.mp3",
+      "sha256": "343313bfb29811e7a12cf40b00aa81489bd02a1a08986e473e1fedbca4cb9175",
+      "git_blob_sha": "2242b6ac473c5c81999767fd6a5786190ce04a3d",
+      "bytes": 14401453
+    },
+    {
+      "review_path": "signature/water-ocean-wave1-review/gentle-ocean-review.mp3",
+      "production_path": "audio/gentle-ocean-real.mp3",
+      "sha256": "cb0fc41a0721d1fd0c0552bfc8017fa7769a15c4004a9dc4c7bebbeb539d32e1",
+      "git_blob_sha": "54bcacfaa9f264a2bab4e2944a190cff30745a00",
+      "bytes": 14401453
+    },
+    {
+      "review_path": "signature/water-ocean-wave2-review/bodetal-brook-review.mp3",
+      "production_path": "audio/bodetal-brook-real.mp3",
+      "sha256": "e3e1bb330426a363842cb93890a40f33049c37a0c4d7351b802428914e4f5725",
+      "git_blob_sha": "c12d0e36d8c30a5e87252d69a30685e710ba89b4",
+      "bytes": 14401453
+    },
+    {
+      "review_path": "signature/water-ocean-wave2-review/wakanui-surf-review.mp3",
+      "production_path": "audio/crashing-ocean-real.mp3",
+      "sha256": "4969a0791d0a7bedfffc79ea5aca581ac3aeb9e23dff5c610f151ef48f7faed1",
+      "git_blob_sha": "cad554b69e82c64beef1f0939a1a8d1877de03a2",
+      "bytes": 14401453
+    },
+    {
+      "review_path": "signature/field-review/box-fan-real-full.mp3",
+      "production_path": "audio/box-fan-real.mp3",
+      "sha256": "d96f44a10ffa6a55e2ea4fda2f479702b98e83f6721bea141144e408ccfe5971",
+      "git_blob_sha": "0ca20be69b8c8709269415ae14cb04a32d735838",
+      "bytes": 1621933
+    },
+    {
+      "review_path": "signature/field-review/heavy-rain-real-full.mp3",
+      "production_path": "audio/heavy-rain-real.mp3",
+      "sha256": "370e977c3ee40457e8d1a85da2a0b6ca61f3fda5f5f94bcd663fe420827cf127",
+      "git_blob_sha": "cb9770e733469a352445ab5d07c1b96fca180d28",
+      "bytes": 4556007
+    },
+    {
+      "review_path": "signature/field-review/ocean-waves-real-full.mp3",
+      "production_path": "audio/ocean-waves-real.mp3",
+      "sha256": "7d784a40ca1f6f081cdd14155b224d26cfff539069d2a9e1b1b487aac012ff8d",
+      "git_blob_sha": "e7dbf2ad9a5f6812c5b7c9d8259d9ac8ef5d75fb",
+      "bytes": 2157339
+    },
+    {
+      "review_path": "signature/field-review/waterfall-real-full.mp3",
+      "production_path": "audio/waterfall-real.mp3",
+      "sha256": "656dc956ec218f51a115f713d2121755849739a9907d86dea8b05ccb272adac8",
+      "git_blob_sha": "cc46e6a78d063c55fd7c0457c14b1db26d0ddcd0",
+      "bytes": 9012914
+    }
+  ]
+}
