@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "revision": "2026-11-09-wave2-owner-approved",
+  "revision": "2026-11-09-wave3-owner-approved",
   "existing_source_of_truth": "catalog/library.json + audio manifests (not duplicated here)",
   "disclosure": "All NEW-xx IDs are project planning IDs. NEW-01, NEW-02, NEW-06 have been promoted to owner-approved audio production as separate IDs and NOINDEX detail pages; remaining 67 are nonplayable concepts. Original lossy CC0 preview provenance must be disclosed, not labeled as lossless.",
   "planned": [
@@ -107,15 +107,23 @@
       "title": "Rain on Leaves",
       "requested_source_type": "Field recording",
       "intent": "Relaxation",
-      "readiness": "planned",
-      "playable": false,
-      "production_id": null,
-      "audio_path": null,
-      "license": null,
-      "independent_seconds": null,
-      "qa": null,
-      "owner_listening_approval": null,
-      "seo_page": null
+      "readiness": "released_audio_seo_pending",
+      "playable": true,
+      "production_id": "rain-leaves-real",
+      "audio_path": "/audio/rain-leaves-real.mp3",
+      "license": "CC0-1.0",
+      "independent_seconds": 605,
+      "qa": {
+        "technical_status": "PASS",
+        "master_sha256": "2bfc87d4c13dfbab09d658f8c120c95ce04c0f7c2a11dc2d442cbc05f3284b0f",
+        "source_type": "CC0-1.0",
+        "lossy_preview": true,
+        "hls": "7DAY_STATIC_VOD"
+      },
+      "owner_listening_approval": "APPROVED_BY_OWNER_2026-11-09",
+      "seo_page": "/sounds/rain-on-leaves/",
+      "seo_status": "noindex,follow",
+      "source_page": "https://freesound.org/people/Garuda1982/sounds/757276/"
     },
     {
       "plan_id": "NEW-06",
@@ -529,15 +537,23 @@
       "title": "Rain on Lake",
       "requested_source_type": "Field recording",
       "intent": "Relaxation",
-      "readiness": "planned",
-      "playable": false,
-      "production_id": null,
-      "audio_path": null,
-      "license": null,
-      "independent_seconds": null,
-      "qa": null,
-      "owner_listening_approval": null,
-      "seo_page": null
+      "readiness": "released_audio_seo_pending",
+      "playable": true,
+      "production_id": "rain-lake-real",
+      "audio_path": "/audio/rain-lake-real.mp3",
+      "license": "CC0-1.0",
+      "independent_seconds": 343,
+      "qa": {
+        "technical_status": "PASS",
+        "master_sha256": "62fee5a2a974d222ef19a9e0cb43f223ce8e1c1f2c8f53fb190f36682c6c9e55",
+        "source_type": "CC0-1.0",
+        "lossy_preview": true,
+        "hls": "7DAY_STATIC_VOD"
+      },
+      "owner_listening_approval": "APPROVED_BY_OWNER_2026-11-09",
+      "seo_page": "/sounds/rain-on-lake/",
+      "seo_status": "noindex,follow",
+      "source_page": "https://freesound.org/people/TRP/sounds/572429/"
     },
     {
       "plan_id": "NEW-30",
