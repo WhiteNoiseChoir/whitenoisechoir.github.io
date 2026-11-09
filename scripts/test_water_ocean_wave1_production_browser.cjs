@@ -23,11 +23,11 @@ const assert=require("node:assert/strict"),fs=require("node:fs"),{chromium}=requ
    }
   }
   await page.goto("http://127.0.0.1:8787/sounds/",{waitUntil:"domcontentloaded"});
-  await page.waitForFunction(()=>document.querySelectorAll('#wnc-catalog-grid [data-wnc-existing-id]').length===33,{timeout:20000});
+  await page.waitForFunction(()=>document.querySelectorAll('#wnc-catalog-grid [data-wnc-existing-id]').length===35,{timeout:20000});
   for(const [slug,id] of tracks)assert.equal(await page.locator('[data-wnc-existing-id="'+id+'"]').count(),1,"Catalog excludes "+id);
   await page.goto("http://127.0.0.1:8787/sounds/water/",{waitUntil:"domcontentloaded"});
   for(const [slug] of tracks)assert.equal(await page.locator('a[href="/sounds/'+slug+'/"]').count(),1);
   assert.deepEqual(errors,[],"Browser JS errors");
-  console.log("WATER_OCEAN_WAVE1_BROWSER_QA_PASS 33 catalog source cards, 3 noindex player pages, native HLS/MP3, no autoplay and 320/390 responsive");
+  console.log("WATER_OCEAN_WAVE1_BROWSER_QA_PASS 35 catalog source cards, 3 noindex player pages, native HLS/MP3, no autoplay and 320/390 responsive");
  }finally{await browser.close()}
 })().catch(e=>{console.error(e);process.exit(1)});

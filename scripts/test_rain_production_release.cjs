@@ -6,14 +6,14 @@ const catalog=json("catalog/library.json"),plans=json("catalog/planned-sounds.js
 const hls=json("audio/continuous/manifest.json"),old=json("audio/original-22-hls-lock.json");
 const sha=p=>crypto.createHash("sha256").update(fs.readFileSync(p)).digest("hex");
 const added=["light-rain-real","rain-tin-roof-real","distant-thunder-real"];
-assert.equal(catalog.sounds.length,33);
+assert.equal(catalog.sounds.length,35);
 assert.equal(plans.length,70);
-assert.equal(plans.filter(x=>x.playable).length,11);
-assert.equal(plans.filter(x=>!x.playable).length,59);
+assert.equal(plans.filter(x=>x.playable).length,13);
+assert.equal(plans.filter(x=>!x.playable).length,57);
 assert.equal(families.length,13);
 assert.deepEqual(families.find(x=>x.id==="rain").existing_ids.slice(2,5),added);
-assert.equal(hls.records.length,33);
-assert.equal(hls.applies_to.length,33);
+assert.equal(hls.records.length,35);
+assert.equal(hls.applies_to.length,35);
 assert.equal(old.records.length,22);
 assert.equal(provenance.status,"OWNER_APPROVED_FOR_AUDIO");
 assert.equal(provenance.tracks.length,3);
@@ -69,10 +69,10 @@ for(const entry of provenance.tracks){
 }
 assert.equal((read("sitemap.xml").match(/<loc>/g)||[]).length,18);
 for(const slug of ["light-rain","rain-on-tin-roof","distant-thunder"])assert.ok(read("sounds/rain/index.html").includes('href="/sounds/'+slug+'/"'));
-assert.equal((read("sounds/index.html").match(/data-wnc-existing-id="/g)||[]).length,33);
-assert.ok(read("index.html").includes("13 families · 33 catalog sources"));
+assert.equal((read("sounds/index.html").match(/data-wnc-existing-id="/g)||[]).length,35);
+assert.ok(read("index.html").includes("13 families · 35 catalog sources"));
 assert.equal(JSON.parse(read("index.html").split("var recipes=")[1].split("];")[0]+"]").length,45);
 for(const r of added)assert.ok(read("index.html").includes('["'+r+'",'),"homepage row missing "+r);
 assert.ok(read("sources.html").includes("The nine recordings"));
 assert.ok(!read("audio/rain-first-wave-provenance.json").includes("lossless_WAV_source"));
-console.log("RAIN_PRODUCTION_QA_PASS "+JSON.stringify({newSounds:added.length,existingProtected:22,hls:33,soundPages:33,indexableSoundPages:10,sitemap:18,presets:45,unreleasedPlanned:59,approval:"OWNER_2026_11_08"}));
+console.log("RAIN_PRODUCTION_QA_PASS "+JSON.stringify({newSounds:added.length,existingProtected:22,hls:35,soundPages:35,indexableSoundPages:10,sitemap:18,presets:45,unreleasedPlanned:57,approval:"OWNER_2026_11_08"}));

@@ -447,15 +447,13 @@
         "Rolling Thunder"
       ],
       "required_ids": [
-        "NEW-13",
+        "crashing-ocean-real",
         "rolling-thunder-real"
       ],
       "readiness": "proposal_only",
       "playable": false,
       "seo_url": null,
-      "missing_sources": [
-        "NEW-13"
-      ],
+      "missing_sources": [],
       "collision": null
     },
     {
@@ -672,15 +670,14 @@
       ],
       "required_ids": [
         "NEW-53",
-        "NEW-13",
+        "crashing-ocean-real",
         "rolling-thunder-real"
       ],
       "readiness": "proposal_only",
       "playable": false,
       "seo_url": null,
       "missing_sources": [
-        "NEW-53",
-        "NEW-13"
+        "NEW-53"
       ],
       "collision": null
     },
