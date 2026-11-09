@@ -52,9 +52,14 @@ for origin in ORIGINS:
 # Block all unknown origins from reading by JS CORS; non-browser HTTP remains public by design.
 bad=Request(BASE+"/audio/white-noise.mp3?wnc-cors-qa=20261109-negative",headers={
  "Origin":"https://example.invalid","Range":"bytes=0-2047"})
-with urlopen(bad,timeout=45) as resp:
- assert resp.headers.get("Access-Control-Allow-Origin") not in ["*","https://example.invalid"],"Unexpected public cross-origin permissions"
- assert resp.status==206
+try:
+ with urlopen(bad,timeout=45) as resp:
+  assert resp.headers.get("Access-Control-Allow-Origin") not in ["*","https://example.invalid"],"Unexpected public cross-origin permissions"
+  assert resp.status==206
+except HTTPError as error:
+ assert error.code in (403,404),"Unexpected deny response for foreign origin: "+str(error.code)
+ assert error.headers.get("Access-Control-Allow-Origin") not in ["*","https://example.invalid"],"Foreign origin was allowed"
+ print("R2_FOREIGN_ORIGIN_DENIED",json.dumps({"http":error.code}),flush=True)
 print("R2_CORS_TRANSPORT_PASS",json.dumps({
  "requests":total,"origins":list(ORIGINS),
  "sampled_objects":len(FILES),"range":"0-2047",
