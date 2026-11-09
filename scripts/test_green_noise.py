@@ -9,8 +9,16 @@ playlist=root/"continuous"/"green-noise"/"continuous.m3u8"
 allm=json.loads((root/"continuous"/"manifest.json").read_text())
 assert m["id"]=="green-noise" and m["qa"]["technical_status"]=="PASS"
 assert hashlib.sha256(p.read_bytes()).hexdigest()==m["file_sha256"]
-assert len(allm["records"])==22 and len(allm["applies_to"])==22
-assert len({x["id"] for x in allm["records"]})==22
+# The 22 original HLS streams have since expanded to 35 approved streams.
+# Validate every original locked master/playlist SHA, not a stale count of 22.
+old22=json.loads((root/"original-22-hls-lock.json").read_text())
+assert len(allm["records"])==35 and len(allm["applies_to"])==35
+assert len({x["id"] for x in allm["records"]})==35
+assert len(old22["records"])==22
+for old in old22["records"]:
+ current=next(x for x in allm["records"] if x["id"]==old["id"])
+ assert current["master_sha256"]==old["master_sha256"]
+ assert current["playlist_sha256"]==old["playlist_sha256"]
 rec=next(x for x in allm["records"] if x["id"]=="green-noise")
 assert hashlib.sha256(playlist.read_bytes()).hexdigest()==rec["playlist_sha256"]
 assert rec["repeated_cycles"]>=1000 and rec["native_stream_duration_hours"]>=168
@@ -29,4 +37,4 @@ assert len(x)>24*8000
 def db(segment):return 20*math.log10(max(1e-12,float(np.sqrt(np.mean(np.square(segment,dtype=np.float64))))))
 a,b=db(x[2*8000:8*8000]),db(x[12*8000:18*8000])
 assert abs(a-b)<4,(a,b)
-print("PASS: Green Noise source MP3 SHA-256, 22-stream manifest, native HLS 7-day timeline, 10-minute transition",flush=True)
+print("PASS: Green Noise source MP3 SHA-256, 35-stream manifest and 22 original SHA locks, native HLS 7-day timeline, 10-minute transition",flush=True)
