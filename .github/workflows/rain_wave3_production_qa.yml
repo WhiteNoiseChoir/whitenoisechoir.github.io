@@ -16,6 +16,8 @@ jobs:
     timeout-minutes: 40
     steps:
       - uses: actions/checkout@v4
+      - name: Restore retired 27 HLS sources into ephemeral CI, verify full Git blob SHA identities
+        run: python3 scripts/rehydrate_r2_hls_ci.py
       - name: Ensure FFmpeg and ffprobe are available for audio decoder QA
         run: |
           if ! command -v ffmpeg >/dev/null || ! command -v ffprobe >/dev/null; then
