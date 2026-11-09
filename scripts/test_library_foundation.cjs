@@ -29,7 +29,7 @@ assert.equal(new Set(proposals.map(x=>x.id)).size,34,"unique mix proposals");
 const available=new Set(sounds.map(x=>x.id)),planId=new Set(planned.map(x=>x.plan_id)),all=new Set([...available,...planId]);
 assert.equal(all.size,92,"Planned and current IDs do not overlap");
 const grouped=families.flatMap(x=>x.existing_ids);
-assert.equal(grouped.length,33,"All 33 current source IDs" assigned exactly once to a primary family");
+assert.equal(grouped.length,33,"All 33 current source IDs assigned exactly once to a primary family");
 assert.equal(new Set(grouped).size,33,"no primary source assigned to multiple families");
 assert.ok(grouped.every(x=>available.has(x)),"all family audio IDs exist in live catalog");
 assert.ok(families.find(f=>f.id==="ocean")?.route==="/sounds/#ocean-waves","Ocean virtual family must not replace /sounds/ocean-waves/ sound page");
