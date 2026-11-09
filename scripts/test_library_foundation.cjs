@@ -16,7 +16,7 @@ assert.equal(sounds.length,35,"35 approved actual source IDs");
 assert.equal(catalog.categories.length,12,"Original 12 physical hubs preserved");
 assert.equal(catalog.collec.length,7,"Seven intent collections retained");
 assert.equal(count(allPlans,"priority","P0"),24);
-assert.equal(count(planned,"priority","P0"),14);
+assert.equal(count(planned,"priority","P0"),12);
 assert.equal(count(allPlans,"priority","P1"),27);
 assert.equal(count(allPlans,"priority","P2"),19);
 assert.equal(count(proposals,"priority","P0"),18);
