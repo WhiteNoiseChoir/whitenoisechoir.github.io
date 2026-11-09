@@ -10,9 +10,9 @@ const catalog=json("catalog/library.json"),fams=json("catalog/family-registry.js
 const newIDs=["rushing-river-real","forest-stream-real","gentle-ocean-real"],slugs=["rushing-river","forest-stream","gentle-ocean-waves"],origPlans=["NEW-08","NEW-09","NEW-12"];
 assert.equal(prov.status,"OWNER_APPROVED_FOR_AUDIO");assert.equal(review.status,"REVIEW_ONLY_PENDING_OWNER");
 assert.equal(prov.tracks.length,3);assert.equal(review.tracks.length,3);
-assert.equal(catalog.sounds.length,33);assert.equal(new Set(catalog.sounds.map(x=>x.id)).size,33);
-assert.equal(hls.records.length,33);assert.equal(hls.applies_to.length,33);assert.equal(new Set(hls.applies_to).size,33);
-assert.equal(fams.length,13);assert.equal(plans.length,70);assert.equal(plans.filter(x=>x.playable).length,11);assert.equal(plans.filter(x=>!x.playable).length,59);
+assert.equal(catalog.sounds.length,35);assert.equal(new Set(catalog.sounds.map(x=>x.id)).size,35);
+assert.equal(hls.records.length,35);assert.equal(hls.applies_to.length,35);assert.equal(new Set(hls.applies_to).size,35);
+assert.equal(fams.length,13);assert.equal(plans.length,70);assert.equal(plans.filter(x=>x.playable).length,13);assert.equal(plans.filter(x=>!x.playable).length,57);
 assert.equal(lock.records.length,30);assert.equal(new Set(lock.records.map(x=>x.id)).size,30);
 const oldIDs=new Set(lock.records.map(x=>x.id)),liveIDs=new Set(hls.records.map(x=>x.id));
 for(const pinned of lock.records){
@@ -61,11 +61,11 @@ for(let i=0;i<3;i++){
  assert.ok(probe.streams.some(z=>z.codec_name==="mp3"&&z.channels===2&&Number(z.sample_rate)===44100));
  console.log("WATER_OCEAN_WAVE1_PRODUCTION_TRACK_PASS "+JSON.stringify({id,sha256:row.master_sha256,hls_hours:h.native_stream_duration_hours,independent_seconds:605}));
 }
-assert.deepEqual(fams.find(f=>f.id==="water").existing_ids.slice(-2),newIDs.slice(0,2));
-assert.equal(fams.find(f=>f.id==="ocean").existing_ids.slice(-1)[0],newIDs[2]);
+assert.deepEqual(fams.find(f=>f.id==="water").existing_ids.slice(-3,-1),newIDs.slice(0,2));
+assert.equal(fams.find(f=>f.id==="ocean").existing_ids.slice(-2,-1)[0],newIDs[2]);
 assert.equal(fams.find(f=>f.id==="ocean").route,"/sounds/#ocean-waves");
-assert.equal((read("sounds/index.html").match(/data-wnc-existing-id="/g)||[]).length,33);
-assert.ok(read("index.html").includes("13 families · 33 catalog sources"));
+assert.equal((read("sounds/index.html").match(/data-wnc-existing-id="/g)||[]).length,35);
+assert.ok(read("index.html").includes("13 families · 35 catalog sources"));
 assert.equal(JSON.parse(read("index.html").split("var recipes=")[1].split("];")[0]+"]").length,45);
 assert.equal((read("sitemap.xml").match(/<loc>/g)||[]).length,18);
 console.log("WATER_OCEAN_WAVE1_PRODUCTION_QA_PASS original30 protected, 3 owner-approved exact MP3, 33 HLS with static 7day, 45 original presets, Ocean URL preserved and 18 sitemap URLs unchanged.");

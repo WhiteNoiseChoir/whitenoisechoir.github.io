@@ -6,8 +6,8 @@ const dir="signature/water-ocean-wave2-review",m=j(dir+"/manifest.json"),html=re
 const catalog=j("catalog/library.json"),hls=j("audio/continuous/manifest.json"),plans=j("catalog/planned-sounds.json").planned;
 const rows=[["NEW-10","bodetal-brook-review","Borgory",651194],["NEW-13","wakanui-surf-review","Desmond178",721591]];
 assert.equal(m.status,"REVIEW_ONLY_PENDING_OWNER");assert.equal(m.tracks.length,2);
-assert.equal(catalog.sounds.length,33);assert.equal(hls.records.length,33);assert.equal(hls.applies_to.length,33);
-assert.equal(plans.filter(x=>!x.playable).length,59);assert.equal(plans.filter(x=>x.playable).length,11);
+assert.equal(catalog.sounds.length,35);assert.equal(hls.records.length,35);assert.equal(hls.applies_to.length,35);
+assert.equal(plans.filter(x=>!x.playable).length,57);assert.equal(plans.filter(x=>x.playable).length,13);
 assert.equal(JSON.parse(read("index.html").split("var recipes=")[1].split("];")[0]+"]").length,45);
 assert.equal((read("sitemap.xml").match(/<loc>/g)||[]).length,18);
 assert.ok(html.includes('name="robots" content="noindex,nofollow"'));
@@ -25,7 +25,7 @@ for(let i=0;i<rows.length;i++){
  assert.equal(x.independent_source_seconds,605);assert.equal(x.repetitions_approx,0);
  assert.ok(fs.existsSync(target)&&fs.statSync(target).size>13_000_000);
  assert.equal(sha(target),x.master_sha256);assert.ok(x.peak_dbfs<=-5.5);
- assert.equal(p.readiness,"planned");assert.equal(p.playable,false);assert.equal(p.production_id,null);
+ assert.equal(p.readiness,"released_audio_seo_pending");assert.equal(p.playable,true);assert.equal(p.production_id,["bodetal-brook-real","crashing-ocean-real"][i]);assert.equal(p.owner_listening_approval,"APPROVED_BY_OWNER_2026-11-09");
  assert.ok(html.includes('data-track="'+id+'"'));
  const info=JSON.parse(cp.execFileSync("ffprobe",["-v","error","-show_entries","format=duration:stream=codec_name,channels,sample_rate","-of","json",target],{encoding:"utf8"}));
  assert.ok(Math.abs(Number(info.format.duration)-600)<=1);

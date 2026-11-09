@@ -14,7 +14,7 @@ assert.ok(page.includes("Tua đến 9:55"),"quick endpoint audition");
 assert.ok(page.includes('id="copy"'),"owner can copy verdicts");
 assert.ok(!sitemap.includes("rain-review"),"no review page in sitemap");
 assert.ok(!home.includes("rain-review"),"no player ingestion");
-assert.equal(catalog.sounds.length,33,"22 deployed sources unchanged");
+assert.equal(catalog.sounds.length,35,"22 deployed sources unchanged");
 assert.ok(!catalog.sounds.some(x=>ids.includes(x.id)),"no audition IDs in catalog");
 assert.equal(planned.length,70,"planned registry untouched");
 for(const id of ids)assert.ok(page.includes('data-select="'+id+'"'),"review page has "+id);

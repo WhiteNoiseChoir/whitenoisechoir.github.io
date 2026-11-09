@@ -3,15 +3,15 @@
 const fs=require("node:fs"),vm=require("node:vm"),assert=require("node:assert/strict");
 const file=p=>fs.readFileSync(p,"utf8");
 const catalog=JSON.parse(file("catalog/library.json")),sounds=catalog.sounds,cats=catalog.categories,collections=catalog.collec;
-assert.equal(sounds.length,33,"22 sound IDs retained");
+assert.equal(sounds.length,35,"22 sound IDs retained");
 assert.equal(cats.length,12,"12 category hubs");
 assert.equal(collections.length,7,"7 collections retained");
-assert.equal(new Set(sounds.map(s=>s.id)).size,33,"unique IDs");
-assert.equal(new Set(sounds.map(s=>s.slug)).size,33,"unique slugs");
+assert.equal(new Set(sounds.map(s=>s.id)).size,35,"unique IDs");
+assert.equal(new Set(sounds.map(s=>s.slug)).size,35,"unique slugs");
 const editoriallyIndexable=new Set(["heavy-rain-real","waterfall-real","blue-noise","violet-noise","shower-synth"]);
 const indexableSound=s=>s.status==="approved"||s.status==="arranged"||editoriallyIndexable.has(s.id);
 const pages=["index.html","sounds/index.html","collections/index.html",...cats.map(c=>"sounds/"+c.slug+"/index.html"),...sounds.map(s=>"sounds/"+s.slug+"/index.html"),...collections.map(c=>"collections/"+c.slug+"/index.html"),"soundscapes/index.html","audio-tools/index.html"];
-assert.equal(pages.length,57,"expected homepage + 45 library pages");
+assert.equal(pages.length,59,"expected homepage + 45 library pages");
 for(const path of pages){
  const html=file(path);
  assert.match(html,/<title>.+<\/title>/,"title: "+path);
@@ -45,7 +45,7 @@ assert.match(home,/function playTracks\(ids,name\)/,"original stream engine pres
 assert.match(file("assets/persistent-router.js"),/history\.pushState/);
 assert.match(file("assets/persistent-router.js"),/new DOMParser/);
 assert.match(file("assets/persistent-router.js"),/replaceWith\(live\)/);
-const manifest=JSON.parse(file("audio/continuous/manifest.json"));assert.equal(manifest.applies_to.length,33);
+const manifest=JSON.parse(file("audio/continuous/manifest.json"));assert.equal(manifest.applies_to.length,35);
 for(const s of sounds)assert.ok(manifest.applies_to.includes(s.id),"HLS source preserved: "+s.id);
 assert.ok(file("sounds/green-noise/index.html").includes('name="robots" content="noindex,follow"'),"unreviewed Green Noise must not index");
 assert.ok(!locs.includes("/sounds/green-noise/"),"unreviewed Green Noise absent from sitemap");
