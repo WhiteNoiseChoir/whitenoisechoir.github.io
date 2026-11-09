@@ -9,12 +9,12 @@ const catalog=json("catalog/library.json"),plans=json("catalog/planned-sounds.js
 const provenance=json("audio/rain-wave2-provenance.json"),review=json("signature/rain-wave2-review/manifest.json");
 const previous=json("audio/rain-first-wave-provenance.json"),old22=json("audio/original-22-hls-lock.json");
 const ids=["rain-on-tent-real","rain-car-roof-real","rolling-thunder-real"];
-assert.equal(catalog.sounds.length,28);assert.equal(new Set(catalog.sounds.map(x=>x.id)).size,28);
-assert.equal(families.length,13);assert.equal(hls.records.length,28);assert.equal(hls.applies_to.length,28);
-assert.deepEqual(families.find(x=>x.id==="rain").existing_ids.slice(-3),ids);
+assert.equal(catalog.sounds.length,30);assert.equal(new Set(catalog.sounds.map(x=>x.id)).size,30);
+assert.equal(families.length,13);assert.equal(hls.records.length,30);assert.equal(hls.applies_to.length,30);
+assert.deepEqual(families.find(x=>x.id==="rain").existing_ids.slice(5,8),ids);
 assert.equal(provenance.status,"OWNER_APPROVED_FOR_AUDIO");assert.equal(provenance.tracks.length,3);
-assert.equal(plans.filter(x=>x.playable).length,6);
-const playlistIds=new Set(hls.records.map(x=>x.id));assert.equal(playlistIds.size,28);
+assert.equal(plans.filter(x=>x.playable).length,8);
+const playlistIds=new Set(hls.records.map(x=>x.id));assert.equal(playlistIds.size,30);
 for(const old of old22.records){
  const rec=hls.records.find(x=>x.id===old.id);assert.ok(rec,"original source lost: "+old.id);
  assert.equal(rec.master_sha256,old.master_sha256);assert.equal(rec.playlist_sha256,old.playlist_sha256);
@@ -50,8 +50,8 @@ for(let i=0;i<3;i++){
  assert.ok(!txt("sitemap.xml").includes("/sounds/"+catalogRow.slug+"/"));
 }
 assert.ok(txt("sounds/rain/index.html").includes("Rolling Thunder"));
-assert.equal((txt("sounds/index.html").match(/data-wnc-existing-id="/g)||[]).length,28);
-assert.ok(txt("index.html").includes("13 families · 28 catalog sources"));
+assert.equal((txt("sounds/index.html").match(/data-wnc-existing-id="/g)||[]).length,30);
+assert.ok(txt("index.html").includes("13 families · 30 catalog sources"));
 const recipes=JSON.parse(txt("index.html").split("var recipes=")[1].split("];")[0]+"]");
 assert.equal(recipes.length,45);
 assert.equal((txt("sitemap.xml").match(/<loc>/g)||[]).length,18);

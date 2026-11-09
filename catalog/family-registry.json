@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "revision": "2026-11-09-wave2-owner-approved",
+  "revision": "2026-11-09-wave3-owner-approved",
   "source": "User supplied 2026-11-08 full sound library blueprint, reconciled to live production commit 7c52701",
   "count_policy": {
     "existing": 25,
@@ -60,15 +60,15 @@
         "distant-thunder-real",
         "rain-on-tent-real",
         "rain-car-roof-real",
-        "rolling-thunder-real"
+        "rolling-thunder-real",
+        "rain-leaves-real",
+        "rain-lake-real"
       ],
       "planned_ids": [
-        "NEW-05",
         "NEW-25",
         "NEW-26",
         "NEW-27",
         "NEW-28",
-        "NEW-29",
         "NEW-30"
       ],
       "seo_policy": "Preserve existing route, canonical and robots state; do not index based on plans"

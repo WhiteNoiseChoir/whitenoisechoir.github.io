@@ -1,6 +1,6 @@
 {
-  "version": "2026-11-09-catalog-v5-rain-wave2-owner-approved",
-  "editorial_note": "28 playable sources: previous 25 preserved; three owner-approved Rain Wave 2 CC0 preview-derived masters added byte-identically. Rain & Thunder is the SEO hub; three new standalone audio pages are noindex,follow. Preserve all 45 live presets and the persistent player. Public HQ MP3 previews are lossy, not source WAVs; duration and repetition disclosed.",
+  "version": "2026-11-09-catalog-v6-rain-wave3-approved",
+  "editorial_note": "30 playable sources and 45 original presets. Wave 3 owner-approved rain on leaves (605s independent) and rain on lake (343s independent, repeats within 600s). Exact listening-review MP3s promoted byte-identically. Original CC0 HQ previews are lossy MP3, not WAV/FLAC originals. Rain & Thunder remains primary indexable hub; two new sound pages noindex,follow.",
   "categories": [
     {
       "slug": "noise-colors",
@@ -361,6 +361,22 @@
       "status": "listening-approved",
       "desc": "Rolling thunder, wind and heavy rain from a real Baltic Sea storm. The 10-minute master uses approximately 605 seconds from a longer field recording; the 10-minute cycle repeats during continuous listening.",
       "slug": "rolling-thunder"
+    },
+    {
+      "id": "rain-leaves-real",
+      "title": "Rain on Leaves",
+      "cat": "rain",
+      "status": "listening-approved",
+      "desc": "A real stereo field recording of gentle rain landing on foliage with soft wind and suburban ambience in Leipzig, Germany. The selected source contains approximately 605 seconds of independent recorded sound and plays as a ten-minute approved master.",
+      "slug": "rain-on-leaves"
+    },
+    {
+      "id": "rain-lake-real",
+      "title": "Rain on Lake",
+      "cat": "rain",
+      "status": "listening-approved",
+      "desc": "A natural stereo recording of rain hitting the surface of a small Ontario lake. The approved ten-minute master is assembled from roughly 343 seconds of independently recorded sound and repeats the source approximately twice.",
+      "slug": "rain-on-lake"
     }
   ],
   "collec": [

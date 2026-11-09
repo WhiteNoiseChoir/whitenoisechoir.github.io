@@ -5,8 +5,8 @@ const read=p=>fs.readFileSync(p,"utf8"),json=p=>JSON.parse(read(p)),sha=p=>crypt
 const root="signature/rain-wave3-review",m=json(root+"/manifest.json"),html=read(root+"/index.html");
 const sound=json("catalog/library.json"),hls=json("audio/continuous/manifest.json"),plans=json("catalog/planned-sounds.json").planned;
 const expectRows=[["NEW-05","rain-leaves-review","Garuda1982",757276],["NEW-29","rain-lake-review","TRP",572429]];
-assert.equal(m.status,"REVIEW_ONLY_PENDING_OWNER");assert.equal(m.tracks.length,2);assert.equal(sound.sounds.length,28);
-assert.equal(hls.records.length,28);assert.equal(hls.applies_to.length,28);
+assert.equal(m.status,"REVIEW_ONLY_PENDING_OWNER");assert.equal(m.tracks.length,2);assert.equal(sound.sounds.length,30);
+assert.equal(hls.records.length,30);assert.equal(hls.applies_to.length,30);
 const recipes=JSON.parse(read("index.html").split("var recipes=")[1].split("];")[0]+"]");assert.equal(recipes.length,45);
 assert.equal((read("sitemap.xml").match(/<loc>/g)||[]).length,18);
 assert.ok(html.includes('name="robots" content="noindex,nofollow"'));assert.ok(html.includes("Tua tới 9:55"));assert.ok(html.includes('id="copy"'));
@@ -26,7 +26,7 @@ for(let i=0;i<2;i++){
  assert.ok(!names.has(id));assert.ok(!hls.applies_to.includes(id));
  assert.ok(html.includes('data-track="'+id+'"'));
  const entry=plans.find(p=>p.plan_id===plan);
- assert.equal(entry.readiness,"planned");assert.equal(entry.playable,false);assert.equal(entry.production_id,null);
+ assert.equal(entry.readiness,"released_audio_seo_pending");assert.equal(entry.playable,true);assert.equal(entry.production_id,["rain-leaves-real","rain-lake-real"][i]);assert.equal(entry.owner_listening_approval,"APPROVED_BY_OWNER_2026-11-09");
  const probe=JSON.parse(cp.execFileSync("ffprobe",["-v","error","-show_entries","format=duration:stream=codec_name,channels,sample_rate","-of","json",path],{encoding:"utf8"}));
  assert.ok(Math.abs(Number(probe.format.duration)-600)<1);
  assert.ok(probe.streams.some(x=>x.codec_name==="mp3"&&x.channels===2&&Number(x.sample_rate)===44100));

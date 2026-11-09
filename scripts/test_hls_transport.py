@@ -21,8 +21,9 @@ LONG={
 NEW_RAIN={"light-rain-real","rain-tin-roof-real","distant-thunder-real"}
 SHORT={"box-fan-real","heavy-rain-real","ocean-waves-real","waterfall-real"}
 WAVE2={"rain-on-tent-real","rain-car-roof-real","rolling-thunder-real"}
-EXPECTED=LONG | SHORT | NEW_RAIN | WAVE2
-assert len(LONG)==18 and len(SHORT)==4 and len(EXPECTED)==28
+WAVE3={"rain-leaves-real","rain-lake-real"}
+EXPECTED=LONG | SHORT | NEW_RAIN | WAVE2 | WAVE3
+assert len(LONG)==18 and len(SHORT)==4 and len(EXPECTED)==30
 
 
 def rms(values):
@@ -62,7 +63,7 @@ def check(ident):
     after=samples[12*SR:18*SR]
     before_level=decibels(rms(before))
     after_level=decibels(rms(after))
-    if abs(before_level-after_level)>(14 if ident in (NEW_RAIN | WAVE2) else 10 if ident in SHORT else 6):
+    if abs(before_level-after_level)>(14 if ident in (NEW_RAIN | WAVE2 | WAVE3) else 10 if ident in SHORT else 6):
         raise RuntimeError(f"Unexpected loudness change across loop in {ident}: {before_level:.1f} to {after_level:.1f}dBFS")
     # Reject prolonged dead air at the splice (around 600 seconds).
     frame=SR//4
@@ -86,7 +87,7 @@ def main():
     results=[check(name) for name in sorted(EXPECTED)]
     for row in results:
         print("HLS_BOUNDARY_QA",json.dumps(row),flush=True)
-    print("PASS: all 28 HLS streams decode continuously across each source cycle.",flush=True)
+    print("PASS: all 30 HLS streams decode continuously across each source cycle.",flush=True)
 
 
 if __name__=="__main__":

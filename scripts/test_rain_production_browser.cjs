@@ -27,7 +27,7 @@ try{
   assert.equal(await page.evaluate(()=>window.WNCBridge.snapshot().timer),"900");
  }
  await page.goto(BASE+"/sounds/",{waitUntil:"domcontentloaded"});
- await page.waitForFunction(()=>document.querySelectorAll('#wnc-catalog-grid [data-wnc-existing-id]').length===28,null,{timeout:25000});
+ await page.waitForFunction(()=>document.querySelectorAll('#wnc-catalog-grid [data-wnc-existing-id]').length===30,null,{timeout:25000});
  await page.locator('#wnc-library-search').fill("tin roof");
  assert.equal(await page.locator('#wnc-catalog-grid .wnc-sound-card:visible').count(),1);
  assert.equal(errors.length,0,"Browser errors: "+errors.join(" | "));

@@ -1,6 +1,6 @@
 {
-  "version": "continuous-hls-v6-rain-wave2-approved-20261109",
-  "playlist_type": "static multi-cycle HLS VOD, seven days per track, 28 sound IDs",
+  "version": "continuous-hls-v7-rain-wave3-approved-20261109",
+  "playlist_type": "static multi-cycle HLS VOD, seven days per track, 30 sound IDs",
   "applies_to": [
     "air-conditioner-synth",
     "blue-noise",
@@ -19,6 +19,8 @@
     "ocean-waves-real",
     "pink-noise",
     "rain-car-roof-real",
+    "rain-lake-real",
+    "rain-leaves-real",
     "rain-on-tent-real",
     "rain-on-window-real",
     "rain-tin-roof-real",
@@ -35,7 +37,7 @@
   "browser_policy": "Use HLS if the audio element advertises native application/vnd.apple.mpegurl support; otherwise use the original looping MP3.",
   "not_an_infinite_stream": "A static GitHub Pages site cannot issue an unbounded server-generated HLS stream. The element also has loop=true at the playlist end.",
   "manual_fast_test_file": "audio/continuous/quick/continuous.m3u8",
-  "source_length_disclosure": "24 ten-minute MP3 masters (including 6 preview-derived CC0 rain and thunder masters) and 4 shorter CC0 field sources. All true source durations and lossy MP3 preview limitations are documented.",
+  "source_length_disclosure": "26 ten-minute MP3 masters (including 8 preview-derived CC0 rain and thunder masters) and 4 shorter CC0 field sources. All true source durations and lossy MP3 preview limitations are documented.",
   "records": [
     {
       "id": "white-noise",
@@ -646,6 +648,54 @@
       "independent_source_duration_seconds": 605,
       "repetitions_of_original_events": 0,
       "review_sha256": "80aa0f4ff2366c271c192dbe88b7d9df84edb8a0adce44dc18f96bec77d81eca"
+    },
+    {
+      "id": "rain-leaves-real",
+      "master_file": "audio/rain-leaves-real.mp3",
+      "master_sha256": "2bfc87d4c13dfbab09d658f8c120c95ce04c0f7c2a11dc2d442cbc05f3284b0f",
+      "playlist_file": "audio/continuous/rain-leaves-real/continuous.m3u8",
+      "playlist_sha256": "1d03b563d4b147b6350a7deb10e0814a46d2baaf5612af1abb7d80464eee66fe",
+      "segment_count_per_source_cycle": 10,
+      "source_cycle_seconds": 600.025,
+      "original_source_length_category": "10_MINUTE_MASTER_FROM_CC0_PREVIEW",
+      "source_license": "CC0-1.0",
+      "source_page": "https://freesound.org/people/Garuda1982/sounds/757276/",
+      "editorial_status": "OWNER_APPROVED_FOR_AUDIO_SEO_PENDING",
+      "repeated_cycles": 1008,
+      "native_stream_duration_hours": 168.01,
+      "audio_codec": "AAC-LC in MPEG-TS",
+      "sample_rate": 44100,
+      "channels": 2,
+      "bitrate_kbps": 192,
+      "long_form_listening_status": "OWNER_APPROVED_10MIN_MP3_LOCKSCREEN_HLS_QA_PENDING",
+      "notes": "Owner approved 600s field-source-derived audition master. Preview is lossy and source WAV not downloaded. 7day static playlist repeats this 600s cycle; iPhone lock screen needs device QA.",
+      "independent_source_duration_seconds": 605,
+      "repetitions_of_original_events": 0,
+      "review_sha256": "2bfc87d4c13dfbab09d658f8c120c95ce04c0f7c2a11dc2d442cbc05f3284b0f"
+    },
+    {
+      "id": "rain-lake-real",
+      "master_file": "audio/rain-lake-real.mp3",
+      "master_sha256": "62fee5a2a974d222ef19a9e0cb43f223ce8e1c1f2c8f53fb190f36682c6c9e55",
+      "playlist_file": "audio/continuous/rain-lake-real/continuous.m3u8",
+      "playlist_sha256": "1d03b563d4b147b6350a7deb10e0814a46d2baaf5612af1abb7d80464eee66fe",
+      "segment_count_per_source_cycle": 10,
+      "source_cycle_seconds": 600.025,
+      "original_source_length_category": "10_MINUTE_MASTER_FROM_CC0_PREVIEW",
+      "source_license": "CC0-1.0",
+      "source_page": "https://freesound.org/people/TRP/sounds/572429/",
+      "editorial_status": "OWNER_APPROVED_FOR_AUDIO_SEO_PENDING",
+      "repeated_cycles": 1008,
+      "native_stream_duration_hours": 168.01,
+      "audio_codec": "AAC-LC in MPEG-TS",
+      "sample_rate": 44100,
+      "channels": 2,
+      "bitrate_kbps": 192,
+      "long_form_listening_status": "OWNER_APPROVED_10MIN_MP3_LOCKSCREEN_HLS_QA_PENDING",
+      "notes": "Owner approved 600s field-source-derived audition master. Preview is lossy and source WAV not downloaded. 7day static playlist repeats this 600s cycle; iPhone lock screen needs device QA.",
+      "independent_source_duration_seconds": 343,
+      "repetitions_of_original_events": 2,
+      "review_sha256": "62fee5a2a974d222ef19a9e0cb43f223ce8e1c1f2c8f53fb190f36682c6c9e55"
     }
   ]
 }
