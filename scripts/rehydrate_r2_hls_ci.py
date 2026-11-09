@@ -73,15 +73,18 @@ def fetch(entry):
  raise AssertionError("download retry exhaustion "+path)
 
 def main():
- data=LEDGER["files"]
+ only={x.strip() for x in os.environ.get("WNC_REHYDRATE_IDS","").split(",") if x.strip()}
+ assert not only or only.issubset(GROUPS),"Unexpected source IDs in hydration scope"
+ data=[x for x in LEDGER["files"] if not only or x["path"].split("/")[2] in only]
+ expected_bytes=sum(x["size"] for x in data)
  with ThreadPoolExecutor(max_workers=6) as pool:
   results=list(pool.map(fetch,data))
- assert len(results)==360
- assert sum(x[1] for x in results)==514374326
+ assert len(results)==len(data)
+ assert sum(x[1] for x in results)==expected_bytes
  d={"total":len(results),"preserved":sum(x[0]=="preserved" for x in results),
     "rehydrated":sum(x[0]=="rehydrated" for x in results),
     "total_bytes":sum(x[1] for x in results),
-    "source_count":len(GROUPS),
+    "source_count":len(only) if only else len(GROUPS),
     "temporary_ci_only":True}
  print("R2_HLS_CI_REHYDRATION_SHA_PASS",json.dumps(d,sort_keys=True),flush=True)
 if __name__=="__main__":main()
