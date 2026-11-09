@@ -25,6 +25,9 @@ jobs:
     timeout-minutes: 18
     steps:
       - uses: actions/checkout@v4
+      - name: Hydrate only 18 approved sound HLS from R2 in temporary CI using immutable Git blob checks
+        run: |
+          WNC_REHYDRATE_IDS="$(python3 -c 'import json; print(",".join(json.load(open("catalog/batch18-20261108.json"))["sound_ids"]))')" python3 scripts/rehydrate_r2_hls_ci.py
       - name: Verify all 18 page sources, metadata, canonical and sound links
         run: |
           node scripts/test_batch18_pages.cjs
