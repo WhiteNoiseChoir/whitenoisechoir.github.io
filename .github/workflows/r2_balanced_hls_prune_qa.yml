@@ -52,7 +52,7 @@ jobs:
           node scripts/test_water_ocean_wave1_production.cjs
           node scripts/test_water_ocean_wave2_production.cjs
           node scripts/test_r2_transport_room.cjs
-      - name: Browser QA: real Chromium R2 outage; 8 GH HLS and 27 GH MP3 backup paths
+      - name: "Browser QA: real Chromium R2 outage; 8 GH HLS and 27 GH MP3 backup paths"
         run: |
           npm install --no-save --no-package-lock playwright
           node scripts/rain_review_range_test_server.cjs > /tmp/wnc-r2-prune-http.log 2>&1 &
