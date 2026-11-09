@@ -198,11 +198,17 @@ async function playTracks(ids,name){
       (id==="green-noise"?"?v=green-noise-master-v1-20261108":
       (["white-noise","pink-noise","brown-noise"].indexOf(id)!==-1?"?v=color-master-v1-20261107":
       (expandedDSP.indexOf(id)!==-1?"?v=extended-dsp-v1-20261108":"")));
+    // GitHub Pages retains native 7-day HLS ONLY for these eight essential
+    // failover sources after validated R2 balanced storage pruning.
+    var githubHLSFallbackIDs=["white-noise","pink-noise","brown-noise","rain-on-window-real",
+      "box-fan-real","heavy-rain-real","ocean-waves-real","waterfall-real"];
+    var hasGitHubHLS=githubHLSFallbackIDs.indexOf(id)!==-1;
     var approvedFieldIDs=["box-fan-real", "heavy-rain-real", "ocean-waves-real", "waterfall-real"];
     var localMP3="audio/"+id+".mp3"+(approvedFieldIDs.indexOf(id)!==-1?"?v=cc0-full-approved-20261108":versioned);
     var localHLS="audio/continuous/"+id+"/continuous.m3u8?v=continuous-hls-v4-cc0-approved-20261108";
     // One-click emergency rollback: append ?audio_origin=github to this page's URL.
-    // All approved audio remains hosted at the original GitHub Pages relative paths.
+    // All 35 approved MP3s remain on GitHub; only eight core HLS playlists
+    // remain there. Other HLS is copied/verified on R2, with GitHub MP3 backup.
     var forceGitHub=false;
     try{forceGitHub=typeof location!=="undefined"&&/(?:^|[?&])audio_origin=github(?:&|$)/.test(location.search||"")}catch(e){}
     var r2base="https://media.whitenoisechoir.com/";
@@ -217,11 +223,15 @@ async function playTracks(ids,name){
     // Other browsers use MP3 with native loop. Every R2 failure has a local
     // GitHub fallback that never needs JavaScript audio synthesis for real recordings.
     var candidates=forceGitHub?
-      (usingHLS?[{url:localHLS,kind:"hls"},{url:localMP3,kind:"mp3"}]:[{url:localMP3,kind:"mp3"}]):
-      (usingHLS?[
-        {url:r2HLS,kind:"hls"},{url:localHLS,kind:"hls"},
-        {url:r2MP3,kind:"mp3"},{url:localMP3,kind:"mp3"}
-      ]:[{url:r2MP3,kind:"mp3"},{url:localMP3,kind:"mp3"}]);
+      (usingHLS&&hasGitHubHLS?
+        [{url:localHLS,kind:"hls"},{url:localMP3,kind:"mp3"}]:
+        [{url:localMP3,kind:"mp3"}]):
+      (usingHLS?
+        (hasGitHubHLS?
+          [{url:r2HLS,kind:"hls"},{url:localHLS,kind:"hls"},
+           {url:r2MP3,kind:"mp3"},{url:localMP3,kind:"mp3"}]:
+          [{url:r2HLS,kind:"hls"},{url:r2MP3,kind:"mp3"},{url:localMP3,kind:"mp3"}]):
+        [{url:r2MP3,kind:"mp3"},{url:localMP3,kind:"mp3"}]);
     var candidateIndex=-1,switching=false,errorFallbackInProgress=false,resumeAfterTransportError=0;
     audio.loop=true;audio.preload="auto";
     // On a host outage, resume close to the previous position when the backup

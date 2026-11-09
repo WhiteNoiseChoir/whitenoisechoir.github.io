@@ -161,6 +161,14 @@ const flush=()=>new Promise(resolve=>setImmediate(resolve));
   const fallbackNativeHLS=audioInstances[audioInstances.length-1];
   assert.ok(fallbackNativeHLS.src.startsWith("audio/continuous/white-noise/continuous.m3u8"),"R2 outage should fall back to GitHub native HLS");
   assert.equal(fallbackNativeHLS.paused,false);
+  // Non-core streams were migrated to R2; no obsolete GitHub HLS should
+  // be attempted during outage. Their verified local MP3 is the fallback.
+  card("Blue Noise").children[3].onclick();
+  await flush();await flush();
+  const retiredHLS=audioInstances[audioInstances.length-1];
+  assert.ok(retiredHLS.src.startsWith("audio/blue-noise.mp3"),"Retired GH HLS fallback must skip old HLS and use pinned GitHub MP3");
+  assert.equal(retiredHLS.loop,true,"Retired HLS uses continuous native MP3 loop");
+  assert.equal(retiredHLS.paused,false,"R2 outage must not stop audio for retired HLS");
   // If both HLS transports fail and R2 is unavailable, use local MP3 with native looping.
   blockNativeHLS=true;
   card("White Noise").children[3].onclick();
@@ -184,5 +192,5 @@ const flush=()=>new Promise(resolve=>setImmediate(resolve));
   liveR2MP3.handlers.loadedmetadata();
   assert.equal(liveR2MP3.currentTime,415,"Backup MP3 should seek near the interrupted playback position");
   assert.match(get("status").textContent,/backup audio source/);
-  console.log("PASS: 35 sound IDs, 45 mixes, 35 R2 MP3/HLS paths, GitHub native HLS + MP3 fallbacks, 13 ten-minute DSP masters, timer and mixer");
+  console.log("PASS: 35 sound IDs, 45 mixes, 35 R2 MP3/HLS paths, 8 GH HLS + 35 GH MP3 fallback paths, 13 ten-minute DSP masters, timer and mixer");
 })().catch(e=>{console.error(e);process.exit(1)});
