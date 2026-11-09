@@ -1,0 +1,54 @@
+name: Water Ocean Wave2 CC0 Audio Review Builder
+on:
+  push:
+    branches: ["feature/water-ocean-wave2-review-20261109"]
+    paths:
+      - "scripts/build_water_ocean_wave2_review.py"
+      - "scripts/test_water_ocean_wave2_review.cjs"
+      - "scripts/test_water_ocean_wave2_browser.cjs"
+      - "signature/water-ocean-wave2-review/index.html"
+      - ".github/workflows/water_ocean_wave2_build.yml"
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  build-review-two:
+    if: github.ref_name == 'feature/water-ocean-wave2-review-20261109' && github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - name: Ensure FFmpeg/ffprobe
+        run: |
+          if ! command -v ffmpeg >/dev/null || ! command -v ffprobe >/dev/null; then
+            sudo apt-get update -qq
+            sudo apt-get install -y -qq ffmpeg
+          fi
+      - name: Generate two 600-second stereo CC0 review masters
+        run: |
+          python3 -m py_compile scripts/build_water_ocean_wave2_review.py
+          python3 scripts/build_water_ocean_wave2_review.py
+      - name: Audit master integrity and preservation of 33 live sources, 33 HLS, 45 mixes
+        run: |
+          node scripts/test_water_ocean_wave2_review.cjs
+          node scripts/test_player_smoke.cjs
+          node scripts/test_library_foundation.cjs
+      - name: Mobile browser, seek, no autoplay, persistence
+        run: |
+          npm install --no-save --no-package-lock playwright
+          node scripts/rain_review_range_test_server.cjs >/tmp/water-wave2-server.log 2>&1 &
+          pid=$!
+          trap 'kill $pid || true' EXIT
+          node scripts/test_water_ocean_wave2_browser.cjs
+      - name: Commit ONLY approved-to-review files after all QA PASS
+        env:
+          BRANCH: ${{ github.ref_name }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add signature/water-ocean-wave2-review/bodetal-brook-review.mp3 signature/water-ocean-wave2-review/wakanui-surf-review.mp3 signature/water-ocean-wave2-review/manifest.json
+          if git diff --cached --quiet; then echo "No new review assets"; exit 0; fi
+          git commit -m "Water Ocean Wave2: two independently sourced CC0 review masters, owner listening pending"
+          git push origin "HEAD:${BRANCH}"
