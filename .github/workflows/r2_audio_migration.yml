@@ -51,6 +51,9 @@ jobs:
           test -n "$R2_ACCESS_KEY_ID" || { echo '::error::Missing R2_ACCESS_KEY_ID'; exit 1; }
           test -n "$R2_SECRET_ACCESS_KEY" || { echo '::error::Missing R2_SECRET_ACCESS_KEY'; exit 1; }
           echo 'Both bucket-scoped R2 S3 credentials are present.'
+      - name: Rehydrate R2-only HLS for optional full historical archive re-verification
+        if: github.event_name == 'workflow_dispatch' && inputs.scope == 'full'
+        run: python3 scripts/rehydrate_r2_hls_ci.py
       - name: Install boto3 S3 connector
         run: python -m pip install --disable-pip-version-check 'boto3>=1.36,<2'
       - name: Verify approved master integrity, copy to R2, SHA-check all remote content, public HTTP Range audit
