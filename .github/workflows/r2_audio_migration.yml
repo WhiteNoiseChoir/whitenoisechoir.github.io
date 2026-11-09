@@ -1,0 +1,61 @@
+name: R2 Audio Migration - secure pilot and full SHA verification
+
+on:
+  push:
+    branches:
+      - feature/r2-audio-migration-20261109
+    paths:
+      - 'scripts/r2_migrate_audio.py'
+      - '.github/workflows/r2_audio_migration.yml'
+  workflow_dispatch:
+    inputs:
+      scope:
+        description: 'pilot: 1 sound; full: all 35 production sounds'
+        type: choice
+        required: true
+        default: pilot
+        options:
+          - pilot
+          - full
+
+permissions:
+  contents: read
+
+concurrency:
+  group: whitenoisechoir-r2-approved-audio-copy
+  cancel-in-progress: false
+
+jobs:
+  copy-and-verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+      R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+      R2_MIGRATION_SCOPE: pilot
+      AWS_EC2_METADATA_DISABLED: 'true'
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - name: Checkout the approved catalog and existing audio objects
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Install Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Confirm both R2 repository secrets are available without revealing them
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$R2_ACCESS_KEY_ID" || { echo '::error::Missing R2_ACCESS_KEY_ID'; exit 1; }
+          test -n "$R2_SECRET_ACCESS_KEY" || { echo '::error::Missing R2_SECRET_ACCESS_KEY'; exit 1; }
+          echo 'Both bucket-scoped R2 S3 credentials are present.'
+      - name: Install boto3 S3 connector
+        run: python -m pip install --disable-pip-version-check 'boto3>=1.36,<2'
+      - name: Verify approved master integrity, copy to R2, SHA-check all remote content, public HTTP Range audit
+        run: python scripts/r2_migrate_audio.py
+      - name: Confirm production remains unchanged
+        run: |
+          echo 'R2 upload-only. GitHub Pages, all 35 MP3/HLS and 45 playlists/presets were NOT modified.'
+          echo 'No owner iPhone listening QA is claimed.'
