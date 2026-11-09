@@ -1,0 +1,195 @@
+{
+  "schema_version": 1,
+  "title": "Water & Ocean Wave 3 — source-page screening (NOT audition-ready)",
+  "screened_utc_date": "2026-11-09",
+  "based_on_main_sha": "d975d801485c5bac8d54849846d5aaa62cd14643",
+  "baseline": {
+    "production_sources": 35,
+    "hls_streams": 35,
+    "presets": 45,
+    "roadmap_items": 70,
+    "remaining_planned": 57,
+    "sitemap_urls": 18
+  },
+  "status": "RESEARCH_ONLY_NO_MASTER_NO_PRODUCTION_CHANGE",
+  "screening_limitations": [
+    "Freesound page metadata and license text checked; original audio, HQ preview duration/format and checksum NOT downloaded or independently probed.",
+    "Descriptions indicate claimed locations and acoustic identities, not independent acoustic verification.",
+    "An eligible declared duration DOES NOT mean listening approval, technical PASS or permission to release."
+  ],
+  "master_gate": {
+    "minimum_independent_source_seconds": 605,
+    "target_master_seconds": 600,
+    "output_format": "44100 Hz stereo 192 kbps MP3",
+    "require_source_license": "CC0-1.0",
+    "preproduction_conditions": [
+      "verify actual media availability, duration and SHA256",
+      "audition to confirm claimed sound and no unwanted voices/noise",
+      "build 600s master without recycling a shorter recording",
+      "FFprobe, QA, loop-edge test, mobile/browser checks",
+      "publish noindex review-only page and obtain explicit owner listening approval"
+    ]
+  },
+  "items": [
+    {
+      "plan_id": "NEW-11",
+      "target_title": "Bamboo Water Fountain / shishi-odoshi",
+      "decision": "BLOCKED_IDENTITY_AND_DURATION",
+      "reason": "Authentic bamboo strike not verified from a long, suitable CC0 recording; ordinary fountains must not be rebranded as bamboo.",
+      "candidates": []
+    },
+    {
+      "plan_id": "NEW-31",
+      "target_title": "Mountain Stream",
+      "decision": "BLOCKED_NO_605S_AUTHENTIC_SOURCE",
+      "candidates": [
+        {
+          "url": "https://freesound.org/people/squashy555/sounds/331894/",
+          "creator": "squashy555",
+          "published_title": "water in stream.wav",
+          "declared_seconds": 156.192,
+          "declared_channels": "mono",
+          "declared_license": "CC0-1.0",
+          "metadata_verdict": "Described as Welsh mountain stream, but only 156s; not eligible for non-repeated 600s master."
+        },
+        {
+          "url": "https://freesound.org/people/Auxide_Audio/sounds/585497/",
+          "creator": "Auxide_Audio",
+          "published_title": "Mountain Stream 001",
+          "declared_seconds": 32.622,
+          "declared_channels": "stereo",
+          "declared_license": "CC0-1.0",
+          "metadata_verdict": "Rocky Alberta mountain stream, but only 33s."
+        },
+        {
+          "url": "https://freesound.org/people/chris_dagorne/sounds/348177/",
+          "creator": "chris_dagorne",
+          "published_title": "160621_0020.wav",
+          "declared_seconds": 869.543,
+          "declared_channels": "stereo",
+          "declared_license": "CC0-1.0",
+          "metadata_verdict": "Long riverbank recording, but not described as mountain stream. Includes prominent birds and distant road/motorbike; do not mislabel."
+        }
+      ]
+    },
+    {
+      "plan_id": "NEW-32",
+      "target_title": "Lake Waves",
+      "decision": "BLOCKED_NO_605S_CLEAN_SOURCE",
+      "candidates": [
+        {
+          "url": "https://freesound.org/people/jazbavac/sounds/198521/",
+          "creator": "jazbavac",
+          "published_title": "lake waves seagulls .wav",
+          "declared_seconds": 334.391,
+          "declared_channels": "mono",
+          "declared_license": "CC0-1.0",
+          "metadata_verdict": "Lake Ohrid waves with gulls early in recording; only 334s."
+        },
+        {
+          "url": "https://freesound.org/people/Mick_/sounds/705034/",
+          "creator": "Mick_",
+          "published_title": "2023-10-03 lake shore ambience.wav",
+          "declared_seconds": 204.973,
+          "declared_channels": "mono",
+          "declared_license": "CC0-1.0",
+          "metadata_verdict": "Lake Pymatuning soft waves/wildlife; only 205s."
+        },
+        {
+          "url": "https://freesound.org/people/kvgarlic/sounds/326097/",
+          "creator": "kvgarlic",
+          "published_title": "LakeWavesOct25th2015.WAV",
+          "declared_seconds": 93.882,
+          "declared_channels": "stereo",
+          "declared_license": "CC0-1.0",
+          "metadata_verdict": "Midwest rocky lake shore but only 94s."
+        }
+      ]
+    },
+    {
+      "plan_id": "NEW-33",
+      "target_title": "Pond Ambience",
+      "decision": "CONDITIONAL_METADATA_ONLY_NOT_AUDITION_READY",
+      "candidates": [
+        {
+          "url": "https://freesound.org/people/rebelgirl2006_tiger/sounds/345600/",
+          "creator": "rebelgirl2006_tiger",
+          "published_title": "pond frogs and birds.wav",
+          "declared_seconds": 608.013,
+          "declared_channels": "stereo",
+          "declared_sample_rate_hz": 24000,
+          "declared_license": "CC0-1.0",
+          "metadata_verdict": "Length narrowly sufficient (608s). Frog/bird pond ecology is plausible, but page acknowledges car pass-bys and wind; 24 kHz original and no media verification. CONDITIONAL; do not call it clean water-surface sound."
+        },
+        {
+          "url": "https://freesound.org/people/felix.blume/sounds/868745/",
+          "creator": "felix.blume",
+          "published_title": "Night Frogs, Toads and Crickets at a Forest Pond",
+          "declared_seconds": 791.167,
+          "declared_channels": "stereo",
+          "declared_sample_rate_hz": 48000,
+          "declared_license": "CC0-1.0",
+          "metadata_verdict": "Night pond ecology >10min, frogs/crickets not lapping water. Could suit a distinct night-pond wildlife ambience; requires hearing and separate semantic placement (Nature family may be preferable)."
+        }
+      ]
+    },
+    {
+      "plan_id": "NEW-34",
+      "target_title": "Zen Fountain",
+      "decision": "BLOCKED_SHORT_OR_UNVERIFIED_IDENTITY",
+      "candidates": [
+        {
+          "url": "https://freesound.org/people/skyko/sounds/169252/",
+          "creator": "skyko",
+          "published_title": "Fountain_4.wav",
+          "declared_seconds": 60.6,
+          "declared_channels": "stereo",
+          "declared_license": "CC0-1.0",
+          "metadata_verdict": "Small garden fountain; no evidence of Zen-style construction, only 61s."
+        },
+        {
+          "url": "https://freesound.org/people/vhio/sounds/789097/",
+          "creator": "vhio",
+          "published_title": "WATRFoun Fountain next to town square",
+          "declared_seconds": 429.598,
+          "declared_channels": "stereo",
+          "declared_license": "CC0-1.0",
+          "metadata_verdict": "Fountain with people talking and traffic; 430s and inconsistent with quiet Zen Fountain."
+        }
+      ]
+    },
+    {
+      "plan_id": "NEW-35",
+      "target_title": "Running Sink",
+      "decision": "NOT_SOURCED",
+      "candidates": []
+    },
+    {
+      "plan_id": "NEW-36",
+      "target_title": "Hot Tub Water",
+      "decision": "NOT_SOURCED",
+      "candidates": []
+    }
+  ],
+  "rejected_or_out_of_scope": [
+    {
+      "url": "https://freesound.org/people/Legnalegna55/sounds/554127/",
+      "reason": "10-minute CC0 aquarium sound, described as altered by uploader; aquarium is not necessarily Zen Fountain or Bamboo Fountain, and requires provenance/authenticity scrutiny."
+    },
+    {
+      "url": "https://freesound.org/s/231755/",
+      "reason": "Lake Waves - 2014 330.752s and CC BY 4.0, not CC0; below duration gate."
+    },
+    {
+      "url": "https://freesound.org/people/Benboncan/sounds/67883/",
+      "reason": "Lake Waves 1 135.401s, CC BY 4.0, includes aircraft."
+    }
+  ],
+  "release_policy": {
+    "production_authorized": false,
+    "owner_listening_approval": false,
+    "preset_additions": 0,
+    "site_index_changes": 0,
+    "notes": "Research manifest only. No master file, review MP3, HLS stream, sound page, sitemap change or SEO release."
+  }
+}
