@@ -55,8 +55,10 @@ const BASE="http://127.0.0.1:8787";
    assert.equal(actual.isPlaying,true,t.name+" playback stopped");
    assert.equal(actual.paused,false,t.name+" media paused");
    assert.equal(requests.length>0,t.contact,t.name+" unexpected R2 request routing");
-   if(!t.localHLS)assert.equal(localHLSRequests.length,0,t.name+" must NEVER request retired GH HLS");
-   else assert.ok(localHLSRequests.length>0,t.name+" should retain native GH HLS backup");
+   if(!t.localHLS&&!t.blockLocal)
+    assert.equal(localHLSRequests.length,0,t.name+" must NEVER request retired GH HLS");
+   else
+    assert.ok(localHLSRequests.length>0,t.name+" should attempt native GH HLS backup");
    assert.equal(errors.length,0,t.name+" JS errors "+errors.join(";"));
    await page.evaluate(()=>window.WNCBridge.stop());
    assert.equal(await page.evaluate(()=>window.WNCBridge.snapshot().playing),false);
