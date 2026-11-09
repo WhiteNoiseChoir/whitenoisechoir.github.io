@@ -1,4 +1,4 @@
-name: Balanced R2 27-HLS Prune — source SHA, browser fallback, 35 streams
+name: Balanced R2 HLS Prune - immutable SHA, native fallback and mobile QA
 
 on:
   push:
@@ -6,15 +6,15 @@ on:
       - feature/r2-balanced-hls-prune-20261109
       - main
     paths:
-      - "audio/continuous/**"
-      - "index.html"
-      - "sounds/**"
-      - "scripts/rehydrate_r2_hls_ci.py"
-      - "scripts/test_r2_balanced_layout.cjs"
-      - "scripts/test_r2_player_browser.cjs"
-      - "scripts/test_player_smoke.cjs"
-      - "scripts/test_media_dedup.cjs"
-      - ".github/workflows/r2_balanced_hls_prune_qa.yml"
+      - 'audio/continuous/**'
+      - 'index.html'
+      - 'sounds/**'
+      - 'scripts/rehydrate_r2_hls_ci.py'
+      - 'scripts/test_r2_balanced_layout.cjs'
+      - 'scripts/test_r2_player_browser.cjs'
+      - 'scripts/test_player_smoke.cjs'
+      - 'scripts/test_media_dedup.cjs'
+      - '.github/workflows/r2_balanced_hls_prune_qa.yml'
   workflow_dispatch:
 
 permissions:
@@ -25,11 +25,11 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 65
     steps:
-      - name: Checkout tracked GitHub Pages files (all 35 MP3s, 8 GH HLS)
+      - name: Checkout production source tree without mutation
         uses: actions/checkout@v4
         with:
           persist-credentials: false
-      - name: Check no HLS deletion broke approved sound-page URLs or GitHub emergency fallback
+      - name: Audit 8 GH HLS backups, 27 R2-only HLS, 35 SHA-approved MP3 and sound pages
         run: |
           node scripts/test_r2_balanced_layout.cjs
           node scripts/audit_r2_storage_budget.cjs
@@ -38,12 +38,12 @@ jobs:
           node scripts/test_library_structure.cjs
           node scripts/test_field_sound_pages.cjs
           node scripts/test_noise_colors_editorial.cjs
-      - name: Restore missing 27 HLS sources only to ephemeral runner, byte-identical from R2
+      - name: Independently verify and restore approved R2 HLS bytes in ephemeral CI
         run: python3 scripts/rehydrate_r2_hls_ci.py
-      - name: Install FFmpeg if unavailable
+      - name: Install ffmpeg for 35 original HLS decoder tests
         run: |
           if ! command -v ffmpeg >/dev/null; then sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg; fi
-      - name: Independently re-run all 35 approved HLS decodes and historical source SHA gates
+      - name: Run 35 native HLS boundaries and historical owner approved source audits
         run: |
           python3 scripts/test_hls_transport.py
           node scripts/test_rain_production_release.cjs
@@ -52,7 +52,7 @@ jobs:
           node scripts/test_water_ocean_wave1_production.cjs
           node scripts/test_water_ocean_wave2_production.cjs
           node scripts/test_r2_transport_room.cjs
-      - name: "Browser QA: real Chromium R2 outage; 8 GH HLS and 27 GH MP3 backup paths"
+      - name: Browser tests for R2 outages and GH fallback routes
         run: |
           npm install --no-save --no-package-lock playwright
           node scripts/rain_review_range_test_server.cjs > /tmp/wnc-r2-prune-http.log 2>&1 &
@@ -60,9 +60,7 @@ jobs:
           trap 'kill $pid || true' EXIT
           node scripts/test_library_foundation_browser.cjs
           node scripts/test_r2_player_browser.cjs
-      - name: Confirm source history/secret safety
+      - name: Assert ephemeral hydration did not change any tracked production files
         run: |
-          test "$(git ls-files audio/continuous | grep -E '^audio/continuous/[^/]+/(continuous[.]m3u8|part_[0-9]{3}[.]ts)
-          echo "Pruned binary media are untracked in HEAD. CI rehydration was temporary and never committed."
- | grep -v '^audio/continuous/quick/' | wc -l)" -eq 63
-          echo "Pruned binary media are untracked in HEAD. CI rehydration was temporary and never committed."
+          git diff --exit-code
+          echo 'Pruned R2 objects are rehydrated only in the CI workspace, never committed.'
