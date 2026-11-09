@@ -222,8 +222,20 @@ async function playTracks(ids,name){
         {url:r2HLS,kind:"hls"},{url:localHLS,kind:"hls"},
         {url:r2MP3,kind:"mp3"},{url:localMP3,kind:"mp3"}
       ]:[{url:r2MP3,kind:"mp3"},{url:localMP3,kind:"mp3"}]);
-    var candidateIndex=-1,switching=false,errorFallbackInProgress=false;
+    var candidateIndex=-1,switching=false,errorFallbackInProgress=false,resumeAfterTransportError=0;
     audio.loop=true;audio.preload="auto";
+    // On a host outage, resume close to the previous position when the backup
+    // metadata becomes available. HLS has a 7-day timeline; MP3 is 10 minutes.
+    audio.addEventListener("loadedmetadata",function(){
+      if(!resumeAfterTransportError||candidateIndex<0)return;
+      var desired=candidates[candidateIndex].kind==="hls"?
+        resumeAfterTransportError:resumeAfterTransportError%600;
+      try{
+        if(isFinite(audio.duration)&&audio.duration>2&&desired>1){
+          audio.currentTime=Math.min(desired,audio.duration-1);
+        }
+      }catch(e){}
+    });
     audio.volume=Math.min(1,layerGain(i,ids.length)*Number($("volume").value)/100);
     audio.addEventListener("timeupdate",checkSleepTimer);
     audio.addEventListener("ended",function(){
@@ -250,6 +262,7 @@ async function playTracks(ids,name){
     audio.addEventListener("error",function(){
       if(token!==playGeneration||!isPlaying||switching||errorFallbackInProgress)return;
       errorFallbackInProgress=true;
+      resumeAfterTransportError=Math.max(0,Number(audio.currentTime)||0);
       status("Audio transport interrupted; trying backup source");
       tryAudioSources(candidateIndex+1).then(function(ok){
         errorFallbackInProgress=false;
