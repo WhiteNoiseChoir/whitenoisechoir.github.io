@@ -9,9 +9,10 @@ const BASE="http://127.0.0.1:8787";
  const binary=["/usr/bin/google-chrome","/usr/bin/google-chrome-stable","/usr/bin/chromium"].find(p=>fs.existsSync(p));
  const browser=await chromium.launch({headless:true,executablePath:binary,args:["--no-sandbox","--autoplay-policy=no-user-gesture-required"]});
  try{
-  for(const [name,path,shouldContactR2] of [
-   ["r2-outage","/",true],
-   ["emergency-rollback","/?audio_origin=github",false]
+  for(const [name,path,shouldContactR2,blockLocalHLS] of [
+   ["r2-outage","/",true,false],
+   ["r2-and-local-hls-outage","/",true,true],
+   ["emergency-rollback","/?audio_origin=github",false,false]
   ]){
    const page=await browser.newPage({viewport:{width:390,height:800},reducedMotion:"reduce"});
    const errors=[],requests=[];
@@ -24,6 +25,9 @@ const BASE="http://127.0.0.1:8787";
     window.Audio.prototype=Native.prototype;
    });
    await page.route("https://media.whitenoisechoir.com/**",route=>route.abort("failed"));
+   if(blockLocalHLS){
+    await page.route("**/audio/continuous/white-noise/continuous.m3u8*",route=>route.abort("failed"));
+   }
    await page.goto(BASE+path,{waitUntil:"domcontentloaded"});
    await page.waitForFunction(()=>!!window.WNCBridge);
    assert.equal(await page.evaluate(()=>window.WNCBridge.snapshot().playing),false,"No autoplay on page load");
@@ -37,7 +41,11 @@ const BASE="http://127.0.0.1:8787";
      })),
      errors
    }));
-   await page.waitForFunction(()=>!!window.__audioInstances[0]&&window.__audioInstances[0].src.includes("/audio/white-noise.mp3"),null,{timeout:18000});
+   await page.waitForFunction(()=>{
+    const a=window.__audioInstances[0];
+    return !!a && (a.src.startsWith(location.origin+"/audio/continuous/white-noise/continuous.m3u8")||
+      a.src.startsWith(location.origin+"/audio/white-noise.mp3"));
+   },null,{timeout:18000});
    const actual=await page.evaluate(()=>({
       src:window.__audioInstances[0].src,
       isPlaying:window.WNCBridge.snapshot().playing,
@@ -47,7 +55,11 @@ const BASE="http://127.0.0.1:8787";
    }));
    assert.equal(actual.sounds,35);
    assert.equal(actual.recipes,45);
-   assert.ok(actual.src.startsWith(BASE+"/audio/white-noise.mp3"),name+" must use GitHub as verified audio backup");
+   assert.ok(
+     actual.src.startsWith(BASE+"/audio/white-noise.mp3")||
+     actual.src.startsWith(BASE+"/audio/continuous/white-noise/continuous.m3u8"),
+     name+" must use GitHub as verified audio backup");
+   if(blockLocalHLS)assert.ok(actual.src.startsWith(BASE+"/audio/white-noise.mp3"),"All HLS sources failed; backup MP3 required");
    assert.equal(actual.isPlaying,true,name+" should continue playing despite simulated R2 failure");
    assert.equal(actual.paused,false,name+" backing player is paused");
    assert.equal(requests.length>0,shouldContactR2,name+" R2 request routing incorrect");
