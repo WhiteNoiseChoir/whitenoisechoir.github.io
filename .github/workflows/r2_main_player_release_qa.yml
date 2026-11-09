@@ -38,3 +38,4 @@ jobs:
           pid=$!
           trap 'kill $pid || true' EXIT
           node scripts/test_library_foundation_browser.cjs
+          node scripts/test_r2_player_browser.cjs
