@@ -6,7 +6,7 @@ const matches=[...html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/g)].fi
 assert.equal(matches.length,1,"Expected one inline player script");
 new vm.Script(matches[0][1],{filename:"index.html:inline-script"});
 
-let now=Date.UTC(2026,10,7,0,0,0), id=1, emulateNativeHLS=false, blockNativeHLS=false;
+let now=Date.UTC(2026,10,7,0,0,0), id=1, emulateNativeHLS=false, blockNativeHLS=false, blockRemoteAudio=false;
 const timerFns=new Map(),intervalFns=new Map(),documentEvents={},windowEvents={},audioInstances=[];
 const elements={};
 function element(tag="div"){
@@ -31,7 +31,7 @@ class FakeAudio{
   constructor(src){this.src=src;this.paused=true;this.volume=1;this.loop=false;this.handlers={};audioInstances.push(this)}
   addEventListener(name,fn){this.handlers[name]=fn}
   canPlayType(type){return emulateNativeHLS&&type.includes("mpegurl")?"maybe":""}
-  play(){if(blockNativeHLS&&this.src&&this.src.includes(".m3u8"))return Promise.reject(new Error("HLS blocked"));this.paused=false;return Promise.resolve()}
+  play(){if(blockRemoteAudio&&this.src&&this.src.startsWith("https://media.whitenoisechoir.com/"))return Promise.reject(new Error("R2 blocked"));if(blockNativeHLS&&this.src&&this.src.includes(".m3u8"))return Promise.reject(new Error("HLS blocked"));this.paused=false;return Promise.resolve()}
   pause(){this.paused=true}
   removeAttribute(attr){if(attr==="src")this.src=""}
   load(){}
@@ -64,7 +64,7 @@ const flush=()=>new Promise(resolve=>setImmediate(resolve));
   await flush();
   assert.equal(audioInstances.length,1);
   assert.ok(audioInstances[0].loop,"Use native HTMLMediaElement loop in background");
-  assert.match(audioInstances[0].src,/rain-on-window-real\.mp3\?v=long-master/);
+  assert.match(audioInstances[0].src,/^https:\/\/media\.whitenoisechoir\.com\/audio\/rain-on-window-real\.mp3$/);
   assert.match(get("timerInfo").textContent,/480 min/);
   assert.match(get("status").textContent,/Playing CC0/);
 
@@ -80,7 +80,7 @@ const flush=()=>new Promise(resolve=>setImmediate(resolve));
   card("Fireplace (Real Recording)").children[3].onclick();
   await flush();
   assert.equal(audioInstances.length,2);
-  assert.match(audioInstances[1].src,/fireplace-real\.mp3\?v=long-master/);
+  assert.match(audioInstances[1].src,/^https:\/\/media\.whitenoisechoir\.com\/audio\/fireplace-real\.mp3$/);
   assert.ok(audioInstances[1].loop);
   const oldAudio=audioInstances[1];
   const mixer=get("mixlist").children.find(c=>c.children[0].textContent.includes("Rain and Fan"));
@@ -99,7 +99,7 @@ const flush=()=>new Promise(resolve=>setImmediate(resolve));
     card(label).children[3].onclick();
     await flush();
     const audio=audioInstances[audioInstances.length-1];
-    assert.ok(audio.src.includes(id+".mp3?v=color-master-v1-20261107"),"Must bust stale 72s source cache for "+label);
+    assert.equal(audio.src,"https://media.whitenoisechoir.com/audio/"+id+".mp3","Approved R2 master expected for "+label);
     assert.ok(audio.loop,"Native loop remains enabled for "+label);
   }
   const synthetic=[
@@ -115,7 +115,7 @@ const flush=()=>new Promise(resolve=>setImmediate(resolve));
     card(label).children[3].onclick();
     await flush();
     const player=audioInstances[audioInstances.length-1];
-    assert.ok(player.src.includes(id+".mp3?v=extended-dsp-v1-20261108"),"New master MP3 cache version is required for "+label);
+    assert.equal(player.src,"https://media.whitenoisechoir.com/audio/"+id+".mp3","Approved R2 DSP MP3 expected for "+label);
     assert.ok(player.loop,label+" should retain native fallback looping");
   }
   // Simulate a native HLS-capable iPhone: the media playlist should not end
@@ -125,7 +125,7 @@ const flush=()=>new Promise(resolve=>setImmediate(resolve));
   card("White Noise").children[3].onclick();
   await flush();
   let stream=audioInstances[audioInstances.length-1];
-  assert.ok(stream.src.includes("audio/continuous/white-noise/continuous.m3u8?v=continuous-hls-v4-cc0-approved"),stream.src);
+  assert.equal(stream.src,"https://media.whitenoisechoir.com/audio/continuous/white-noise/continuous.m3u8",stream.src);
   assert.ok(stream.loop,"HLS playlist end retains native loop for exceptionally long sessions");
   stream.currentTime=600;
   document.hidden=true;stream.handlers.timeupdate();
@@ -153,5 +153,31 @@ const flush=()=>new Promise(resolve=>setImmediate(resolve));
   assert.ok(mp3fallback.src.includes("white-noise.mp3"),"Failed HLS must fall back to MP3");
   assert.ok(mp3fallback.loop,"Fallback MP3 should loop");
   blockNativeHLS=false;
-  console.log("PASS: 35 sound IDs, 45 mixes, 13 ten-minute DSP MP3 masters, 35 native HLS paths, fallback MP3, timer and mixer");
+  // R2 outage on an HLS-capable browser must keep the seven-day native
+  // timeline alive using the same content already hosted on GitHub Pages.
+  blockRemoteAudio=true;
+  card("White Noise").children[3].onclick();
+  await flush();await flush();
+  const fallbackNativeHLS=audioInstances[audioInstances.length-1];
+  assert.ok(fallbackNativeHLS.src.startsWith("audio/continuous/white-noise/continuous.m3u8"),"R2 outage should fall back to GitHub native HLS");
+  assert.equal(fallbackNativeHLS.paused,false);
+  // If both HLS transports fail and R2 is unavailable, use local MP3 with native looping.
+  blockNativeHLS=true;
+  card("White Noise").children[3].onclick();
+  await flush();await flush();
+  const emergencyMP3=audioInstances[audioInstances.length-1];
+  assert.ok(emergencyMP3.src.startsWith("audio/white-noise.mp3"),"R2+HLS outage must recover via local MP3");
+  assert.equal(emergencyMP3.loop,true);
+  blockRemoteAudio=false;blockNativeHLS=false;emulateNativeHLS=false;
+  // Late R2 failure *after* playback has started must also switch to GitHub MP3.
+  card("White Noise").children[3].onclick();
+  await flush();await flush();
+  const liveR2MP3=audioInstances[audioInstances.length-1];
+  assert.equal(liveR2MP3.src,"https://media.whitenoisechoir.com/audio/white-noise.mp3");
+  liveR2MP3.handlers.error();
+  await flush();await flush();
+  assert.ok(liveR2MP3.src.startsWith("audio/white-noise.mp3"),"Midplay R2 interruption should switch to GitHub MP3");
+  assert.equal(liveR2MP3.paused,false);
+  assert.match(get("status").textContent,/backup audio source/);
+  console.log("PASS: 35 sound IDs, 45 mixes, 35 R2 MP3/HLS paths, GitHub native HLS + MP3 fallbacks, 13 ten-minute DSP masters, timer and mixer");
 })().catch(e=>{console.error(e);process.exit(1)});
