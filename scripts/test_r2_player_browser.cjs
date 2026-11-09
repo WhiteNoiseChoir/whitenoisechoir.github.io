@@ -23,12 +23,21 @@ const BASE="http://127.0.0.1:8787";
     window.Audio=function(){const a=new Native();window.__audioInstances.push(a);return a;};
     window.Audio.prototype=Native.prototype;
    });
-   await page.route("https://media.whitenoisechoir.com/**",route=>route.fulfill({status:503,contentType:"text/plain",body:"Simulated R2 outage"}));
+   await page.route("https://media.whitenoisechoir.com/**",route=>route.abort("failed"));
    await page.goto(BASE+path,{waitUntil:"domcontentloaded"});
    await page.waitForFunction(()=>!!window.WNCBridge);
    assert.equal(await page.evaluate(()=>window.WNCBridge.snapshot().playing),false,"No autoplay on page load");
    const result=await page.evaluate(()=>window.WNCBridge.play(["white-noise"],"White Noise"));
-   await page.waitForFunction(()=>!!window.__audioInstances[0]&&window.__audioInstances[0].src.includes("/audio/white-noise.mp3"),null,{timeout:30000});
+   console.log("R2_BROWSER_DIAGNOSTIC",JSON.stringify({
+     scenario:name,requests:requests.length,
+     state:await page.evaluate(()=>({
+       tracks:window.__audioInstances?.map(a=>({src:a.src,paused:a.paused,error:a.error?.code||null})),
+       playing:window.WNCBridge?.snapshot()?.playing,
+       status:document.querySelector("#status")?.textContent
+     })),
+     errors
+   }));
+   await page.waitForFunction(()=>!!window.__audioInstances[0]&&window.__audioInstances[0].src.includes("/audio/white-noise.mp3"),null,{timeout:18000});
    const actual=await page.evaluate(()=>({
       src:window.__audioInstances[0].src,
       isPlaying:window.WNCBridge.snapshot().playing,
