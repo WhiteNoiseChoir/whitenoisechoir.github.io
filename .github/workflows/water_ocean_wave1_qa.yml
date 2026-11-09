@@ -1,0 +1,37 @@
+name: Water Ocean Wave 1 Review QA (30-Source Production Protected)
+on:
+  push:
+    branches: [main, "feature/water-ocean-wave1-review-20261109"]
+    paths:
+      - "signature/water-ocean-wave1-review/**"
+      - "scripts/test_water_ocean_wave1_review.cjs"
+      - "scripts/test_water_ocean_wave1_browser.cjs"
+      - ".github/workflows/water_ocean_wave1_qa.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  qa-water-ocean-wave1-audition:
+    runs-on: ubuntu-latest
+    timeout-minutes: 32
+    steps:
+      - uses: actions/checkout@v4
+      - name: Ensure FFmpeg for source integrity
+        run: |
+          if ! command -v ffprobe >/dev/null || ! command -v ffmpeg >/dev/null; then
+            sudo apt-get update -qq
+            sudo apt-get install -y -qq ffmpeg
+          fi
+      - name: Verify 3 review masters and protect 30 sound sources, 30 HLS, 45 presets
+        run: |
+          node scripts/test_water_ocean_wave1_review.cjs
+          node scripts/test_player_smoke.cjs
+          node scripts/test_library_foundation.cjs
+          node scripts/test_library_structure.cjs
+      - name: Verify no autoplay, 9:55 seek, responsive 320/390px and saved verdicts
+        run: |
+          npm install --no-save --no-package-lock playwright
+          node scripts/rain_review_range_test_server.cjs >/tmp/wnc-water-qa.log 2>&1 &
+          pid=$!
+          trap 'kill $pid || true' EXIT
+          node scripts/test_water_ocean_wave1_browser.cjs
