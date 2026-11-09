@@ -32,7 +32,7 @@ const {chromium}=require("playwright"),assert=require("node:assert/strict"),fs=r
   await page.reload({waitUntil:"domcontentloaded"});
   await page.locator('button[data-track="pond-night-review"]').click();
   assert.equal(await page.locator("#verdict").inputValue(),"REWORK");
-  assert.equal(await page.locator("#notes").inputValue(),"Compare high surf impact and wind with Gentle Ocean Waves.");
+  assert.equal(await page.locator("#notes").inputValue(),"Check frogs, crickets, absence of traffic or voices, and seam.");
   assert.deepEqual(errs,[]);
   console.log("POND_WILDLIFE_BROWSER_PASS two 600s masters, no autoplay, 9:55 seek, stop, 320/390/760 mobile, saved owner feedback.");
  }finally{await browser.close()}
