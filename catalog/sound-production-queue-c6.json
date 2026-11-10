@@ -94,7 +94,25 @@
         "new_route": null,
         "allow_index": false
       },
-      "release_status": "BLOCKED"
+      "release_status": "BLOCKED",
+      "metadata_discovery": [
+        {
+          "discovery_status": "PAGE_METADATA_ONLY_NOT_ACQUIRED",
+          "page_url": "https://freesound.org/people/hargissssound/sounds/536332/",
+          "creator_username": "hargissssound",
+          "declared_license_on_page": "Creative Commons 0",
+          "displayed_file_type": "WAV",
+          "displayed_duration_seconds": 614.115,
+          "displayed_sample_rate_hz": 48000,
+          "displayed_channels": 2,
+          "displayed_bit_depth": 24,
+          "caveats": [
+            "Suburban cars and people described; whole-file speech and transient QA pending",
+            "Audio bytes not downloaded; duration and license are page claims, not file-level QA"
+          ],
+          "checked_date": "2026-11-10"
+        }
+      ]
     },
     {
       "rank": 2,
@@ -151,7 +169,27 @@
         "new_route": null,
         "allow_index": false
       },
-      "release_status": "BLOCKED"
+      "release_status": "BLOCKED",
+      "metadata_discovery": [
+        {
+          "discovery_status": "PAGE_METADATA_ONLY_NOT_ACQUIRED",
+          "page_url": "https://freesound.org/people/ali.g/sounds/855323/",
+          "creator_username": "ali.g",
+          "declared_license_on_page": "Creative Commons 0",
+          "displayed_file_type": "MP3 (already lossy)",
+          "displayed_duration_seconds": 2580.099,
+          "displayed_sample_rate_hz": 48000,
+          "displayed_channels": 2,
+          "displayed_bit_depth": null,
+          "displayed_bitrate_kbps": 180,
+          "caveats": [
+            "Deer bark in the middle explicitly described by uploader; possible sleep ambience interruption",
+            "Lossy original, do not label source as FLAC or WAV",
+            "Audio bytes not downloaded; whole-file QA and comparable novelty pending"
+          ],
+          "checked_date": "2026-11-10"
+        }
+      ]
     },
     {
       "rank": 3,
@@ -615,5 +653,12 @@
       },
       "release_status": "BLOCKED"
     }
-  ]
+  ],
+  "research_summary": {
+    "individual_source_pages_inspected": 2,
+    "metadata_leads_meeting_600s_on_page": 2,
+    "downloaded_originals": 0,
+    "file_integrity_verified": 0,
+    "rights_provenance_confirmed": 0
+  }
 }
