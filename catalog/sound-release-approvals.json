@@ -1,0 +1,6 @@
+{
+  "schema_version": 1,
+  "revision": "2026-11-10-C5",
+  "policy": "Explicit per-record release approval only; zero entries by default. A candidate source cannot become playable or indexable via metadata inference. This file is NEVER an authorization to deploy by itself.",
+  "approvals": []
+}

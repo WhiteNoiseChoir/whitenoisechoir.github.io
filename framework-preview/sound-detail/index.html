@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow,noarchive">
+<meta name="theme-color" content="#0c1718">
+<title>Sound Detail Blueprint — Editorial Preview | WhiteNoiseChoir</title>
+<meta name="description" content="Non-indexed editorial preview and evidence-gated sound detail template. Does not create audio, sound pages or an indexable URL.">
+<style>
+:root{color-scheme:dark;font:16px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif;background:#0c1718;color:#e5f5eb}
+*{box-sizing:border-box}body{margin:0}header,main,footer{max-width:1050px;margin:auto;padding:22px clamp(16px,4vw,30px)}
+header{display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;border-bottom:1px solid #38584b;align-items:center}
+a{color:#9feec6}a:focus-visible,input:focus-visible,button:focus-visible{outline:3px solid #adf3cb;outline-offset:3px}
+h1{font-size:clamp(28px,5vw,46px);line-height:1.13;letter-spacing:-.035em;margin:14px 0}
+h2{font-size:21px;margin:28px 0 12px}h3{font-size:16px;margin:0 0 8px}
+p{color:#b8d1c0}.eyebrow{text-transform:uppercase;font-size:12px;letter-spacing:.14em;color:#a9e3be;font-weight:750}
+.notice{border:1px solid #6c8156;border-radius:13px;background:#2a3427;padding:14px;line-height:1.6;margin:18px 0;color:#f0e9d5}
+.tool{border-radius:15px;border:1px solid #395f4b;padding:17px;background:#152c26;margin:19px 0}
+label{font-size:13px;color:#aec9b8;display:block;margin:0 0 6px}.finder{display:flex;gap:10px;flex-wrap:wrap}
+input{min-width:180px;flex:1 1 260px;padding:12px 13px;min-height:46px;border-radius:10px;border:1px solid #67917a;background:#0d211d;color:#f2fff6;font:inherit}
+button{border:1px solid #8bbda1;background:#285a41;color:#f1fff5;padding:10px 18px;min-height:46px;border-radius:10px;font:inherit;cursor:pointer}
+.status{display:inline-block;border:1px solid #58715e;border-radius:40px;padding:4px 11px;font-size:12px;color:#dfeddf}
+.panel{background:#162b26;border-radius:15px;border:1px solid #335346;padding:19px;margin:19px 0}
+.metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:11px}
+.metrics article{background:#182f28;border:1px solid #3a5d4c;border-radius:12px;padding:13px}
+.metrics strong{display:block;font-size:14px;margin:6px 0;overflow-wrap:anywhere}
+.metrics small{color:#b8d0bc}.gate-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.gate{background:#152c26;border:1px solid #46624f;border-radius:12px;padding:15px}
+.gate strong{display:block;color:#ebf8ec}.gate small{display:block;color:#b6cdbc;margin:6px 0}
+.detail-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.detail-grid dl{margin:0;background:#172d27;padding:14px;border-radius:12px;border:1px solid #3b594b}.detail-grid dt{color:#a5c8b2;font-size:12px}.detail-grid dd{margin:7px 0 0;word-break:break-word}
+.empty{background:#293329;border:1px dashed #73866a;border-radius:12px;padding:16px}
+a.doclink{display:inline-block;margin:7px 9px 7px 0;font-size:14px}
+footer{border-top:1px solid #38584b;font-size:12px;color:#98b7a4}
+@media(max-width:630px){.metrics,.gate-grid,.detail-grid{grid-template-columns:1fr}.panel{padding:15px}.finder button{width:100%}}
+</style></head><body>
+<header><strong>◉ WhiteNoiseChoir</strong><a href="/sounds/explore/">Return to 532-item library</a></header>
+<main>
+<span class="eyebrow">C5 • Sound Detail Blueprint • Editorial review only</span>
+<h1>Sound Detail production blueprint</h1>
+<p>Inspect the status and evidence for any sound concept. This is a reusable page specification; it does not create a separate SEO page or produce new MP3 audio.</p>
+<div class="notice"><strong>Not a listening page.</strong> Existing audio is played from its current sound page only. Unproduced items never show a player or AudioObject schema. A source/license claim is shown only when explicitly recorded in the approved plan.</div>
+<section class="tool" aria-label="Choose sound for review">
+<label for="sound-lookup">Sound record ID or exact English title</label>
+<div class="finder"><input id="sound-lookup" type="search" list="sound-list" placeholder="e.g. SND-0040 or Morning Birds" autocomplete="off"><datalist id="sound-list"></datalist><button type="button" id="load">Inspect record</button></div>
+<p id="search-status" role="status" aria-live="polite">Loading registry…</p>
+</section>
+<section id="record" hidden aria-labelledby="record-heading">
+<div class="panel">
+<span class="eyebrow">Sound page content template</span>
+<h2 id="record-heading">—</h2><span id="stage" class="status"></span>
+<p id="summary"></p>
+<div class="metrics">
+<article><small>Primary taxonomy</small><strong id="family">—</strong></article>
+<article><small>Subcategory</small><strong id="subfamily">—</strong></article>
+<article><small>Editorial priority</small><strong id="priority">—</strong></article>
+</div>
+<p id="media-action" class="empty"></p>
+<div id="existing-route"></div>
+</div>
+<h2>Release gates</h2>
+<div class="gate-grid">
+<div class="gate"><h3>1. Source and rights</h3><strong id="rights">—</strong><small>License type alone does not guarantee full provenance verification.</small></div>
+<div class="gate"><h3>2. Audio technical QA</h3><strong id="technical">—</strong><small>Independent source duration, sound quality, looping and playable transport must be checked.</small></div>
+<div class="gate"><h3>3. Owner listening review</h3><strong id="owner">—</strong><small>Never infer listening approval from successful automated tests.</small></div>
+<div class="gate"><h3>4. SEO and page decision</h3><strong id="seo">—</strong><small>New page creation and indexing remain blocked pending an explicit editorial decision.</small></div>
+</div>
+<h2>Recorded evidence</h2><div class="detail-grid">
+<dl><dt>Sound record</dt><dd id="record-id">—</dd></dl>
+<dl><dt>Production catalog ID</dt><dd id="production-id">—</dd></dl>
+<dl><dt>Recorded rights / license</dt><dd id="license">—</dd></dl>
+<dl><dt>Independent recorded seconds</dt><dd id="duration">—</dd></dl>
+<dl><dt>Master SHA-256 (when documented)</dt><dd id="sha">—</dd></dl>
+<dl><dt>Recorded listening intent</dt><dd id="intent">—</dd></dl>
+</div><div id="source-link"></div>
+<h2>Editorial sections required before publication</h2>
+<div class="panel"><h3>Acoustic identity / listening experience</h3><p>Write a verified, non-duplicated description supported by the actual audio. No placeholder claims will be published automatically.</p>
+<h3>Listening and playback</h3><p>Use the existing continuous player after the media is verified, with the native HLS and MP3 fallback behavior preserved.</p>
+<h3>Provenance and rights</h3><p>Disclose the original recording length, looping/arrangement, credit and license, and any audio caveats applicable to this exact asset.</p>
+<h3>SEO and internal linking</h3><p>Only approve a canonical URL and indexability after confirming a unique search intent, sufficient content and no cannibalization with existing sound pages.</p></div>
+</section>
+</main><footer>Template preview is noindex and is omitted from sitemap. It does not change production audio, player, 35 catalog records or 45 mixer presets.</footer>
+<script>
+"use strict";
+const $=id=>document.getElementById(id), els={input:$("sound-lookup"),list:$("sound-list"),button:$("load"),status:$("search-status"),record:$("record")};
+let all=[],byId=new Map();
+function val(x){return x===null||x===undefined||x===""?"Not documented":String(x)}
+function show(r){
+ $("record-heading").textContent=r.title_en+(r.title_vi?" · "+r.title_vi:"");
+ $("stage").textContent=r.current_stage.replaceAll("_"," ");
+ $("summary").textContent="Record "+r.id+" — "+r.editorial_class.replaceAll("_"," ").toLowerCase()+". This status is derived from the source catalog and research inventory, not a new audio product.";
+ $("family").textContent=r.family_id.replaceAll("-"," ");
+ $("subfamily").textContent=val(r.subfamily);
+ $("priority").textContent=val(r.priority);
+ $("rights").textContent=r.gates.provenance_rights.replaceAll("_"," ");
+ $("technical").textContent=r.gates.technical_qa.replaceAll("_"," ");
+ $("owner").textContent=r.gates.owner_listening.replaceAll("_"," ");
+ $("seo").textContent=r.gates.seo.replaceAll("_"," ");
+ $("record-id").textContent=r.id;
+ $("production-id").textContent=val(r.existing_production?.id);
+ $("license").textContent=val(r.evidence.license);
+ $("duration").textContent=val(r.evidence.independent_seconds);
+ $("sha").textContent=val(r.evidence.audio_master_sha256);
+ $("intent").textContent=val(r.planned_intent);
+ const box=$("existing-route");box.replaceChildren();
+ if(r.existing_production){
+  $("media-action").textContent=r.current_stage==="PRODUCTION_PENDING_LISTENING"?"Production recording exists, but subjective listening review remains pending. Open the existing page for any available playback.":"Production entry exists. Use its current canonical page for real playback; never duplicate the player on this preview.";
+  const a=document.createElement("a");a.href=r.existing_production.route;a.textContent="Open existing sound page";a.className="doclink";box.append(a);
+ }else{$("media-action").textContent="No approved audio master or playback route for this concept. Do not create a Play button or standalone Sound Page."}
+ const link=$("source-link");link.replaceChildren();
+ if(r.evidence.source_page&&/^https:\/\/[a-z0-9.-]+\//i.test(r.evidence.source_page)){
+  const a=document.createElement("a");a.href=r.evidence.source_page;a.rel="noopener noreferrer";a.target="_blank";a.textContent="Documented source page (rights still require verification)";a.className="doclink";link.append(a)
+ }
+ els.record.hidden=false;els.status.textContent=r.id+" loaded • no new audio or page is approved";
+ const u=new URL(location.href);u.searchParams.set("sound",r.id);history.replaceState(null,"",u.pathname+u.search);
+}
+function inspect(){
+ const input=els.input.value.trim().toLocaleLowerCase(),r=byId.get(input.toUpperCase())||all.find(x=>x.title_en.toLocaleLowerCase()===input);
+ if(!r){els.record.hidden=true;els.status.textContent="Record not found. Choose an ID from the suggestions.";return}
+ els.input.value=r.id;show(r)
+}
+els.button.addEventListener("click",inspect);
+els.input.addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();inspect()}});
+(async()=>{try{
+ const rsp=await fetch("/catalog/sound-production-registry-c5.json",{cache:"no-store"});if(!rsp.ok)throw Error("registry unavailable");
+ const data=await rsp.json();all=data.records;
+ if(all.length!==532||data.summary.production_catalog!==35)throw Error("registry counts mismatch");
+ for(const r of all){byId.set(r.id,r);const o=document.createElement("option");o.value=r.id;o.label=r.title_en;els.list.append(o)}
+ const input=new URLSearchParams(location.search).get("sound")||"SND-0040";els.input.value=input;inspect();
+}catch(e){els.status.textContent="Unable to load registry: "+e.message}})();
+</script></body></html>

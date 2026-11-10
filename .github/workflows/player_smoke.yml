@@ -23,6 +23,12 @@ on:
       - 'scripts/test_library_explorer_browser.cjs'
       - 'scripts/test_library_hubs_c4.cjs'
       - 'scripts/test_library_hubs_c4_browser.cjs'
+      - 'catalog/sound-production-registry-c5.json'
+      - 'catalog/sound-release-approvals.json'
+      - 'framework-preview/sound-detail/**'
+      - 'scripts/sound_release_gate.cjs'
+      - 'scripts/test_sound_production_registry_c5.cjs'
+      - 'scripts/test_sound_detail_blueprint_browser_c5.cjs'
       - 'catalog/framework-hubs-c4.json'
       - 'framework-preview/**'
       - 'scripts/test_relaxing_collection.cjs'
@@ -58,6 +64,7 @@ jobs:
           node scripts/test_loop_check.cjs
           node scripts/test_library_structure.cjs
           node scripts/test_library_hubs_c4.cjs
+          node scripts/test_sound_production_registry_c5.cjs
           node scripts/test_framework_staging.cjs
           node scripts/build_sound_library_foundation.cjs
           node scripts/test_library_foundation.cjs
@@ -83,3 +90,4 @@ jobs:
           node scripts/test_library_foundation_browser.cjs
           node scripts/test_library_explorer_browser.cjs
           node scripts/test_library_hubs_c4_browser.cjs
+          node scripts/test_sound_detail_blueprint_browser_c5.cjs
