@@ -1,0 +1,31 @@
+name: C6B Ocean Migration Audit and Source Gate
+on:
+  pull_request:
+    paths:
+      - "scripts/test_water_ocean_wave1_production.cjs"
+      - "scripts/c6b_source_probe.cjs"
+      - "scripts/test_c6b_migration_audit.cjs"
+      - "catalog/sound-production-queue-c6.json"
+      - "docs/c6b-source-and-ocean-audit-2026-11-10.md"
+      - ".github/workflows/c6b_audit.yml"
+  push:
+    branches: [main]
+    paths:
+      - "scripts/test_water_ocean_wave1_production.cjs"
+      - "scripts/c6b_source_probe.cjs"
+      - "scripts/test_c6b_migration_audit.cjs"
+      - "catalog/sound-production-queue-c6.json"
+      - ".github/workflows/c6b_audit.yml"
+permissions:
+  contents: read
+jobs:
+  fast-structural-regression:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Check post-migration integrity, read-only source probe and closed C6 release gates
+        run: node scripts/test_c6b_migration_audit.cjs
