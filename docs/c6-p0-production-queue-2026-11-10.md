@@ -51,3 +51,13 @@ The preexisting independent `Approved Review Audio Dedup — Independent QA` at 
 - `.github/workflows/c6-p0-queue.yml` — PR and main CI for C6 and inherited C5 gate checks
 
 Run `node scripts/test_sound_production_queue_c6.cjs` and `node scripts/test_sound_production_registry_c5.cjs`.
+
+## Source discovery progress: two page-level leads, not sourced or approved
+On 2026-11-10 we inspected the individual Freesound detail pages:
+- **SND-0039 / Crickets at Night**: [hargissssound's suburban crickets](https://freesound.org/people/hargissssound/sounds/536332/) displays **CC0**, WAV 48 kHz/24-bit stereo, **10:14.115**. The uploader explicitly notes occasional suburban cars and people. The WAV bytes have **not** been acquired, fingerprinted, listened to, or QA-tested; existence of CC0 page metadata does not prove absence of third-party rights or speech issues.
+- **SND-0040 / Morning Birds**: [ali.g's 2026 field recording](https://freesound.org/people/ali.g/sounds/855323/) displays **CC0**, MP3 48 kHz stereo ~180 kbps, **43:00.099**. The uploader mentions a deer barking midway; it could disturb sleep. This is a **lossy source**; do not label it an original lossless master. Bytes not acquired, listened to, fingerprinted or QA-tested.
+
+Both match the independent-length threshold **only on the publisher's displayed metadata**; neither advances the official `source_audit.status: UNSOURSED`, rights, QA or owner listening gates. The other eight have no viable documented >=600s source yet. Do not substitute shorter CC0 SFX and claim ten independently recorded minutes.
+
+## Deployment verification blocker on the preexisting C5 baseline
+The C5 main `de7395a...` Pages build succeeded but `pages build and deployment` workflow [42750700424](https://github.com/WhiteNoiseChoir/whitenoisechoir.github.io/actions/runs/42750700424) timed out in its deploy job and reported **FAILURE**. Direct reads of the C5 domain's Explorer, Morning Birds preview and Bird hub worked, but successful page fetches do not prove that the Pages deployment workflow finished successfully. A failed-job rerun was requested; verify its ultimate result before claiming C6 is live. The present C6 work only adds a noindexed review route, not playable audio.
