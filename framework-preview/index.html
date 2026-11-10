@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow,noarchive"><meta name="theme-color" content="#0c1718">
+<title>Library Framework — Editorial Staging | WhiteNoiseChoir</title>
+<meta name="description" content="Non-indexed editorial preview of sound-library taxonomy and inventory planning. Not a released sound catalog.">
+<style>
+:root{color-scheme:dark;font:16px/1.55 system-ui,-apple-system,Segoe UI,sans-serif;background:#0c1718;color:#e3f0e9}
+*{box-sizing:border-box}body{margin:0}main,header,footer{max-width:1120px;margin:auto;padding:22px clamp(16px,4vw,30px)}
+a{color:#b1f0cc}a:focus-visible,button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid #96e6b6;outline-offset:3px}
+header{border-bottom:1px solid #375346;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+header strong{font-size:21px}.muted{color:#a9c0b3}.eyebrow{font-size:12px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;color:#a5dabd}
+h1{font-size:clamp(30px,5vw,48px);line-height:1.12;margin:14px 0}.lead{max-width:800px;color:#c2d9c9}
+h2{font-size:23px;margin:37px 0 13px}.notice{background:#20382f;border:1px solid #65846b;border-radius:14px;padding:16px;margin:24px 0}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:22px 0}.stat{background:#162c28;border:1px solid #34584a;border-radius:12px;padding:15px}.stat b{font-size:29px;display:block}.stat span{font-size:12px;color:#b2c8b9}
+.hubs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.hub{border:1px solid #38574b;background:#152824;border-radius:12px;padding:16px;min-width:0}
+.hub strong{display:block}.hub small{color:#a5c1ac}.hub a{font-weight:700}
+.chip{display:inline-block;border:1px solid #526d5c;border-radius:30px;padding:2px 9px;font-size:11px;margin-bottom:6px}
+.planned{border-style:dashed;background:#172323}.filters{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:10px;margin:18px 0}
+label{display:block;font-size:12px;color:#b7d6c6;margin-bottom:5px}input,select{width:100%;background:#172823;border:1px solid #547566;color:#f1f9f2;border-radius:10px;padding:12px;min-height:46px;font:inherit}
+.count{color:#bed4c5;margin:14px 0}.results{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}
+.item{background:#152925;border:1px solid #355447;border-radius:12px;padding:15px;min-width:0}
+.item h3{font-size:17px;line-height:1.35;margin:6px 0}.item p{font-size:13px;color:#b4c8b9;margin:4px 0}
+.item .meta{font-size:12px;color:#9ac4a8}.pill{display:inline-block;font-size:11px;padding:3px 8px;border-radius:8px;background:#345846;margin-right:5px}
+.pill.pending{background:#4c4433;color:#f4dba9}.pill.effect{background:#3a4357}
+button{font:inherit;border:1px solid #66977b;background:#224835;border-radius:10px;color:#e8f9ec;cursor:pointer;padding:10px 18px;min-height:44px}
+button:hover{background:#346349}button:disabled{opacity:.5;cursor:not-allowed}
+.controls{display:flex;align-items:center;gap:12px;justify-content:center;margin:24px 0;flex-wrap:wrap}
+footer{border-top:1px solid #375346;color:#9cb8aa;font-size:13px}
+@media(max-width:840px){.hubs{grid-template-columns:repeat(2,minmax(0,1fr))}.filters{grid-template-columns:repeat(2,minmax(0,1fr))}.stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:520px){.hubs,.results,.filters{grid-template-columns:1fr}.stats{gap:8px}.stat b{font-size:23px}}
+</style></head>
+<body>
+<header><strong>◉ WhiteNoiseChoir</strong><a href="/sounds/">Back to live Sound Library</a></header>
+<main>
+<div class="eyebrow">Editorial staging • Non-indexed • Not production</div><h1>Full Sound Library Framework</h1>
+<p class="lead">Explore the planned taxonomy and editorial inventory before new audio or SEO pages are released. Planned entries are not playable; existing sound-page links are taken from the production catalog only.</p>
+<div class="notice"><strong>Framework-only preview.</strong> Nothing here represents new MP3s or approved indexable pages. The six proposed hub URLs shown below are <em>not active links</em> until approved and built.</div>
+<section class="stats" aria-label="Inventory status"><div class="stat"><b id="stat-items">—</b><span>Sound-type records</span></div><div class="stat"><b id="stat-groups">—</b><span>Logical groups</span></div><div class="stat"><b id="stat-live">—</b><span>Production catalog records</span></div><div class="stat"><b>0</b><span>New MP3s in this stage</span></div></section>
+<section aria-labelledby="hub-heading"><h2 id="hub-heading">Physical library hubs</h2><p class="muted">12 existing links are preserved. Six new hubs are conceptual proposals, not published routes. Ocean remains an internal browsing section.</p>
+<div id="hub-list" class="hubs"></div><p class="muted">Ocean Waves: <a href="/sounds/#ocean-waves">existing virtual category section</a>; <code>/sounds/ocean-waves/</code> remains a dedicated Sound Page.</p></section>
+<section aria-labelledby="inventory-heading"><h2 id="inventory-heading">Browse 28 logical groups</h2>
+<p class="muted">Browse types and facets here without generating separate public SEO pages.</p>
+<div class="filters"><div><label for="q">Search sound name / ID</label><input id="q" type="search" placeholder="e.g. rain, fan, cricket" autocomplete="off"></div>
+<div><label for="group">Logical group</label><select id="group"><option value="">All 28 groups</option></select></div>
+<div><label for="status">Audio status</label><select id="status"><option value="">Any status</option><option value="live">Production catalog</option><option value="planned">Not produced</option><option value="other">Facet / mix / SFX</option></select></div>
+<div><label for="priority">Priority</label><select id="priority"><option value="">All priorities</option><option>P0</option><option>P1</option><option>P2</option></select></div></div>
+<p class="count" id="count" aria-live="polite">Loading editorial inventory…</p><div class="results" id="results" aria-live="polite"></div>
+<div class="controls"><button id="more" type="button" hidden>Show 36 more</button><button id="reset" type="button">Clear filters</button></div>
+</section>
+</main><footer>Research preview only. Existing media, routes, canonicals, sitemap and 45 mixer presets remain unchanged. No automatic crawl or release permission.</footer>
+<script>
+"use strict";
+const HUBS=[{"title":"Noise Colors","route":"/sounds/noise-colors/","type":"existing"},{"title":"Rain & Thunder","route":"/sounds/rain/","type":"existing"},{"title":"Rivers & Water","route":"/sounds/water/","type":"existing"},{"title":"Fire & Warmth","route":"/sounds/fire/","type":"existing"},{"title":"Fans & Ventilation","route":"/sounds/fan-noise/","type":"existing"},{"title":"Household Machines","route":"/sounds/household/","type":"existing"},{"title":"Wind & Weather","route":"/sounds/wind-weather/","type":"existing"},{"title":"Forest & Wildlife","route":"/sounds/nature/","type":"existing"},{"title":"Transportation","route":"/sounds/transportation/","type":"existing"},{"title":"Urban & Indoor","route":"/sounds/urban/","type":"existing"},{"title":"Hums & Sci-Fi","route":"/sounds/hums-drones/","type":"existing"},{"title":"Gentle & Baby","route":"/sounds/gentle-sounds/","type":"existing"},{"title":"Birds & Birdsong","route":"/sounds/bird-sounds/","type":"proposed"},{"title":"Insects & Amphibians","route":"/sounds/insect-frog-sounds/","type":"proposed"},{"title":"Mammals & Wildlife","route":"/sounds/animal-sounds/","type":"proposed"},{"title":"ASMR & Tactile","route":"/sounds/asmr-sounds/","type":"proposed"},{"title":"Meditation & Tonal","route":"/sounds/meditation-sounds/","type":"proposed"},{"title":"Industrial & Factory","route":"/sounds/industrial-sounds/","type":"proposed"}];
+const els={q:document.querySelector("#q"),group:document.querySelector("#group"),status:document.querySelector("#status"),priority:document.querySelector("#priority"),results:document.querySelector("#results"),count:document.querySelector("#count"),more:document.querySelector("#more"),reset:document.querySelector("#reset")};
+function node(tag,txt,cl){const e=document.createElement(tag);if(txt!==undefined)e.textContent=String(txt);if(cl)e.className=cl;return e}
+for(const hub of HUBS){const c=node("div",undefined,"hub "+(hub.type==="proposed"?"planned":""));c.append(node("span",hub.type==="proposed"?"Proposed / no page yet":"Existing hub","chip"));if(hub.type==="existing"){const a=node("a",hub.title);a.href=hub.route;c.append(a)}else{c.append(node("strong",hub.title),node("small","Suggested path: "+hub.route))}document.querySelector("#hub-list").append(c)}
+let rows=[],cols={},soundMap=new Map(),filtered=[],shown=36,groupLabels=new Map();
+function get(r,k){return r[cols[k]]??""}
+function displayStatus(r){if(get(r,"v2_type")==="PRODUCTION_ASSET")return "live";if(["SHORT_SFX","TECHNICAL_FACET","SOUNDSCAPE_MIX"].includes(get(r,"v2_type")))return "other";return "planned"}
+function show(r){const c=node("article",undefined,"item"),live=displayStatus(r)==="live",type=get(r,"v2_type");const st=node("span",live?"Catalog record":type==="SHORT_SFX"?"Short effect":type==="TECHNICAL_FACET"?"Technical facet":type==="SOUNDSCAPE_MIX"?"Soundscape / mix":"Planned — no playable audio","pill "+(live?"":type==="SHORT_SFX"?"effect":"pending"));c.append(st,node("span"," "+get(r,"priority"),"meta"),node("h3",get(r,"name_en")),node("p",get(r,"name_vi")||"Vietnamese label: editorial review needed"),node("p",(groupLabels.get(get(r,"family_id"))||get(r,"family_id"))+" · "+get(r,"id"),"meta"));if(live){const ids=get(r,"production_ids").split(";").map(s=>s.trim()).filter(Boolean);const production=ids.map(id=>soundMap.get(id)).find(Boolean);if(production){const a=node("a","Open existing sound page");a.href="/sounds/"+production.slug+"/";c.append(a)}else c.append(node("p","Current catalog entry — URL confirmation pending"))}else c.append(node("p","Not playable · No public detail page created","meta"));return c}
+function render(){let term=els.q.value.trim().toLocaleLowerCase(),family=els.group.value,status=els.status.value,priority=els.priority.value;filtered=rows.filter(r=>(!term||[get(r,"name_en"),get(r,"name_vi"),get(r,"id")].some(t=>String(t).toLocaleLowerCase().includes(term)))&&(!family||get(r,"family_id")===family)&&(!priority||get(r,"priority")===priority)&&(!status||displayStatus(r)===status));els.results.replaceChildren(...filtered.slice(0,shown).map(show));els.count.textContent=filtered.length+" matching sound-type records · showing "+Math.min(shown,filtered.length)+". Not an MP3 count.";els.more.hidden=shown>=filtered.length}
+for(const e of [els.q,els.group,els.status,els.priority])e.addEventListener("input",()=>{shown=36;render()});
+els.more.addEventListener("click",()=>{shown+=36;render()});
+els.reset.addEventListener("click",()=>{els.q.value="";els.group.value="";els.status.value="";els.priority.value="";shown=36;render()});
+(async()=>{try{const [a,b]=await Promise.all([fetch("./master-inventory.json",{cache:"no-store"}),fetch("/catalog/library.json",{cache:"no-store"})]);if(!a.ok||!b.ok)throw Error("Inventory or production catalog unavailable");const d=await a.json(),lib=await b.json();cols=Object.fromEntries(d.columns.map((x,i)=>[x,i]));rows=d.rows;for(const s of lib.sounds)soundMap.set(s.id,s);for(const f of d.logical_families)groupLabels.set(f[0],f[1]);for(const [id,name] of [...groupLabels.entries()]){const op=node("option",name);op.value=id;els.group.append(op)}if(rows.length!==532||groupLabels.size!==28||lib.sounds.length!==35)throw Error("Unexpected editorial data counts");document.querySelector("#stat-items").textContent=rows.length;document.querySelector("#stat-groups").textContent=groupLabels.size;document.querySelector("#stat-live").textContent=lib.sounds.length;render()}catch(e){els.count.textContent="Framework data could not load: "+e.message;els.more.hidden=true}})();
+</script></body></html>
