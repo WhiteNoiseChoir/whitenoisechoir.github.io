@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow,noarchive">
+<meta name="theme-color" content="#0c1718">
+<title>C6 • P0 Audio Listening Review (Locked Until QA) — WhiteNoiseChoir</title>
+<meta name="description" content="Private editorial staging for C6 P0 recordings; no playable file until source, rights and acoustic QA are verified.">
+<style>
+:root{color-scheme:dark;font:16px/1.55 system-ui,-apple-system,Segoe UI,sans-serif;background:#0c1718;color:#e6f5ec}
+*{box-sizing:border-box}body{margin:0}header,main,footer{max-width:900px;margin:auto;padding:20px clamp(16px,4vw,30px)}
+header{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;border-bottom:1px solid #365547}a{color:#9fe6c3}
+h1{font-size:clamp(26px,5vw,43px);line-height:1.15;letter-spacing:-.03em;margin:12px 0}h2{font-size:20px}p{color:#b8d1c2}
+.notice{background:#2e3327;border:1px solid #807651;border-radius:12px;padding:14px;margin:20px 0;color:#f4e5bf}
+.panel{background:#162c26;border:1px solid #3b5d4c;border-radius:16px;padding:clamp(14px,3vw,22px);margin:16px 0}
+label{display:block;font-weight:700;margin-bottom:9px}select,input[type=range]{width:100%}select{background:#0d211b;color:#eafff0;padding:13px;border:1px solid #668c74;border-radius:9px;min-height:48px;font:inherit}
+small,.muted{color:#acc6b7;font-size:13px}.status{font-size:13px;display:inline-block;border:1px solid #6d755f;background:#2d382c;border-radius:22px;padding:5px 11px;margin:8px 0 0}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.grid div{background:#10241e;border:1px solid #3b5c4a;border-radius:10px;padding:12px;overflow-wrap:anywhere}
+.grid strong{display:block;margin-top:6px}dt{color:#b3c9bb;font-size:13px}dd{margin:0 0 11px;overflow-wrap:anywhere}
+audio{width:100%;margin:14px 0}button{padding:12px;border:1px solid #789887;border-radius:10px;background:#285941;color:#ecffee;min-height:44px;font:inherit;cursor:pointer}
+button:disabled,input:disabled{opacity:.45;cursor:not-allowed}.controls{display:flex;gap:10px;flex-wrap:wrap}
+.controls button{flex:1 1 155px}input[type=range]{min-height:36px;accent-color:#9fe6c3}
+.timer{display:flex;justify-content:space-between;font-size:13px;color:#b9dbc9}
+fieldset{border:1px solid #4f705c;border-radius:11px;margin:15px 0;padding:12px}legend{padding:0 6px}.check{font-weight:400}
+:focus-visible{outline:3px solid #d0f6df;outline-offset:3px}footer{font-size:12px;color:#a4b9ad;border-top:1px solid #365547}
+@media(max-width:620px){.grid{grid-template-columns:1fr}.controls button{flex:1 1 100%}}
+</style></head>
+<body>
+<header><strong>◉ WhiteNoiseChoir — C6</strong><a href="/sounds/explore/">532-item research explorer</a></header>
+<main>
+<p class="muted">C6 • Editorial source research / independent audio • Not for SEO indexing</p>
+<h1>P0 listening review room</h1>
+<p>Ten distinct, proposed MP3 candidates. Audio will become available here only after the exact original source, reuse rights and whole-file acoustic QA have passed. This room does not publish or approve anything.</p>
+<div class="notice"><strong>No new C6 MP3 currently exists.</strong> All ten are research records, not playable tracks. The timeline and seek-to-end controls are intentionally disabled until independently verified review media is staged. A 10-minute loop made from a short sample does not count as an independent 10-minute original.</div>
+<section class="panel">
+<label for="track">Select proposed recording</label>
+<select id="track" aria-label="C6 candidate"><option>Loading ten candidates…</option></select>
+<p id="load-status" role="status">Loading C6 queue…</p>
+<div class="grid">
+<div><small>Original source / rights</small><strong id="rights">—</strong></div>
+<div><small>Independent source duration</small><strong id="duration">—</strong></div>
+<div><small>Whole-file acoustic QA</small><strong id="technical">—</strong></div>
+<div><small>Owner listening signoff</small><strong id="approval">—</strong></div>
+</div>
+<p id="stage" class="status">Awaiting source</p>
+<h2>Acoustic identity and duplicate review</h2><p id="brief"></p><p id="dedup"></p>
+<dl><dt>Related existing production IDs to compare</dt><dd id="compare"></dd><dt>Source acquisition note</dt><dd id="guidance"></dd></dl>
+</section>
+<section class="panel">
+<h2>Audition and seek controls</h2>
+<p id="availability" role="status" aria-live="polite">Review media unavailable until QA.</p>
+<audio id="player" controls preload="metadata" hidden aria-label="C6 QA-approved MP3 audition player"></audio>
+<label for="seek">Seek through the full MP3 (available after source verification)</label>
+<input id="seek" type="range" min="0" max="1000" value="0" step="1" disabled aria-label="Seek position within recording">
+<div class="timer"><span id="elapsed">00:00</span><span id="total">--:--</span></div>
+<div class="controls"><button id="play" type="button" disabled>Play selected audio</button><button id="near-end" type="button" disabled>Jump to last 5 seconds</button><button id="restart" type="button" disabled>Restart</button></div>
+<fieldset><legend>Loop seam listening test</legend><label class="check"><input id="loop" type="checkbox" disabled> Loop review MP3 after the end (off by default)</label></fieldset>
+<p class="muted">When an independent 600-second original is verified and a seekable review master passes checks, these controls activate. The jump feature tests the ending immediately without waiting ten minutes. Playback here is separate from the public HLS player.</p>
+</section>
+<section class="panel">
+<h2>Human approval remains separate</h2>
+<p>Listen to the start, middle and end; confirm the title matches the acoustic content, the sound is distinct from existing masters, no speech or sharp surprises are present, and the transition is comfortable. Any approval must be entered in the reviewed release ledger through a separate PR. This screen deliberately has no one-click publishing or approval action.</p>
+<p><a href="/framework-preview/sound-detail/?sound=SND-0040">Open C5 evidence-gate blueprint</a></p>
+</section>
+</main>
+<footer>Stage C6A · noindex · no sitemap entry · production catalog, player, 45 presets and existing sound URLs preserved.</footer>
+<script>
+"use strict";
+const el=id=>document.getElementById(id);
+const track=el("track"),audio=el("player"),seek=el("seek"),loop=el("loop");
+const play=el("play"),near=el("near-end"),restart=el("restart");
+let items=[],chosen=null,pendingNearEnd=false;
+function tm(t){if(!Number.isFinite(t)||t<0)return "--:--";const n=Math.floor(t);return String(Math.floor(n/60)).padStart(2,"0")+":"+String(n%60).padStart(2,"0")}
+function fullHash(x){return typeof x==="string"&&/^[a-f0-9]{64}$/i.test(x)}
+function safeReview(r){
+ const s=r.source_audit,m=r.master_audit,a=r.review_audio;
+ return !!(s&&m&&a&&s.status==="VERIFIED"&&s.independent_seconds>=600&&fullHash(s.original_asset_sha256)&&m.status==="QA_PASS"&&fullHash(m.master_sha256)&&a.technical_qa_pass===true&&a.sha256===m.master_sha256&&typeof a.mp3_path==="string"&&/^\/signature\/c6-review-audio\/[a-z0-9-]+\.mp3$/.test(a.mp3_path))
+}
+function clearAudio(){
+ audio.pause();audio.removeAttribute("src");audio.load();audio.hidden=true;
+ seek.value=0;seek.disabled=true;loop.checked=false;loop.disabled=true;
+ play.disabled=true;near.disabled=true;restart.disabled=true;
+ el("elapsed").textContent="00:00";el("total").textContent="--:--";pendingNearEnd=false
+}
+function show(){
+ chosen=items.find(r=>r.record_id===track.value);clearAudio();if(!chosen)return;
+ const r=chosen;
+ el("rights").textContent=r.source_audit.status==="VERIFIED"?"Verified in staged ledger":"NOT VERIFIED — no acquired source";
+ el("duration").textContent=r.source_audit.independent_seconds==null?"Unknown; >= 600 original seconds required":r.source_audit.independent_seconds+" independent seconds";
+ el("technical").textContent=r.master_audit.status==="QA_PASS"?"QA PASS":r.master_audit.status;
+ el("approval").textContent=r.owner_listening.status;
+ el("stage").textContent=r.record_id+" · "+r.requested_source_type+" · "+r.release_status;
+ el("brief").textContent=r.acoustic_brief;
+ el("dedup").textContent=r.dedup_instructions;
+ el("compare").textContent=r.compare_existing_ids.join(", ");
+ el("guidance").textContent=r.source_search_guidance;
+ const ready=safeReview(r);
+ el("availability").textContent=ready?"QA-approved review MP3 staged; owner listening approval is still separate.":"Locked: source verification, independent duration and/or acoustic QA missing. There is no C6 audio to listen to yet.";
+ if(ready){
+  audio.src=r.review_audio.mp3_path;audio.hidden=false;audio.load();
+  play.disabled=false;near.disabled=false;restart.disabled=false;seek.disabled=false;loop.disabled=false;
+ }
+ const u=new URL(window.location.href);u.searchParams.set("sound",r.record_id);history.replaceState(null,"",u.pathname+u.search);
+}
+track.addEventListener("change",show);
+play.addEventListener("click",()=>{if(audio.hidden)return;audio.play().catch(()=>{el("availability").textContent="Tap the native audio controls to enable playback."})});
+restart.addEventListener("click",()=>{if(!audio.hidden){audio.currentTime=0;seek.value=0}});
+near.addEventListener("click",()=>{if(audio.hidden)return; if(Number.isFinite(audio.duration)&&audio.duration>6){audio.currentTime=Math.max(0,audio.duration-5);pendingNearEnd=false}else{pendingNearEnd=true;audio.load()}});
+seek.addEventListener("input",()=>{if(!audio.hidden&&Number.isFinite(audio.duration)&&audio.duration>0){audio.currentTime=(Number(seek.value)/1000)*audio.duration}});
+loop.addEventListener("change",()=>{audio.loop=loop.checked});
+audio.addEventListener("loadedmetadata",()=>{el("total").textContent=tm(audio.duration);if(pendingNearEnd&&audio.duration>6){audio.currentTime=audio.duration-5;pendingNearEnd=false}});
+audio.addEventListener("timeupdate",()=>{el("elapsed").textContent=tm(audio.currentTime);if(Number.isFinite(audio.duration)&&audio.duration>0)seek.value=String(Math.round(1000*audio.currentTime/audio.duration))});
+audio.addEventListener("error",()=>{if(!audio.hidden)el("availability").textContent="The staged file could not be opened. Stop review; do not approve."});
+(async()=>{try{
+const rsp=await fetch("/catalog/sound-production-queue-c6.json",{cache:"no-store"});if(!rsp.ok)throw Error("C6 queue unavailable");
+const data=await rsp.json();items=data.items;if(items.length!==10)throw Error("C6 queue count mismatch");
+track.replaceChildren();for(const r of items){const opt=document.createElement("option");opt.value=r.record_id;opt.textContent=r.rank+". "+r.title_en+" ("+r.record_id+")";track.append(opt)}
+const id=new URLSearchParams(location.search).get("sound");if(items.some(r=>r.record_id===id))track.value=id;
+el("load-status").textContent="10 P0 candidates · no media or publishing approved";show();
+}catch(e){el("load-status").textContent="Unable to load review queue: "+e.message;track.replaceChildren();clearAudio()}})();
+</script>
+</body></html>
