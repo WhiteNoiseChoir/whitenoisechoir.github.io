@@ -33,7 +33,8 @@ def probe(p):
     if not MIN_DURATION<=dur<=86400:raise ValueError("duration out of bounds")
     return dur,stream,meta.get("format",{})
 def valid_rights(row):
-    rights=row.get("rights",{})
+    rights=row.get("rights")
+    if not isinstance(rights,dict):return False,["RIGHTS_RECORD_MISSING"]
     license=rights.get("license")
     if license not in SUPPORTED:return False,["LICENSE_NOT_ELIGIBLE"]
     errs=[]
@@ -46,6 +47,8 @@ def valid_rights(row):
         errs.append("CC_BY_ATTRIBUTION_MISSING")
     return not errs,errs
 def inspect(row,seen):
+    if not isinstance(row,dict):
+        return {"candidate_id":None,"status":"REJECTED","warnings":["MALFORMED_ROW"],"automatic_human_listening_required":False,"commercial_export_ready":False}
     ident=str(row.get("candidate_id","")).strip()
     result={"candidate_id":ident,"concept_ids":row.get("concept_ids",[]),
             "status":"NEEDS_REVIEW","warnings":[],"automatic_human_listening_required":False,
@@ -68,7 +71,7 @@ def inspect(row,seen):
     digest=sha256(p)
     result.update(file_sha256=digest,bytes=p.stat().st_size,duration_seconds=round(duration,3),
                   actual_independent_seconds="NOT_MEASURED",codec=stream.get("codec_name"),
-                  sample_rate_hz=int(stream.get("sample_rate",0)),channels=stream.get("channels"),
+                  sample_rate_hz=int(stream.get("sample_rate") or 0),channels=stream.get("channels"),
                   source_url=row.get("source_url"),creator=row.get("creator"),
                   rights=row.get("rights"),source_filename=p.name,
                   planned_storage_key="asset-library/sha256/"+digest[:2]+"/"+digest+p.suffix.lower(),
@@ -78,7 +81,7 @@ def inspect(row,seen):
     seen[digest]=ident
     if duration<0.3:result["warnings"].append("ULTRA_SHORT_CLIP_VERIFY_IF_USEFUL")
     if role=="SPEECH_OR_VOCAL":result["warnings"].append("SPEECH_VOICE_PRIVACY_AND_RIGHTS_REVIEW")
-    if stream.get("codec_name")=="mp3" and int(fmt.get("bit_rate",0))<64000:
+    if stream.get("codec_name")=="mp3" and int(fmt.get("bit_rate") or 0)<64000:
         result["warnings"].append("LOW_BITRATE_QUALITY_SPOT_CHECK")
     rights_ok,rights_err=valid_rights(row)
     if not rights_ok:result["warnings"].extend(rights_err)
