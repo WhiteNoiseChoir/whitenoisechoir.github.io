@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "revision": "2026-11-10-SOUND-ASSET-LIBRARY-V1",
+  "revision": "2026-11-10-SOUND-ASSET-LIBRARY-FAST-INTAKE-V1",
   "purpose": "Independent source-level clips for future multi-track timeline mixing and user-exported compositions; preserve the established 532 editorial concepts, 35 production sound sources and 45 presets.",
   "immutable_baseline": {
     "existing_editorial_records": 532,
@@ -49,27 +49,23 @@
   },
   "lifecycle": [
     "DISCOVERED",
-    "SOURCE_METADATA_VERIFIED",
-    "RIGHTS_REVIEWED",
-    "ORIGINAL_BYTES_ACQUIRED",
-    "FILE_QA_PASS",
-    "ACOUSTIC_ROLE_QA_PASS",
-    "DEDUPE_PASS",
-    "MIX_READY"
+    "ACQUIRED_NOT_VERIFIED",
+    "FAST_QA_SCREENED",
+    "READY_FOR_STORAGE",
+    "MIX_READY_AFTER_STORAGE_CHECK",
+    "NEEDS_REVIEW",
+    "DUPLICATE",
+    "REJECTED"
   ],
   "required_mixing_checks": [
     "source_url",
     "creator",
-    "license_proof_url",
-    "license_verification_date",
-    "sha256",
-    "duration_seconds",
-    "actual_independent_seconds",
-    "codec_and_channels",
-    "role_qa",
-    "loudness_peak",
-    "duplicate_check",
-    "mix_export_rights"
+    "license_evidence_url",
+    "rights_verification",
+    "source_file_sha256",
+    "audio_decode_and_duration",
+    "exact_file_dedup",
+    "playable_storage_object_verified"
   ],
   "restrictions": {
     "candidate_not_mix_ready_until_all_gates_pass": true,
@@ -81,5 +77,49 @@
     "do_not_modify_previous_c6_queue": true
   },
   "asset_count": 0,
-  "assets": []
+  "assets": [],
+  "fast_intake": {
+    "policy": "MAXIMUM_BREADTH_WITH_AUTOMATED_MINIMAL_INGESTION_QA",
+    "duration_rule": "ANY_POSITIVE_AUDIO_LENGTH_ACCEPTED; NO_10_MINUTE_MINIMUM_FOR_ASSETS",
+    "acceptable_roles": "All original source roles including 0.5s one-shots and repeating textures",
+    "no_per_clip_owner_listening": true,
+    "no_mandatory_acoustic_panel_or_long_master": true,
+    "no_mandatory_independent_600_seconds": true,
+    "automatic_file_checks": [
+      "file_exists",
+      "format_supported",
+      "ffprobe_audio_decode_header",
+      "file_length_positive",
+      "sha256_exact_dedup"
+    ],
+    "required_rights_data": [
+      "source_url",
+      "creator",
+      "declared_license",
+      "license_evidence_url",
+      "source_license_verified",
+      "authorized_download",
+      "website_playback_allowed",
+      "remix_allowed"
+    ],
+    "automatic_review_exceptions": [
+      "unverified_license_or_distribution_rights",
+      "missing_creator_or_provenance",
+      "unreadable_file",
+      "voice_or_spoken_content",
+      "missing_category_data",
+      "suspected_corrupt_audio"
+    ],
+    "optional_async_quality_flags": [
+      "loudness_peak",
+      "long_silence",
+      "near_dup_fingerprint",
+      "low_bitrate",
+      "background_voice_or_music",
+      "audibly_bad_loop_seam"
+    ],
+    "publish_policy": "A fully authorized, technically valid asset can be uploaded and offered for mixing without per-file owner listening; only publish assets whose verified rights permit streaming/reuse. SEO detail pages and replacements of the 35 existing masters still use separate approval.",
+    "youtube_policy": "Commercial remix and export permission must be checked per audio asset. Export rights may differ from website playback rights.",
+    "workflow": "DISCOVER -> LICENSE_EVIDENCE -> AUTHORIZED_DOWNLOAD -> FAST_PROBE_AND_SHA -> STORE -> MIX_READY; flag and review only exceptions"
+  }
 }
