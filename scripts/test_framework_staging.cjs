@@ -53,6 +53,8 @@ assert.ok(!/<audio\\b/i.test(liveExplorer),"published directory contains no fake
 assert.ok(!/<link rel="canonical"/i.test(liveExplorer),"planning directory has no competing canonical");
 for(const i of ["sleep","relax","focus","baby"])assert.ok(liveExplorer.includes('data-intent="'+i+'"'),"missing live intent "+i);
 for(const href of ["/sounds/bird-sounds/","/sounds/animal-sounds/","/sounds/asmr-sounds/"]){
- assert.ok(!liveExplorer.includes('href="'+href+'"'),"unbuilt hub linked: "+href);
+ assert.ok(liveExplorer.includes('"route":"'+href+'"'),"new framework hub must be listed: "+href);
 }
+assert.ok(liveExplorer.includes('hub.type==="planned_hub"'),"six hubs are real browsing routes but still planned audio");
+assert.ok(liveExplorer.includes('new URLSearchParams(location.search).get("group")'),"deep links select correct taxonomy group");
 console.log("PASS — C2 + /sounds/explore/ launch safety, 532 records / 28 groups / 35 production, zero new media");
