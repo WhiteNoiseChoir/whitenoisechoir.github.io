@@ -1,0 +1,76 @@
+{
+  "schema_version": 1,
+  "phase": "C4",
+  "status": "PUBLISHED_CATEGORY_FRAMEWORK_PENDING_QA",
+  "source": "framework-preview/master-inventory.json",
+  "policy": "Six new hub routes contain planned concepts only and remain noindex. No MP3s or detail pages are created.",
+  "hubs": [
+    {
+      "id": "birds-birdsong",
+      "slug": "bird-sounds",
+      "title": "Bird Sounds & Birdsong",
+      "route": "/sounds/bird-sounds/",
+      "parent_route": "/sounds/nature/",
+      "subgroups": {
+        "birds": "Birdsong & calls"
+      }
+    },
+    {
+      "id": "insects-amphibians",
+      "slug": "insect-frog-sounds",
+      "title": "Insect & Frog Sounds",
+      "route": "/sounds/insect-frog-sounds/",
+      "parent_route": "/sounds/nature/",
+      "subgroups": {
+        "insects": "Insects",
+        "amphibians": "Frogs & amphibians"
+      }
+    },
+    {
+      "id": "mammals-wildlife",
+      "slug": "animal-sounds",
+      "title": "Animal & Wildlife Sounds",
+      "route": "/sounds/animal-sounds/",
+      "parent_route": "/sounds/nature/",
+      "subgroups": {
+        "mammals": "Mammals & pets",
+        "marine": "Marine wildlife",
+        "reptiles-other": "Reptiles & other wildlife"
+      }
+    },
+    {
+      "id": "asmr-tactile",
+      "slug": "asmr-sounds",
+      "title": "ASMR & Tactile Sounds",
+      "route": "/sounds/asmr-sounds/",
+      "parent_route": "/sounds/",
+      "subgroups": {}
+    },
+    {
+      "id": "meditation-tonal",
+      "slug": "meditation-sounds",
+      "title": "Meditation & Tonal Sounds",
+      "route": "/sounds/meditation-sounds/",
+      "parent_route": "/sounds/gentle-sounds/",
+      "subgroups": {}
+    },
+    {
+      "id": "industrial-factory",
+      "slug": "industrial-sounds",
+      "title": "Industrial & Factory Sounds",
+      "route": "/sounds/industrial-sounds/",
+      "parent_route": "/sounds/hums-drones/",
+      "subgroups": {}
+    }
+  ],
+  "expected_total_records": 182,
+  "expected_counts": {
+    "birds-birdsong": 37,
+    "insects-amphibians": 34,
+    "mammals-wildlife": 64,
+    "asmr-tactile": 22,
+    "meditation-tonal": 11,
+    "industrial-factory": 14
+  },
+  "approved_new_indexable_pages": 0
+}
