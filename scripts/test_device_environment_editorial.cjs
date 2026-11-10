@@ -64,7 +64,7 @@ for(const [id,slug,allowIndex,detail] of cases){
  const web=scripts.find(x=>x["@type"]==="WebPage");
  const crumbs=scripts.find(x=>x["@type"]==="BreadcrumbList");
  assert.ok(audio&&web&&crumbs,id+" audio, webpage and breadcrumb JSON-LD");
- assert.equal(audio.contentUrl,root+"/audio/"+id+".mp3");
+ assert.equal(audio.contentUrl,"https://media.whitenoisechoir.com/audio/"+id+".mp3");
  assert.equal(audio.duration,"PT10M");
  assert.equal(web.url,url);
  assert.equal(web.mainEntity["@id"],url+"#audio");
