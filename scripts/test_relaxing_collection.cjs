@@ -29,7 +29,7 @@ assert.deepEqual(page.mainEntity.itemListElement.map(x=>x.url),expected.map(id=>
 assert.equal(crumb.itemListElement.length,3);
 assert.match(html,/<title>Relaxing Sounds:/);
 assert.match(html,/<meta name="description" content="[^"]{100,165}"/);
-assert.match(html,/<link rel="canonical" href="https:\/\/whitenoisechoir\.github\.io\/collections\/relaxing-sounds\/"/);
+assert.match(html,/<link rel="canonical" href="https:\/\/whitenoisechoir\.com\/collections\/relaxing-sounds\/"/);
 assert.ok(!/<meta name="robots" content="noindex/.test(html),"Finished editorial page is indexable");
 assert.ok(!/<audio[^>]+autoplay/.test(html),"Audio must not autoplay");
 assert.match(html,/<audio controls loop preload="none" data-sound="rain-on-window-real"/);
