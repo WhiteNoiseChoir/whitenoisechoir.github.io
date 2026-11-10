@@ -1,0 +1,39 @@
+name: C6C Stable Library Search Grid Regression
+on:
+  pull_request:
+    paths:
+      - 'assets/persistent-router.js'
+      - 'scripts/test_browser_navigation.cjs'
+      - '.github/workflows/c6c_library_search_fix.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'assets/persistent-router.js'
+      - 'scripts/test_browser_navigation.cjs'
+      - '.github/workflows/c6c_library_search_fix.yml'
+permissions:
+  contents: read
+jobs:
+  test-search-selector-and-navigation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Static selectors, 45 player IDs, legacy 35 and SEO non-regression
+        run: |
+          set -euo pipefail
+          node --check assets/persistent-router.js
+          node scripts/test_c6c_production_main.cjs
+          node scripts/test_library_structure.cjs
+          node scripts/test_library_foundation.cjs
+          grep -q 'main.querySelector("#wnc-catalog-grid")' assets/persistent-router.js
+          grep -q 'main.querySelector("#wnc-family-grid")' assets/persistent-router.js
+      - name: Real Chromium persistent navigation, Pink search, filter and mobile QA
+        run: |
+          set -euo pipefail
+          npm install --no-save playwright@1.55.0
+          python3 -m http.server 8787 --bind 127.0.0.1 > /tmp/wnc-c6c-search-http.log 2>&1 &
+          sleep 2
+          node scripts/test_browser_navigation.cjs
