@@ -1,0 +1,24 @@
+#!/usr/bin/env node
+"use strict";
+const fs=require("node:fs"),assert=require("node:assert/strict");
+const j=x=>JSON.parse(fs.readFileSync(x,"utf8"));
+const a=j("catalog/sound-asset-library-v1.json"),m=j("catalog/mix-timeline-example-v1.json"),catalog=j("catalog/library.json"),r=j("catalog/sound-production-registry-c5.json");
+assert.equal(a.schema_version,1);assert.equal(a.asset_count,a.assets.length);assert.equal(a.asset_count,0,"Foundation cannot silently add unverified audio");
+assert.equal(a.durations_policy.minimum_seconds_for_mix_asset,null,"Short effects must not be rejected by 10min threshold");
+assert.ok(a.source_roles.includes("ONE_SHOT")&&a.source_roles.includes("CONTINUOUS_BED")&&a.source_roles.includes("PASS_BY"));
+assert.ok(a.restrictions.candidate_not_mix_ready_until_all_gates_pass);
+assert.ok(a.restrictions.never_automatically_index_asset_routes);
+assert.equal(a.immutable_baseline.existing_editorial_records,532);
+assert.equal(catalog.sounds.length,35);assert.equal(r.summary.total_records,532);assert.equal(r.summary.short_sfx,16);assert.equal(r.summary.soundscape_mixes,14);
+assert.equal(m.status,"DEMONSTRATION_ONLY_ASSET_IDS_UNRESOLVED_NOT_PLAYABLE_NOT_EXPORTABLE");
+assert.ok(m.tracks.every(x=>x.asset_id===null&&x.editable===true));
+const by=id=>m.tracks.find(x=>x.track_id===id);
+assert.equal(by("stream-bed").start_ms,0);
+assert.equal(by("wolf-at-minute-two").start_ms,120000);
+assert.equal(by("birds-at-minute-three").start_ms,180000);
+assert.equal(by("train-pass-by").start_ms,300000);
+assert.equal(m.total_duration_ms,900000);assert.equal(m.media_files_created,0);
+assert.equal(m.production_changes,0);
+assert.ok(m.export_requirements.includes("commercial redistribution and adaptation rights verified for all components"));
+const approvals=j("catalog/sound-release-approvals.json");assert.equal(approvals.approvals.length,0);
+console.log("ASSET_MIXER_FOUNDATION_PASS short SFX allowed, 532 editorial ideas kept, 35 live sources/45 presets untouched, 0 new assets, 0 playable mix, 0 new SEO URLs");
