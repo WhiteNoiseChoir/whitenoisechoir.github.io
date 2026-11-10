@@ -23,7 +23,7 @@ assert.ok(!sitemap.includes("/framework-preview/"),"preview excluded from sitema
 assert.ok(current.includes('id="wnc-family-grid"'),"original production library remains");
 assert.equal(data.rows.filter(r=>r[data.columns.indexOf("v2_type")]==="PRODUCTION_ASSET").length,35,"35 production records mapped in inventory");
 const vm=require("node:vm");
-const inline=html.match(/<script>([\\s\\S]*?)<\\/script>/)?.[1];
+const inline=html.split("<script>")[1]?.split("</script>")[0];
 assert.ok(inline,"framework inline JS exists");
 new vm.Script(inline,{filename:"framework-preview/index.html"}); 
 for(const i of ["sleep","relax","focus","baby"]){
