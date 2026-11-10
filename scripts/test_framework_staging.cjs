@@ -1,0 +1,25 @@
+#!/usr/bin/env node
+"use strict";
+const fs=require("node:fs"),assert=require("node:assert/strict");
+const data=JSON.parse(fs.readFileSync("framework-preview/master-inventory.json","utf8"));
+const lib=JSON.parse(fs.readFileSync("catalog/library.json","utf8"));
+const reg=JSON.parse(fs.readFileSync("catalog/family-registry.json","utf8"));
+const html=fs.readFileSync("framework-preview/index.html","utf8");
+const current=fs.readFileSync("sounds/index.html","utf8");
+const sitemap=fs.readFileSync("sitemap.xml","utf8");
+assert.equal(data.rows.length,532,"532 editorial records");
+assert.equal(data.logical_families.length,28,"28 logical family names");
+assert.equal(lib.sounds.length,35,"35 production records unchanged");
+assert.equal(reg.families.filter(x=>x.route_type==="existing_hub").length,12,"12 physical hubs preserved");
+assert.equal(reg.families.filter(x=>x.route_type==="virtual_family").length,1,"Ocean virtual preserved");
+assert.equal(new Set(data.rows.map(r=>r[0])).size,532,"all editorial IDs unique");
+assert.match(html,/<meta name="robots" content="noindex,nofollow,noarchive">/,"preview noindexed");
+assert.ok(html.includes('fetch("./master-inventory.json"'),"preview loads its own dataset");
+assert.ok(html.includes("Not playable · No public detail page created"),"planned states not fake playable");
+assert.ok(html.includes("/sounds/#ocean-waves"),"Ocean anchor kept");
+assert.ok(!/<audio\\b/i.test(html),"no preview fake audio");
+assert.ok(!/<link rel="canonical"/i.test(html),"preview must not claim canonical SEO URL");
+assert.ok(!sitemap.includes("/framework-preview/"),"preview excluded from sitemap");
+assert.ok(current.includes('id="wnc-family-grid"'),"original production library remains");
+assert.equal(data.rows.filter(r=>r[data.columns.indexOf("v2_type")]==="PRODUCTION_ASSET").length,35,"35 production records mapped in inventory");
+console.log("PASS — staging-only framework, 532 rows / 28 groups / 35 production, no fake audio or indexable pages");
