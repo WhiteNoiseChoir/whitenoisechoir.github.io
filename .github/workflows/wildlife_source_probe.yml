@@ -16,8 +16,10 @@ jobs:
     steps:
       - name: Checkout research branch
         uses: actions/checkout@v4
-      - name: Verify tools
+      - name: Install and verify media inspection tools
         run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y ffmpeg curl
           command -v ffprobe
           command -v ffmpeg
           command -v curl
