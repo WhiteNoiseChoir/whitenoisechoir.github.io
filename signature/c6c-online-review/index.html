@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="vi"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow,noarchive">
+<meta name="theme-color" content="#091d20">
+<title>C6C — 10 Original Synthetic Audio Auditions | WhiteNoiseChoir</title>
+<meta name="description" content="Ten 10-minute independent synthesized sounds for non-production owner review. Noindex, source and listening QA pending.">
+<style>
+:root{color-scheme:dark;background:#081b1d;color:#e8f5f0;font:16px/1.58 system-ui,-apple-system,Segoe UI,sans-serif}
+*{box-sizing:border-box}body{margin:0}header,main,footer{width:min(960px,100%);padding:20px clamp(16px,4vw,30px);margin:auto}
+header{display:flex;gap:10px;justify-content:space-between;align-items:center;flex-wrap:wrap;border-bottom:1px solid #355453}
+h1{font-size:clamp(28px,5vw,44px);letter-spacing:-.04em;line-height:1.13;margin:14px 0}
+h2{font-size:21px;margin:0 0 10px}p{color:#b9d4ca;margin:9px 0 15px}a{color:#9de5bf}
+.pill{border:1px solid #607d5b;background:#29352b;border-radius:30px;padding:5px 10px;font-size:12px;color:#dbefcf}
+.panel{border:1px solid #3b6055;border-radius:16px;background:#132b2a;padding:clamp(16px,3vw,24px);margin:16px 0}
+.notice{background:#323023;border:1px solid #968159;padding:16px;border-radius:13px;color:#fceac8;margin:14px 0}
+select,textarea{width:100%;font:inherit;background:#092328;color:#eaffef;border:1px solid #71988c;border-radius:10px;padding:12px}
+select{min-height:50px}textarea{min-height:115px;resize:vertical}
+label{display:block;margin-bottom:8px;font-weight:700}audio{width:100%;margin:16px 0}
+.seek{width:100%;min-height:42px;accent-color:#a5edc9}
+.times{display:flex;justify-content:space-between;font-size:13px;font-variant-numeric:tabular-nums;color:#b2cfc4}
+.controls{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin:15px 0}
+button{min-height:46px;padding:11px;border:1px solid #7ea990;background:#235b47;color:#fff;border-radius:10px;font:inherit;cursor:pointer}
+button:hover{background:#2b7157}.check{display:flex;gap:9px;align-items:center;font-weight:400}
+.check input{width:20px;height:20px;accent-color:#8de4b2}
+.description{font-size:14px;color:#c7dace;margin:10px 0}.small{font-size:13px;color:#aabfb7}
+.meta{display:grid;grid-template-columns:1fr 1fr;gap:10px}.meta>div{background:#0c2425;border:1px solid #335753;padding:12px;border-radius:10px;min-width:0}
+.meta strong{display:block;color:#ebfff2;font-size:14px}
+footer{border-top:1px solid #355453;font-size:12px;color:#99bcb0}
+@media(max-width:620px){.controls,.meta{grid-template-columns:1fr}}
+:focus-visible{outline:3px solid #b9f9d6;outline-offset:3px}
+</style></head><body>
+<header><strong>◉ WhiteNoiseChoir — C6C</strong><span class="pill">10 originals · Synthetic · Noindex</span></header>
+<main>
+<p class="small">Sound Quality Lab / Non-production owner listening</p>
+<h1>Phòng nghe thử 10 âm thanh mới</h1>
+<p>Đây là mười bản <strong>tự tổng hợp từ đầu bằng DSP</strong>, mỗi bản dài 10 phút với tín hiệu được tạo liên tục, không nhân bản vòng lặp từ một đoạn ngắn. Bản thu mới được trình bày rõ là <strong>Synthetic</strong>, không phải âm thanh thu ngoài thực tế.</p>
+<div class="notice"><strong>Chưa phát hành production hoặc SEO.</strong> Cần người nghe đánh giá độ tự nhiên, khác biệt, điểm nối vòng lặp và cảm giác dễ chịu. Tên “Womb-like” và “Heartbeat” là hiệu ứng sáng tạo, không phải bản thu hay tuyên bố y khoa. Không có bản nhạc hoặc giọng người.</div>
+<section class="panel">
+<h2>Chọn âm thanh</h2>
+<label for="sound">10 bản nghe thử — 10 phút/bản</label>
+<select id="sound">
+<option value="SND-0041">1. Tower Fan — Synthetic</option>
+<option value="SND-0042">2. Oscillating Fan — Synthetic</option>
+<option value="SND-0046">3. Womb-like Sound — Synthetic</option>
+<option value="SND-0047">4. Gentle Shushing — Synthetic</option>
+<option value="SND-0090">5. Soft Heartbeat — Synthetic</option>
+<option value="SND-0091">6. Gentle Breathing — Synthetic</option>
+<option value="SND-0092">7. Grey Noise — Experimental Synthetic</option>
+<option value="SND-0082">8. Radio Static — Synthetic</option>
+<option value="SND-0083">9. Vinyl Crackle — Synthetic</option>
+<option value="SND-0085">10. Electrical Hum — Synthetic</option>
+</select>
+<p id="description" class="description">Mô phỏng quạt tháp cố định. Không phải tiếng quạt thật được thu âm.</p>
+<div class="meta">
+<div><span class="small">Master review</span><strong>600 giây · MP3 · 44,1 kHz · Stereo · 192 kbps</strong></div>
+<div><span class="small">Tình trạng</span><strong>Review only · Chưa duyệt nghe</strong></div>
+</div>
+<audio id="audio" controls loop preload="metadata" aria-label="C6C 10-minute synthetic audition player"></audio>
+<label for="seek">Tua nhanh đến đoạn muốn nghe</label>
+<input id="seek" class="seek" type="range" min="0" max="1000" value="0" step="1" aria-label="Seek the synthetic sound">
+<div class="times"><span id="now">00:00</span><span id="end">10:00</span></div>
+<div class="controls">
+<button type="button" id="play">Phát / Tạm dừng</button>
+<button type="button" id="last">Nhảy tới 5 giây cuối</button>
+<button type="button" id="restart">Nghe từ đầu</button>
+</div>
+<label class="check"><input id="loop" type="checkbox" checked> Tự động lặp lại khi hết 10 phút (bật mặc định)</label>
+<p id="status" class="small" role="status" aria-live="polite">Chọn âm thanh và nhấn Play. Trình phát không tự mở khi vào trang.</p>
+</section>
+<section class="panel">
+<h2>Ghi nhận nhận xét</h2>
+<p class="small">Nghe đoạn đầu, giữa và cuối, so sánh độ khác biệt giữa các bản. Chú ý tiếng quá gắt, nhịp quá lộ, âm lượng và vòng lặp. Nếu bản Synthetic không đủ thật thì loại hoặc yêu cầu thu hiện trường, không đưa lên production.</p>
+<button id="timestamp" type="button">Thêm mốc thời gian</button>
+<label for="notes" style="margin-top:12px">Ghi chú và quyết định</label>
+<textarea id="notes" placeholder="Ví dụ: SND-0042 04:20 quạt dao động quá lộ; SND-0090 nhịp không tự nhiên; yêu cầu làm lại..."></textarea>
+<div class="controls"><button type="button" id="copy">Copy đánh giá</button></div>
+<p id="copied" role="status" class="small"></p>
+</section>
+<section class="panel">
+<h2>Giới hạn kiểm định</h2>
+<p class="small">Nguồn được tạo mới bằng thuật toán, không dùng mẫu ghi âm của bên thứ ba. Mỗi đầu ra có SHA-256 và được giải mã toàn file trước khi đưa lên khu review. Đây chỉ là kiểm tra kỹ thuật; chất lượng chủ quan và tính tương đồng với âm thanh có sẵn phải được kiểm định thêm.</p>
+<p class="small">Tất cả các MP3 đều lưu trong <code>review/c6c-20261110/</code> trên R2, tách khỏi 35 nguồn production, 45 preset, sitemap và player chính. <code>noindex</code> không phải cơ chế kiểm soát truy cập.</p>
+</section>
+</main>
+<footer>WhiteNoiseChoir C6C · 10 separate 600-second independent DSP auditions · No production release</footer>
+<script>
+"use strict";
+(function(){
+ const base="https://media.whitenoisechoir.com/review/c6c-20261110/";
+ const defs={
+  "SND-0041":"Mô phỏng tiếng quạt tháp chạy cố định (Synthetic). Không phải bản thu từ một máy quạt thật.",
+  "SND-0042":"Mô phỏng quạt dao động trái/phải, thay đổi năng lượng và vị trí stereo. Không phải bản thu thực tế.",
+  "SND-0046":"Cảnh âm trầm êm có nhịp. Không phải tiếng trong tử cung thật hay dữ liệu y khoa.",
+  "SND-0047":"Nhịp tiếng shushing êm được tạo bằng nhiễu lọc; không có giọng người.",
+  "SND-0090":"Hiệu ứng nhịp tim êm được tổng hợp; không phải nhịp tim thật.",
+  "SND-0091":"Tiếng thở giả lập theo bao âm mềm; không phải âm thanh của người.",
+  "SND-0092":"Thử nghiệm Grey Noise dựa trên nhiều dải tần, chưa hiệu chuẩn theo thính lực từng người.",
+  "SND-0082":"Hiệu ứng radio static/tuning, không có tín hiệu chương trình phát thanh.",
+  "SND-0083":"Mô phỏng tiếng lạo xạo đĩa vinyl; không có bài hát, bản ghi đĩa thật.",
+  "SND-0085":"Âm nền điện 50 Hz và các họa âm được tạo bằng tổng hợp; không phải máy móc thật."
+ };
+ const el=id=>document.getElementById(id),audio=el("audio"),sel=el("sound"),seek=el("seek"),status=el("status");
+ const fmt=v=>{if(!Number.isFinite(v)||v<0)return "00:00";const i=Math.floor(v);return String(Math.floor(i/60)).padStart(2,"0")+":"+String(i%60).padStart(2,"0")};
+ function select(){
+  audio.pause();
+  const id=sel.value;
+  audio.src=base+id+".mp3";
+  audio.loop=el("loop").checked;
+  audio.load();seek.value="0";el("now").textContent="00:00";el("end").textContent="10:00";
+  el("description").textContent=defs[id];
+  status.textContent="Đã chọn "+sel.options[sel.selectedIndex].text+". Nhấn Play.";
+ }
+ sel.addEventListener("change",select);
+ audio.addEventListener("loadedmetadata",()=>{if(Number.isFinite(audio.duration))el("end").textContent=fmt(audio.duration)});
+ audio.addEventListener("timeupdate",()=>{
+  el("now").textContent=fmt(audio.currentTime);
+  if(Number.isFinite(audio.duration)&&audio.duration>0)seek.value=String(Math.round(audio.currentTime/audio.duration*1000));
+ });
+ audio.addEventListener("error",()=>status.textContent="Không thể tải MP3. Hãy tải lại trang hoặc kiểm tra kết nối.");
+ seek.addEventListener("input",()=>{if(Number.isFinite(audio.duration)&&audio.duration>0)audio.currentTime=Number(seek.value)*audio.duration/1000});
+ el("play").addEventListener("click",()=>{if(audio.paused){audio.play().catch(()=>status.textContent="Trình duyệt chặn phát. Hãy nhấn Play trên trình phát.");}else audio.pause()});
+ el("last").addEventListener("click",()=>{if(Number.isFinite(audio.duration)&&audio.duration>5)audio.currentTime=audio.duration-5});
+ el("restart").addEventListener("click",()=>{audio.currentTime=0;audio.play().catch(()=>{})});
+ el("loop").addEventListener("change",()=>{
+  audio.loop=el("loop").checked;
+  status.textContent=audio.loop?"Đã bật phát lại tự động khi hết 10 phút.":"Đã tắt lặp tự động.";
+ });
+ audio.addEventListener("ended",()=>{
+  if(el("loop").checked){audio.currentTime=0;audio.play().catch(()=>status.textContent="Không tự lặp được. Nhấn Play để tiếp tục.");}
+  else status.textContent="Bản thu đã kết thúc.";
+ });
+ audio.addEventListener("playing",()=>status.textContent="Đang phát bản Synthetic review.");
+ el("timestamp").addEventListener("click",()=>{
+  const prior=el("notes").value.trim();
+  el("notes").value=(prior?prior+"\n":"")+sel.value+" @ "+fmt(audio.currentTime)+": ";
+  el("notes").focus();
+ });
+ el("copy").addEventListener("click",()=>{
+  const text="WhiteNoiseChoir C6C review — NOT a production approval\n"+
+  sel.options[sel.selectedIndex].text+"\nTime: "+fmt(audio.currentTime)+"\n"+el("notes").value;
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+   navigator.clipboard.writeText(text).then(()=>el("copied").textContent="Đã copy. Dán vào cuộc trò chuyện.",
+   ()=>el("copied").textContent="Không copy tự động được. Hãy copy thủ công.");
+  }else el("copied").textContent="Không copy tự động được. Hãy copy thủ công.";
+ });
+ audio.loop=el("loop").checked;select();
+}());
+</script>
+</body></html>

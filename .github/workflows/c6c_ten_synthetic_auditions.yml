@@ -1,0 +1,103 @@
+name: C6C Ten Original Synthetic 600s Auditions - R2 Review Only
+on:
+  pull_request:
+    paths:
+      - 'catalog/c6c-ten-synthetic-review.json'
+      - 'signature/c6c-online-review/**'
+      - 'scripts/c6c_render_ten_original_synth.py'
+      - 'scripts/c6c_publish_ten_review_r2.py'
+      - 'scripts/test_c6c_ten_synth_smoke.py'
+      - 'scripts/test_c6c_ten_review.cjs'
+      - 'scripts/test_c6c_online_browser.cjs'
+      - '.github/workflows/c6c_ten_synthetic_auditions.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'catalog/c6c-ten-synthetic-review.json'
+      - 'signature/c6c-online-review/**'
+      - 'scripts/c6c_render_ten_original_synth.py'
+      - 'scripts/c6c_publish_ten_review_r2.py'
+      - 'scripts/test_c6c_ten_synth_smoke.py'
+      - 'scripts/test_c6c_ten_review.cjs'
+      - 'scripts/test_c6c_online_browser.cjs'
+      - '.github/workflows/c6c_ten_synthetic_auditions.yml'
+permissions:
+  contents: read
+concurrency:
+  group: c6c-ten-original-synthetic-review-only
+  cancel-in-progress: false
+jobs:
+  validate-models-and-browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Validate manifest, 532 registry links, noindex and no release gates
+        run: |
+          set -euo pipefail
+          node scripts/test_c6c_ten_review.cjs
+          node scripts/test_sound_production_queue_c6.cjs
+          python3 -m py_compile scripts/c6c_render_ten_original_synth.py scripts/c6c_publish_ten_review_r2.py
+      - name: Smoke all 10 DSP engines without generating audio files
+        run: |
+          python -m pip install --disable-pip-version-check 'numpy>=1.26,<3' 'scipy>=1.14,<2'
+          python3 scripts/test_c6c_ten_synth_smoke.py
+      - name: Browser verifies autoplay-free native continuous loop and switchable ten sounds
+        run: |
+          set -euo pipefail
+          npm install --no-save playwright@1.55.0
+          python3 -m http.server 8787 --bind 127.0.0.1 > /tmp/wnc-c6c-http.log 2>&1 &
+          sleep 2
+          node scripts/test_c6c_online_browser.cjs
+  render-and-publish-ten-original-auditions:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: [validate-models-and-browser]
+    runs-on: ubuntu-latest
+    timeout-minutes: 65
+    env:
+      R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+      R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+      AWS_EC2_METADATA_DISABLED: 'true'
+      PYTHONUNBUFFERED: '1'
+      OMP_NUM_THREADS: '1'
+      OPENBLAS_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Validate R2 secrets, audio tooling and scientific DSP libraries
+        run: |
+          set -euo pipefail
+          test -n "$R2_ACCESS_KEY_ID"
+          test -n "$R2_SECRET_ACCESS_KEY"
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq ffmpeg
+          command -v ffmpeg
+          command -v ffprobe
+          python -m pip install --disable-pip-version-check 'numpy>=1.26,<3' 'scipy>=1.14,<2' 'boto3>=1.36,<2'
+      - name: Render ten independent 600-second 44.1kHz stereo MP3 review audio with SHA and decode QA
+        run: python3 scripts/c6c_render_ten_original_synth.py
+      - name: Upload ten immutable R2 review MP3s, verify full remote SHA, range, then publish HTML last
+        run: python3 scripts/c6c_publish_ten_review_r2.py
+      - name: Upload audit metadata only, never expose or commit MP3 media into Pages
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: c6c-ten-synthetic-public-audition-audit-json
+          path: |
+            audits/c6c-original-render/audit.json
+            audits/c6c-live-review/audit.json
+          if-no-files-found: warn
+          retention-days: 30
+      - name: Confirm owner approval and production gates still CLOSED
+        run: |
+          echo "C6C 10 independent original synthesized MP3s live ONLY at https://media.whitenoisechoir.com/review/c6c-20261110/index.html"
+          echo "No additional production masters; no sitemap or 35 approved sound / 45 preset changes."

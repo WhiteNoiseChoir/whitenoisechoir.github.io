@@ -1,0 +1,117 @@
+{
+  "schema_version": 1,
+  "revision": "C6C-2026-11-10",
+  "title": "C6C Original Synthetic 10-Sound Audition Batch",
+  "purpose": "Unapproved non-production 10-minute independent procedural renders; not field recordings; no SEO/publishing promotion",
+  "immutable_baseline": {
+    "approved_production_sources": 35,
+    "approved_presets": 45,
+    "registry_records": 532
+  },
+  "audio_spec": {
+    "seconds": 600,
+    "render_sample_rate_hz": 22050,
+    "mp3_sample_rate_hz": 44100,
+    "channels": 2,
+    "mp3_bitrate_kbps": 192,
+    "automatic_player_loop": true,
+    "normalized_review_only": true
+  },
+  "media_public_prefix": "https://media.whitenoisechoir.com/review/c6c-20261110/",
+  "source_kind": "original_DSP_procedural_synthesis_not_field_recording",
+  "owner_approval": false,
+  "production_released": false,
+  "sitemap_update": false,
+  "items": [
+    {
+      "id": "SND-0041",
+      "title": "Tower Fan",
+      "review_label": "Tower Fan — Synthetic",
+      "priority": "P0",
+      "family": "fans-ventilation",
+      "algorithm": "tower_fan",
+      "qualifier": "Simulated stationary fan; NOT a captured physical tower fan"
+    },
+    {
+      "id": "SND-0042",
+      "title": "Oscillating Fan",
+      "review_label": "Oscillating Fan — Synthetic",
+      "priority": "P0",
+      "family": "fans-ventilation",
+      "algorithm": "oscillating_fan",
+      "qualifier": "Simulated lateral fan motion; NOT a physical oscillating fan recording"
+    },
+    {
+      "id": "SND-0046",
+      "title": "Womb-like Sound",
+      "review_label": "Womb-like Sound — Synthetic",
+      "priority": "P0",
+      "family": "gentle-baby",
+      "algorithm": "womb",
+      "qualifier": "Creative low-frequency soundscape; NOT a medical/in-utero recording"
+    },
+    {
+      "id": "SND-0047",
+      "title": "Gentle Shushing",
+      "review_label": "Gentle Shushing — Synthetic",
+      "priority": "P0",
+      "family": "gentle-baby",
+      "algorithm": "shushing",
+      "qualifier": "Synthesized soft rhythmic noise, no human voice"
+    },
+    {
+      "id": "SND-0090",
+      "title": "Soft Heartbeat",
+      "review_label": "Soft Heartbeat — Synthetic",
+      "priority": "P0",
+      "family": "gentle-baby",
+      "algorithm": "heartbeat",
+      "qualifier": "Synthetic pulse effect; NOT an actual heartbeat or medical recording"
+    },
+    {
+      "id": "SND-0091",
+      "title": "Gentle Breathing",
+      "review_label": "Gentle Breathing — Synthetic",
+      "priority": "P0",
+      "family": "gentle-baby",
+      "algorithm": "breathing",
+      "qualifier": "Generated breathing-like noise envelope; NOT a human breath recording"
+    },
+    {
+      "id": "SND-0092",
+      "title": "Grey Noise",
+      "review_label": "Grey Noise — Experimental Synthetic",
+      "priority": "P0",
+      "family": "noise-colors",
+      "algorithm": "grey",
+      "qualifier": "Approximate grey-noise-style EQ, NOT calibrated to an individual equal-loudness curve"
+    },
+    {
+      "id": "SND-0082",
+      "title": "Radio Static",
+      "review_label": "Radio Static — Synthetic",
+      "priority": "P1",
+      "family": "drones-textures",
+      "algorithm": "radio",
+      "qualifier": "Generated tuning/static effect; NO broadcast, copyrighted signal, speech or station audio"
+    },
+    {
+      "id": "SND-0083",
+      "title": "Vinyl Crackle",
+      "review_label": "Vinyl Crackle — Synthetic",
+      "priority": "P1",
+      "family": "drones-textures",
+      "algorithm": "vinyl",
+      "qualifier": "Generated surface-noise impression; NO music/record sample"
+    },
+    {
+      "id": "SND-0085",
+      "title": "Electrical Hum",
+      "review_label": "Electrical Hum — Synthetic",
+      "priority": "P1",
+      "family": "drones-textures",
+      "algorithm": "electrical",
+      "qualifier": "Generated 50/100/150 Hz electrical tone texture; no appliance recording"
+    }
+  ]
+}
