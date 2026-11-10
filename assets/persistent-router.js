@@ -208,8 +208,8 @@ function enhance(main){
  // Library search only; browsing destinations stay in crawlable static HTML.
  const title=main.querySelector("h1"),isSounds=title&&title.textContent.trim()==="Explore sounds";
  if(isSounds){
-  const grids=main.querySelectorAll(".grid");if(grids.length>1){
-   const list=grids[1];
+  const list=main.querySelector("#wnc-catalog-grid"),catGrid=main.querySelector("#wnc-family-grid");
+  if(list&&catGrid){
    if(!$("wnc-library-search")){
     const controls=document.createElement("div");controls.className="wnc-search-controls";
     controls.innerHTML='<label for="wnc-library-search">Find a sound</label><input type="search" id="wnc-library-search" placeholder="Search white noise, rain, fan..." autocomplete="off"><div class="wnc-filter-row" role="group" aria-label="Filter sound category"></div><p id="wnc-result-count" class="wnc-play-hint" aria-live="polite"></p>';
@@ -226,7 +226,7 @@ function enhance(main){
     filterSounds();
    }
    // Keep empty, planned-only categories accessible but out of the primary list.
-   const catGrid=grids[0],planned=[...catGrid.querySelectorAll("a.tile")].filter(a=>/0 available/.test(a.textContent));
+   const planned=[...catGrid.querySelectorAll("a.tile")].filter(a=>/0 available/.test(a.textContent));
    if(planned.length){const details=document.createElement("details");details.className="wnc-planned-categories";details.innerHTML="<summary>Planned categories (no audio yet)</summary>";const group=document.createElement("div");group.className="grid";planned.forEach(x=>group.append(x));details.append(group);catGrid.after(details)}
   }
  }
