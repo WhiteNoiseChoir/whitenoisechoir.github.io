@@ -1,0 +1,33 @@
+name: Wildlife CC BY-SA Original Source Probe (research)
+on:
+  push:
+    branches:
+      - research/wildlife-source-probe-20261110
+    paths:
+      - ".github/workflows/wildlife_source_probe.yml"
+      - "scripts/probe_wikimedia_audio.sh"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout research branch
+        uses: actions/checkout@v4
+      - name: Verify tools
+        run: |
+          command -v ffprobe
+          command -v ffmpeg
+          command -v curl
+      - name: Download public original and probe
+        run: bash scripts/probe_wikimedia_audio.sh
+      - name: Publish only QA metadata, never source audio
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: wildlife-crickets-original-metadata
+          path: qa-output/
+          if-no-files-found: warn
+          retention-days: 14
