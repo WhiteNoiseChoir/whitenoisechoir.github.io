@@ -3,7 +3,7 @@
 /* Device/environment editorial release: actual decoded-MP3 facts + conservative search policy. */
 const fs=require("node:fs"),assert=require("node:assert/strict");
 const read=p=>fs.readFileSync(p,"utf8"),json=p=>JSON.parse(read(p));
-const root="https://whitenoisechoir.github.io";
+const root="https://whitenoisechoir.com";
 const library=json("catalog/library.json");
 const masters=json("audio/extended-dsp-manifest.json");
 const hls=json("audio/continuous/manifest.json");

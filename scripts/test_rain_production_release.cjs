@@ -58,7 +58,7 @@ for(const entry of provenance.tracks){
  assert.ok(page.includes('data-mp3="/audio/'+s.id+'.mp3'));
  assert.ok(page.includes('/audio/continuous/'+s.id+'/continuous.m3u8'));
  assert.ok(page.includes('<audio controls loop preload="none"'));
- assert.ok(page.includes('rel="canonical" href="https://whitenoisechoir.github.io/sounds/'+s.slug+'/'));
+ assert.ok(page.includes('rel="canonical" href="https://whitenoisechoir.com/sounds/'+s.slug+'/'));
  assert.ok(page.includes('"@type":"AudioObject"'));
  assert.ok(page.includes(entry.source_page));
  assert.equal(read("sitemap.xml").includes("/sounds/"+s.slug+"/"),false);

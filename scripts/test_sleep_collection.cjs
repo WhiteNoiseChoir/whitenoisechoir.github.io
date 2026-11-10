@@ -2,7 +2,7 @@
 "use strict";
 const fs=require("node:fs"),assert=require("node:assert/strict");
 const read=p=>fs.readFileSync(p,"utf8"),json=p=>JSON.parse(read(p));
-const url="https://whitenoisechoir.github.io/collections/white-noise-for-sleep/";
+const url="https://whitenoisechoir.com/collections/white-noise-for-sleep/";
 const html=read("collections/white-noise-for-sleep/index.html");
 const catalog=json("catalog/library.json"), hls=json("audio/continuous/manifest.json");
 const sounds=Object.fromEntries(catalog.sounds.map(x=>[x.id,x]));
@@ -23,7 +23,7 @@ const crumb=schema.find(x=>x["@type"]==="BreadcrumbList");
 assert.ok(coll&&crumb,"CollectionPage and BreadcrumbList schema present");
 assert.equal(coll.url,url);
 assert.equal(coll.mainEntity.numberOfItems,6);
-assert.deepEqual(coll.mainEntity.itemListElement.map(x=>x.url),ids.map(id=>"https://whitenoisechoir.github.io/sounds/"+sounds[id].slug+"/"));
+assert.deepEqual(coll.mainEntity.itemListElement.map(x=>x.url),ids.map(id=>"https://whitenoisechoir.com/sounds/"+sounds[id].slug+"/"));
 assert.equal(crumb.itemListElement.length,3);
 assert.match(html,/<title>White Noise for Sleep — Listen to 6 Continuous Sounds/);
 assert.match(html,/<meta name="description" content="[^"]{90,180}"/);

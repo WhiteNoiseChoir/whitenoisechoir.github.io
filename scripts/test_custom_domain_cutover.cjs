@@ -52,7 +52,7 @@ for(const url of urls){
   assert.doesNotMatch(html,/<meta\b[^>]*name=["']robots["'][^>]*content=["'][^"']*\bnoindex\b/i,"Sitemap includes noindex "+url);
 }
 const home=read("index.html");
-assert.match(home,/https:\/\/media\.whitenoisechoir\.com\/audio\//,"Production player lost R2 transport");
+assert.match(home,/https:\/\/media\.whitenoisechoir\.com\//,"Production player lost R2 transport base");
 assert.match(home,/\baudio_origin=github\b/,"One-click GitHub backup URL missing");
 assert.equal(JSON.parse(read("catalog/library.json")).sounds.length,35,"35 playable sources required");
 const mixSection=home.split("var recipes=")[1];

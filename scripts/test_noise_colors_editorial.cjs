@@ -3,7 +3,7 @@
 /* 6 Noise Colors editorial gates: audio provenance, actual QA spectra, safe SEO release. */
 const fs=require("node:fs"),assert=require("node:assert/strict");
 const read=p=>fs.readFileSync(p,"utf8"),json=p=>JSON.parse(read(p));
-const root="https://whitenoisechoir.github.io";
+const root="https://whitenoisechoir.com";
 const catalog=json("catalog/library.json"),extended=json("audio/extended-dsp-manifest.json"),hls=json("audio/continuous/manifest.json");
 const byId=Object.fromEntries(catalog.sounds.map(x=>[x.id,x]));
 const byExtended=Object.fromEntries(extended.tracks.map(x=>[x.id,x]));

@@ -3,7 +3,7 @@
 /* Baby-sleep page: pediatric guidance, index policy, existing sound IDs, progressive audio. */
 const fs=require("node:fs"),assert=require("node:assert/strict");
 const read=p=>fs.readFileSync(p,"utf8"),json=p=>JSON.parse(read(p));
-const url="https://whitenoisechoir.github.io/collections/baby-sleep-sounds/";
+const url="https://whitenoisechoir.com/collections/baby-sleep-sounds/";
 const html=read("collections/baby-sleep-sounds/index.html");
 const library=json("catalog/library.json"),hls=json("audio/continuous/manifest.json");
 const byId=Object.fromEntries(library.sounds.map(s=>[s.id,s]));
@@ -22,7 +22,7 @@ const crumbs=graph.find(x=>x["@type"]==="BreadcrumbList");
 assert.ok(page&&crumbs,"CollectionPage and BreadcrumbList JSON-LD");
 assert.equal(page.url,url);
 assert.equal(page.mainEntity.numberOfItems,3);
-assert.deepEqual(page.mainEntity.itemListElement.map(x=>x.url),ids.map(id=>"https://whitenoisechoir.github.io/sounds/"+byId[id].slug+"/"));
+assert.deepEqual(page.mainEntity.itemListElement.map(x=>x.url),ids.map(id=>"https://whitenoisechoir.com/sounds/"+byId[id].slug+"/"));
 assert.equal(crumbs.itemListElement.length,3);
 assert.match(html,/<title>Baby Sleep Sounds — Gentle Background Audio &amp; Safety \| WhiteNoiseChoir/);
 const descr=html.match(/<meta name="description" content="([^"]+)"/)?.[1]||"";
