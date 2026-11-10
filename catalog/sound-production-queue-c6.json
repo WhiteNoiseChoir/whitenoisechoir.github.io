@@ -1,0 +1,664 @@
+{
+  "schema_version": 1,
+  "revision": "2026-11-10-C6A",
+  "scope": "P0 source-acquisition queue; not generated sound files or publishable pages",
+  "selection_policy": "Ten registry-confirmed P0 SOURCE_CANDIDATE records; semantic aliases collapsed; mix/SFX/facets and all 35 existing production sounds excluded",
+  "immutable_baseline": {
+    "registry_records": 532,
+    "production_sources": 35,
+    "presets": 45,
+    "logical_groups": 28,
+    "physical_hubs": 18
+  },
+  "target": {
+    "independent_original_seconds_min": 600,
+    "master_target_seconds": 600,
+    "original_10min_distinct_from_looped_10min": true,
+    "lossy_derivative_must_be_disclosed": true
+  },
+  "required_gates": [
+    "Provenance URL, rights and license evidence individually verified",
+    "Unedited independently recorded or freshly synthesized duration >=600 seconds (not looped from short source)",
+    "Original source checksum and master checksum independently pinned",
+    "Full-file decode, peak/clipping, silence/DC, speech/safety, seam, acoustic distinctness and HLS/MP3/mobile checks",
+    "Owner listens via seekable non-indexed review room and explicitly approves",
+    "Separate SEO uniqueness, URL and indexing approval only after human signoff"
+  ],
+  "blockers": {
+    "legacy_independent_ocean_canonical_checksum_qa": "OPEN_FAIL_DO_NOT_AUTOFIX",
+    "green_noise_listening": "PENDING_LEAVE_UNCHANGED"
+  },
+  "summary": {
+    "total_p0_candidates": 10,
+    "real_audio_acquired": 0,
+    "license_verified": 0,
+    "independent_originals_verified": 0,
+    "master_mp3_produced": 0,
+    "acoustic_qa_pass": 0,
+    "owner_listening_approved": 0,
+    "new_pages": 0
+  },
+  "items": [
+    {
+      "rank": 1,
+      "record_id": "SND-0039",
+      "title_en": "Crickets at Night",
+      "title_vi": null,
+      "family_id": "insects-amphibians",
+      "subfamily": "insects",
+      "priority": "P0",
+      "editorial_class": "SOURCE_CANDIDATE",
+      "source_refs": "NEW-16; WILD-023",
+      "editorial_intents": [
+        "Adult sleep",
+        "relaxation"
+      ],
+      "requested_source_type": "Field recording",
+      "acoustic_brief": "Night cricket bed; no intermittent SFX stitched into long ambience",
+      "dedup_instructions": "No other cricket master live; alias NEW-16 / WILD-023 resolved to one queue item",
+      "compare_existing_ids": [
+        "none: catalog has no live cricket track"
+      ],
+      "source_search_guidance": "Natural sustained ambience, not isolated chirp",
+      "source_audit": {
+        "status": "UNSOURCED",
+        "provenance_url": null,
+        "creator": null,
+        "license": null,
+        "license_evidence_url": null,
+        "license_checked_at": null,
+        "original_format": null,
+        "original_asset_sha256": null,
+        "independent_seconds": null,
+        "independent_duration_qa": "NOT_RUN"
+      },
+      "master_audit": {
+        "status": "NOT_PRODUCED",
+        "master_seconds": null,
+        "master_sha256": null,
+        "whole_file_decode": "NOT_RUN",
+        "clipping_loudness_dc_silence": "NOT_RUN",
+        "speech_and_unwanted_events": "NOT_RUN",
+        "loop_seam": "NOT_RUN",
+        "cross_source_dedup": "NOT_RUN",
+        "r2_hls_and_mp3": "NOT_RUN",
+        "mobile_background_and_sleep_timer": "NOT_RUN"
+      },
+      "review_audio": null,
+      "owner_listening": {
+        "status": "NOT_REQUESTED",
+        "approval_reference": null
+      },
+      "seo": {
+        "unique_intent_review": "NOT_RUN",
+        "new_route": null,
+        "allow_index": false
+      },
+      "release_status": "BLOCKED",
+      "metadata_discovery": [
+        {
+          "discovery_status": "PAGE_METADATA_ONLY_NOT_ACQUIRED",
+          "page_url": "https://freesound.org/people/hargissssound/sounds/536332/",
+          "creator_username": "hargissssound",
+          "declared_license_on_page": "Creative Commons 0",
+          "displayed_file_type": "WAV",
+          "displayed_duration_seconds": 614.115,
+          "displayed_sample_rate_hz": 48000,
+          "displayed_channels": 2,
+          "displayed_bit_depth": 24,
+          "caveats": [
+            "Suburban cars and people described; whole-file speech and transient QA pending",
+            "Audio bytes not downloaded; duration and license are page claims, not file-level QA"
+          ],
+          "checked_date": "2026-11-10"
+        }
+      ]
+    },
+    {
+      "rank": 2,
+      "record_id": "SND-0040",
+      "title_en": "Morning Birds",
+      "title_vi": null,
+      "family_id": "birds-birdsong",
+      "subfamily": "birds",
+      "priority": "P0",
+      "editorial_class": "SOURCE_CANDIDATE",
+      "source_refs": "NEW-17; EXP-014; WILD-001",
+      "editorial_intents": [
+        "Relaxation",
+        "focus"
+      ],
+      "requested_source_type": "Field recording",
+      "acoustic_brief": "Morning bird chorus as sustained outdoor recording",
+      "dedup_instructions": "Aliases NEW-17 / EXP-014 / WILD-001 are ONE candidate; reject reusing Bodetal Brook & Birds master",
+      "compare_existing_ids": [
+        "bodetal-brook-real"
+      ],
+      "source_search_guidance": "Birdsong foreground, not stream-dominant",
+      "source_audit": {
+        "status": "UNSOURCED",
+        "provenance_url": null,
+        "creator": null,
+        "license": null,
+        "license_evidence_url": null,
+        "license_checked_at": null,
+        "original_format": null,
+        "original_asset_sha256": null,
+        "independent_seconds": null,
+        "independent_duration_qa": "NOT_RUN"
+      },
+      "master_audit": {
+        "status": "NOT_PRODUCED",
+        "master_seconds": null,
+        "master_sha256": null,
+        "whole_file_decode": "NOT_RUN",
+        "clipping_loudness_dc_silence": "NOT_RUN",
+        "speech_and_unwanted_events": "NOT_RUN",
+        "loop_seam": "NOT_RUN",
+        "cross_source_dedup": "NOT_RUN",
+        "r2_hls_and_mp3": "NOT_RUN",
+        "mobile_background_and_sleep_timer": "NOT_RUN"
+      },
+      "review_audio": null,
+      "owner_listening": {
+        "status": "NOT_REQUESTED",
+        "approval_reference": null
+      },
+      "seo": {
+        "unique_intent_review": "NOT_RUN",
+        "new_route": null,
+        "allow_index": false
+      },
+      "release_status": "BLOCKED",
+      "metadata_discovery": [
+        {
+          "discovery_status": "PAGE_METADATA_ONLY_NOT_ACQUIRED",
+          "page_url": "https://freesound.org/people/ali.g/sounds/855323/",
+          "creator_username": "ali.g",
+          "declared_license_on_page": "Creative Commons 0",
+          "displayed_file_type": "MP3 (already lossy)",
+          "displayed_duration_seconds": 2580.099,
+          "displayed_sample_rate_hz": 48000,
+          "displayed_channels": 2,
+          "displayed_bit_depth": null,
+          "displayed_bitrate_kbps": 180,
+          "caveats": [
+            "Deer bark in the middle explicitly described by uploader; possible sleep ambience interruption",
+            "Lossy original, do not label source as FLAC or WAV",
+            "Audio bytes not downloaded; whole-file QA and comparable novelty pending"
+          ],
+          "checked_date": "2026-11-10"
+        }
+      ]
+    },
+    {
+      "rank": 3,
+      "record_id": "SND-0037",
+      "title_en": "Campfire",
+      "title_vi": null,
+      "family_id": "fire-warmth",
+      "subfamily": null,
+      "priority": "P0",
+      "editorial_class": "SOURCE_CANDIDATE",
+      "source_refs": "NEW-14",
+      "editorial_intents": [
+        "Relaxation",
+        "adult sleep"
+      ],
+      "requested_source_type": "Field recording",
+      "acoustic_brief": "Outdoor campfire bed, distinct from indoor fireplace",
+      "dedup_instructions": "Acoustic comparison to existing Fireplace mandatory",
+      "compare_existing_ids": [
+        "fireplace-real"
+      ],
+      "source_search_guidance": "Outdoor flame crackle; avoid renamed fireplace",
+      "source_audit": {
+        "status": "UNSOURCED",
+        "provenance_url": null,
+        "creator": null,
+        "license": null,
+        "license_evidence_url": null,
+        "license_checked_at": null,
+        "original_format": null,
+        "original_asset_sha256": null,
+        "independent_seconds": null,
+        "independent_duration_qa": "NOT_RUN"
+      },
+      "master_audit": {
+        "status": "NOT_PRODUCED",
+        "master_seconds": null,
+        "master_sha256": null,
+        "whole_file_decode": "NOT_RUN",
+        "clipping_loudness_dc_silence": "NOT_RUN",
+        "speech_and_unwanted_events": "NOT_RUN",
+        "loop_seam": "NOT_RUN",
+        "cross_source_dedup": "NOT_RUN",
+        "r2_hls_and_mp3": "NOT_RUN",
+        "mobile_background_and_sleep_timer": "NOT_RUN"
+      },
+      "review_audio": null,
+      "owner_listening": {
+        "status": "NOT_REQUESTED",
+        "approval_reference": null
+      },
+      "seo": {
+        "unique_intent_review": "NOT_RUN",
+        "new_route": null,
+        "allow_index": false
+      },
+      "release_status": "BLOCKED"
+    },
+    {
+      "rank": 4,
+      "record_id": "SND-0041",
+      "title_en": "Tower Fan",
+      "title_vi": null,
+      "family_id": "fans-ventilation",
+      "subfamily": null,
+      "priority": "P0",
+      "editorial_class": "SOURCE_CANDIDATE",
+      "source_refs": "NEW-18",
+      "editorial_intents": [
+        "Adult sleep",
+        "focus"
+      ],
+      "requested_source_type": "Field recording",
+      "acoustic_brief": "Tower fan at fixed speed: authentic fan motor/airflow",
+      "dedup_instructions": "Must show timbral novelty against box fan, desk fan and AC",
+      "compare_existing_ids": [
+        "box-fan-real",
+        "desk-fan-synth",
+        "air-conditioner-synth"
+      ],
+      "source_search_guidance": "Real tower-fan recording, no synthesized fan relabel",
+      "source_audit": {
+        "status": "UNSOURCED",
+        "provenance_url": null,
+        "creator": null,
+        "license": null,
+        "license_evidence_url": null,
+        "license_checked_at": null,
+        "original_format": null,
+        "original_asset_sha256": null,
+        "independent_seconds": null,
+        "independent_duration_qa": "NOT_RUN"
+      },
+      "master_audit": {
+        "status": "NOT_PRODUCED",
+        "master_seconds": null,
+        "master_sha256": null,
+        "whole_file_decode": "NOT_RUN",
+        "clipping_loudness_dc_silence": "NOT_RUN",
+        "speech_and_unwanted_events": "NOT_RUN",
+        "loop_seam": "NOT_RUN",
+        "cross_source_dedup": "NOT_RUN",
+        "r2_hls_and_mp3": "NOT_RUN",
+        "mobile_background_and_sleep_timer": "NOT_RUN"
+      },
+      "review_audio": null,
+      "owner_listening": {
+        "status": "NOT_REQUESTED",
+        "approval_reference": null
+      },
+      "seo": {
+        "unique_intent_review": "NOT_RUN",
+        "new_route": null,
+        "allow_index": false
+      },
+      "release_status": "BLOCKED"
+    },
+    {
+      "rank": 5,
+      "record_id": "SND-0043",
+      "title_en": "Hair Dryer",
+      "title_vi": null,
+      "family_id": "household-machines",
+      "subfamily": null,
+      "priority": "P0",
+      "editorial_class": "SOURCE_CANDIDATE",
+      "source_refs": "NEW-20",
+      "editorial_intents": [
+        "Baby ambient listening",
+        "adult sleep"
+      ],
+      "requested_source_type": "Field recording",
+      "acoustic_brief": "Real hair dryer steady airflow at safe mastered level",
+      "dedup_instructions": "Must differ from fan/AC; baby intent is only editorial, not a safety guarantee",
+      "compare_existing_ids": [
+        "box-fan-real",
+        "air-conditioner-synth"
+      ],
+      "source_search_guidance": "Avoid appliance operation advice; no baby sleep claims",
+      "source_audit": {
+        "status": "UNSOURCED",
+        "provenance_url": null,
+        "creator": null,
+        "license": null,
+        "license_evidence_url": null,
+        "license_checked_at": null,
+        "original_format": null,
+        "original_asset_sha256": null,
+        "independent_seconds": null,
+        "independent_duration_qa": "NOT_RUN"
+      },
+      "master_audit": {
+        "status": "NOT_PRODUCED",
+        "master_seconds": null,
+        "master_sha256": null,
+        "whole_file_decode": "NOT_RUN",
+        "clipping_loudness_dc_silence": "NOT_RUN",
+        "speech_and_unwanted_events": "NOT_RUN",
+        "loop_seam": "NOT_RUN",
+        "cross_source_dedup": "NOT_RUN",
+        "r2_hls_and_mp3": "NOT_RUN",
+        "mobile_background_and_sleep_timer": "NOT_RUN"
+      },
+      "review_audio": null,
+      "owner_listening": {
+        "status": "NOT_REQUESTED",
+        "approval_reference": null
+      },
+      "seo": {
+        "unique_intent_review": "NOT_RUN",
+        "new_route": null,
+        "allow_index": false
+      },
+      "release_status": "BLOCKED"
+    },
+    {
+      "rank": 6,
+      "record_id": "SND-0060",
+      "title_en": "Wind Through Trees",
+      "title_vi": null,
+      "family_id": "wind-weather",
+      "subfamily": null,
+      "priority": "P0",
+      "editorial_class": "SOURCE_CANDIDATE",
+      "source_refs": "NEW-38",
+      "editorial_intents": [
+        "Relaxation",
+        "focus"
+      ],
+      "requested_source_type": "Field recording",
+      "acoustic_brief": "Wind moving through trees: rustling foliage foreground",
+      "dedup_instructions": "Must differ from existing generic synthesized Gentle Wind",
+      "compare_existing_ids": [
+        "wind-synth"
+      ],
+      "source_search_guidance": "No recycled wind DSP with new label",
+      "source_audit": {
+        "status": "UNSOURCED",
+        "provenance_url": null,
+        "creator": null,
+        "license": null,
+        "license_evidence_url": null,
+        "license_checked_at": null,
+        "original_format": null,
+        "original_asset_sha256": null,
+        "independent_seconds": null,
+        "independent_duration_qa": "NOT_RUN"
+      },
+      "master_audit": {
+        "status": "NOT_PRODUCED",
+        "master_seconds": null,
+        "master_sha256": null,
+        "whole_file_decode": "NOT_RUN",
+        "clipping_loudness_dc_silence": "NOT_RUN",
+        "speech_and_unwanted_events": "NOT_RUN",
+        "loop_seam": "NOT_RUN",
+        "cross_source_dedup": "NOT_RUN",
+        "r2_hls_and_mp3": "NOT_RUN",
+        "mobile_background_and_sleep_timer": "NOT_RUN"
+      },
+      "review_audio": null,
+      "owner_listening": {
+        "status": "NOT_REQUESTED",
+        "approval_reference": null
+      },
+      "seo": {
+        "unique_intent_review": "NOT_RUN",
+        "new_route": null,
+        "allow_index": false
+      },
+      "release_status": "BLOCKED"
+    },
+    {
+      "rank": 7,
+      "record_id": "SND-0036",
+      "title_en": "Bamboo Water Fountain",
+      "title_vi": null,
+      "family_id": "freshwater",
+      "subfamily": null,
+      "priority": "P0",
+      "editorial_class": "SOURCE_CANDIDATE",
+      "source_refs": "NEW-11",
+      "editorial_intents": [
+        "Relaxation",
+        "focus"
+      ],
+      "requested_source_type": "Field recording",
+      "acoustic_brief": "Bamboo water fountain with distinctive physical water/bamboo impulses",
+      "dedup_instructions": "Previous bamboo source candidate was blocked; NO inherited source clearance; compare waterfall/stream",
+      "compare_existing_ids": [
+        "waterfall-real",
+        "forest-stream-real"
+      ],
+      "source_search_guidance": "Do not promote earlier unverified bamboo asset",
+      "source_audit": {
+        "status": "UNSOURCED",
+        "provenance_url": null,
+        "creator": null,
+        "license": null,
+        "license_evidence_url": null,
+        "license_checked_at": null,
+        "original_format": null,
+        "original_asset_sha256": null,
+        "independent_seconds": null,
+        "independent_duration_qa": "NOT_RUN"
+      },
+      "master_audit": {
+        "status": "NOT_PRODUCED",
+        "master_seconds": null,
+        "master_sha256": null,
+        "whole_file_decode": "NOT_RUN",
+        "clipping_loudness_dc_silence": "NOT_RUN",
+        "speech_and_unwanted_events": "NOT_RUN",
+        "loop_seam": "NOT_RUN",
+        "cross_source_dedup": "NOT_RUN",
+        "r2_hls_and_mp3": "NOT_RUN",
+        "mobile_background_and_sleep_timer": "NOT_RUN"
+      },
+      "review_audio": null,
+      "owner_listening": {
+        "status": "NOT_REQUESTED",
+        "approval_reference": null
+      },
+      "seo": {
+        "unique_intent_review": "NOT_RUN",
+        "new_route": null,
+        "allow_index": false
+      },
+      "release_status": "BLOCKED"
+    },
+    {
+      "rank": 8,
+      "record_id": "EXP2-0144",
+      "title_en": "Night Sleeper Train",
+      "title_vi": "Tàu giường nằm ban đêm",
+      "family_id": "transportation",
+      "subfamily": null,
+      "priority": "P0",
+      "editorial_class": "SOURCE_CANDIDATE",
+      "source_refs": "WNC_V2_CURATED_DISCOVERY",
+      "editorial_intents": [
+        "Adult sleep",
+        "relaxation"
+      ],
+      "requested_source_type": "Field recording",
+      "acoustic_brief": "Steady interior sleeper-train rail ambience",
+      "dedup_instructions": "Distinct from airplane cabin; no short pass-by train SFX/transport compilation",
+      "compare_existing_ids": [
+        "cabin-hum-synth"
+      ],
+      "source_search_guidance": "Actual interior journey, ideally continuous >= 600s",
+      "source_audit": {
+        "status": "UNSOURCED",
+        "provenance_url": null,
+        "creator": null,
+        "license": null,
+        "license_evidence_url": null,
+        "license_checked_at": null,
+        "original_format": null,
+        "original_asset_sha256": null,
+        "independent_seconds": null,
+        "independent_duration_qa": "NOT_RUN"
+      },
+      "master_audit": {
+        "status": "NOT_PRODUCED",
+        "master_seconds": null,
+        "master_sha256": null,
+        "whole_file_decode": "NOT_RUN",
+        "clipping_loudness_dc_silence": "NOT_RUN",
+        "speech_and_unwanted_events": "NOT_RUN",
+        "loop_seam": "NOT_RUN",
+        "cross_source_dedup": "NOT_RUN",
+        "r2_hls_and_mp3": "NOT_RUN",
+        "mobile_background_and_sleep_timer": "NOT_RUN"
+      },
+      "review_audio": null,
+      "owner_listening": {
+        "status": "NOT_REQUESTED",
+        "approval_reference": null
+      },
+      "seo": {
+        "unique_intent_review": "NOT_RUN",
+        "new_route": null,
+        "allow_index": false
+      },
+      "release_status": "BLOCKED"
+    },
+    {
+      "rank": 9,
+      "record_id": "SND-0046",
+      "title_en": "Womb-like Sound",
+      "title_vi": null,
+      "family_id": "gentle-baby",
+      "subfamily": null,
+      "priority": "P0",
+      "editorial_class": "SOURCE_CANDIDATE",
+      "source_refs": "NEW-23",
+      "editorial_intents": [
+        "Baby ambient listening"
+      ],
+      "requested_source_type": "Original synthetic DSP",
+      "acoustic_brief": "Womb-like low-frequency texture created as an original independent render",
+      "dedup_instructions": "Semantic review required; cannot simply EQ/rename existing Low Rumble/Brown Noise",
+      "compare_existing_ids": [
+        "low-rumble",
+        "brown-noise",
+        "deep-brown-noise"
+      ],
+      "source_search_guidance": "No physiological or infant-safety/medical efficacy claims",
+      "source_audit": {
+        "status": "UNSOURCED",
+        "provenance_url": null,
+        "creator": null,
+        "license": null,
+        "license_evidence_url": null,
+        "license_checked_at": null,
+        "original_format": null,
+        "original_asset_sha256": null,
+        "independent_seconds": null,
+        "independent_duration_qa": "NOT_RUN"
+      },
+      "master_audit": {
+        "status": "NOT_PRODUCED",
+        "master_seconds": null,
+        "master_sha256": null,
+        "whole_file_decode": "NOT_RUN",
+        "clipping_loudness_dc_silence": "NOT_RUN",
+        "speech_and_unwanted_events": "NOT_RUN",
+        "loop_seam": "NOT_RUN",
+        "cross_source_dedup": "NOT_RUN",
+        "r2_hls_and_mp3": "NOT_RUN",
+        "mobile_background_and_sleep_timer": "NOT_RUN"
+      },
+      "review_audio": null,
+      "owner_listening": {
+        "status": "NOT_REQUESTED",
+        "approval_reference": null
+      },
+      "seo": {
+        "unique_intent_review": "NOT_RUN",
+        "new_route": null,
+        "allow_index": false
+      },
+      "release_status": "BLOCKED"
+    },
+    {
+      "rank": 10,
+      "record_id": "SND-0044",
+      "title_en": "Dishwasher",
+      "title_vi": null,
+      "family_id": "household-machines",
+      "subfamily": null,
+      "priority": "P0",
+      "editorial_class": "SOURCE_CANDIDATE",
+      "source_refs": "NEW-21",
+      "editorial_intents": [
+        "Adult sleep",
+        "ambient listening"
+      ],
+      "requested_source_type": "Field recording",
+      "acoustic_brief": "Real continuous dishwasher operation",
+      "dedup_instructions": "Compare AC/fan sources; capture a stable cycle rather than sporadic isolated beeps",
+      "compare_existing_ids": [
+        "air-conditioner-synth",
+        "box-fan-real"
+      ],
+      "source_search_guidance": "Avoid short cycle effects masquerading as 10-minute original",
+      "source_audit": {
+        "status": "UNSOURCED",
+        "provenance_url": null,
+        "creator": null,
+        "license": null,
+        "license_evidence_url": null,
+        "license_checked_at": null,
+        "original_format": null,
+        "original_asset_sha256": null,
+        "independent_seconds": null,
+        "independent_duration_qa": "NOT_RUN"
+      },
+      "master_audit": {
+        "status": "NOT_PRODUCED",
+        "master_seconds": null,
+        "master_sha256": null,
+        "whole_file_decode": "NOT_RUN",
+        "clipping_loudness_dc_silence": "NOT_RUN",
+        "speech_and_unwanted_events": "NOT_RUN",
+        "loop_seam": "NOT_RUN",
+        "cross_source_dedup": "NOT_RUN",
+        "r2_hls_and_mp3": "NOT_RUN",
+        "mobile_background_and_sleep_timer": "NOT_RUN"
+      },
+      "review_audio": null,
+      "owner_listening": {
+        "status": "NOT_REQUESTED",
+        "approval_reference": null
+      },
+      "seo": {
+        "unique_intent_review": "NOT_RUN",
+        "new_route": null,
+        "allow_index": false
+      },
+      "release_status": "BLOCKED"
+    }
+  ],
+  "research_summary": {
+    "individual_source_pages_inspected": 2,
+    "metadata_leads_meeting_600s_on_page": 2,
+    "downloaded_originals": 0,
+    "file_integrity_verified": 0,
+    "rights_provenance_confirmed": 0
+  }
+}
