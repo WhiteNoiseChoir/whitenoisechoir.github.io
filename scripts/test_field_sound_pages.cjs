@@ -3,7 +3,7 @@
 /* Field-source page SEO gate: four approved masters, two selective releases, transparency. */
 const fs=require("node:fs"),assert=require("node:assert/strict");
 const read=p=>fs.readFileSync(p,"utf8"),obj=p=>JSON.parse(read(p));
-const site="https://whitenoisechoir.github.io";
+const site="https://whitenoisechoir.com";
 const library=obj("catalog/library.json"),source=obj("audio/cc0-sources.json"),hls=obj("audio/continuous/manifest.json");
 const sources=Object.fromEntries(source.map(x=>[x.id,x]));
 const soundById=Object.fromEntries(library.sounds.map(x=>[x.id,x]));
