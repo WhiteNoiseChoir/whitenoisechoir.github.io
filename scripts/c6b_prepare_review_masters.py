@@ -68,8 +68,9 @@ def decode_seconds(path):
 def prepare(item):
   preview_url,page_sha=preview_link(item["page"])
   # Caps come from previously decoded HQ-preview bitrate: SND-0039 ~185 kbps (entire file 14.17 MB),
-  # SND-0040 ~96 kbps (>605 s fits within 10 MB). Require actual >=605 s decode anyway.
-  cap_by_id={"SND-0039":16_000_000,"SND-0040":10_000_000}
+  # SND-0040 reports ~96 kbps in the header but empirical 10MB decoded only 434.86 s.
+  # Require an actual >=605s decode; 17MB includes a safety margin for variable bitrate.
+  cap_by_id={"SND-0039":16_000_000,"SND-0040":17_000_000}
   preview_bytes,status,ct=fetch(preview_url,cap_by_id[item["id"]])
   if len(preview_bytes)<1_000_000: raise RuntimeError("Public HQ preview unavailable or too short")
   with tempfile.TemporaryDirectory(prefix="wnc-c6b-review-") as folder:
