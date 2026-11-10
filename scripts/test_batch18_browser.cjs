@@ -16,7 +16,7 @@ const byId=Object.fromEntries(catalog.sounds.map(s=>[s.id,s]));
     await page.goto(url,{waitUntil:"domcontentloaded",timeout:30000});
     assert.equal(await page.locator('audio[data-sound]').getAttribute("data-sound"),id,"correct audio source in deep link: "+id);
     const canonical=await page.locator('link[rel="canonical"]').getAttribute("href");
-    assert.equal(canonical,"https://whitenoisechoir.github.io/sounds/"+s.slug+"/");
+    assert.equal(canonical,"https://whitenoisechoir.com/sounds/"+s.slug+"/");
     await page.waitForFunction(()=>window.WNCBridge&&document.querySelector("button[data-wnc-play]"),null,{timeout:25000});
     const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth);
     assert.ok(overflow<=1,"no horizontal overflow for "+id+": "+overflow);

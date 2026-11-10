@@ -3,7 +3,7 @@
 /* Field-source page SEO gate: four approved masters, two selective releases, transparency. */
 const fs=require("node:fs"),assert=require("node:assert/strict");
 const read=p=>fs.readFileSync(p,"utf8"),obj=p=>JSON.parse(read(p));
-const site="https://whitenoisechoir.github.io";
+const site="https://whitenoisechoir.com";
 const library=obj("catalog/library.json"),source=obj("audio/cc0-sources.json"),hls=obj("audio/continuous/manifest.json");
 const sources=Object.fromEntries(source.map(x=>[x.id,x]));
 const soundById=Object.fromEntries(library.sounds.map(x=>[x.id,x]));
@@ -48,7 +48,7 @@ for(const [id,slug,iso,indexable] of examples){
  const graph=[...html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)].flatMap(x=>JSON.parse(x[1]));
  const audio=graph.find(x=>x["@type"]==="AudioObject"),crumb=graph.find(x=>x["@type"]==="BreadcrumbList"),webpage=graph.find(x=>x["@type"]==="WebPage");
  assert.ok(audio&&crumb&&webpage,id+" AudioObject/WebPage/BreadcrumbList schema");
- assert.equal(audio.contentUrl,site+"/audio/"+id+".mp3");
+ assert.equal(audio.contentUrl,"https://media.whitenoisechoir.com/audio/"+id+".mp3");
  assert.equal(audio.duration,iso);
  assert.equal(audio.license,"https://creativecommons.org/publicdomain/zero/1.0/");
  assert.equal(webpage.url,url);

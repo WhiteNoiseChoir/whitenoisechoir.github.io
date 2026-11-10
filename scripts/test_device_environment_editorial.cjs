@@ -3,7 +3,7 @@
 /* Device/environment editorial release: actual decoded-MP3 facts + conservative search policy. */
 const fs=require("node:fs"),assert=require("node:assert/strict");
 const read=p=>fs.readFileSync(p,"utf8"),json=p=>JSON.parse(read(p));
-const root="https://whitenoisechoir.github.io";
+const root="https://whitenoisechoir.com";
 const library=json("catalog/library.json");
 const masters=json("audio/extended-dsp-manifest.json");
 const hls=json("audio/continuous/manifest.json");
@@ -64,7 +64,7 @@ for(const [id,slug,allowIndex,detail] of cases){
  const web=scripts.find(x=>x["@type"]==="WebPage");
  const crumbs=scripts.find(x=>x["@type"]==="BreadcrumbList");
  assert.ok(audio&&web&&crumbs,id+" audio, webpage and breadcrumb JSON-LD");
- assert.equal(audio.contentUrl,root+"/audio/"+id+".mp3");
+ assert.equal(audio.contentUrl,"https://media.whitenoisechoir.com/audio/"+id+".mp3");
  assert.equal(audio.duration,"PT10M");
  assert.equal(web.url,url);
  assert.equal(web.mainEntity["@id"],url+"#audio");

@@ -103,7 +103,7 @@ assert.equal((html.match(/data-wnc-existing-id="/g)||[]).length,35);
 assert.equal((html.match(/class="wnc-roadmap-family"/g)||[]).length,13);
 assert.ok(html.includes('id="ocean-waves"'),"ocean anchor target exists on /sounds/");
 assert.ok(html.includes("Green Noise")&&html.includes("listening review pending"),"Green pending disclosure");
-assert.ok(html.includes('rel="canonical" href="https://whitenoisechoir.github.io/sounds/"'),"Preserve browse URL canonical");
+assert.ok(html.includes('rel="canonical" href="https://whitenoisechoir.com/sounds/"'),"Preserve browse URL canonical");
 assert.ok(!html.includes('name="robots" content="noindex'),"Library still indexable");
 assert.ok(!sitemap.includes("/sounds/roadmap/"),"No thin roadmap URL");
 assert.equal((sitemap.match(/<loc>/g)||[]).length,18,"Sitemap unchanged");

@@ -27,7 +27,7 @@ for(const id of edited){
  assert.ok(html.includes('/audio/continuous/'+id+'/continuous.m3u8'),p+" correct HLS");
  assert.match(html,/<audio controls loop preload="none"/,p+" progressive native controls");
  const canon=html.match(/<link rel="canonical" href="([^"]+)"/)?.[1];
- assert.equal(canon,"https://whitenoisechoir.github.io/sounds/"+s.slug+"/",p+" canonical");
+ assert.equal(canon,"https://whitenoisechoir.com/sounds/"+s.slug+"/",p+" canonical");
  assert.ok(!canonicalSet.has(canon),p+" duplicate canonical");canonicalSet.add(canon);
  const reviewedNoiseColor=new Set(["blue-noise","violet-noise","shower-synth"]);
  const expectedIndex=s.status==="approved"||s.status==="arranged"||reviewedNoiseColor.has(id);
@@ -37,7 +37,7 @@ for(const id of edited){
  const graph=schemaParts[0];
  assert.ok(Array.isArray(graph)&&graph.some(x=>x["@type"]==="AudioObject"),p+" AudioObject");
  const ao=graph.find(x=>x["@type"]==="AudioObject");
- assert.equal(ao.contentUrl,"https://whitenoisechoir.github.io/audio/"+id+".mp3");
+ assert.equal(ao.contentUrl,"https://media.whitenoisechoir.com/audio/"+id+".mp3");
  assert.equal(ao.duration,"PT10M");
  assert.ok(graph.some(x=>x["@type"]==="BreadcrumbList"));
  const compare=[...html.matchAll(/data-wnc-compare="([^"]+)"/g)].map(x=>x[1]);
@@ -58,7 +58,7 @@ for(const id of edited){
 }
 const sitemap=file("sitemap.xml"),sitemapUrls=[...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map(x=>x[1]);
 assert.equal(sitemapUrls.length,18,"Measured Shower sound page selectively added after Blue/Violet phase");
-for(const id of edited){const x=byId[id];if(x.status==="dsp-review")assert.ok(!sitemapUrls.includes("https://whitenoisechoir.github.io/sounds/"+x.slug+"/"),"unreviewed excluded: "+id)}
+for(const id of edited){const x=byId[id];if(x.status==="dsp-review")assert.ok(!sitemapUrls.includes("https://whitenoisechoir.com/sounds/"+x.slug+"/"),"unreviewed excluded: "+id)}
 const hubs=["noise-colors","fan-noise","rain","water","wind-weather","fire","transportation","household","hums-drones"];
 for(const h of hubs){const doc=file("sounds/"+h+"/index.html");assert.match(doc,/batch18-hub-compare/,"category improved "+h)}
 assert.match(file("sounds/index.html"),/Browse 35 sound sources in 13 families/,"library count accurate");

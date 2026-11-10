@@ -1,0 +1,49 @@
+name: Custom Domain Migration - SEO + R2 + Player Regression Gate
+on:
+  push:
+    branches: [feature/custom-domain-cutover-20261110]
+    paths:
+      - 'CNAME'
+      - 'index.html'
+      - 'sounds/**'
+      - 'collections/**'
+      - 'sources.html'
+      - 'sitemap.xml'
+      - 'robots.txt'
+      - 'scripts/test_custom_domain_cutover.cjs'
+      - 'scripts/test_library_foundation.cjs'
+      - 'scripts/test_batch18_pages.cjs'
+      - 'scripts/test_field_sound_pages.cjs'
+      - 'scripts/test_device_environment_editorial.cjs'
+      - 'scripts/test_noise_colors_editorial.cjs'
+      - 'scripts/test_relaxing_collection.cjs'
+      - '.github/workflows/custom_domain_cutover_qa.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  editorial-and-player:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate CNAME, 60 static canonical pages, 18 sitemap URLs, JSON-LD and R2 origin
+        run: node scripts/test_custom_domain_cutover.cjs
+      - name: Playback/SEO production regression suite
+        run: |
+          node scripts/test_player_smoke.cjs
+          node scripts/test_library_foundation.cjs
+          node scripts/test_library_structure.cjs
+          node scripts/test_batch18_pages.cjs
+          node scripts/test_field_sound_pages.cjs
+          node scripts/test_baby_collection.cjs
+          node scripts/test_relaxing_collection.cjs
+          node scripts/test_sleep_collection.cjs
+          node scripts/test_r2_transport_room.cjs
+      - name: Identify any source generators/tests still referencing old public hostname
+        if: always()
+        run: |
+          grep -Rln 'whitenoisechoir.github.io' scripts | head -70 || true

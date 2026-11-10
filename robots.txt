@@ -1,3 +1,3 @@
 User-agent: *
 Allow: /
-Sitemap: https://whitenoisechoir.github.io/sitemap.xml
+Sitemap: https://whitenoisechoir.com/sitemap.xml
