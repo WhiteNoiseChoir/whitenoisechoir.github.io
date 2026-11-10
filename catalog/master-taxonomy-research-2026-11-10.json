@@ -1,0 +1,548 @@
+{
+  "schema_version": 1,
+  "revision": "2026-11-10-research-v1",
+  "status": "RESEARCH_ONLY",
+  "purpose": "Coverage audit taxonomy, not indexed page list or MP3 publishing queue.",
+  "baseline": {
+    "production_sources": 35,
+    "production_presets": 45,
+    "existing_families": 13,
+    "planned_concepts": 70,
+    "planned_promoted": 13,
+    "planned_not_playable": 57,
+    "external_research_proposals": 38,
+    "external_research_pr": 31
+  },
+  "policy": {
+    "existing_urls_untouched": true,
+    "production_audio_untouched": true,
+    "existing_presets_untouched": true,
+    "new_seo_urls": 0,
+    "new_audio_files": 0,
+    "new_live_categories": 0,
+    "discovery_not_licensing": true,
+    "do_not_copy_streaming_audio": true
+  },
+  "dimensions": [
+    "source_taxon",
+    "recording",
+    "habitat",
+    "weather",
+    "time_of_day",
+    "surface",
+    "material",
+    "acoustic_texture",
+    "rhythm",
+    "continuous_suitability",
+    "species_common_name",
+    "species_scientific_name",
+    "species_call_type",
+    "place_context",
+    "location",
+    "spatial_format",
+    "use_case",
+    "license",
+    "source_duration_seconds",
+    "repeatability",
+    "playback_safety",
+    "production_status",
+    "seo_intent"
+  ],
+  "research_sources": [
+    {
+      "id": "bsd10k",
+      "url": "https://github.com/allholy/BSD10k",
+      "purpose": "taxonomy cross-check",
+      "usage": "metadata research, verify exact licensing separately"
+    },
+    {
+      "id": "freesound",
+      "url": "https://freesound.org/",
+      "purpose": "field recordings and license-qualified candidate search",
+      "usage": "verify each file license and provenance"
+    },
+    {
+      "id": "macaulay",
+      "url": "https://www.macaulaylibrary.org/",
+      "purpose": "wildlife species/call taxonomy",
+      "usage": "rights clearance needed for audio"
+    },
+    {
+      "id": "xeno-canto",
+      "url": "https://xeno-canto.org/",
+      "purpose": "bird/wildlife voice taxonomy",
+      "usage": "license varies by recording"
+    },
+    {
+      "id": "earth-fm",
+      "url": "https://earth.fm/nature-soundmap/",
+      "purpose": "habitat/location soundscape taxonomy",
+      "usage": "no audio reuse without permission"
+    },
+    {
+      "id": "radio-aporee",
+      "url": "https://aporee.org/maps/",
+      "purpose": "geographical field sound taxonomy",
+      "usage": "verify recording rights"
+    },
+    {
+      "id": "zapsplat",
+      "url": "https://www.zapsplat.com/",
+      "purpose": "SFX/category coverage",
+      "usage": "check restrictive standalone-library terms"
+    },
+    {
+      "id": "sonniss",
+      "url": "https://sonniss.com/gameaudiogdc/",
+      "purpose": "industrial/fantasy classification",
+      "usage": "not presumed eligible for standalone sound library"
+    },
+    {
+      "id": "mynoise",
+      "url": "https://mynoise.net/",
+      "purpose": "ambient/frequency/multi-layer models",
+      "usage": "reference only absent permission"
+    },
+    {
+      "id": "tiengdong",
+      "url": "https://tiengdong.com/",
+      "purpose": "Vietnamese animal and daily-life taxonomy",
+      "usage": "not a licensed audio source by default"
+    },
+    {
+      "id": "spotify",
+      "url": "https://open.spotify.com/playlist/37i9dQZF1DWUZ5bk6qqDSy",
+      "purpose": "playlist concepts",
+      "usage": "not a redistribution source"
+    },
+    {
+      "id": "amazon",
+      "url": "https://music.amazon.com/podcasts/115cfc94-5337-4229-8670-fad407d01726/white-noise-and-sleep-sounds-12-hours",
+      "purpose": "long duration soundscape inspiration",
+      "usage": "not a redistribution source"
+    }
+  ],
+  "families": [
+    {
+      "research_id": "FAM-01",
+      "id": "noise-colors",
+      "label": "Noise Colors",
+      "existing_parent": "noise-colors",
+      "type": "core",
+      "priority": "P0",
+      "created_website_route": false,
+      "seo_status": "not_assigned",
+      "example_subtypes": [],
+      "review_status": "proposed"
+    },
+    {
+      "research_id": "FAM-02",
+      "id": "frequencies-tones",
+      "label": "Frequencies & Tones",
+      "existing_parent": "noise-colors",
+      "type": "facet",
+      "priority": "P1",
+      "created_website_route": false,
+      "seo_status": "not_assigned",
+      "example_subtypes": [],
+      "review_status": "proposed"
+    },
+    {
+      "research_id": "FAM-03",
+      "id": "drones-textures",
+      "label": "Drones & Textures",
+      "existing_parent": "hums-drones",
+      "type": "facet",
+      "priority": "P1",
+      "created_website_route": false,
+      "seo_status": "not_assigned",
+      "example_subtypes": [],
+      "review_status": "proposed"
+    },
+    {
+      "research_id": "FAM-04",
+      "id": "rain-thunder",
+      "label": "Rain & Thunder",
+      "existing_parent": "rain",
+      "type": "core",
+      "priority": "P0",
+      "created_website_route": false,
+      "seo_status": "not_assigned",
+      "example_subtypes": [],
+      "review_status": "proposed"
+    },
+    {
+      "research_id": "FAM-05",
+      "id": "freshwater",
+      "label": "Freshwater",
+      "existing_parent": "water",
+      "type": "core",
+      "priority": "P0",
+      "created_website_route": false,
+      "seo_status": "not_assigned",
+      "example_subtypes": [],
+      "review_status": "proposed"
+    },
+    {
+      "research_id": "FAM-06",
+      "id": "ocean-coastal",
+      "label": "Ocean & Coastal",
+      "existing_parent": "ocean",
+      "type": "core",
+      "priority": "P0",
+      "created_website_route": false,
+      "seo_status": "not_assigned",
+      "example_subtypes": [],
+      "review_status": "proposed"
+    },
+    {
+      "research_id": "FAM-07",
+      "id": "wind-weather",
+      "label": "Wind & Weather",
+      "existing_parent": "wind-weather",
+      "type": "core",
+      "priority": "P0",
+      "created_website_route": false,
+      "seo_status": "not_assigned",
+      "example_subtypes": [],
+      "review_status": "proposed"
+    },
+    {
+      "research_id": "FAM-08",
+      "id": "birds-birdsong",
+      "label": "Birds & Birdsong",
+      "existing_parent": "nature",
+      "type": "facet",
+      "priority": "P0",
+      "created_website_route": false,
+      "seo_status": "not_assigned",
+      "example_subtypes": [
+        "dawn chorus",
+        "songbird solo",
+        "owls",
+        "seabirds",
+        "waterbirds",
+        "forest birds",
+        "tropical birds"
+      ],
+      "review_status": "proposed"
+    },
+    {
+      "research_id": "FAM-09",
+      "id": "insects-amphibians",
+      "label": "Insects & Amphibians",
+      "existing_parent": "nature",
+      "type": "facet",
+      "priority": "P0",
+      "created_website_route": false,
+      "seo_status": "not_assigned",
+      "example_subtypes": [
+        "crickets",
+        "cicadas",
+        "grasshoppers",
+        "frogs",
+        "toads",
+        "wetland night ambience"
+      ],
+      "review_status": "proposed"
+    },
+    {
+      "research_id": "FAM-10",
+      "id": "mammals-wildlife",
+      "label": "Mammals & Wildlife",
+      "existing_parent": "nature",
+      "type": "facet",
+      "priority": "P1",
+      "created_website_route": false,
+      "seo_status": "not_assigned",
+      "example_subtypes": [
+        "cat purring",
+        "wolf howl",
+        "monkeys and apes",
+        "whales",
+        "dolphins",
+        "deer",
+        "farm mammals"
+      ],
+      "review_status": "proposed"
+    },
+    {
+      "research_id": "FAM-11",
+      "id": "fans-ventilation",
+      "label": "Fans & Ventilation",
+      "existing_parent": "fan-noise",
+      "type": "core",
+      "priority": "P0",
+      "created_website_route": false,
+      "seo_status": "not_assigned",
+      "example_subtypes": [],
+      "review_status": "proposed"
+    },
+    {
+      "research_id": "FAM-12",
+      "id": "household-machines",
+      "label": "Household Machines",
+      "existing_parent": "household",
+      "type": "core",
+      "priority": "P0",
+      "created_website_route": false,
+      "seo_status": "not_assigned",
+      "example_subtypes": [],
+      "review_status": "proposed"
+    },
+    {
+      "research_id": "FAM-13",
+      "id": "transportation",
+      "label": "Transportation",
+      "existing_parent": "transportation",
+      "type": "core",
+      "priority": "P1",
+      "created_website_route": false,
+      "seo_status": "not_assigned",
+      "example_subtypes": [],
+      "review_status": "proposed"
+    },
+    {
+      "research_id": "FAM-14",
+      "id": "urban-indoor",
+      "label": "Urban & Indoor",
+      "existing_parent": "urban",
+      "type": "core",
+      "priority": "P1",
+      "created_website_route": false,
+      "seo_status": "not_assigned",
+      "example_subtypes": [],
+      "review_status": "proposed"
+    },
+    {
+      "research_id": "FAM-15",
+      "id": "fire-warmth",
+      "label": "Fire & Warmth",
+      "existing_parent": "fire",
+      "type": "core",
+      "priority": "P0",
+      "created_website_route": false,
+      "seo_status": "not_assigned",
+      "example_subtypes": [],
+      "review_status": "proposed"
+    },
+    {
+      "research_id": "FAM-16",
+      "id": "gentle-baby",
+      "label": "Gentle & Baby",
+      "existing_parent": "gentle-sounds",
+      "type": "core",
+      "priority": "P0",
+      "created_website_route": false,
+      "seo_status": "not_assigned",
+      "example_subtypes": [],
+      "review_status": "proposed"
+    },
+    {
+      "research_id": "FAM-17",
+      "id": "meditation-tonal",
+      "label": "Meditation & Tonal",
+      "existing_parent": "gentle-sounds",
+      "type": "facet",
+      "priority": "P2",
+      "created_website_route": false,
+      "seo_status": "not_assigned",
+      "example_subtypes": [],
+      "review_status": "proposed"
+    },
+    {
+      "research_id": "FAM-18",
+      "id": "soundscapes-mixes",
+      "label": "Soundscapes & Mixes",
+      "existing_parent": null,
+      "type": "composer",
+      "priority": "P0",
+      "created_website_route": false,
+      "seo_status": "not_assigned",
+      "example_subtypes": [],
+      "review_status": "proposed"
+    },
+    {
+      "research_id": "FAM-19",
+      "id": "asmr-tactile",
+      "label": "ASMR & Tactile",
+      "existing_parent": "gentle-sounds",
+      "type": "facet",
+      "priority": "P1",
+      "created_website_route": false,
+      "seo_status": "not_assigned",
+      "example_subtypes": [
+        "paper and page turning",
+        "wood tapping",
+        "keyboard typing",
+        "fabric brushing",
+        "glass and metal texture"
+      ],
+      "review_status": "proposed"
+    },
+    {
+      "research_id": "FAM-20",
+      "id": "industrial-factory",
+      "label": "Industrial & Factory",
+      "existing_parent": "hums-drones",
+      "type": "facet",
+      "priority": "P2",
+      "created_website_route": false,
+      "seo_status": "not_assigned",
+      "example_subtypes": [
+        "generators",
+        "compressors",
+        "factory ventilation",
+        "machinery",
+        "workshop tools"
+      ],
+      "review_status": "proposed"
+    },
+    {
+      "research_id": "FAM-21",
+      "id": "rural-farm",
+      "label": "Rural & Farm",
+      "existing_parent": "nature",
+      "type": "facet",
+      "priority": "P1",
+      "created_website_route": false,
+      "seo_status": "not_assigned",
+      "example_subtypes": [
+        "barn",
+        "stable",
+        "countryside sunrise",
+        "windmill",
+        "farm birds"
+      ],
+      "review_status": "proposed"
+    },
+    {
+      "research_id": "FAM-22",
+      "id": "fantasy-sci-fi",
+      "label": "Fantasy & Sci-Fi",
+      "existing_parent": "hums-drones",
+      "type": "facet",
+      "priority": "P2",
+      "created_website_route": false,
+      "seo_status": "not_assigned",
+      "example_subtypes": [
+        "spaceship cabin",
+        "fantasy forest",
+        "fictional machinery",
+        "castle room",
+        "cave fantasy"
+      ],
+      "review_status": "proposed"
+    },
+    {
+      "research_id": "FAM-23",
+      "id": "spatial-3d",
+      "label": "Spatial & 3D Audio",
+      "existing_parent": null,
+      "type": "cross_cutting",
+      "priority": "P2",
+      "created_website_route": false,
+      "seo_status": "not_assigned",
+      "example_subtypes": [
+        "binaural field recording",
+        "moving ambience",
+        "ambisonic capture"
+      ],
+      "review_status": "proposed"
+    },
+    {
+      "research_id": "FAM-24",
+      "id": "rhythmic-repetitive",
+      "label": "Rhythmic & Repetitive",
+      "existing_parent": "hums-drones",
+      "type": "facet",
+      "priority": "P1",
+      "created_website_route": false,
+      "seo_status": "not_assigned",
+      "example_subtypes": [
+        "clock ticking",
+        "rails rhythm",
+        "mechanical cycles",
+        "metronomic ambient textures"
+      ],
+      "review_status": "proposed"
+    },
+    {
+      "research_id": "FAM-25",
+      "id": "cultural-sacred",
+      "label": "Cultural & Sacred Spaces",
+      "existing_parent": "urban",
+      "type": "facet",
+      "priority": "P2",
+      "created_website_route": false,
+      "seo_status": "not_assigned",
+      "example_subtypes": [
+        "temple courtyard",
+        "bells",
+        "sacred interior ambience",
+        "Japanese garden"
+      ],
+      "review_status": "proposed"
+    },
+    {
+      "research_id": "FAM-26",
+      "id": "human-spoken",
+      "label": "Human & Spoken",
+      "existing_parent": "urban",
+      "type": "facet",
+      "priority": "P2",
+      "created_website_route": false,
+      "seo_status": "not_assigned",
+      "example_subtypes": [
+        "indistinct crowd murmur",
+        "soft whisper",
+        "reading ambience"
+      ],
+      "review_status": "proposed"
+    },
+    {
+      "research_id": "FAM-27",
+      "id": "seasonal-holiday",
+      "label": "Seasonal & Holiday",
+      "existing_parent": null,
+      "type": "cross_cutting",
+      "priority": "P2",
+      "created_website_route": false,
+      "seo_status": "not_assigned",
+      "example_subtypes": [
+        "winter night",
+        "autumn storm",
+        "summer insects",
+        "holiday ambience"
+      ],
+      "review_status": "proposed"
+    },
+    {
+      "research_id": "FAM-28",
+      "id": "extreme-environments",
+      "label": "Extreme Environments",
+      "existing_parent": null,
+      "type": "cross_cutting",
+      "priority": "P2",
+      "created_website_route": false,
+      "seo_status": "not_assigned",
+      "example_subtypes": [
+        "glacier cracking",
+        "cave ambience",
+        "arctic wind",
+        "desert",
+        "underwater"
+      ],
+      "review_status": "proposed"
+    }
+  ],
+  "coverage_gate": [
+    "Map each actual production ID to 1 primary sound type; allow multiple facets without duplicate URLs",
+    "Map NEW-01..NEW-70 and EXP-001..EXP-038 by identity; avoid counting promoted plans as additional audio",
+    "Mark source-needed, licensed, QA-approved, published separately",
+    "Wildlife requires scientific name and call type when determinable; unknown taxonomy stays unresolved",
+    "Sound effects that startle or interrupt sleep remain discovery-only until suitability reviewed",
+    "No indexable page without unique user intent and audio or demonstrable informational value",
+    "Only publish audio after independent duration/provenance/license/loop/acoustic QA and owner listening approval"
+  ]
+}
