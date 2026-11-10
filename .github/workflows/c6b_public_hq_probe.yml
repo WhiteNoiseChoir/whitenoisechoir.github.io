@@ -1,0 +1,29 @@
+name: C6B Public CC0 Preview Research (No Audio Release)
+on:
+  pull_request:
+    paths:
+      - "scripts/probe_c6b_public_hq_previews.py"
+      - ".github/workflows/c6b_public_hq_probe.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  inspect-public-previews-only:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify Python and FFprobe
+        run: |
+          python3 -m py_compile scripts/probe_c6b_public_hq_previews.py
+          ffprobe -version | head -n 1
+      - name: Inspect public preview rights markers, actual first 605 seconds and bitstreams
+        run: python3 scripts/probe_c6b_public_hq_previews.py
+      - name: Upload JSON-only research report (NO AUDIO)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: c6b-research-json-no-audio
+          path: audits/c6b-public-hq-preview-probe.json
+          if-no-files-found: warn
+          retention-days: 14
