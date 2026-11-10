@@ -1,0 +1,65 @@
+name: Publish C6B Noindex Listening HTML to Isolated R2 Review (Pages Fallback)
+on:
+  pull_request:
+    paths:
+      - 'scripts/c6b_publish_review_html_r2.py'
+      - '.github/workflows/c6b_review_html_r2.yml'
+      - 'signature/c6b-online-review/index.html'
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/c6b_publish_review_html_r2.py'
+      - '.github/workflows/c6b_review_html_r2.yml'
+      - 'signature/c6b-online-review/index.html'
+permissions:
+  contents: read
+concurrency:
+  group: c6b-review-html-r2-production-isolation
+  cancel-in-progress: false
+jobs:
+  validate-review-html:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Validate source HTML and default native loop
+        run: |
+          set -euo pipefail
+          python3 -m py_compile scripts/c6b_publish_review_html_r2.py
+          python3 - <<'PY'
+          import runpy
+          ns=runpy.run_path("scripts/c6b_publish_review_html_r2.py",run_name="__c6b_readonly_validate__")
+          data,h=ns["check_local"]()
+          print("C6B_REVIEW_HTML_SAFE",len(data),h)
+          PY
+          node scripts/test_c6b_online_room.cjs
+          node scripts/test_sound_production_queue_c6.cjs
+  publish-noindex-review-html:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: [validate-review-html]
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+      R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+      AWS_EC2_METADATA_DISABLED: 'true'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Install audited R2 connector
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check 'boto3>=1.36,<2'
+      - name: Upload isolated R2 review HTML and verify live exact SHA-256
+        run: python3 scripts/c6b_publish_review_html_r2.py
+      - name: Record JSON QA only
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: c6b-r2-live-html-verification
+          path: audits/c6b-html-live-r2-audit.json
+          retention-days: 30
+          if-no-files-found: warn
