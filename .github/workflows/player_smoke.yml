@@ -21,6 +21,9 @@ on:
       - 'scripts/test_library_foundation.cjs'
       - 'scripts/test_library_foundation_browser.cjs'
       - 'scripts/test_library_explorer_browser.cjs'
+      - 'scripts/test_library_hubs_c4.cjs'
+      - 'scripts/test_library_hubs_c4_browser.cjs'
+      - 'catalog/framework-hubs-c4.json'
       - 'framework-preview/**'
       - 'scripts/test_relaxing_collection.cjs'
       - 'scripts/test_relaxing_browser.cjs'
@@ -54,6 +57,8 @@ jobs:
           node scripts/test_player_smoke.cjs
           node scripts/test_loop_check.cjs
           node scripts/test_library_structure.cjs
+          node scripts/test_library_hubs_c4.cjs
+          node scripts/test_framework_staging.cjs
           node scripts/build_sound_library_foundation.cjs
           node scripts/test_library_foundation.cjs
           node scripts/test_relaxing_collection.cjs
@@ -77,3 +82,4 @@ jobs:
           node scripts/test_noise_colors_browser.cjs
           node scripts/test_library_foundation_browser.cjs
           node scripts/test_library_explorer_browser.cjs
+          node scripts/test_library_hubs_c4_browser.cjs
