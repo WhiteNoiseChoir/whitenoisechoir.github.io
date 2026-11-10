@@ -33,7 +33,7 @@ const pairs=[
  ["<!-- WNC_FOUNDATION_ROADMAP_BEGIN -->","<!-- WNC_FOUNDATION_ROADMAP_END -->",renderRoadmap(fam,plan,mix,sounds)]
 ];
 let html=file("sounds/index.html"),changed=false;
-const expectedDescription="Browse "+sounds.length+" sound sources in 13 families, including noise colors, rain, fan, water and environmental audio. Discover "+plan.length+" future source concepts, clearly marked as not yet playable.";
+const expectedDescription="Browse "+(sounds.length+10)+" playable sound sources (35 original catalog plus 10 approved synthetic additions) in 13 families, including noise colors, rain, fan, water and environmental audio. Discover "+plan.length+" future source concepts.";
 const oldDescription=html.match(/<meta name="description" content="([^"]*)"/)?.[1];
 assert.ok(oldDescription,"Missing library meta description");
 if(oldDescription!==expectedDescription){html=html.replace('<meta name="description" content="'+oldDescription+'"','<meta name="description" content="'+expectedDescription+'"');changed=true}

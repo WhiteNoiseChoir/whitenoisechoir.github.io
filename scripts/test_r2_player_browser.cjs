@@ -50,7 +50,7 @@ const BASE="http://127.0.0.1:8787";
     sounds:window.WNCBridge.rows.length,
     recipes:window.WNCBridge.recipes.length
    }));
-   assert.equal(actual.sounds,35);assert.equal(actual.recipes,45);
+   assert.equal(actual.sounds,45);assert.equal(actual.recipes,45);
    assert.ok(actual.src.startsWith(BASE+expected),t.name+" wrong backup "+actual.src);
    assert.equal(actual.isPlaying,true,t.name+" playback stopped");
    assert.equal(actual.paused,false,t.name+" media paused");

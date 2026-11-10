@@ -1,0 +1,55 @@
+name: C6C 45-Source Production UI and 10 Native HLS Integration QA
+on:
+  pull_request:
+    paths:
+      - 'index.html'
+      - 'sounds/index.html'
+      - 'sounds/c6c-synthetic/**'
+      - 'scripts/test_c6c_production_main.cjs'
+      - 'scripts/test_c6c_production_browser.cjs'
+      - 'scripts/test_player_smoke.cjs'
+      - 'scripts/test_r2_player_browser.cjs'
+      - 'scripts/build_sound_library_foundation.cjs'
+      - '.github/workflows/c6c_production_ui_qa.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'index.html'
+      - 'sounds/index.html'
+      - 'sounds/c6c-synthetic/**'
+      - 'scripts/test_c6c_production_main.cjs'
+      - 'scripts/test_c6c_production_browser.cjs'
+      - 'scripts/test_player_smoke.cjs'
+      - 'scripts/test_r2_player_browser.cjs'
+      - 'scripts/build_sound_library_foundation.cjs'
+      - '.github/workflows/c6c_production_ui_qa.yml'
+permissions:
+  contents: read
+jobs:
+  integration:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Check 45 playable IDs, 45 mixes, unchanged original 35, SEO gate and noindex new hub
+        run: |
+          set -euo pipefail
+          node scripts/test_c6c_production_main.cjs
+          node scripts/test_player_smoke.cjs
+          node scripts/test_library_foundation.cjs
+          node scripts/build_sound_library_foundation.cjs
+          node scripts/test_library_structure.cjs
+          node scripts/test_r2_balanced_layout.cjs
+          # Legacy cutover checker assumes exactly 60 all-canonical pages; site now
+          # contains separate noindex preview and audio-release rooms. Keep 18
+          # sitemap and noindex invariants in the C6C and library tests above.
+      - name: Browser - new C6C ten production tracks and old HLS/MP3 fallback
+        run: |
+          set -euo pipefail
+          npm install --no-save playwright@1.55.0
+          python3 -m http.server 8787 --bind 127.0.0.1 > /tmp/wnc-c6c-live-http.log 2>&1 &
+          sleep 2
+          node scripts/test_c6c_production_browser.cjs
+          node scripts/test_r2_player_browser.cjs
