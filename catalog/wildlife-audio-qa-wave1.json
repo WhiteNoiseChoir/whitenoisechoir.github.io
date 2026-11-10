@@ -1,0 +1,93 @@
+{
+  "schema_version": 1,
+  "revision": "2026-11-10",
+  "stage": "AWAITING_AUTHENTICATED_SOURCE_DOWNLOAD",
+  "linked_candidate_manifest": "catalog/wildlife-recording-candidates-wave1-2026-11-10.json",
+  "production_integration": false,
+  "acquisition": "Download full original files via authorized Freesound login. Never use preview and claim original lossless quality. Preserve a source-page metadata record alongside uploaded bytes.",
+  "auditions": [
+    {
+      "candidate_id": "WREC-002",
+      "wildlife_id": "WILD-001",
+      "name": "Dawn Chorus",
+      "source_url": "https://freesound.org/people/SamsterBirdies/sounds/639984/",
+      "expected_duration_seconds": 613.75,
+      "expected_format": "flac",
+      "priority": "P0",
+      "download_status": "BLOCKED_LOGIN_REQUIRED",
+      "qa_status": "NOT_RUN",
+      "human_review": "PENDING",
+      "comment": "Best candidate for long dawn chorus; exact source length pending bytes check"
+    },
+    {
+      "candidate_id": "WREC-003",
+      "wildlife_id": "WILD-003",
+      "name": "Forest Bird Chorus",
+      "source_url": "https://freesound.org/people/SamsterBirdies/sounds/745273/",
+      "expected_duration_seconds": 589.097,
+      "expected_format": "flac",
+      "priority": "P0",
+      "download_status": "BLOCKED_LOGIN_REQUIRED",
+      "qa_status": "NOT_RUN",
+      "human_review": "PENDING",
+      "comment": "Forest near lake; needs differentiation against Dawn Chorus"
+    },
+    {
+      "candidate_id": "WREC-005",
+      "wildlife_id": "WILD-023",
+      "name": "Crickets at Night",
+      "source_url": "https://freesound.org/people/Goldenboy76/sounds/857163/",
+      "expected_duration_seconds": 535.769,
+      "expected_format": "wav",
+      "priority": "HOLD",
+      "download_status": "BLOCKED_LOGIN_REQUIRED",
+      "qa_status": "NOT_RUN",
+      "human_review": "PENDING",
+      "comment": "Freesound comment reports recorder movement and possible voices; not clean verified sleep material"
+    },
+    {
+      "candidate_id": "WREC-006",
+      "wildlife_id": "WILD-023",
+      "name": "Crickets at Night alternative",
+      "source_url": "https://freesound.org/people/kvgarlic/sounds/810306/",
+      "expected_duration_seconds": 346.302,
+      "expected_format": "wav",
+      "priority": "P0",
+      "download_status": "BLOCKED_LOGIN_REQUIRED",
+      "qa_status": "NOT_RUN",
+      "human_review": "PENDING",
+      "comment": "Alternative cricket source; inspect and verify first"
+    },
+    {
+      "candidate_id": "WREC-008",
+      "wildlife_id": "WILD-038",
+      "name": "Frog Pond Chorus",
+      "source_url": "https://freesound.org/people/Stan-Williams/sounds/510502/",
+      "expected_duration_seconds": 256.009,
+      "expected_format": "mp3",
+      "priority": "P1",
+      "download_status": "BLOCKED_LOGIN_REQUIRED",
+      "qa_status": "NOT_RUN",
+      "human_review": "PENDING",
+      "comment": "Already labeled a loop; original unique duration unknown"
+    }
+  ],
+  "quality_gate": {
+    "required_checks": [
+      "sha256",
+      "ffprobe_duration_channels_sample_rate",
+      "true_peak_loudness",
+      "manual_voice_intrusion_review",
+      "end_to_start_join_audition",
+      "10min_master_playback",
+      "mobile_background_loop",
+      "license_record",
+      "owner_listening_approval"
+    ],
+    "distinct_recorded_duration_never_inferred_from_page_duration": true,
+    "default_auto_approve": false
+  },
+  "public_review_page_ready": false,
+  "review_audio_paths": [],
+  "no_faux_audio_links": true
+}
