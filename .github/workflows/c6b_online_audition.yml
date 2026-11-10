@@ -1,0 +1,85 @@
+name: C6B Online Listening Room - Isolated R2 Review Only
+on:
+  pull_request:
+    paths:
+      - 'signature/c6b-online-review/**'
+      - 'scripts/c6b_publish_review_r2.py'
+      - 'scripts/test_c6b_online_room.cjs'
+      - '.github/workflows/c6b_online_audition.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'signature/c6b-online-review/**'
+      - 'scripts/c6b_publish_review_r2.py'
+      - 'scripts/test_c6b_online_room.cjs'
+      - '.github/workflows/c6b_online_audition.yml'
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: c6b-isolated-r2-review-only
+  cancel-in-progress: false
+jobs:
+  static-room-and-release-gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Verify nonindex preview room, fail-closed uploader, production baseline and release gate
+        run: |
+          set -euo pipefail
+          node scripts/test_c6b_online_room.cjs
+          python3 -m py_compile scripts/c6b_publish_review_r2.py
+          node scripts/test_sound_production_queue_c6.cjs
+  publish-four-review-only-r2-files:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: [static-room-and-release-gate]
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+      R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+      AWS_EC2_METADATA_DISABLED: 'true'
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Download exact vetted, unapproved review artifact from CI run 42763529255
+        uses: actions/download-artifact@v4
+        with:
+          name: c6b-two-mp3-not-approved-audition
+          path: audits/c6b-audition-artifacts
+          run-id: 42763529255
+          repository: WhiteNoiseChoir/whitenoisechoir.github.io
+          github-token: ${{ github.token }}
+      - name: Verify FFmpeg, R2 secrets and toolchain
+        run: |
+          set -euo pipefail
+          test -n "$R2_ACCESS_KEY_ID"
+          test -n "$R2_SECRET_ACCESS_KEY"
+          test -s audits/c6b-audition-artifacts/SND-0039.mp3
+          test -s audits/c6b-audition-artifacts/SND-0040.mp3
+          test -s audits/c6b-audition-artifacts/audit.json
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq ffmpeg
+          command -v ffprobe
+          command -v ffmpeg
+          python -m pip install --disable-pip-version-check 'boto3>=1.36,<2'
+      - name: Pin two original review MP3 SHA, make balanced copies and upload to review/ prefix only
+        run: python3 scripts/c6b_publish_review_r2.py
+      - name: Export R2-only QA report (no source audio in artifact)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: c6b-online-r2-review-verification-json
+          path: audits/c6b-online-audition/online-review-audit.json
+          if-no-files-found: warn
+          retention-days: 30
+      - name: Confirm public review route, never touch production library
+        run: |
+          echo "Review-only MP3s at https://media.whitenoisechoir.com/review/c6b-20261110/"
+          echo "Listening URL: https://whitenoisechoir.com/signature/c6b-online-review/"
+          echo "No sound release / owner approval / sitemap / player / HLS altered."
