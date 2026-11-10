@@ -1,0 +1,34 @@
+name: C6B Build Two Non-Production MP3 Audition Artifacts
+on:
+  pull_request:
+    paths:
+      - "scripts/c6b_prepare_review_masters.py"
+      - ".github/workflows/c6b_audition_artifacts.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  build-owner-listening-artifacts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install and check FFmpeg, and compile review-only script
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq ffmpeg
+          command -v ffmpeg
+          command -v ffprobe
+          python3 -m py_compile scripts/c6b_prepare_review_masters.py
+      - name: Decode public CC0 HQ previews and encode 600s MP3 review files only
+        run: python3 scripts/c6b_prepare_review_masters.py
+      - name: Publish short-lived GitHub Actions audition artifact, NEVER site or R2
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: c6b-two-mp3-not-approved-audition
+          path: audits/c6b-audition-artifacts/
+          if-no-files-found: warn
+          compression-level: 1
+          retention-days: 7
