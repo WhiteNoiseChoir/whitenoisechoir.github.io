@@ -1,27 +1,34 @@
 # Master Catalog Crosswalk — 2026-11-10
 
-## Scope
-Verified from GitHub: **35 production catalog records**, **70 original planned records** and **38 research proposals from open PR #31**. These are **143 records**, not 143 unique audio files. Branch includes taxonomy foundation from PR #32; production `main` is untouched.
+## Verified baseline
 
-## Reconciliation outcome
-- **catalog_record**: 35
-- **already_promoted**: 13
-- **not_produced**: 55
-- **overlap_review**: 22
-- **research_new_concept**: 16
-- **mix_not_new_mp3**: 2
+- **35 production catalog entries**, including **3 Ocean & Coastal** records explicitly reclassified from legacy `water`.
+- **70 blueprint records**, of which **13** carry explicit promoted production IDs.
+- **38 external-research records** (from open PR #31).
+- **143 source records overall — not 143 distinct sounds or 143 MP3.**
+- The research framework is on PR #32; this PR #33 is stacked on it.
 
-The 13 blueprint items with explicit production IDs are marked `already_promoted`. A source record with a similar title can be a distinct acoustically meaningful recording and is never automatically deleted or merged. All candidate collisions are manual review only.
+## Classification outcomes
 
-## Per-family counts
-| Family | Current catalog | Unproduced blueprint | New unmatched research | Overlap-review records |
+- `catalog_record`: **35**
+- `already_promoted`: **13**
+- `not_produced`: **55**
+- `overlap_review`: **22**
+- `research_new_concept`: **16**
+- `mix_not_new_mp3`: **2**
+
+Some original blueprints are already produced; others overlap or require distinct independent recordings. Labels `overlap_review` indicate similarities **not proven duplicates**. No candidate is deleted automatically.
+
+## Sound family audit
+
+| Family | Existing catalog | Unproduced blueprint | New unmatched research | Needs overlap review |
 |---|---:|---:|---:|---:|
 | Noise Colors | 10 | 1 | 0 | 0 |
 | Frequencies & Tones | 0 | 0 | 3 | 0 |
 | Drones & Textures | 1 | 6 | 0 | 1 |
 | Rain & Thunder | 10 | 5 | 1 | 5 |
-| Freshwater | 8 | 7 | 2 | 1 |
-| Ocean & Coastal | 0 | 0 | 0 | 0 |
+| Freshwater | 5 | 7 | 2 | 1 |
+| Ocean & Coastal | 3 | 0 | 0 | 0 |
 | Wind & Weather | 1 | 5 | 3 | 0 |
 | Birds & Birdsong | 0 | 2 | 0 | 2 |
 | Insects & Amphibians | 0 | 3 | 2 | 0 |
@@ -45,12 +52,18 @@ The 13 blueprint items with explicit production IDs are marked `already_promoted
 | Seasonal & Holiday | 0 | 0 | 0 | 0 |
 | Extreme Environments | 0 | 0 | 1 | 0 |
 
-## Gaps and next work
-1. Link species-specific wildlife concepts to call type, habitat, Latin name where known; do not invent scientific names.
-2. Audit actual 35 source *recording* lengths and provenance from manifests before forecasting independent MP3 hours.
-3. Validate pairs with tentative overlaps via human review. `overlap_review` does not mean duplicate.
-4. Add source/rights/licensing checklist for 38 research proposals before production.
-5. Establish gap dashboard with priority, family, source availability, QA readiness and SEO intent. Do not create indexed pages automatically.
+## Checks and limitations
 
-## Safety and non-regression
-Only research JSON and report are added. No player, site routes, audio, sitemap, current source IDs or 45 presets changed.
+- All 143 entries map to 28 valid logical taxonomy identifiers.
+- **Ocean & Coastal** now correctly separates 3 produced ocean sources and 2 promoted blueprints from freshwater; legacy production IDs, category routes and sound pages remain unchanged.
+- Only the 13 explicit `production_id` links are treated as authoritative source-to-plan matches. Title and acoustic similarities are provisional and need reviewer judgment.
+- The taxonomy list is a coverage scaffold, not an exhaustive scraped inventory of TiengDong, Freesound, Macaulay, Xeno-canto or BSD10k.
+- The names `catalog_record`, `already_promoted`, and `research_new_concept` do not imply a separate unique MP3 each.
+- Metadata is insufficient to measure independent recorded audio duration, verified licenses for every new candidate or source quality.
+- No new MP3, indexable URLs, sitemap changes, media source changes, audio modifications, mixer changes or preset changes.
+
+## Next tasks
+
+1. Make a machine-readable availability/gap report prioritizing P0 by family, avoiding named overlaps.
+2. Extend Wildlife by habitat, species and vocalization subtype, marking all unverified names and links clearly.
+3. Verify individual recordings, licensing and original duration before sending any P0 candidate to audio QA and owner listening approval.
