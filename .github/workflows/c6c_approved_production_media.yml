@@ -1,0 +1,85 @@
+name: C6C Owner-Approved 10 Production MP3 and Native HLS R2 Promotion
+on:
+  pull_request:
+    paths:
+      - 'catalog/c6c-production-audio-approval.json'
+      - 'scripts/c6c_release_production_r2.py'
+      - '.github/workflows/c6c_approved_production_media.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'catalog/c6c-production-audio-approval.json'
+      - 'scripts/c6c_release_production_r2.py'
+      - '.github/workflows/c6c_approved_production_media.yml'
+permissions:
+  contents: read
+concurrency:
+  group: c6c-ten-approved-r2-audio-production
+  cancel-in-progress: false
+jobs:
+  validate-immutable-audio-approval:
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Check production approval provenance, data and exact SHA of ten C6C user-approved sources
+        run: |
+          set -euo pipefail
+          python3 -m py_compile scripts/c6c_release_production_r2.py
+          python3 - <<'PY'
+          import json,re
+          q=json.load(open("catalog/c6c-production-audio-approval.json"))
+          m=json.load(open("catalog/c6c-ten-synthetic-review.json"))
+          assert len(q["items"])==len(m["items"])==10
+          assert set(r["record_id"] for r in q["items"])==set(r["id"] for r in m["items"])
+          assert len(set(x["production_id"] for x in q["items"]))==10
+          assert all(x["owner_listening_status"]=="APPROVED_BY_OWNER_2026-11-10" for x in q["items"])
+          assert all(re.fullmatch(r"[a-f0-9]{64}",x["approved_review_master_sha256"]) for x in q["items"])
+          assert all(x["approved_production_mp3"]=="audio/"+x["production_id"]+".mp3" for x in q["items"])
+          assert q["previous_production_sources"]==35 and q["existing_presets"]==45
+          assert q["seo_indexing_approved"] is False
+          s=open("scripts/c6c_release_production_r2.py").read()
+          assert "delete_object" not in s
+          assert 'put_immutable' in s and 'digest_remote' in s
+          print("C6C_APPROVED_AUDIO_SOURCE_GATE_PASS",len(q["items"]))
+          PY
+          node scripts/test_c6c_ten_review.cjs
+  publish-approved-ten:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: [validate-immutable-audio-approval]
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    env:
+      R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+      R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+      AWS_EC2_METADATA_DISABLED: 'true'
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Install FFmpeg and Python R2 client
+        run: |
+          set -euo pipefail
+          test -n "$R2_ACCESS_KEY_ID" && test -n "$R2_SECRET_ACCESS_KEY"
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq ffmpeg
+          command -v ffmpeg
+          command -v ffprobe
+          python -m pip install --disable-pip-version-check 'boto3>=1.36,<2'
+      - name: Copy the EXACT user-approved MP3 hashes and generate independent 7-day iPhone HLS playback from each
+        run: python3 scripts/c6c_release_production_r2.py
+      - name: Store promotion evidence (JSON-only)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: c6c-production-10-mp3-10-hls-verification
+          path: audits/c6c-production-promotion/audit.json
+          if-no-files-found: warn
+          retention-days: 30
+      - name: Confirm old audio not mutated and SEO stays separate
+        run: |
+          echo "Only new audio/c6c-* and audio/continuous/c6c-* keys created."
+          echo "Ten user-approved C6C audio masters and native HLS are ready for separately QA-gated website integration."
