@@ -62,6 +62,18 @@ assert.ok(html.includes('audio.currentTime=audio.duration-5'));
 assert.ok(html.includes('fetch("/catalog/sound-production-queue-c6.json"'));
 const js=html.split("<script>")[1]?.split("</script>")[0];assert.ok(js);
 new vm.Script(js,{filename:"C6 review room"});
+assert.equal(q.research_summary.individual_source_pages_inspected,2);
+assert.equal(q.research_summary.metadata_leads_meeting_600s_on_page,2);
+assert.equal(q.research_summary.downloaded_originals,0);
+assert.equal(q.research_summary.rights_provenance_confirmed,0);
+for(const id of ["SND-0039","SND-0040"]){
+ const row=q.items.find(r=>r.record_id===id);
+ assert.equal(row.metadata_discovery.length,1);
+ assert.equal(row.metadata_discovery[0].discovery_status,"PAGE_METADATA_ONLY_NOT_ACQUIRED");
+ assert.ok(row.metadata_discovery[0].displayed_duration_seconds>=600);
+ assert.equal(row.metadata_discovery[0].declared_license_on_page,"Creative Commons 0");
+ assert.equal(row.source_audit.license,null);
+}
 assert.ok(!sitemap.includes("c6-listening"));
 assert.ok(!sitemap.includes("sound-production-queue-c6"));
 const blocked=JSON.parse(cp.execFileSync(process.execPath,["scripts/sound_release_gate.cjs","--id=SND-0040"],{encoding:"utf8"}));
