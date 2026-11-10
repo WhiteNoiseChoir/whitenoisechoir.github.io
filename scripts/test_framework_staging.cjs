@@ -39,4 +39,20 @@ assert.ok(!html.includes('href="/sounds/bird-sounds/"'),"proposed hub URL not a 
 assert.ok(!html.includes('href="/sounds/asmr-sounds/"'),"proposed ASMR hub URL not a link");
 const subIx=data.columns.indexOf("subfamily");
 assert.ok(subIx>=0&&data.rows.some(r=>r[subIx]==="birds")&&data.rows.some(r=>r[subIx]==="insects"),"wildlife subfamilies present");
-console.log("PASS — C2 intent/subgroup UX + existing 532 rows / 28 groups / 35 production; zero new indexable/audio pages");
+const liveExplorer=fs.readFileSync("sounds/explore/index.html","utf8");
+const liveScript=liveExplorer.split("<script>")[1]?.split("</script>")[0];
+assert.ok(liveScript,"published explorer has working inline JavaScript");
+new vm.Script(liveScript,{filename:"sounds/explore/index.html"});
+assert.match(liveExplorer,/<meta name="robots" content="noindex,nofollow,noarchive">/,"planned live directory not indexable");
+assert.ok(liveExplorer.includes('fetch("/framework-preview/master-inventory.json"'),"live explorer loads shared 532-item data");
+assert.ok(liveExplorer.includes('fetch("/catalog/library.json"'),"live explorer only links verified production sources");
+assert.ok(current.includes('href="/sounds/explore/"'),"sounds hub visibly links to expanded directory");
+assert.ok(current.includes("532 researched sound-type records across 28 logical groups"),"accurate expanded library labeling");
+assert.ok(!sitemap.includes("/sounds/explore/"),"non-indexed planning directory omitted from sitemap");
+assert.ok(!/<audio\\b/i.test(liveExplorer),"published directory contains no fake audio player");
+assert.ok(!/<link rel="canonical"/i.test(liveExplorer),"planning directory has no competing canonical");
+for(const i of ["sleep","relax","focus","baby"])assert.ok(liveExplorer.includes('data-intent="'+i+'"'),"missing live intent "+i);
+for(const href of ["/sounds/bird-sounds/","/sounds/animal-sounds/","/sounds/asmr-sounds/"]){
+ assert.ok(!liveExplorer.includes('href="'+href+'"'),"unbuilt hub linked: "+href);
+}
+console.log("PASS — C2 + /sounds/explore/ launch safety, 532 records / 28 groups / 35 production, zero new media");
