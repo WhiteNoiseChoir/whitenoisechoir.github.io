@@ -1,0 +1,2048 @@
+{
+  "schema_version": 1,
+  "as_of": "2026-11-10",
+  "stage": "research_only",
+  "baseline": {
+    "production": 35,
+    "blueprint": 70,
+    "expansion": 38,
+    "total_records": 143
+  },
+  "semantics": "143 source records, NOT 143 distinct sounds, NOT 143 MP3. Explicit production links are authoritative; heuristic normalized-title and acoustic similarities are tentative, never auto-delete.",
+  "taxonomy_pr": 32,
+  "external_research_pr": 31,
+  "summary": {
+    "statuses": {
+      "catalog_record": 35,
+      "already_promoted": 13,
+      "not_produced": 55,
+      "overlap_review": 22,
+      "research_new_concept": 16,
+      "mix_not_new_mp3": 2
+    },
+    "family_distribution": [
+      {
+        "id": "noise-colors",
+        "name": "Noise Colors",
+        "prod": 10,
+        "blueprint_unproduced": 1,
+        "new_research": 0,
+        "overlap_review": 0
+      },
+      {
+        "id": "frequencies-tones",
+        "name": "Frequencies & Tones",
+        "prod": 0,
+        "blueprint_unproduced": 0,
+        "new_research": 3,
+        "overlap_review": 0
+      },
+      {
+        "id": "drones-textures",
+        "name": "Drones & Textures",
+        "prod": 1,
+        "blueprint_unproduced": 6,
+        "new_research": 0,
+        "overlap_review": 1
+      },
+      {
+        "id": "rain-thunder",
+        "name": "Rain & Thunder",
+        "prod": 10,
+        "blueprint_unproduced": 5,
+        "new_research": 1,
+        "overlap_review": 5
+      },
+      {
+        "id": "freshwater",
+        "name": "Freshwater",
+        "prod": 8,
+        "blueprint_unproduced": 7,
+        "new_research": 2,
+        "overlap_review": 1
+      },
+      {
+        "id": "ocean-coastal",
+        "name": "Ocean & Coastal",
+        "prod": 0,
+        "blueprint_unproduced": 0,
+        "new_research": 0,
+        "overlap_review": 0
+      },
+      {
+        "id": "wind-weather",
+        "name": "Wind & Weather",
+        "prod": 1,
+        "blueprint_unproduced": 5,
+        "new_research": 3,
+        "overlap_review": 0
+      },
+      {
+        "id": "birds-birdsong",
+        "name": "Birds & Birdsong",
+        "prod": 0,
+        "blueprint_unproduced": 2,
+        "new_research": 0,
+        "overlap_review": 2
+      },
+      {
+        "id": "insects-amphibians",
+        "name": "Insects & Amphibians",
+        "prod": 0,
+        "blueprint_unproduced": 3,
+        "new_research": 2,
+        "overlap_review": 0
+      },
+      {
+        "id": "mammals-wildlife",
+        "name": "Mammals & Wildlife",
+        "prod": 0,
+        "blueprint_unproduced": 1,
+        "new_research": 0,
+        "overlap_review": 0
+      },
+      {
+        "id": "fans-ventilation",
+        "name": "Fans & Ventilation",
+        "prod": 2,
+        "blueprint_unproduced": 5,
+        "new_research": 0,
+        "overlap_review": 2
+      },
+      {
+        "id": "household-machines",
+        "name": "Household Machines",
+        "prod": 1,
+        "blueprint_unproduced": 5,
+        "new_research": 1,
+        "overlap_review": 4
+      },
+      {
+        "id": "transportation",
+        "name": "Transportation",
+        "prod": 1,
+        "blueprint_unproduced": 5,
+        "new_research": 0,
+        "overlap_review": 3
+      },
+      {
+        "id": "urban-indoor",
+        "name": "Urban & Indoor",
+        "prod": 0,
+        "blueprint_unproduced": 4,
+        "new_research": 0,
+        "overlap_review": 2
+      },
+      {
+        "id": "fire-warmth",
+        "name": "Fire & Warmth",
+        "prod": 1,
+        "blueprint_unproduced": 3,
+        "new_research": 0,
+        "overlap_review": 0
+      },
+      {
+        "id": "gentle-baby",
+        "name": "Gentle & Baby",
+        "prod": 0,
+        "blueprint_unproduced": 5,
+        "new_research": 0,
+        "overlap_review": 2
+      },
+      {
+        "id": "meditation-tonal",
+        "name": "Meditation & Tonal",
+        "prod": 0,
+        "blueprint_unproduced": 0,
+        "new_research": 3,
+        "overlap_review": 0
+      },
+      {
+        "id": "soundscapes-mixes",
+        "name": "Soundscapes & Mixes",
+        "prod": 0,
+        "blueprint_unproduced": 0,
+        "new_research": 0,
+        "overlap_review": 0
+      },
+      {
+        "id": "asmr-tactile",
+        "name": "ASMR & Tactile",
+        "prod": 0,
+        "blueprint_unproduced": 0,
+        "new_research": 0,
+        "overlap_review": 0
+      },
+      {
+        "id": "industrial-factory",
+        "name": "Industrial & Factory",
+        "prod": 0,
+        "blueprint_unproduced": 0,
+        "new_research": 0,
+        "overlap_review": 0
+      },
+      {
+        "id": "rural-farm",
+        "name": "Rural & Farm",
+        "prod": 0,
+        "blueprint_unproduced": 0,
+        "new_research": 0,
+        "overlap_review": 0
+      },
+      {
+        "id": "fantasy-sci-fi",
+        "name": "Fantasy & Sci-Fi",
+        "prod": 0,
+        "blueprint_unproduced": 0,
+        "new_research": 0,
+        "overlap_review": 0
+      },
+      {
+        "id": "spatial-3d",
+        "name": "Spatial & 3D Audio",
+        "prod": 0,
+        "blueprint_unproduced": 0,
+        "new_research": 0,
+        "overlap_review": 0
+      },
+      {
+        "id": "rhythmic-repetitive",
+        "name": "Rhythmic & Repetitive",
+        "prod": 0,
+        "blueprint_unproduced": 0,
+        "new_research": 0,
+        "overlap_review": 0
+      },
+      {
+        "id": "cultural-sacred",
+        "name": "Cultural & Sacred Spaces",
+        "prod": 0,
+        "blueprint_unproduced": 0,
+        "new_research": 0,
+        "overlap_review": 0
+      },
+      {
+        "id": "human-spoken",
+        "name": "Human & Spoken",
+        "prod": 0,
+        "blueprint_unproduced": 0,
+        "new_research": 0,
+        "overlap_review": 0
+      },
+      {
+        "id": "seasonal-holiday",
+        "name": "Seasonal & Holiday",
+        "prod": 0,
+        "blueprint_unproduced": 0,
+        "new_research": 0,
+        "overlap_review": 0
+      },
+      {
+        "id": "extreme-environments",
+        "name": "Extreme Environments",
+        "prod": 0,
+        "blueprint_unproduced": 0,
+        "new_research": 1,
+        "overlap_review": 0
+      }
+    ]
+  },
+  "records": [
+    {
+      "record_id": "PROD:white-noise",
+      "source": "production",
+      "name": "White Noise",
+      "taxonomy": "noise-colors",
+      "status": "catalog_record",
+      "production_id": "white-noise",
+      "release_status": "approved",
+      "identity": "primary_production",
+      "related_ids": [],
+      "reason": "Production catalog record. Independent recording duration must be verified from audio manifests."
+    },
+    {
+      "record_id": "PROD:pink-noise",
+      "source": "production",
+      "name": "Pink Noise",
+      "taxonomy": "noise-colors",
+      "status": "catalog_record",
+      "production_id": "pink-noise",
+      "release_status": "approved",
+      "identity": "primary_production",
+      "related_ids": [],
+      "reason": "Production catalog record. Independent recording duration must be verified from audio manifests."
+    },
+    {
+      "record_id": "PROD:brown-noise",
+      "source": "production",
+      "name": "Brown Noise",
+      "taxonomy": "noise-colors",
+      "status": "catalog_record",
+      "production_id": "brown-noise",
+      "release_status": "approved",
+      "identity": "primary_production",
+      "related_ids": [],
+      "reason": "Production catalog record. Independent recording duration must be verified from audio manifests."
+    },
+    {
+      "record_id": "PROD:green-noise",
+      "source": "production",
+      "name": "Green Noise",
+      "taxonomy": "noise-colors",
+      "status": "catalog_record",
+      "production_id": "green-noise",
+      "release_status": "dsp-review",
+      "identity": "primary_production",
+      "related_ids": [],
+      "reason": "Production catalog record. Independent recording duration must be verified from audio manifests."
+    },
+    {
+      "record_id": "PROD:blue-noise",
+      "source": "production",
+      "name": "Blue Noise",
+      "taxonomy": "noise-colors",
+      "status": "catalog_record",
+      "production_id": "blue-noise",
+      "release_status": "listening-approved",
+      "identity": "primary_production",
+      "related_ids": [],
+      "reason": "Production catalog record. Independent recording duration must be verified from audio manifests."
+    },
+    {
+      "record_id": "PROD:violet-noise",
+      "source": "production",
+      "name": "Violet Noise",
+      "taxonomy": "noise-colors",
+      "status": "catalog_record",
+      "production_id": "violet-noise",
+      "release_status": "listening-approved",
+      "identity": "primary_production",
+      "related_ids": [],
+      "reason": "Production catalog record. Independent recording duration must be verified from audio manifests."
+    },
+    {
+      "record_id": "PROD:soft-white-noise",
+      "source": "production",
+      "name": "Soft White Noise",
+      "taxonomy": "noise-colors",
+      "status": "catalog_record",
+      "production_id": "soft-white-noise",
+      "release_status": "listening-approved",
+      "identity": "primary_production",
+      "related_ids": [],
+      "reason": "Production catalog record. Independent recording duration must be verified from audio manifests."
+    },
+    {
+      "record_id": "PROD:deep-brown-noise",
+      "source": "production",
+      "name": "Deep Brown Noise",
+      "taxonomy": "noise-colors",
+      "status": "catalog_record",
+      "production_id": "deep-brown-noise",
+      "release_status": "listening-approved",
+      "identity": "primary_production",
+      "related_ids": [],
+      "reason": "Production catalog record. Independent recording duration must be verified from audio manifests."
+    },
+    {
+      "record_id": "PROD:warm-pink-noise",
+      "source": "production",
+      "name": "Warm Pink Noise",
+      "taxonomy": "noise-colors",
+      "status": "catalog_record",
+      "production_id": "warm-pink-noise",
+      "release_status": "listening-approved",
+      "identity": "primary_production",
+      "related_ids": [],
+      "reason": "Production catalog record. Independent recording duration must be verified from audio manifests."
+    },
+    {
+      "record_id": "PROD:mid-noise",
+      "source": "production",
+      "name": "Neutral Mid Noise",
+      "taxonomy": "noise-colors",
+      "status": "catalog_record",
+      "production_id": "mid-noise",
+      "release_status": "listening-approved",
+      "identity": "primary_production",
+      "related_ids": [],
+      "reason": "Production catalog record. Independent recording duration must be verified from audio manifests."
+    },
+    {
+      "record_id": "PROD:desk-fan-synth",
+      "source": "production",
+      "name": "Desk Fan — Synthetic",
+      "taxonomy": "fans-ventilation",
+      "status": "catalog_record",
+      "production_id": "desk-fan-synth",
+      "release_status": "listening-approved",
+      "identity": "primary_production",
+      "related_ids": [],
+      "reason": "Production catalog record. Independent recording duration must be verified from audio manifests."
+    },
+    {
+      "record_id": "PROD:box-fan-real",
+      "source": "production",
+      "name": "Box Fan — Field Recording",
+      "taxonomy": "fans-ventilation",
+      "status": "catalog_record",
+      "production_id": "box-fan-real",
+      "release_status": "listening-approved",
+      "identity": "primary_production",
+      "related_ids": [],
+      "reason": "Production catalog record. Independent recording duration must be verified from audio manifests."
+    },
+    {
+      "record_id": "PROD:rain-on-window-real",
+      "source": "production",
+      "name": "Rain on Window",
+      "taxonomy": "rain-thunder",
+      "status": "catalog_record",
+      "production_id": "rain-on-window-real",
+      "release_status": "arranged",
+      "identity": "primary_production",
+      "related_ids": [],
+      "reason": "Production catalog record. Independent recording duration must be verified from audio manifests."
+    },
+    {
+      "record_id": "PROD:heavy-rain-real",
+      "source": "production",
+      "name": "Heavy Rain",
+      "taxonomy": "rain-thunder",
+      "status": "catalog_record",
+      "production_id": "heavy-rain-real",
+      "release_status": "listening-approved",
+      "identity": "primary_production",
+      "related_ids": [],
+      "reason": "Production catalog record. Independent recording duration must be verified from audio manifests."
+    },
+    {
+      "record_id": "PROD:ocean-waves-real",
+      "source": "production",
+      "name": "Ocean Waves",
+      "taxonomy": "freshwater",
+      "status": "catalog_record",
+      "production_id": "ocean-waves-real",
+      "release_status": "listening-approved",
+      "identity": "primary_production",
+      "related_ids": [],
+      "reason": "Production catalog record. Independent recording duration must be verified from audio manifests."
+    },
+    {
+      "record_id": "PROD:waterfall-real",
+      "source": "production",
+      "name": "Waterfall",
+      "taxonomy": "freshwater",
+      "status": "catalog_record",
+      "production_id": "waterfall-real",
+      "release_status": "listening-approved",
+      "identity": "primary_production",
+      "related_ids": [],
+      "reason": "Production catalog record. Independent recording duration must be verified from audio manifests."
+    },
+    {
+      "record_id": "PROD:shower-synth",
+      "source": "production",
+      "name": "Shower — Synthetic",
+      "taxonomy": "freshwater",
+      "status": "catalog_record",
+      "production_id": "shower-synth",
+      "release_status": "listening-approved",
+      "identity": "primary_production",
+      "related_ids": [],
+      "reason": "Production catalog record. Independent recording duration must be verified from audio manifests."
+    },
+    {
+      "record_id": "PROD:wind-synth",
+      "source": "production",
+      "name": "Gentle Wind — Synthetic",
+      "taxonomy": "wind-weather",
+      "status": "catalog_record",
+      "production_id": "wind-synth",
+      "release_status": "listening-approved",
+      "identity": "primary_production",
+      "related_ids": [],
+      "reason": "Production catalog record. Independent recording duration must be verified from audio manifests."
+    },
+    {
+      "record_id": "PROD:fireplace-real",
+      "source": "production",
+      "name": "Fireplace",
+      "taxonomy": "fire-warmth",
+      "status": "catalog_record",
+      "production_id": "fireplace-real",
+      "release_status": "arranged",
+      "identity": "primary_production",
+      "related_ids": [],
+      "reason": "Production catalog record. Independent recording duration must be verified from audio manifests."
+    },
+    {
+      "record_id": "PROD:cabin-hum-synth",
+      "source": "production",
+      "name": "Airplane Cabin — Synthetic",
+      "taxonomy": "transportation",
+      "status": "catalog_record",
+      "production_id": "cabin-hum-synth",
+      "release_status": "listening-approved",
+      "identity": "primary_production",
+      "related_ids": [],
+      "reason": "Production catalog record. Independent recording duration must be verified from audio manifests."
+    },
+    {
+      "record_id": "PROD:air-conditioner-synth",
+      "source": "production",
+      "name": "Air Conditioner — Synthetic",
+      "taxonomy": "household-machines",
+      "status": "catalog_record",
+      "production_id": "air-conditioner-synth",
+      "release_status": "listening-approved",
+      "identity": "primary_production",
+      "related_ids": [],
+      "reason": "Production catalog record. Independent recording duration must be verified from audio manifests."
+    },
+    {
+      "record_id": "PROD:low-rumble",
+      "source": "production",
+      "name": "Low Rumble",
+      "taxonomy": "drones-textures",
+      "status": "catalog_record",
+      "production_id": "low-rumble",
+      "release_status": "listening-approved",
+      "identity": "primary_production",
+      "related_ids": [],
+      "reason": "Production catalog record. Independent recording duration must be verified from audio manifests."
+    },
+    {
+      "record_id": "PROD:light-rain-real",
+      "source": "production",
+      "name": "Light Rain",
+      "taxonomy": "rain-thunder",
+      "status": "catalog_record",
+      "production_id": "light-rain-real",
+      "release_status": "listening-approved",
+      "identity": "primary_production",
+      "related_ids": [],
+      "reason": "Production catalog record. Independent recording duration must be verified from audio manifests."
+    },
+    {
+      "record_id": "PROD:rain-tin-roof-real",
+      "source": "production",
+      "name": "Rain on Tin Roof",
+      "taxonomy": "rain-thunder",
+      "status": "catalog_record",
+      "production_id": "rain-tin-roof-real",
+      "release_status": "listening-approved",
+      "identity": "primary_production",
+      "related_ids": [],
+      "reason": "Production catalog record. Independent recording duration must be verified from audio manifests."
+    },
+    {
+      "record_id": "PROD:distant-thunder-real",
+      "source": "production",
+      "name": "Distant Thunder",
+      "taxonomy": "rain-thunder",
+      "status": "catalog_record",
+      "production_id": "distant-thunder-real",
+      "release_status": "listening-approved",
+      "identity": "primary_production",
+      "related_ids": [],
+      "reason": "Production catalog record. Independent recording duration must be verified from audio manifests."
+    },
+    {
+      "record_id": "PROD:rain-on-tent-real",
+      "source": "production",
+      "name": "Rain on Tent",
+      "taxonomy": "rain-thunder",
+      "status": "catalog_record",
+      "production_id": "rain-on-tent-real",
+      "release_status": "listening-approved",
+      "identity": "primary_production",
+      "related_ids": [],
+      "reason": "Production catalog record. Independent recording duration must be verified from audio manifests."
+    },
+    {
+      "record_id": "PROD:rain-car-roof-real",
+      "source": "production",
+      "name": "Rain on Car Roof",
+      "taxonomy": "rain-thunder",
+      "status": "catalog_record",
+      "production_id": "rain-car-roof-real",
+      "release_status": "listening-approved",
+      "identity": "primary_production",
+      "related_ids": [],
+      "reason": "Production catalog record. Independent recording duration must be verified from audio manifests."
+    },
+    {
+      "record_id": "PROD:rolling-thunder-real",
+      "source": "production",
+      "name": "Rolling Thunder",
+      "taxonomy": "rain-thunder",
+      "status": "catalog_record",
+      "production_id": "rolling-thunder-real",
+      "release_status": "listening-approved",
+      "identity": "primary_production",
+      "related_ids": [],
+      "reason": "Production catalog record. Independent recording duration must be verified from audio manifests."
+    },
+    {
+      "record_id": "PROD:rain-leaves-real",
+      "source": "production",
+      "name": "Rain on Leaves",
+      "taxonomy": "rain-thunder",
+      "status": "catalog_record",
+      "production_id": "rain-leaves-real",
+      "release_status": "listening-approved",
+      "identity": "primary_production",
+      "related_ids": [],
+      "reason": "Production catalog record. Independent recording duration must be verified from audio manifests."
+    },
+    {
+      "record_id": "PROD:rain-lake-real",
+      "source": "production",
+      "name": "Rain on Lake",
+      "taxonomy": "rain-thunder",
+      "status": "catalog_record",
+      "production_id": "rain-lake-real",
+      "release_status": "listening-approved",
+      "identity": "primary_production",
+      "related_ids": [],
+      "reason": "Production catalog record. Independent recording duration must be verified from audio manifests."
+    },
+    {
+      "record_id": "PROD:rushing-river-real",
+      "source": "production",
+      "name": "Rushing River",
+      "taxonomy": "freshwater",
+      "status": "catalog_record",
+      "production_id": "rushing-river-real",
+      "release_status": "listening-approved",
+      "identity": "primary_production",
+      "related_ids": [],
+      "reason": "Production catalog record. Independent recording duration must be verified from audio manifests."
+    },
+    {
+      "record_id": "PROD:forest-stream-real",
+      "source": "production",
+      "name": "Gentle Forest Stream",
+      "taxonomy": "freshwater",
+      "status": "catalog_record",
+      "production_id": "forest-stream-real",
+      "release_status": "listening-approved",
+      "identity": "primary_production",
+      "related_ids": [],
+      "reason": "Production catalog record. Independent recording duration must be verified from audio manifests."
+    },
+    {
+      "record_id": "PROD:gentle-ocean-real",
+      "source": "production",
+      "name": "Gentle Ocean Waves",
+      "taxonomy": "freshwater",
+      "status": "catalog_record",
+      "production_id": "gentle-ocean-real",
+      "release_status": "listening-approved",
+      "identity": "primary_production",
+      "related_ids": [],
+      "reason": "Production catalog record. Independent recording duration must be verified from audio manifests."
+    },
+    {
+      "record_id": "PROD:bodetal-brook-real",
+      "source": "production",
+      "name": "Bodetal Brook & Birds",
+      "taxonomy": "freshwater",
+      "status": "catalog_record",
+      "production_id": "bodetal-brook-real",
+      "release_status": "listening-approved",
+      "identity": "primary_production",
+      "related_ids": [],
+      "reason": "Production catalog record. Independent recording duration must be verified from audio manifests."
+    },
+    {
+      "record_id": "PROD:crashing-ocean-real",
+      "source": "production",
+      "name": "Crashing Ocean Waves",
+      "taxonomy": "freshwater",
+      "status": "catalog_record",
+      "production_id": "crashing-ocean-real",
+      "release_status": "listening-approved",
+      "identity": "primary_production",
+      "related_ids": [],
+      "reason": "Production catalog record. Independent recording duration must be verified from audio manifests."
+    },
+    {
+      "record_id": "NEW-01",
+      "source": "blueprint",
+      "name": "Light Rain",
+      "taxonomy": "rain-thunder",
+      "status": "already_promoted",
+      "production_id": "light-rain-real",
+      "release_status": "released_audio_seo_pending",
+      "identity": "explicit_production_id",
+      "related_ids": [
+        "light-rain-real"
+      ],
+      "reason": "Explicit production link in blueprint."
+    },
+    {
+      "record_id": "NEW-02",
+      "source": "blueprint",
+      "name": "Rain on Tin Roof",
+      "taxonomy": "rain-thunder",
+      "status": "already_promoted",
+      "production_id": "rain-tin-roof-real",
+      "release_status": "released_audio_seo_pending",
+      "identity": "explicit_production_id",
+      "related_ids": [
+        "rain-tin-roof-real"
+      ],
+      "reason": "Explicit production link in blueprint."
+    },
+    {
+      "record_id": "NEW-03",
+      "source": "blueprint",
+      "name": "Rain on Tent",
+      "taxonomy": "rain-thunder",
+      "status": "already_promoted",
+      "production_id": "rain-on-tent-real",
+      "release_status": "released_audio_seo_pending",
+      "identity": "explicit_production_id",
+      "related_ids": [
+        "rain-on-tent-real"
+      ],
+      "reason": "Explicit production link in blueprint."
+    },
+    {
+      "record_id": "NEW-04",
+      "source": "blueprint",
+      "name": "Rain on Car Roof",
+      "taxonomy": "rain-thunder",
+      "status": "already_promoted",
+      "production_id": "rain-car-roof-real",
+      "release_status": "released_audio_seo_pending",
+      "identity": "explicit_production_id",
+      "related_ids": [
+        "rain-car-roof-real"
+      ],
+      "reason": "Explicit production link in blueprint."
+    },
+    {
+      "record_id": "NEW-05",
+      "source": "blueprint",
+      "name": "Rain on Leaves",
+      "taxonomy": "rain-thunder",
+      "status": "already_promoted",
+      "production_id": "rain-leaves-real",
+      "release_status": "released_audio_seo_pending",
+      "identity": "explicit_production_id",
+      "related_ids": [
+        "rain-leaves-real"
+      ],
+      "reason": "Explicit production link in blueprint."
+    },
+    {
+      "record_id": "NEW-06",
+      "source": "blueprint",
+      "name": "Distant Thunder",
+      "taxonomy": "rain-thunder",
+      "status": "already_promoted",
+      "production_id": "distant-thunder-real",
+      "release_status": "released_audio_seo_pending",
+      "identity": "explicit_production_id",
+      "related_ids": [
+        "distant-thunder-real"
+      ],
+      "reason": "Explicit production link in blueprint."
+    },
+    {
+      "record_id": "NEW-07",
+      "source": "blueprint",
+      "name": "Rolling Thunder",
+      "taxonomy": "rain-thunder",
+      "status": "already_promoted",
+      "production_id": "rolling-thunder-real",
+      "release_status": "released_audio_seo_pending",
+      "identity": "explicit_production_id",
+      "related_ids": [
+        "rolling-thunder-real"
+      ],
+      "reason": "Explicit production link in blueprint."
+    },
+    {
+      "record_id": "NEW-08",
+      "source": "blueprint",
+      "name": "Rushing River",
+      "taxonomy": "freshwater",
+      "status": "already_promoted",
+      "production_id": "rushing-river-real",
+      "release_status": "released_audio_seo_pending",
+      "identity": "explicit_production_id",
+      "related_ids": [
+        "rushing-river-real"
+      ],
+      "reason": "Explicit production link in blueprint."
+    },
+    {
+      "record_id": "NEW-09",
+      "source": "blueprint",
+      "name": "Gentle Forest Stream",
+      "taxonomy": "freshwater",
+      "status": "already_promoted",
+      "production_id": "forest-stream-real",
+      "release_status": "released_audio_seo_pending",
+      "identity": "explicit_production_id",
+      "related_ids": [
+        "forest-stream-real"
+      ],
+      "reason": "Explicit production link in blueprint."
+    },
+    {
+      "record_id": "NEW-10",
+      "source": "blueprint",
+      "name": "Bubbling Brook",
+      "taxonomy": "freshwater",
+      "status": "already_promoted",
+      "production_id": "bodetal-brook-real",
+      "release_status": "released_audio_seo_pending",
+      "identity": "explicit_production_id",
+      "related_ids": [
+        "bodetal-brook-real"
+      ],
+      "reason": "Approved as Bodetal Brook & Birds: distant stream and birds. The original Bubbling Brook intent is not validated by this recording."
+    },
+    {
+      "record_id": "NEW-11",
+      "source": "blueprint",
+      "name": "Bamboo Water Fountain",
+      "taxonomy": "freshwater",
+      "status": "not_produced",
+      "production_id": null,
+      "release_status": "planned",
+      "identity": "unmatched",
+      "related_ids": [],
+      "reason": "No recorded production match; research or production still needed."
+    },
+    {
+      "record_id": "NEW-12",
+      "source": "blueprint",
+      "name": "Gentle Ocean Waves",
+      "taxonomy": "ocean-coastal",
+      "status": "already_promoted",
+      "production_id": "gentle-ocean-real",
+      "release_status": "released_audio_seo_pending",
+      "identity": "explicit_production_id",
+      "related_ids": [
+        "gentle-ocean-real"
+      ],
+      "reason": "Explicit production link in blueprint."
+    },
+    {
+      "record_id": "NEW-13",
+      "source": "blueprint",
+      "name": "Crashing Ocean Waves",
+      "taxonomy": "ocean-coastal",
+      "status": "already_promoted",
+      "production_id": "crashing-ocean-real",
+      "release_status": "released_audio_seo_pending",
+      "identity": "explicit_production_id",
+      "related_ids": [
+        "crashing-ocean-real"
+      ],
+      "reason": "Independent breaking surf at Wakanui Beach, New Zealand."
+    },
+    {
+      "record_id": "NEW-14",
+      "source": "blueprint",
+      "name": "Campfire",
+      "taxonomy": "fire-warmth",
+      "status": "not_produced",
+      "production_id": null,
+      "release_status": "planned",
+      "identity": "unmatched",
+      "related_ids": [],
+      "reason": "No recorded production match; research or production still needed."
+    },
+    {
+      "record_id": "NEW-15",
+      "source": "blueprint",
+      "name": "Wood Stove",
+      "taxonomy": "fire-warmth",
+      "status": "not_produced",
+      "production_id": null,
+      "release_status": "planned",
+      "identity": "unmatched",
+      "related_ids": [],
+      "reason": "No recorded production match; research or production still needed."
+    },
+    {
+      "record_id": "NEW-16",
+      "source": "blueprint",
+      "name": "Crickets at Night",
+      "taxonomy": "insects-amphibians",
+      "status": "not_produced",
+      "production_id": null,
+      "release_status": "planned",
+      "identity": "unmatched",
+      "related_ids": [],
+      "reason": "No recorded production match; research or production still needed."
+    },
+    {
+      "record_id": "NEW-17",
+      "source": "blueprint",
+      "name": "Morning Birds",
+      "taxonomy": "birds-birdsong",
+      "status": "not_produced",
+      "production_id": null,
+      "release_status": "planned",
+      "identity": "unmatched",
+      "related_ids": [],
+      "reason": "No recorded production match; research or production still needed."
+    },
+    {
+      "record_id": "NEW-18",
+      "source": "blueprint",
+      "name": "Tower Fan",
+      "taxonomy": "fans-ventilation",
+      "status": "not_produced",
+      "production_id": null,
+      "release_status": "planned",
+      "identity": "unmatched",
+      "related_ids": [],
+      "reason": "No recorded production match; research or production still needed."
+    },
+    {
+      "record_id": "NEW-19",
+      "source": "blueprint",
+      "name": "Oscillating Fan",
+      "taxonomy": "fans-ventilation",
+      "status": "not_produced",
+      "production_id": null,
+      "release_status": "planned",
+      "identity": "unmatched",
+      "related_ids": [],
+      "reason": "No recorded production match; research or production still needed."
+    },
+    {
+      "record_id": "NEW-20",
+      "source": "blueprint",
+      "name": "Hair Dryer",
+      "taxonomy": "household-machines",
+      "status": "not_produced",
+      "production_id": null,
+      "release_status": "planned",
+      "identity": "unmatched",
+      "related_ids": [],
+      "reason": "No recorded production match; research or production still needed."
+    },
+    {
+      "record_id": "NEW-21",
+      "source": "blueprint",
+      "name": "Dishwasher",
+      "taxonomy": "household-machines",
+      "status": "not_produced",
+      "production_id": null,
+      "release_status": "planned",
+      "identity": "unmatched",
+      "related_ids": [],
+      "reason": "No recorded production match; research or production still needed."
+    },
+    {
+      "record_id": "NEW-22",
+      "source": "blueprint",
+      "name": "Train Cabin",
+      "taxonomy": "transportation",
+      "status": "not_produced",
+      "production_id": null,
+      "release_status": "planned",
+      "identity": "unmatched",
+      "related_ids": [],
+      "reason": "No recorded production match; research or production still needed."
+    },
+    {
+      "record_id": "NEW-23",
+      "source": "blueprint",
+      "name": "Womb-like Sound",
+      "taxonomy": "gentle-baby",
+      "status": "overlap_review",
+      "production_id": null,
+      "release_status": "planned",
+      "identity": "acoustic_or_intent_overlap_not_duplicate",
+      "related_ids": [
+        "brown-noise"
+      ],
+      "reason": "Possible overlapping acoustics or use case; not proof of duplicate."
+    },
+    {
+      "record_id": "NEW-24",
+      "source": "blueprint",
+      "name": "Gentle Shushing",
+      "taxonomy": "gentle-baby",
+      "status": "overlap_review",
+      "production_id": null,
+      "release_status": "planned",
+      "identity": "acoustic_or_intent_overlap_not_duplicate",
+      "related_ids": [
+        "soft-white-noise"
+      ],
+      "reason": "Possible overlapping acoustics or use case; not proof of duplicate."
+    },
+    {
+      "record_id": "NEW-25",
+      "source": "blueprint",
+      "name": "Torrential Rain",
+      "taxonomy": "rain-thunder",
+      "status": "not_produced",
+      "production_id": null,
+      "release_status": "planned",
+      "identity": "unmatched",
+      "related_ids": [],
+      "reason": "No recorded production match; research or production still needed."
+    },
+    {
+      "record_id": "NEW-26",
+      "source": "blueprint",
+      "name": "Tropical Rainforest Rain",
+      "taxonomy": "rain-thunder",
+      "status": "not_produced",
+      "production_id": null,
+      "release_status": "planned",
+      "identity": "unmatched",
+      "related_ids": [],
+      "reason": "No recorded production match; research or production still needed."
+    },
+    {
+      "record_id": "NEW-27",
+      "source": "blueprint",
+      "name": "Rain on RV",
+      "taxonomy": "rain-thunder",
+      "status": "not_produced",
+      "production_id": null,
+      "release_status": "planned",
+      "identity": "unmatched",
+      "related_ids": [],
+      "reason": "No recorded production match; research or production still needed."
+    },
+    {
+      "record_id": "NEW-28",
+      "source": "blueprint",
+      "name": "Rain on Porch",
+      "taxonomy": "rain-thunder",
+      "status": "not_produced",
+      "production_id": null,
+      "release_status": "planned",
+      "identity": "unmatched",
+      "related_ids": [],
+      "reason": "No recorded production match; research or production still needed."
+    },
+    {
+      "record_id": "NEW-29",
+      "source": "blueprint",
+      "name": "Rain on Lake",
+      "taxonomy": "rain-thunder",
+      "status": "already_promoted",
+      "production_id": "rain-lake-real",
+      "release_status": "released_audio_seo_pending",
+      "identity": "explicit_production_id",
+      "related_ids": [
+        "rain-lake-real"
+      ],
+      "reason": "Explicit production link in blueprint."
+    },
+    {
+      "record_id": "NEW-30",
+      "source": "blueprint",
+      "name": "Rain on Clay Jars",
+      "taxonomy": "rain-thunder",
+      "status": "not_produced",
+      "production_id": null,
+      "release_status": "planned",
+      "identity": "unmatched",
+      "related_ids": [],
+      "reason": "No recorded production match; research or production still needed."
+    },
+    {
+      "record_id": "NEW-31",
+      "source": "blueprint",
+      "name": "Mountain Stream",
+      "taxonomy": "freshwater",
+      "status": "not_produced",
+      "production_id": null,
+      "release_status": "planned",
+      "identity": "unmatched",
+      "related_ids": [],
+      "reason": "No recorded production match; research or production still needed."
+    },
+    {
+      "record_id": "NEW-32",
+      "source": "blueprint",
+      "name": "Lake Waves",
+      "taxonomy": "freshwater",
+      "status": "not_produced",
+      "production_id": null,
+      "release_status": "planned",
+      "identity": "unmatched",
+      "related_ids": [],
+      "reason": "No recorded production match; research or production still needed."
+    },
+    {
+      "record_id": "NEW-33",
+      "source": "blueprint",
+      "name": "Pond Ambience",
+      "taxonomy": "freshwater",
+      "status": "not_produced",
+      "production_id": null,
+      "release_status": "planned",
+      "identity": "unmatched",
+      "related_ids": [],
+      "reason": "No recorded production match; research or production still needed."
+    },
+    {
+      "record_id": "NEW-34",
+      "source": "blueprint",
+      "name": "Zen Fountain",
+      "taxonomy": "freshwater",
+      "status": "not_produced",
+      "production_id": null,
+      "release_status": "planned",
+      "identity": "unmatched",
+      "related_ids": [],
+      "reason": "No recorded production match; research or production still needed."
+    },
+    {
+      "record_id": "NEW-35",
+      "source": "blueprint",
+      "name": "Running Sink",
+      "taxonomy": "freshwater",
+      "status": "not_produced",
+      "production_id": null,
+      "release_status": "planned",
+      "identity": "unmatched",
+      "related_ids": [],
+      "reason": "No recorded production match; research or production still needed."
+    },
+    {
+      "record_id": "NEW-36",
+      "source": "blueprint",
+      "name": "Hot Tub Water",
+      "taxonomy": "freshwater",
+      "status": "not_produced",
+      "production_id": null,
+      "release_status": "planned",
+      "identity": "unmatched",
+      "related_ids": [],
+      "reason": "No recorded production match; research or production still needed."
+    },
+    {
+      "record_id": "NEW-37",
+      "source": "blueprint",
+      "name": "Bonfire",
+      "taxonomy": "fire-warmth",
+      "status": "not_produced",
+      "production_id": null,
+      "release_status": "planned",
+      "identity": "unmatched",
+      "related_ids": [],
+      "reason": "No recorded production match; research or production still needed."
+    },
+    {
+      "record_id": "NEW-38",
+      "source": "blueprint",
+      "name": "Wind Through Trees",
+      "taxonomy": "wind-weather",
+      "status": "not_produced",
+      "production_id": null,
+      "release_status": "planned",
+      "identity": "unmatched",
+      "related_ids": [],
+      "reason": "No recorded production match; research or production still needed."
+    },
+    {
+      "record_id": "NEW-39",
+      "source": "blueprint",
+      "name": "Coastal Wind",
+      "taxonomy": "wind-weather",
+      "status": "not_produced",
+      "production_id": null,
+      "release_status": "planned",
+      "identity": "unmatched",
+      "related_ids": [],
+      "reason": "No recorded production match; research or production still needed."
+    },
+    {
+      "record_id": "NEW-40",
+      "source": "blueprint",
+      "name": "Howling Wind",
+      "taxonomy": "wind-weather",
+      "status": "not_produced",
+      "production_id": null,
+      "release_status": "planned",
+      "identity": "unmatched",
+      "related_ids": [],
+      "reason": "No recorded production match; research or production still needed."
+    },
+    {
+      "record_id": "NEW-41",
+      "source": "blueprint",
+      "name": "Snowstorm",
+      "taxonomy": "wind-weather",
+      "status": "not_produced",
+      "production_id": null,
+      "release_status": "planned",
+      "identity": "unmatched",
+      "related_ids": [],
+      "reason": "No recorded production match; research or production still needed."
+    },
+    {
+      "record_id": "NEW-42",
+      "source": "blueprint",
+      "name": "Cicadas",
+      "taxonomy": "insects-amphibians",
+      "status": "not_produced",
+      "production_id": null,
+      "release_status": "planned",
+      "identity": "unmatched",
+      "related_ids": [],
+      "reason": "No recorded production match; research or production still needed."
+    },
+    {
+      "record_id": "NEW-43",
+      "source": "blueprint",
+      "name": "Frogs at Night",
+      "taxonomy": "insects-amphibians",
+      "status": "not_produced",
+      "production_id": null,
+      "release_status": "planned",
+      "identity": "unmatched",
+      "related_ids": [],
+      "reason": "No recorded production match; research or production still needed."
+    },
+    {
+      "record_id": "NEW-44",
+      "source": "blueprint",
+      "name": "Rainforest Birds",
+      "taxonomy": "birds-birdsong",
+      "status": "not_produced",
+      "production_id": null,
+      "release_status": "planned",
+      "identity": "unmatched",
+      "related_ids": [],
+      "reason": "No recorded production match; research or production still needed."
+    },
+    {
+      "record_id": "NEW-45",
+      "source": "blueprint",
+      "name": "Cat Purring",
+      "taxonomy": "mammals-wildlife",
+      "status": "not_produced",
+      "production_id": null,
+      "release_status": "planned",
+      "identity": "unmatched",
+      "related_ids": [],
+      "reason": "No recorded production match; research or production still needed."
+    },
+    {
+      "record_id": "NEW-46",
+      "source": "blueprint",
+      "name": "Washing Machine",
+      "taxonomy": "household-machines",
+      "status": "not_produced",
+      "production_id": null,
+      "release_status": "planned",
+      "identity": "unmatched",
+      "related_ids": [],
+      "reason": "No recorded production match; research or production still needed."
+    },
+    {
+      "record_id": "NEW-47",
+      "source": "blueprint",
+      "name": "Clothes Dryer",
+      "taxonomy": "household-machines",
+      "status": "not_produced",
+      "production_id": null,
+      "release_status": "planned",
+      "identity": "unmatched",
+      "related_ids": [],
+      "reason": "No recorded production match; research or production still needed."
+    },
+    {
+      "record_id": "NEW-48",
+      "source": "blueprint",
+      "name": "Vacuum Cleaner",
+      "taxonomy": "household-machines",
+      "status": "not_produced",
+      "production_id": null,
+      "release_status": "planned",
+      "identity": "unmatched",
+      "related_ids": [],
+      "reason": "No recorded production match; research or production still needed."
+    },
+    {
+      "record_id": "NEW-49",
+      "source": "blueprint",
+      "name": "Bathroom Exhaust Fan",
+      "taxonomy": "fans-ventilation",
+      "status": "not_produced",
+      "production_id": null,
+      "release_status": "planned",
+      "identity": "unmatched",
+      "related_ids": [],
+      "reason": "No recorded production match; research or production still needed."
+    },
+    {
+      "record_id": "NEW-50",
+      "source": "blueprint",
+      "name": "Car Interior Ride",
+      "taxonomy": "transportation",
+      "status": "not_produced",
+      "production_id": null,
+      "release_status": "planned",
+      "identity": "unmatched",
+      "related_ids": [],
+      "reason": "No recorded production match; research or production still needed."
+    },
+    {
+      "record_id": "NEW-51",
+      "source": "blueprint",
+      "name": "Train on Tracks",
+      "taxonomy": "transportation",
+      "status": "not_produced",
+      "production_id": null,
+      "release_status": "planned",
+      "identity": "unmatched",
+      "related_ids": [],
+      "reason": "No recorded production match; research or production still needed."
+    },
+    {
+      "record_id": "NEW-52",
+      "source": "blueprint",
+      "name": "Jet Engine",
+      "taxonomy": "transportation",
+      "status": "not_produced",
+      "production_id": null,
+      "release_status": "planned",
+      "identity": "unmatched",
+      "related_ids": [],
+      "reason": "No recorded production match; research or production still needed."
+    },
+    {
+      "record_id": "NEW-53",
+      "source": "blueprint",
+      "name": "Wooden Ship Creaks",
+      "taxonomy": "transportation",
+      "status": "not_produced",
+      "production_id": null,
+      "release_status": "planned",
+      "identity": "unmatched",
+      "related_ids": [],
+      "reason": "No recorded production match; research or production still needed."
+    },
+    {
+      "record_id": "NEW-54",
+      "source": "blueprint",
+      "name": "Spaceship Engine",
+      "taxonomy": "drones-textures",
+      "status": "not_produced",
+      "production_id": null,
+      "release_status": "planned",
+      "identity": "unmatched",
+      "related_ids": [],
+      "reason": "No recorded production match; research or production still needed."
+    },
+    {
+      "record_id": "NEW-55",
+      "source": "blueprint",
+      "name": "Warp Core Hum",
+      "taxonomy": "drones-textures",
+      "status": "not_produced",
+      "production_id": null,
+      "release_status": "planned",
+      "identity": "unmatched",
+      "related_ids": [],
+      "reason": "No recorded production match; research or production still needed."
+    },
+    {
+      "record_id": "NEW-56",
+      "source": "blueprint",
+      "name": "Coffee Shop",
+      "taxonomy": "urban-indoor",
+      "status": "not_produced",
+      "production_id": null,
+      "release_status": "planned",
+      "identity": "unmatched",
+      "related_ids": [],
+      "reason": "No recorded production match; research or production still needed."
+    },
+    {
+      "record_id": "NEW-57",
+      "source": "blueprint",
+      "name": "Library Ambience",
+      "taxonomy": "urban-indoor",
+      "status": "not_produced",
+      "production_id": null,
+      "release_status": "planned",
+      "identity": "unmatched",
+      "related_ids": [],
+      "reason": "No recorded production match; research or production still needed."
+    },
+    {
+      "record_id": "NEW-58",
+      "source": "blueprint",
+      "name": "City Park",
+      "taxonomy": "urban-indoor",
+      "status": "not_produced",
+      "production_id": null,
+      "release_status": "planned",
+      "identity": "unmatched",
+      "related_ids": [],
+      "reason": "No recorded production match; research or production still needed."
+    },
+    {
+      "record_id": "NEW-59",
+      "source": "blueprint",
+      "name": "Distant Traffic",
+      "taxonomy": "urban-indoor",
+      "status": "not_produced",
+      "production_id": null,
+      "release_status": "planned",
+      "identity": "unmatched",
+      "related_ids": [],
+      "reason": "No recorded production match; research or production still needed."
+    },
+    {
+      "record_id": "NEW-60",
+      "source": "blueprint",
+      "name": "Radio Static",
+      "taxonomy": "drones-textures",
+      "status": "not_produced",
+      "production_id": null,
+      "release_status": "planned",
+      "identity": "unmatched",
+      "related_ids": [],
+      "reason": "No recorded production match; research or production still needed."
+    },
+    {
+      "record_id": "NEW-61",
+      "source": "blueprint",
+      "name": "Vinyl Crackle",
+      "taxonomy": "drones-textures",
+      "status": "not_produced",
+      "production_id": null,
+      "release_status": "planned",
+      "identity": "unmatched",
+      "related_ids": [],
+      "reason": "No recorded production match; research or production still needed."
+    },
+    {
+      "record_id": "NEW-62",
+      "source": "blueprint",
+      "name": "Tape Hiss",
+      "taxonomy": "drones-textures",
+      "status": "not_produced",
+      "production_id": null,
+      "release_status": "planned",
+      "identity": "unmatched",
+      "related_ids": [],
+      "reason": "No recorded production match; research or production still needed."
+    },
+    {
+      "record_id": "NEW-63",
+      "source": "blueprint",
+      "name": "Electrical Hum",
+      "taxonomy": "drones-textures",
+      "status": "not_produced",
+      "production_id": null,
+      "release_status": "planned",
+      "identity": "unmatched",
+      "related_ids": [],
+      "reason": "No recorded production match; research or production still needed."
+    },
+    {
+      "record_id": "NEW-64",
+      "source": "blueprint",
+      "name": "Heater Fan",
+      "taxonomy": "fans-ventilation",
+      "status": "not_produced",
+      "production_id": null,
+      "release_status": "planned",
+      "identity": "unmatched",
+      "related_ids": [],
+      "reason": "No recorded production match; research or production still needed."
+    },
+    {
+      "record_id": "NEW-65",
+      "source": "blueprint",
+      "name": "Air Purifier Fan",
+      "taxonomy": "fans-ventilation",
+      "status": "not_produced",
+      "production_id": null,
+      "release_status": "planned",
+      "identity": "unmatched",
+      "related_ids": [],
+      "reason": "No recorded production match; research or production still needed."
+    },
+    {
+      "record_id": "NEW-66",
+      "source": "blueprint",
+      "name": "Desert Wind",
+      "taxonomy": "wind-weather",
+      "status": "not_produced",
+      "production_id": null,
+      "release_status": "planned",
+      "identity": "unmatched",
+      "related_ids": [],
+      "reason": "No recorded production match; research or production still needed."
+    },
+    {
+      "record_id": "NEW-67",
+      "source": "blueprint",
+      "name": "Wind Chimes",
+      "taxonomy": "gentle-baby",
+      "status": "not_produced",
+      "production_id": null,
+      "release_status": "planned",
+      "identity": "unmatched",
+      "related_ids": [],
+      "reason": "No recorded production match; research or production still needed."
+    },
+    {
+      "record_id": "NEW-68",
+      "source": "blueprint",
+      "name": "Soft Heartbeat",
+      "taxonomy": "gentle-baby",
+      "status": "not_produced",
+      "production_id": null,
+      "release_status": "planned",
+      "identity": "unmatched",
+      "related_ids": [],
+      "reason": "No recorded production match; research or production still needed."
+    },
+    {
+      "record_id": "NEW-69",
+      "source": "blueprint",
+      "name": "Gentle Breathing",
+      "taxonomy": "gentle-baby",
+      "status": "not_produced",
+      "production_id": null,
+      "release_status": "planned",
+      "identity": "unmatched",
+      "related_ids": [],
+      "reason": "No recorded production match; research or production still needed."
+    },
+    {
+      "record_id": "NEW-70",
+      "source": "blueprint",
+      "name": "Grey Noise",
+      "taxonomy": "noise-colors",
+      "status": "not_produced",
+      "production_id": null,
+      "release_status": "planned",
+      "identity": "unmatched",
+      "related_ids": [],
+      "reason": "No recorded production match; research or production still needed."
+    },
+    {
+      "record_id": "EXP-001",
+      "source": "external_research",
+      "name": "Rain on Umbrella",
+      "taxonomy": "rain-thunder",
+      "status": "research_new_concept",
+      "production_id": null,
+      "release_status": "research_only",
+      "identity": "unmatched",
+      "related_ids": [],
+      "reason": "Unmatched research proposal; no audio/rights/QA validated."
+    },
+    {
+      "record_id": "EXP-002",
+      "source": "external_research",
+      "name": "Rain on Skylight",
+      "taxonomy": "rain-thunder",
+      "status": "overlap_review",
+      "production_id": null,
+      "release_status": "research_only",
+      "identity": "acoustic_or_intent_overlap_not_duplicate",
+      "related_ids": [
+        "rain-on-window-real"
+      ],
+      "reason": "Related existing audio; must verify perceptual differentiation, not an asserted duplicate."
+    },
+    {
+      "record_id": "EXP-003",
+      "source": "external_research",
+      "name": "Rain on Pavement",
+      "taxonomy": "rain-thunder",
+      "status": "overlap_review",
+      "production_id": null,
+      "release_status": "research_only",
+      "identity": "acoustic_or_intent_overlap_not_duplicate",
+      "related_ids": [
+        "rain-on-window-real",
+        "heavy-rain-real"
+      ],
+      "reason": "Related existing audio; must verify perceptual differentiation, not an asserted duplicate."
+    },
+    {
+      "record_id": "EXP-004",
+      "source": "external_research",
+      "name": "Rain in Gutter",
+      "taxonomy": "rain-thunder",
+      "status": "overlap_review",
+      "production_id": null,
+      "release_status": "research_only",
+      "identity": "acoustic_or_intent_overlap_not_duplicate",
+      "related_ids": [
+        "heavy-rain-real"
+      ],
+      "reason": "Related existing audio; must verify perceptual differentiation, not an asserted duplicate."
+    },
+    {
+      "record_id": "EXP-005",
+      "source": "external_research",
+      "name": "Rain on Wooden Roof",
+      "taxonomy": "rain-thunder",
+      "status": "overlap_review",
+      "production_id": null,
+      "release_status": "research_only",
+      "identity": "acoustic_or_intent_overlap_not_duplicate",
+      "related_ids": [
+        "rain-tin-roof-real"
+      ],
+      "reason": "Related existing audio; must verify perceptual differentiation, not an asserted duplicate."
+    },
+    {
+      "record_id": "EXP-006",
+      "source": "external_research",
+      "name": "Hail on Window",
+      "taxonomy": "rain-thunder",
+      "status": "overlap_review",
+      "production_id": null,
+      "release_status": "research_only",
+      "identity": "acoustic_or_intent_overlap_not_duplicate",
+      "related_ids": [
+        "rain-on-window-real"
+      ],
+      "reason": "Related existing audio; must verify perceptual differentiation, not an asserted duplicate."
+    },
+    {
+      "record_id": "EXP-007",
+      "source": "external_research",
+      "name": "Pebble Beach Waves",
+      "taxonomy": "freshwater",
+      "status": "overlap_review",
+      "production_id": null,
+      "release_status": "research_only",
+      "identity": "acoustic_or_intent_overlap_not_duplicate",
+      "related_ids": [
+        "ocean-waves-real"
+      ],
+      "reason": "Related existing audio; must verify perceptual differentiation, not an asserted duplicate."
+    },
+    {
+      "record_id": "EXP-008",
+      "source": "external_research",
+      "name": "Cave Drips",
+      "taxonomy": "freshwater",
+      "status": "research_new_concept",
+      "production_id": null,
+      "release_status": "research_only",
+      "identity": "unmatched",
+      "related_ids": [],
+      "reason": "Unmatched research proposal; no audio/rights/QA validated."
+    },
+    {
+      "record_id": "EXP-009",
+      "source": "external_research",
+      "name": "Aquarium Bubbles",
+      "taxonomy": "freshwater",
+      "status": "research_new_concept",
+      "production_id": null,
+      "release_status": "research_only",
+      "identity": "unmatched",
+      "related_ids": [],
+      "reason": "Unmatched research proposal; no audio/rights/QA validated."
+    },
+    {
+      "record_id": "EXP-010",
+      "source": "external_research",
+      "name": "Underwater Ambience",
+      "taxonomy": "extreme-environments",
+      "status": "research_new_concept",
+      "production_id": null,
+      "release_status": "research_only",
+      "identity": "unmatched",
+      "related_ids": [],
+      "reason": "Unmatched research proposal; no audio/rights/QA validated."
+    },
+    {
+      "record_id": "EXP-011",
+      "source": "external_research",
+      "name": "Icy Wind and Crackling Ice",
+      "taxonomy": "wind-weather",
+      "status": "research_new_concept",
+      "production_id": null,
+      "release_status": "research_only",
+      "identity": "unmatched",
+      "related_ids": [],
+      "reason": "Unmatched research proposal; no audio/rights/QA validated."
+    },
+    {
+      "record_id": "EXP-012",
+      "source": "external_research",
+      "name": "Wind Through Bamboo",
+      "taxonomy": "wind-weather",
+      "status": "research_new_concept",
+      "production_id": null,
+      "release_status": "research_only",
+      "identity": "unmatched",
+      "related_ids": [],
+      "reason": "Unmatched research proposal; no audio/rights/QA validated."
+    },
+    {
+      "record_id": "EXP-013",
+      "source": "external_research",
+      "name": "Autumn Leaves in Wind",
+      "taxonomy": "wind-weather",
+      "status": "research_new_concept",
+      "production_id": null,
+      "release_status": "research_only",
+      "identity": "unmatched",
+      "related_ids": [],
+      "reason": "Unmatched research proposal; no audio/rights/QA validated."
+    },
+    {
+      "record_id": "EXP-014",
+      "source": "external_research",
+      "name": "Forest Dawn Ambience",
+      "taxonomy": "birds-birdsong",
+      "status": "overlap_review",
+      "production_id": null,
+      "release_status": "research_only",
+      "identity": "acoustic_or_intent_overlap_not_duplicate",
+      "related_ids": [
+        "bodetal-brook-real"
+      ],
+      "reason": "Related existing audio; must verify perceptual differentiation, not an asserted duplicate."
+    },
+    {
+      "record_id": "EXP-015",
+      "source": "external_research",
+      "name": "Night Owls",
+      "taxonomy": "birds-birdsong",
+      "status": "overlap_review",
+      "production_id": null,
+      "release_status": "research_only",
+      "identity": "acoustic_or_intent_overlap_not_duplicate",
+      "related_ids": [
+        "distant-thunder-real"
+      ],
+      "reason": "Related existing audio; must verify perceptual differentiation, not an asserted duplicate."
+    },
+    {
+      "record_id": "EXP-016",
+      "source": "external_research",
+      "name": "Meadow Insects",
+      "taxonomy": "insects-amphibians",
+      "status": "research_new_concept",
+      "production_id": null,
+      "release_status": "research_only",
+      "identity": "unmatched",
+      "related_ids": [],
+      "reason": "Unmatched research proposal; no audio/rights/QA validated."
+    },
+    {
+      "record_id": "EXP-017",
+      "source": "external_research",
+      "name": "Tropical Jungle Night",
+      "taxonomy": "insects-amphibians",
+      "status": "research_new_concept",
+      "production_id": null,
+      "release_status": "research_only",
+      "identity": "unmatched",
+      "related_ids": [],
+      "reason": "Unmatched research proposal; no audio/rights/QA validated."
+    },
+    {
+      "record_id": "EXP-018",
+      "source": "external_research",
+      "name": "Campfire in Rain",
+      "taxonomy": "soundscapes-mixes",
+      "status": "mix_not_new_mp3",
+      "production_id": null,
+      "release_status": "research_only",
+      "identity": "derived_composition",
+      "related_ids": [],
+      "reason": "Multi-layer soundscape concept; no independent recording automatically needed."
+    },
+    {
+      "record_id": "EXP-019",
+      "source": "external_research",
+      "name": "Computer Fan",
+      "taxonomy": "fans-ventilation",
+      "status": "overlap_review",
+      "production_id": null,
+      "release_status": "research_only",
+      "identity": "acoustic_or_intent_overlap_not_duplicate",
+      "related_ids": [
+        "desk-fan-synth"
+      ],
+      "reason": "Related existing audio; must verify perceptual differentiation, not an asserted duplicate."
+    },
+    {
+      "record_id": "EXP-020",
+      "source": "external_research",
+      "name": "Server Room Ventilation",
+      "taxonomy": "fans-ventilation",
+      "status": "overlap_review",
+      "production_id": null,
+      "release_status": "research_only",
+      "identity": "acoustic_or_intent_overlap_not_duplicate",
+      "related_ids": [
+        "air-conditioner-synth"
+      ],
+      "reason": "Related existing audio; must verify perceptual differentiation, not an asserted duplicate."
+    },
+    {
+      "record_id": "EXP-021",
+      "source": "external_research",
+      "name": "Refrigerator Compressor",
+      "taxonomy": "household-machines",
+      "status": "overlap_review",
+      "production_id": null,
+      "release_status": "research_only",
+      "identity": "acoustic_or_intent_overlap_not_duplicate",
+      "related_ids": [
+        "air-conditioner-synth"
+      ],
+      "reason": "Related existing audio; must verify perceptual differentiation, not an asserted duplicate."
+    },
+    {
+      "record_id": "EXP-022",
+      "source": "external_research",
+      "name": "Dehumidifier",
+      "taxonomy": "household-machines",
+      "status": "overlap_review",
+      "production_id": null,
+      "release_status": "research_only",
+      "identity": "acoustic_or_intent_overlap_not_duplicate",
+      "related_ids": [
+        "air-conditioner-synth"
+      ],
+      "reason": "Related existing audio; must verify perceptual differentiation, not an asserted duplicate."
+    },
+    {
+      "record_id": "EXP-023",
+      "source": "external_research",
+      "name": "Humidifier",
+      "taxonomy": "household-machines",
+      "status": "overlap_review",
+      "production_id": null,
+      "release_status": "research_only",
+      "identity": "acoustic_or_intent_overlap_not_duplicate",
+      "related_ids": [
+        "shower-synth"
+      ],
+      "reason": "Related existing audio; must verify perceptual differentiation, not an asserted duplicate."
+    },
+    {
+      "record_id": "EXP-024",
+      "source": "external_research",
+      "name": "Aquarium Filter Motor",
+      "taxonomy": "household-machines",
+      "status": "overlap_review",
+      "production_id": null,
+      "release_status": "research_only",
+      "identity": "acoustic_or_intent_overlap_not_duplicate",
+      "related_ids": [
+        "air-conditioner-synth"
+      ],
+      "reason": "Related existing audio; must verify perceptual differentiation, not an asserted duplicate."
+    },
+    {
+      "record_id": "EXP-025",
+      "source": "external_research",
+      "name": "Kitchen Range Hood",
+      "taxonomy": "household-machines",
+      "status": "research_new_concept",
+      "production_id": null,
+      "release_status": "research_only",
+      "identity": "unmatched",
+      "related_ids": [],
+      "reason": "Unmatched research proposal; no audio/rights/QA validated."
+    },
+    {
+      "record_id": "EXP-026",
+      "source": "external_research",
+      "name": "Sailboat Cabin",
+      "taxonomy": "transportation",
+      "status": "overlap_review",
+      "production_id": null,
+      "release_status": "research_only",
+      "identity": "acoustic_or_intent_overlap_not_duplicate",
+      "related_ids": [
+        "cabin-hum-synth"
+      ],
+      "reason": "Related existing audio; must verify perceptual differentiation, not an asserted duplicate."
+    },
+    {
+      "record_id": "EXP-027",
+      "source": "external_research",
+      "name": "Bus Interior",
+      "taxonomy": "transportation",
+      "status": "overlap_review",
+      "production_id": null,
+      "release_status": "research_only",
+      "identity": "acoustic_or_intent_overlap_not_duplicate",
+      "related_ids": [
+        "cabin-hum-synth"
+      ],
+      "reason": "Related existing audio; must verify perceptual differentiation, not an asserted duplicate."
+    },
+    {
+      "record_id": "EXP-028",
+      "source": "external_research",
+      "name": "Subway Interior",
+      "taxonomy": "transportation",
+      "status": "overlap_review",
+      "production_id": null,
+      "release_status": "research_only",
+      "identity": "acoustic_or_intent_overlap_not_duplicate",
+      "related_ids": [
+        "cabin-hum-synth"
+      ],
+      "reason": "Related existing audio; must verify perceptual differentiation, not an asserted duplicate."
+    },
+    {
+      "record_id": "EXP-029",
+      "source": "external_research",
+      "name": "Rainy Cafe",
+      "taxonomy": "soundscapes-mixes",
+      "status": "mix_not_new_mp3",
+      "production_id": null,
+      "release_status": "research_only",
+      "identity": "derived_composition",
+      "related_ids": [],
+      "reason": "Multi-layer soundscape concept; no independent recording automatically needed."
+    },
+    {
+      "record_id": "EXP-030",
+      "source": "external_research",
+      "name": "Quiet Reading Room",
+      "taxonomy": "urban-indoor",
+      "status": "overlap_review",
+      "production_id": null,
+      "release_status": "research_only",
+      "identity": "acoustic_or_intent_overlap_not_duplicate",
+      "related_ids": [
+        "cabin-hum-synth"
+      ],
+      "reason": "Related existing audio; must verify perceptual differentiation, not an asserted duplicate."
+    },
+    {
+      "record_id": "EXP-031",
+      "source": "external_research",
+      "name": "Calm Office HVAC",
+      "taxonomy": "urban-indoor",
+      "status": "overlap_review",
+      "production_id": null,
+      "release_status": "research_only",
+      "identity": "acoustic_or_intent_overlap_not_duplicate",
+      "related_ids": [
+        "air-conditioner-synth"
+      ],
+      "reason": "Related existing audio; must verify perceptual differentiation, not an asserted duplicate."
+    },
+    {
+      "record_id": "EXP-032",
+      "source": "external_research",
+      "name": "Data Center Hum",
+      "taxonomy": "drones-textures",
+      "status": "overlap_review",
+      "production_id": null,
+      "release_status": "research_only",
+      "identity": "acoustic_or_intent_overlap_not_duplicate",
+      "related_ids": [
+        "low-rumble"
+      ],
+      "reason": "Related existing audio; must verify perceptual differentiation, not an asserted duplicate."
+    },
+    {
+      "record_id": "EXP-033",
+      "source": "external_research",
+      "name": "40 Hz Modulated Tone",
+      "taxonomy": "frequencies-tones",
+      "status": "research_new_concept",
+      "production_id": null,
+      "release_status": "research_only",
+      "identity": "unmatched",
+      "related_ids": [],
+      "reason": "Unmatched research proposal; no audio/rights/QA validated."
+    },
+    {
+      "record_id": "EXP-034",
+      "source": "external_research",
+      "name": "Isochronic Pulses",
+      "taxonomy": "frequencies-tones",
+      "status": "research_new_concept",
+      "production_id": null,
+      "release_status": "research_only",
+      "identity": "unmatched",
+      "related_ids": [],
+      "reason": "Unmatched research proposal; no audio/rights/QA validated."
+    },
+    {
+      "record_id": "EXP-035",
+      "source": "external_research",
+      "name": "Binaural Beats",
+      "taxonomy": "frequencies-tones",
+      "status": "research_new_concept",
+      "production_id": null,
+      "release_status": "research_only",
+      "identity": "unmatched",
+      "related_ids": [],
+      "reason": "Unmatched research proposal; no audio/rights/QA validated."
+    },
+    {
+      "record_id": "EXP-036",
+      "source": "external_research",
+      "name": "Singing Bowls",
+      "taxonomy": "meditation-tonal",
+      "status": "research_new_concept",
+      "production_id": null,
+      "release_status": "research_only",
+      "identity": "unmatched",
+      "related_ids": [],
+      "reason": "Unmatched research proposal; no audio/rights/QA validated."
+    },
+    {
+      "record_id": "EXP-037",
+      "source": "external_research",
+      "name": "Tanpura Drone",
+      "taxonomy": "meditation-tonal",
+      "status": "research_new_concept",
+      "production_id": null,
+      "release_status": "research_only",
+      "identity": "unmatched",
+      "related_ids": [],
+      "reason": "Unmatched research proposal; no audio/rights/QA validated."
+    },
+    {
+      "record_id": "EXP-038",
+      "source": "external_research",
+      "name": "Shruti Box Drone",
+      "taxonomy": "meditation-tonal",
+      "status": "research_new_concept",
+      "production_id": null,
+      "release_status": "research_only",
+      "identity": "unmatched",
+      "related_ids": [],
+      "reason": "Unmatched research proposal; no audio/rights/QA validated."
+    }
+  ],
+  "policy": {
+    "auto_dedup": false,
+    "license_clearance_required": true,
+    "qa_required": true,
+    "production_changes": false,
+    "new_seo_urls": 0,
+    "media_changes": 0,
+    "presets_unchanged": 45
+  }
+}
