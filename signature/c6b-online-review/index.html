@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow,noarchive">
+<meta name="theme-color" content="#0a1b1b">
+<title>C6B Listening Lab — WhiteNoiseChoir (Review Only)</title>
+<meta name="description" content="C6B non-production listening and loop-seam evaluation room. Two sources, raw and balanced auditions, awaiting human approval.">
+<style>
+:root{color-scheme:dark;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#091a1c;color:#f1f7f4;font-size:16px}
+*{box-sizing:border-box}
+body{margin:0;line-height:1.55}
+header,main,footer{width:min(860px,100%);margin:auto;padding:20px clamp(16px,4vw,30px)}
+header{display:flex;gap:12px;align-items:center;justify-content:space-between;border-bottom:1px solid #2f5757;flex-wrap:wrap}
+h1{font-size:clamp(28px,5vw,40px);line-height:1.16;margin:16px 0 12px}
+h2{font-size:21px;margin:0 0 13px}
+p,li{color:#c1d6d0}
+a{color:#a7eacb}
+.small{font-size:13px;color:#a7beb7}
+.kicker{text-transform:uppercase;letter-spacing:.11em;font-size:12px;color:#8bdbb4;font-weight:700}
+.notice{padding:16px;background:#282b20;border:1px solid #827650;border-radius:13px;color:#fff0c9;margin:15px 0}
+.notice strong{display:block;margin-bottom:4px}
+.panel{padding:clamp(16px,3.5vw,24px);border-radius:16px;background:#15292a;border:1px solid #345755;margin:16px 0}
+label{display:block;font-weight:700;margin:0 0 8px}
+select,textarea,input[type=text]{width:100%;border:1px solid #668d87;color:#f5fffb;background:#092326;border-radius:10px;padding:12px;min-height:46px;font:inherit}
+select{margin-bottom:8px}
+audio{width:100%;margin:14px 0}
+.seek{width:100%;min-height:36px;accent-color:#9cf0c3}
+.timer{display:flex;justify-content:space-between;color:#a8cfc4;font-size:13px;font-variant-numeric:tabular-nums}
+.buttons{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:15px 0}
+button{min-height:46px;padding:10px 12px;border-radius:10px;border:1px solid #659c81;background:#235743;color:#effff3;font:inherit;cursor:pointer}
+button:hover{background:#2d7457}
+button:disabled{opacity:.45;cursor:not-allowed}
+.meta{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:16px 0}
+.meta>div{padding:12px;background:#0c2525;border:1px solid #2c5350;border-radius:10px}
+.meta strong{display:block;font-size:14px}
+.muted{color:#a8c2b8}
+.check{display:flex;gap:9px;align-items:center;font-weight:400}
+textarea{min-height:116px;resize:vertical}
+footer{color:#9bb5b1;border-top:1px solid #345755;font-size:13px}
+@media(max-width:600px){.buttons{grid-template-columns:1fr}.meta{grid-template-columns:1fr}}
+:focus-visible{outline:3px solid #b6ffd8;outline-offset:3px}
+</style>
+</head>
+<body>
+<header><strong>◉ WhiteNoiseChoir — C6B</strong><span class="small">Listening lab · Noindex · 10/11/2026</span></header>
+<main>
+<p class="kicker">Owner audition • Not published sound library</p>
+<h1>Phòng nghe kiểm định âm thanh trực tuyến</h1>
+<p>Nghe ngay trên điện thoại hoặc máy tính. Hai bản âm thanh — <strong>Crickets at Night</strong> và <strong>Morning Birds</strong> — mỗi bản có lựa chọn <em>Raw</em> và <em>Balanced</em> (cân bằng âm lượng). Thanh tua và nút nhảy tới 5 giây cuối giúp kiểm tra nhanh vòng lặp.</p>
+<div class="notice">
+<strong>Chưa được duyệt chất lượng hoặc phát hành production.</strong>
+Đây là MP3 nghe thử 10 phút tạo từ <b>Freesound HQ preview đã nén</b>, không phải WAV gốc. Nguồn gốc đầy đủ, chất lượng nghe, âm thanh nền, độ độc lập và điểm nối vòng lặp vẫn phải kiểm tra. Trang này không tự đánh dấu QA PASS.
+</div>
+<section class="panel" aria-label="Audio audition">
+<h2>Nghe và so sánh</h2>
+<label for="track">Chọn bản nghe thử</label>
+<select id="track">
+<option value="SND-0039-balanced" selected>Crickets at Night — Balanced (ưu tiên nghe)</option>
+<option value="SND-0039-raw">Crickets at Night — Raw / chưa tăng âm lượng</option>
+<option value="SND-0040-balanced">Morning Birds — Balanced (ưu tiên nghe)</option>
+<option value="SND-0040-raw">Morning Birds — Raw / chưa tăng âm lượng</option>
+</select>
+<p id="track-description" class="small">Crickets: tiếng dế ban đêm, có thể có tiếng người hoặc xe cộ từ khu dân cư. Kiểm tra tai nghe ở âm lượng nhỏ.</p>
+<div class="meta">
+<div><span class="small">Duration</span><strong id="duration-fact">10 phút · nguồn HQ preview</strong></div>
+<div><span class="small">Source type</span><strong id="source-fact">MP3 44.1 kHz stereo · listening only</strong></div>
+</div>
+<audio id="player" controls preload="metadata" aria-label="C6B audio audition"></audio>
+<label for="seek">Tua tới vị trí cần nghe</label>
+<input class="seek" id="seek" type="range" min="0" max="1000" value="0" step="1" aria-label="Seek within ten-minute audio">
+<div class="timer"><span id="elapsed">00:00</span><span id="total">10:00</span></div>
+<div class="buttons">
+<button id="listen" type="button">Phát / Tạm dừng</button>
+<button id="near-end" type="button">Nhảy tới 5 giây cuối</button>
+<button id="restart" type="button">Nghe lại từ đầu</button>
+</div>
+<label class="check"><input type="checkbox" id="loop"> Lặp lại để nghe điểm nối giữa cuối và đầu bản thu (mặc định tắt)</label>
+<p id="status" class="small" role="status" aria-live="polite">Nhấn Play để nghe. Trình phát không tự động khởi chạy.</p>
+</section>
+<section class="panel" aria-label="QA notes">
+<h2>Ghi nhận đánh giá</h2>
+<p class="small">Nghe kỹ đoạn đầu, giữa, cuối; kiểm tra tiếng người, xe, tiếng động đột ngột, trùng với các bản cũ và tiếng “tách” khi loop. Ghi mốc thời gian rồi copy phản hồi gửi vào cuộc trò chuyện.</p>
+<button id="capture" type="button">Ghi mốc thời gian hiện tại</button>
+<label for="notes" style="margin-top:12px">Ghi chú chất lượng</label>
+<textarea id="notes" placeholder="VD: 03:18 có tiếng xe; 09:59 tiếng cắt đột ngột. Đề nghị làm lại..."></textarea>
+<div class="buttons"><button id="copy" type="button">Copy đánh giá</button></div>
+<p id="copy-status" class="small" role="status"></p>
+</section>
+<section class="panel">
+<h2>Nguồn và giới hạn</h2>
+<p><a id="freesound" href="https://freesound.org/people/hargissssound/sounds/536332/" rel="noopener noreferrer">Trang nguồn CC0 trên Freesound</a></p>
+<p class="small">Các tệp nằm dưới prefix <code>review/c6b-20261110/</code> trên Cloudflare R2, tách khỏi 35 nguồn production và 45 preset. Không thêm sitemap, canonical hoặc phát hành SEO. <strong>Balanced</strong> chỉ là bản điều chỉnh mức âm lượng để nghe; chưa phải master chính thức. URL review công khai cho người có liên kết, <code>noindex</code> không phải cơ chế bảo mật.</p>
+<p class="small">Existing queue/release gates stay closed. Owner listening approval must be a separate documented step.</p>
+</section>
+</main>
+<footer>WhiteNoiseChoir C6B • Technical review only • Not released audio • Not indexed</footer>
+<script>
+"use strict";
+(function(){
+  const base="https://media.whitenoisechoir.com/review/c6b-20261110/";
+  const origin={
+    "SND-0039":"https://freesound.org/people/hargissssound/sounds/536332/",
+    "SND-0040":"https://freesound.org/people/ali.g/sounds/855323/"
+  };
+  const $=id=>document.getElementById(id);
+  const audio=$("player"),choice=$("track"),seek=$("seek"),status=$("status");
+  const fmt=t=>{
+    if(!Number.isFinite(t)||t<0)return "00:00";
+    let n=Math.floor(t);return String(Math.floor(n/60)).padStart(2,"0")+":"+String(n%60).padStart(2,"0");
+  };
+  function select(){
+    audio.pause();const item=choice.value;audio.src=base+item+".mp3";audio.load();
+    seek.value="0";$("elapsed").textContent="00:00";$("total").textContent="10:00";
+    $("freesound").href=origin[item.slice(0,8)];
+    $("track-description").textContent=item.includes("0039")
+     ? "Crickets: dế đêm, khu dân cư có thể xuất hiện tiếng người/xe. Kiểm tra sự yên ổn và điểm nối."
+     : "Morning Birds: chim hót buổi sáng, chú ý tiếng động lạ và âm lượng gốc thấp của HQ preview.";
+    status.textContent="Đã chọn "+choice.options[choice.selectedIndex].text+". Nhấn Play để nghe.";
+  }
+  function loaded(){const dur=audio.duration;if(Number.isFinite(dur))$("total").textContent=fmt(dur)}
+  choice.addEventListener("change",select);
+  audio.addEventListener("loadedmetadata",loaded);
+  audio.addEventListener("timeupdate",()=>{
+    $("elapsed").textContent=fmt(audio.currentTime);
+    if(Number.isFinite(audio.duration)&&audio.duration>0)
+      seek.value=String(Math.round(1000*audio.currentTime/audio.duration));
+  });
+  audio.addEventListener("error",()=>status.textContent="Không tải được MP3. Kiểm tra kết nối hoặc tải lại trang.");
+  seek.addEventListener("input",()=>{
+    if(Number.isFinite(audio.duration)&&audio.duration>0)audio.currentTime=Number(seek.value)/1000*audio.duration;
+  });
+  $("listen").addEventListener("click",()=>{
+    if(audio.paused){audio.play().catch(()=>status.textContent="Trình duyệt chưa phát được. Hãy thử nút Play trên audio hoặc tải lại trang.");}
+    else audio.pause();
+  });
+  $("near-end").addEventListener("click",()=>{
+    if(Number.isFinite(audio.duration)&&audio.duration>5)audio.currentTime=audio.duration-5;
+  });
+  $("restart").addEventListener("click",()=>{audio.currentTime=0;audio.play().catch(()=>{});});
+  $("loop").addEventListener("change",()=>audio.loop=$("loop").checked);
+  audio.addEventListener("playing",()=>status.textContent="Đang phát bản nghe thử; không phải production.");
+  audio.addEventListener("pause",()=>status.textContent="Đã tạm dừng.");
+  $("capture").addEventListener("click",()=>{
+    const t=fmt(audio.currentTime);
+    const old=$("notes").value.trim();
+    $("notes").value=(old?old+"\n":"")+choice.options[choice.selectedIndex].text+" @ "+t+": ";
+    $("notes").focus();
+  });
+  $("copy").addEventListener("click",()=>{
+    const note="WhiteNoiseChoir C6B owner listening feedback\nSelected: "+choice.options[choice.selectedIndex].text+
+      "\nCurrent time: "+fmt(audio.currentTime)+"\nNotes:\n"+$("notes").value.trim()+
+      "\nNot a release approval unless explicitly confirmed.";
+    if(navigator.clipboard&&navigator.clipboard.writeText){
+      navigator.clipboard.writeText(note).then(()=>$("copy-status").textContent="Đã copy. Dán ghi chú vào cuộc trò chuyện.",
+      ()=>$("copy-status").textContent="Không thể copy tự động. Hãy chọn và copy ghi chú thủ công.");
+    }else{
+      $("copy-status").textContent="Không thể copy tự động. Hãy chọn và copy ghi chú thủ công.";
+    }
+  });
+  select();
+}());
+</script>
+</body>
+</html>
