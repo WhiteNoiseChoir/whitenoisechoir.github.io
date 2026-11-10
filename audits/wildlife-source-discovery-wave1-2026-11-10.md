@@ -47,4 +47,4 @@ Short clips (owl 9.7s, frog 13.1s, cicada 25.1s, cat purring 35.9s) are **not** 
 - Keep 35 current catalog source IDs, 45 presets, live URLs, HLS, R2 and existing Sound Pages untouched.
 
 ## Unresolved
-10 of the 16 preselected sleep-friendly WILD archetypes have no recording here yet, and this collection does not establish comprehensive species coverage. Search additional sources, including Freesound, Macaulay, Xeno-canto, rather than treating the short samples as production ready.
+12 of the 16 WILD archetypes marked SLEEP_CANDIDATE in the taxonomy have no matched candidate in this first wave, and this collection does not establish comprehensive species coverage. Search additional sources, including Freesound, Macaulay, Xeno-canto, rather than treating the short samples as production ready.
