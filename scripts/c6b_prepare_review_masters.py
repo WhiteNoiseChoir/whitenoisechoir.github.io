@@ -67,10 +67,13 @@ def decode_seconds(path):
   return round(seconds,3)
 def prepare(item):
   preview_url,page_sha=preview_link(item["page"])
-  preview_bytes,status,ct=fetch(preview_url,CAP_BYTES)
+  # Caps come from previously decoded HQ-preview bitrate: SND-0039 ~185 kbps (entire file 14.17 MB),
+  # SND-0040 ~96 kbps (>605 s fits within 10 MB). Require actual >=605 s decode anyway.
+  cap_by_id={"SND-0039":16_000_000,"SND-0040":10_000_000}
+  preview_bytes,status,ct=fetch(preview_url,cap_by_id[item["id"]])
   if len(preview_bytes)<1_000_000: raise RuntimeError("Public HQ preview unavailable or too short")
   with tempfile.TemporaryDirectory(prefix="wnc-c6b-review-") as folder:
-    f=Path(folder)/"preview."+("ogg" if preview_url.lower().endswith(".ogg") else "mp3")
+    f=Path(folder)/("preview."+("ogg" if preview_url.lower().endswith(".ogg") else "mp3"))
     f.write_bytes(preview_bytes)
     info=probe_duration(f)
     decoded=decode_seconds(f)
