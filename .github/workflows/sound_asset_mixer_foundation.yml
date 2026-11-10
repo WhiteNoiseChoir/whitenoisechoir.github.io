@@ -1,0 +1,28 @@
+name: Sound Asset Library and Timeline Foundation QA
+on:
+  pull_request:
+    paths:
+      - "catalog/sound-asset-library-v1.json"
+      - "catalog/mix-timeline-example-v1.json"
+      - "docs/sound-library-mixer-architecture-v1.md"
+      - "scripts/test_sound_asset_mixer_foundation.cjs"
+      - ".github/workflows/sound_asset_mixer_foundation.yml"
+  push:
+    branches: [main]
+    paths:
+      - "catalog/sound-asset-library-v1.json"
+      - "catalog/mix-timeline-example-v1.json"
+      - "scripts/test_sound_asset_mixer_foundation.cjs"
+permissions:
+  contents: read
+jobs:
+  foundation-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Validate sound asset role model and non-playable timeline safety
+        run: node scripts/test_sound_asset_mixer_foundation.cjs
