@@ -1,0 +1,58 @@
+#!/usr/bin/env node
+"use strict";
+const fs=require("node:fs"),assert=require("node:assert/strict");
+const data=JSON.parse(fs.readFileSync("framework-preview/master-inventory.json","utf8"));
+const lib=JSON.parse(fs.readFileSync("catalog/library.json","utf8"));
+const reg=JSON.parse(fs.readFileSync("catalog/family-registry.json","utf8"));
+const html=fs.readFileSync("framework-preview/index.html","utf8");
+const current=fs.readFileSync("sounds/index.html","utf8");
+const sitemap=fs.readFileSync("sitemap.xml","utf8");
+assert.equal(data.rows.length,532,"532 editorial records");
+assert.equal(data.logical_families.length,28,"28 logical family names");
+assert.equal(lib.sounds.length,35,"35 production records unchanged");
+assert.equal(reg.families.filter(x=>x.route_type==="existing_hub").length,12,"12 physical hubs preserved");
+assert.equal(reg.families.filter(x=>x.route_type==="virtual_family").length,1,"Ocean virtual preserved");
+assert.equal(new Set(data.rows.map(r=>r[0])).size,532,"all editorial IDs unique");
+assert.match(html,/<meta name="robots" content="noindex,nofollow,noarchive">/,"preview noindexed");
+assert.ok(html.includes('fetch("./master-inventory.json"'),"preview loads its own dataset");
+assert.ok(html.includes("Not playable · No public detail page created"),"planned states not fake playable");
+assert.ok(html.includes("/sounds/#ocean-waves"),"Ocean anchor kept");
+assert.ok(!/<audio\\b/i.test(html),"no preview fake audio");
+assert.ok(!/<link rel="canonical"/i.test(html),"preview must not claim canonical SEO URL");
+assert.ok(!sitemap.includes("/framework-preview/"),"preview excluded from sitemap");
+assert.ok(current.includes('id="wnc-family-grid"'),"original production library remains");
+assert.equal(data.rows.filter(r=>r[data.columns.indexOf("v2_type")]==="PRODUCTION_ASSET").length,35,"35 production records mapped in inventory");
+const vm=require("node:vm");
+const inline=html.split("<script>")[1]?.split("</script>")[0];
+assert.ok(inline,"framework inline JS exists");
+new vm.Script(inline,{filename:"framework-preview/index.html"}); 
+for(const i of ["sleep","relax","focus","baby"]){
+ assert.ok(html.includes('data-intent="'+i+'"'),"missing purpose filter "+i);
+}
+assert.ok(html.includes('id="subgroup"'),"subcategory selector exists");
+assert.ok(html.includes('id="group-overview"'),"group-specific overview present");
+assert.ok(html.includes("rebuildSubgroups()"),"subgroup options from real inventory");
+assert.ok(html.includes('aria-pressed="false"'),"accessible purpose filter toggles");
+assert.ok(html.includes("Purpose labels are provisional editorial suggestions"),"no unverified health suitability claims");
+assert.ok(html.includes('if(purpose==="baby")'),"baby suggestions conservative and explicit");
+assert.ok(!html.includes('href="/sounds/bird-sounds/"'),"proposed hub URL not a link");
+assert.ok(!html.includes('href="/sounds/asmr-sounds/"'),"proposed ASMR hub URL not a link");
+const subIx=data.columns.indexOf("subfamily");
+assert.ok(subIx>=0&&data.rows.some(r=>r[subIx]==="birds")&&data.rows.some(r=>r[subIx]==="insects"),"wildlife subfamilies present");
+const liveExplorer=fs.readFileSync("sounds/explore/index.html","utf8");
+const liveScript=liveExplorer.split("<script>")[1]?.split("</script>")[0];
+assert.ok(liveScript,"published explorer has working inline JavaScript");
+new vm.Script(liveScript,{filename:"sounds/explore/index.html"});
+assert.match(liveExplorer,/<meta name="robots" content="noindex,nofollow,noarchive">/,"planned live directory not indexable");
+assert.ok(liveExplorer.includes('fetch("/framework-preview/master-inventory.json"'),"live explorer loads shared 532-item data");
+assert.ok(liveExplorer.includes('fetch("/catalog/library.json"'),"live explorer only links verified production sources");
+assert.ok(current.includes('href="/sounds/explore/"'),"sounds hub visibly links to expanded directory");
+assert.ok(current.includes("532 researched sound-type records across 28 logical groups"),"accurate expanded library labeling");
+assert.ok(!sitemap.includes("/sounds/explore/"),"non-indexed planning directory omitted from sitemap");
+assert.ok(!/<audio\\b/i.test(liveExplorer),"published directory contains no fake audio player");
+assert.ok(!/<link rel="canonical"/i.test(liveExplorer),"planning directory has no competing canonical");
+for(const i of ["sleep","relax","focus","baby"])assert.ok(liveExplorer.includes('data-intent="'+i+'"'),"missing live intent "+i);
+for(const href of ["/sounds/bird-sounds/","/sounds/animal-sounds/","/sounds/asmr-sounds/"]){
+ assert.ok(!liveExplorer.includes('href="'+href+'"'),"unbuilt hub linked: "+href);
+}
+console.log("PASS — C2 + /sounds/explore/ launch safety, 532 records / 28 groups / 35 production, zero new media");
