@@ -5,6 +5,7 @@ on:
       - "catalog/sound-production-queue-c6.json"
       - "framework-preview/c6-listening/**"
       - "scripts/test_sound_production_queue_c6.cjs"
+      - "scripts/test_sound_production_queue_browser_c6.cjs"
       - ".github/workflows/c6-p0-queue.yml"
       - "catalog/sound-production-registry-c5.json"
       - "catalog/library.json"
@@ -28,5 +29,11 @@ jobs:
           node-version: "22"
       - name: Validate all ten candidates, source gates, JS and SEO non-regression
         run: node scripts/test_sound_production_queue_c6.cjs
+      - name: Browser/mobile smoke test (no C6 audio unlocked)
+        run: |
+          npm install --no-save playwright@1.55.0
+          python3 -m http.server 8787 --bind 127.0.0.1 > /tmp/wnc-c6-http.log 2>&1 &
+          sleep 2
+          node scripts/test_sound_production_queue_browser_c6.cjs
       - name: Revalidate legacy C5 release registry
         run: node scripts/test_sound_production_registry_c5.cjs
