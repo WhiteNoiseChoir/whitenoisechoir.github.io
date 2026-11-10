@@ -22,4 +22,21 @@ assert.ok(!/<link rel="canonical"/i.test(html),"preview must not claim canonical
 assert.ok(!sitemap.includes("/framework-preview/"),"preview excluded from sitemap");
 assert.ok(current.includes('id="wnc-family-grid"'),"original production library remains");
 assert.equal(data.rows.filter(r=>r[data.columns.indexOf("v2_type")]==="PRODUCTION_ASSET").length,35,"35 production records mapped in inventory");
-console.log("PASS — staging-only framework, 532 rows / 28 groups / 35 production, no fake audio or indexable pages");
+const vm=require("node:vm");
+const inline=html.match(/<script>([\\s\\S]*?)<\\/script>/)?.[1];
+assert.ok(inline,"framework inline JS exists");
+new vm.Script(inline,{filename:"framework-preview/index.html"}); 
+for(const i of ["sleep","relax","focus","baby"]){
+ assert.ok(html.includes('data-intent="'+i+'"'),"missing purpose filter "+i);
+}
+assert.ok(html.includes('id="subgroup"'),"subcategory selector exists");
+assert.ok(html.includes('id="group-overview"'),"group-specific overview present");
+assert.ok(html.includes("rebuildSubgroups()"),"subgroup options from real inventory");
+assert.ok(html.includes('aria-pressed="false"'),"accessible purpose filter toggles");
+assert.ok(html.includes("Purpose labels are provisional editorial suggestions"),"no unverified health suitability claims");
+assert.ok(html.includes('if(purpose==="baby")'),"baby suggestions conservative and explicit");
+assert.ok(!html.includes('href="/sounds/bird-sounds/"'),"proposed hub URL not a link");
+assert.ok(!html.includes('href="/sounds/asmr-sounds/"'),"proposed ASMR hub URL not a link");
+const subIx=data.columns.indexOf("subfamily");
+assert.ok(subIx>=0&&data.rows.some(r=>r[subIx]==="birds")&&data.rows.some(r=>r[subIx]==="insects"),"wildlife subfamilies present");
+console.log("PASS — C2 intent/subgroup UX + existing 532 rows / 28 groups / 35 production; zero new indexable/audio pages");
