@@ -71,7 +71,7 @@ for(const entry of provenance.tracks){
 assert.equal((read("sitemap.xml").match(/<loc>/g)||[]).length,18);
 for(const slug of ["light-rain","rain-on-tin-roof","distant-thunder"])assert.ok(read("sounds/rain/index.html").includes('href="/sounds/'+slug+'/"'));
 assert.equal((read("sounds/index.html").match(/data-wnc-existing-id="/g)||[]).length,35);
-assert.ok(read("index.html").includes("13 families · 35 catalog sources"));
+assert.ok(read("index.html").includes("13 families · 45 playable sources (35 original catalog + 10 new DSP)"));
 assert.equal(JSON.parse(read("index.html").split("var recipes=")[1].split("];")[0]+"]").length,45);
 for(const r of added)assert.ok(read("index.html").includes('["'+r+'",'),"homepage row missing "+r);
 assert.ok(read("sources.html").includes("The nine recordings"));
