@@ -91,6 +91,7 @@ for(const btn of document.querySelectorAll("button[data-pick]")){
 audio.addEventListener("ended",()=>{if(audio.loop){audio.currentTime=0;audio.play().catch(()=>{})}});
 audio.addEventListener("playing",()=>status.textContent="Đang phát "+sel.options[sel.selectedIndex].text);
 try{if("mediaSession"in navigator)navigator.mediaSession.metadata=new MediaMetadata({title:"C6C Synthetic Sound",artist:"WhiteNoiseChoir"})}catch(e){}
+try{const requested=new URLSearchParams(location.search).get("sound");if(requested&&map[requested])sel.value=requested;}catch(e){}
 choose(sel.value,false);
 }());
 </script></body></html>
