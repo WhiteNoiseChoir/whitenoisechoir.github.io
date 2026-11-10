@@ -13,10 +13,16 @@ jobs:
     timeout-minutes: 12
     steps:
       - uses: actions/checkout@v4
-      - name: Verify Python and FFprobe
+      - name: Install and verify FFmpeg / FFprobe (fail closed if unavailable)
         run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq ffmpeg
+          command -v ffprobe
+          command -v ffmpeg
+          ffprobe -version
+          ffmpeg -version
           python3 -m py_compile scripts/probe_c6b_public_hq_previews.py
-          ffprobe -version | head -n 1
       - name: Inspect public preview rights markers, actual first 605 seconds and bitstreams
         run: python3 scripts/probe_c6b_public_hq_previews.py
       - name: Upload JSON-only research report (NO AUDIO)
