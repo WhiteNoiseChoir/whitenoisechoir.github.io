@@ -83,7 +83,8 @@ def inspect(row,seen):
     rights_ok,rights_err=valid_rights(row)
     if not rights_ok:result["warnings"].extend(rights_err)
     if not nonempty_string(row.get("creator")):result["warnings"].append("CREATOR_MISSING")
-    if any(not nonempty_string(x) for x in result["concept_ids"]) or not isinstance(result["concept_ids"],list):
+    concepts=result["concept_ids"]
+    if not isinstance(concepts,list) or not concepts or any(not nonempty_string(x) for x in concepts):
         result["warnings"].append("BAD_CONCEPT_IDS")
     needs_attention=(not rights_ok or not nonempty_string(row.get("creator"))
             or role=="SPEECH_OR_VOCAL" or "BAD_CONCEPT_IDS" in result["warnings"])
