@@ -50,7 +50,7 @@ globalThis._intervalId=0;globalThis._timerId=0;
 vm.runInContext(matches[0][1],context);
 const flush=()=>new Promise(resolve=>setImmediate(resolve));
 (async()=>{
-  assert.equal(get("cards").children.length,35,"Sound catalog changed unexpectedly");
+  assert.equal(get("cards").children.length,45,"35 existing + 10 approved original C6C sounds required");
   assert.equal(get("mixlist").children.length,45,"Mixer preset count changed");
   assert.match(html,/value="28800">8 hours/);
   assert.match(html,/value="43200">12 hours/);
