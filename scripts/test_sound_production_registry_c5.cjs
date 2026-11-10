@@ -50,7 +50,7 @@ assert.equal(green.gates.owner_listening,"PENDING_LISTENING_REVIEW");
 assert.match(site,/<meta name="robots" content="noindex,nofollow,noarchive">/);
 assert.ok(!site.includes('rel="canonical"'),"editorial preview may not claim canonical");
 assert.ok(!/<audio\b/i.test(site),"editorial preview may not pretend to stream audio");
-assert.ok(!/<script[^>]*type="application\\/ld\\+json"/i.test(site),"editorial preview may not emit JSON-LD for nonexistent audio");
+assert.ok(!site.includes('type="application/ld+json"'),"editorial preview may not emit JSON-LD for nonexistent audio");
 assert.ok(site.includes('fetch("/catalog/sound-production-registry-c5.json"'));
 assert.ok(site.includes('id="rights"')&&site.includes('id="technical"')&&site.includes('id="owner"')&&site.includes('id="seo"'));
 const js=site.split("<script>")[1]?.split("</script>")[0];assert.ok(js);new vm.Script(js,{filename:"C5 sound detail template"});
