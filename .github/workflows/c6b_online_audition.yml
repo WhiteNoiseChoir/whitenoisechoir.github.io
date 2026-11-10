@@ -35,7 +35,7 @@ jobs:
           node scripts/test_c6b_online_room.cjs
           python3 -m py_compile scripts/c6b_publish_review_r2.py
           node scripts/test_sound_production_queue_c6.cjs
-      - name: Browser test: simulate 10-minute end with 1.25-second fixture, verify continuous loop and manual OFF
+      - name: Browser regression - short audio loop must repeat, manual OFF must stop
         run: |
           set -euo pipefail
           npm install --no-save playwright@1.55.0
