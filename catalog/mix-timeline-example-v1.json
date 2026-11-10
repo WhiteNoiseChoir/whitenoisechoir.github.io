@@ -1,0 +1,101 @@
+{
+  "schema_version": 1,
+  "revision": "2026-11-10-MIX-TIMELINE-EXAMPLE",
+  "status": "DEMONSTRATION_ONLY_ASSET_IDS_UNRESOLVED_NOT_PLAYABLE_NOT_EXPORTABLE",
+  "note": "Concept placeholders illustrate user timeline, NOT acquired or QA-approved recordings. Gains are illustrative starting values and are editable by user.",
+  "total_duration_ms": 900000,
+  "defaults": {
+    "sample_rate_hz": 44100,
+    "output_channels": 2,
+    "repeat_policy": "EXPLICIT_PER_TRACK",
+    "auto_play": false,
+    "export_status": "BLOCKED_UNTIL_ALL_ASSETS_RIGHTS_CLEARED_AND_QA_PASSED"
+  },
+  "tracks": [
+    {
+      "track_id": "stream-bed",
+      "concept": "flowing-stream",
+      "asset_id": null,
+      "role": "CONTINUOUS_BED",
+      "start_ms": 0,
+      "duration_ms": 900000,
+      "repeat_mode": "LOOP_WITH_CROSSFADE",
+      "gain_db": -18,
+      "pan": 0,
+      "fade_in_ms": 2500,
+      "fade_out_ms": 3000,
+      "editable": true
+    },
+    {
+      "track_id": "wolf-at-minute-two",
+      "concept": "wolf-howl",
+      "asset_id": null,
+      "role": "ONE_SHOT",
+      "start_ms": 120000,
+      "duration_ms": null,
+      "repeat_mode": "NONE",
+      "gain_db": -10,
+      "pan": -0.25,
+      "fade_in_ms": 100,
+      "fade_out_ms": 800,
+      "editable": true
+    },
+    {
+      "track_id": "birds-at-minute-three",
+      "concept": "forest-bird-call",
+      "asset_id": null,
+      "role": "RECURRING_EVENT",
+      "start_ms": 180000,
+      "duration_ms": null,
+      "repeat_mode": "SCHEDULED_EVENTS",
+      "schedule_ms": [
+        180000,
+        205000,
+        243000
+      ],
+      "gain_db": -16,
+      "pan": 0.35,
+      "fade_in_ms": 150,
+      "fade_out_ms": 400,
+      "editable": true
+    },
+    {
+      "track_id": "train-pass-by",
+      "concept": "train-passing",
+      "asset_id": null,
+      "role": "PASS_BY",
+      "start_ms": 300000,
+      "duration_ms": null,
+      "repeat_mode": "NONE",
+      "gain_db": -12,
+      "pan": 0,
+      "pan_automation": [
+        {
+          "time_ms": 300000,
+          "value": -0.8
+        },
+        {
+          "time_ms": 318000,
+          "value": 0.8
+        }
+      ],
+      "fade_in_ms": 1500,
+      "fade_out_ms": 2000,
+      "editable": true
+    }
+  ],
+  "export_requirements": [
+    "every referenced asset exists and is mix-ready",
+    "commercial redistribution and adaptation rights verified for all components",
+    "attribution manifest included for CC-BY",
+    "no clipping; target loudness and peak checked",
+    "user explicitly initiates export"
+  ],
+  "export_formats_planned": [
+    "WAV",
+    "MP3",
+    "MP4_WITH_VISUALS"
+  ],
+  "media_files_created": 0,
+  "production_changes": 0
+}
