@@ -4,9 +4,6 @@ from __future__ import annotations
 import hashlib,json,os,time
 from pathlib import Path
 from urllib.request import Request,urlopen
-import boto3
-from botocore.config import Config
-from botocore.exceptions import ClientError
 
 PAGE=Path("signature/c6b-online-review/index.html")
 KEY="review/c6b-20261110/index.html"
@@ -30,6 +27,9 @@ def check_local():
  return data,hashlib.sha256(data).hexdigest()
 
 def main():
+ import boto3
+ from botocore.config import Config
+ from botocore.exceptions import ClientError
  data,expected=check_local()
  assert os.environ.get("R2_ACCESS_KEY_ID") and os.environ.get("R2_SECRET_ACCESS_KEY")
  client=boto3.session.Session().client(
