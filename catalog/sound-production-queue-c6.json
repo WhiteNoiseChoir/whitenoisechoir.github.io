@@ -110,7 +110,11 @@
             "Suburban cars and people described; whole-file speech and transient QA pending",
             "Audio bytes not downloaded; duration and license are page claims, not file-level QA"
           ],
-          "checked_date": "2026-11-10"
+          "checked_date": "2026-11-10",
+          "original_download_access": "FREESOUND_LOGIN_REQUIRED",
+          "original_downloaded": false,
+          "recording_bytes_sha256": null,
+          "file_qa_complete": false
         }
       ]
     },
@@ -187,6 +191,25 @@
             "Lossy original, do not label source as FLAC or WAV",
             "Audio bytes not downloaded; whole-file QA and comparable novelty pending"
           ],
+          "checked_date": "2026-11-10",
+          "original_download_access": "FREESOUND_LOGIN_REQUIRED",
+          "original_downloaded": false,
+          "recording_bytes_sha256": null,
+          "file_qa_complete": false
+        }
+      ],
+      "alternative_leads": [
+        {
+          "url": "https://commons.wikimedia.org/wiki/File:Dawnchorus-uk.ogg",
+          "creator": "Silas S. Brown",
+          "declared_rights": "Public domain dedicated by creator on Wikimedia Commons",
+          "displayed_duration_seconds": 3001.689977324263,
+          "displayed_container": "OGG Vorbis",
+          "displayed_bitrate_kbps_approx": 52,
+          "download_access": "PUBLIC_WIKIMEDIA_COMMONS_ORIGINAL",
+          "qa_risk": "LOW_SOURCE_BITRATE; potential quality degradation; full-file acoustic listening required",
+          "disposition": "BACKUP_RESEARCH_ONLY_NOT_SELECTED",
+          "source_file_acquired": false,
           "checked_date": "2026-11-10"
         }
       ]
@@ -659,6 +682,8 @@
     "metadata_leads_meeting_600s_on_page": 2,
     "downloaded_originals": 0,
     "file_integrity_verified": 0,
-    "rights_provenance_confirmed": 0
+    "rights_provenance_confirmed": 0,
+    "original_download_obstacle": "FREESOUND_LOGIN_REQUIRED_FOR_TWO_PREFERRED_CC0_RECORDINGS",
+    "public_domain_backup_options": 1
   }
 }
