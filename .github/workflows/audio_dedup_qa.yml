@@ -11,6 +11,12 @@ on:
       - 'scripts/test_*review*'
       - 'scripts/test_*production*'
       - '.github/workflows/audio_dedup_qa.yml'
+  pull_request:
+    paths:
+      - 'scripts/test_water_ocean_wave1_production.cjs'
+      - 'catalog/sound-production-queue-c6.json'
+      - 'docs/c6b-source-and-ocean-audit-2026-11-10.md'
+      - '.github/workflows/audio_dedup_qa.yml'
   workflow_dispatch:
 permissions:
   contents: read

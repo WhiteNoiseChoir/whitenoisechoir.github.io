@@ -22,9 +22,39 @@ for(const pinned of lock.records){
  assert.equal(row.master_sha256,pinned.master_sha256);assert.equal(row.playlist_sha256,pinned.playlist_sha256);
  assert.equal(sha(row.master_file),pinned.master_sha256);assert.equal(sha(row.playlist_file),pinned.playlist_sha256);
 }
-assert.equal(gitblob("sounds/ocean-waves/index.html"),"13f684200c1b276276018895c5a0af9896c40a7e","Existing Ocean Waves canonical page must not change");
+// Domain-migration audit (2026-11-10): historical old-host Ocean page blob
+// 13f684200c1b276276018895c5a0af9896c40a7e at 4100e4085b3e6b4160a10b840b4c1c0b71dd9bb9
+// was intentionally transformed by 4d72ee391464d4bc149dfdacd6707f4cb6d9ec7c:
+// all whitenoisechoir.github.io occurrences -> whitenoisechoir.com,
+// and contentUrl https://whitenoisechoir.com/audio/ocean-waves-real.mp3
+// -> https://media.whitenoisechoir.com/audio/ocean-waves-real.mp3.
+// In-memory diff was verified against GitHub content before updating this guard.
+// Pin the new reviewed blob and verify canonical + media URL without touching either file.
+const oceanPage=read("sounds/ocean-waves/index.html");
+assert.equal(gitblob("sounds/ocean-waves/index.html"),"1ffb0a6e4e8368f3c37418cbfe2bbca4f6312573","Reviewed post-domain-migration Ocean canonical page must remain byte-identical");
+assert.ok(oceanPage.includes('<link rel="canonical" href="https://whitenoisechoir.com/sounds/ocean-waves/">'),"Ocean canonical must use production .com");
+assert.ok(oceanPage.includes('"contentUrl":"https://media.whitenoisechoir.com/audio/ocean-waves-real.mp3"'),"Ocean structured audio URL must use approved R2 media hostname");
+assert.ok(!oceanPage.includes("whitenoisechoir.github.io"),"Retired Ocean SEO hostname must not recur");
+assert.ok(oceanPage.includes('name="robots" content="noindex,follow"'),"Ocean existing robots directive unchanged");
 assert.equal(gitblob("assets/persistent-router.js"),"e7c039730a8869ab037736cabbce9eb7b6cef65d","Persistent playback code must be unchanged");
-assert.equal(gitblob("sitemap.xml"),"a3aebac7cc125f357d858730f4480f415ea298ea","Do not index thin new variant pages");
+// Sitemap 1dc9eadc8c721d2ea2de27c91e46deeb6a6e5836
+// (blob a3aebac7cc125f357d858730f4480f415ea298ea) became this blob at
+// d37468ebd4ca09bb90ef4056406f3313358312cd via hostname substitution ONLY.
+// Exact 18 URL paths below were verified identical before/after; no C6 candidate pages added.
+const sitemap=read("sitemap.xml");
+assert.equal(gitblob("sitemap.xml"),"1fb26b9e9186b3f9dba89234cc60c7bc3bb2228d","Reviewed .com sitemap must remain byte-identical");
+const indexedRoutes=[...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map(m=>{
+ assert.ok(m[1].startsWith("https://whitenoisechoir.com/"),"Unexpected sitemap hostname");
+ return m[1].slice("https://whitenoisechoir.com".length);
+});
+assert.deepEqual(indexedRoutes,[
+ "/","/sounds/","/collections/","/sounds/noise-colors/","/sounds/rain/",
+ "/sounds/white-noise/","/sounds/pink-noise/","/sounds/brown-noise/",
+ "/sounds/rain-on-window/","/sounds/fireplace/","/sounds/blue-noise/",
+ "/sounds/violet-noise/","/sounds/heavy-rain/","/sounds/waterfall/",
+ "/sounds/shower/","/collections/relaxing-sounds/",
+ "/collections/white-noise-for-sleep/","/collections/baby-sleep-sounds/"
+],"Existing 18 indexable routes only; no thin/unapproved variants");
 const hub=read("sounds/water/index.html");assert.ok(hub.includes('name="robots" content="noindex,follow"'));
 assert.ok(read("sounds/index.html").includes('id="ocean-waves"'),"Original Ocean family virtual anchor retained");
 for(let i=0;i<3;i++){
@@ -69,4 +99,4 @@ assert.equal((read("sounds/index.html").match(/data-wnc-existing-id="/g)||[]).le
 assert.ok(read("index.html").includes("13 families · 35 catalog sources"));
 assert.equal(JSON.parse(read("index.html").split("var recipes=")[1].split("];")[0]+"]").length,45);
 assert.equal((read("sitemap.xml").match(/<loc>/g)||[]).length,18);
-console.log("WATER_OCEAN_WAVE1_PRODUCTION_QA_PASS original30 protected, 3 owner-approved exact MP3, 33 HLS with static 7day, 45 original presets, Ocean URL preserved and 18 sitemap URLs unchanged.");
+console.log("WATER_OCEAN_WAVE1_PRODUCTION_QA_PASS original30 protected, 3 owner-approved exact MP3, 33 HLS with static 7day, 45 original presets, Ocean canonical migrated with verified provenance; 18 sitemap paths preserved.");
