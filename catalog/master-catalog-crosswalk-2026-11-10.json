@@ -56,7 +56,7 @@
       {
         "id": "freshwater",
         "name": "Freshwater",
-        "prod": 8,
+        "prod": 5,
         "blueprint_unproduced": 7,
         "new_research": 2,
         "overlap_review": 1
@@ -64,7 +64,7 @@
       {
         "id": "ocean-coastal",
         "name": "Ocean & Coastal",
-        "prod": 0,
+        "prod": 3,
         "blueprint_unproduced": 0,
         "new_research": 0,
         "overlap_review": 0
@@ -420,7 +420,7 @@
       "record_id": "PROD:ocean-waves-real",
       "source": "production",
       "name": "Ocean Waves",
-      "taxonomy": "freshwater",
+      "taxonomy": "ocean-coastal",
       "status": "catalog_record",
       "production_id": "ocean-waves-real",
       "release_status": "listening-approved",
@@ -636,7 +636,7 @@
       "record_id": "PROD:gentle-ocean-real",
       "source": "production",
       "name": "Gentle Ocean Waves",
-      "taxonomy": "freshwater",
+      "taxonomy": "ocean-coastal",
       "status": "catalog_record",
       "production_id": "gentle-ocean-real",
       "release_status": "listening-approved",
@@ -660,7 +660,7 @@
       "record_id": "PROD:crashing-ocean-real",
       "source": "production",
       "name": "Crashing Ocean Waves",
-      "taxonomy": "freshwater",
+      "taxonomy": "ocean-coastal",
       "status": "catalog_record",
       "production_id": "crashing-ocean-real",
       "release_status": "listening-approved",
