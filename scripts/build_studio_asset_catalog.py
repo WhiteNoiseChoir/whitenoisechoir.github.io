@@ -158,6 +158,16 @@ def main():
         config=Config(signature_version="s3v4", max_pool_connections=48,
                       s3={"addressing_style": "path"}, retries={"max_attempts": 6, "mode": "standard"}),
     )
+    worker_bucket = os.environ.get("STUDIO_STATE_BUCKET", "").strip()
+    worker_only = os.environ.get("STUDIO_STATE_ONLY") == "true"
+    if worker_only and not worker_bucket:
+        raise RuntimeError("Studio state bucket is required for a private-only build")
+    if worker_bucket:
+        if worker_bucket == BUCKET:
+            raise RuntimeError("Studio state must use its own private bucket")
+        s3.list_objects_v2(Bucket=worker_bucket, MaxKeys=1)
+        print("STUDIO_STATE_BUCKET_ACCESS_OK", flush=True)
+
     catalog = {}
     stored = set()
     for prefix in PREFIXES.values():
@@ -191,11 +201,10 @@ def main():
         "version": 1, "generatedAt": datetime.now(timezone.utc).isoformat(),
         "inventoryCount": len(stored), "browserFormats": len(catalog), "rows": rows,
     }
-    worker_bucket = os.environ.get("STUDIO_STATE_BUCKET", "").strip()
     if worker_bucket:
-        if worker_bucket == BUCKET:
-            raise RuntimeError("Studio state must use its own private bucket")
         write_worker_catalog(s3, worker_bucket, payload)
+    if worker_only:
+        return
     jwk = json.loads((Path(__file__).parents[1] / "data" / "studio-catalog-public-key.json").read_text())
     encoded = json.dumps(seal(payload, jwk), separators=(",", ":")).encode()
     digest = hashlib.sha256(encoded).hexdigest()

@@ -1,7 +1,7 @@
 name: Publish encrypted Studio asset catalog
 on:
   push:
-    branches: [main, feature/unified-studio-library]
+    branches: [main, feature/unified-studio-library, feature/owner-studio-and-public-mp3-catalog]
     paths:
       - 'scripts/build_studio_asset_catalog.py'
       - 'data/studio-catalog-public-key.json'
@@ -32,9 +32,10 @@ jobs:
         with:
           python-version: '3.11'
       - run: python -m pip install -q 'boto3>=1.36,<2' 'cryptography>=44,<47'
-      - name: Read current R2 inventory and publish only the encrypted catalog
+      - name: Read R2 inventory and publish the private Studio catalog
         env:
           R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
           R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
-          STUDIO_STATE_BUCKET: ${{ vars.STUDIO_STATE_BUCKET }}
+          STUDIO_STATE_BUCKET: ${{ vars.STUDIO_STATE_BUCKET || 'whitenoisechoir-studio-state' }}
+          STUDIO_STATE_ONLY: ${{ github.ref == 'refs/heads/feature/owner-studio-and-public-mp3-catalog' && 'true' || 'false' }}
         run: python scripts/build_studio_asset_catalog.py
