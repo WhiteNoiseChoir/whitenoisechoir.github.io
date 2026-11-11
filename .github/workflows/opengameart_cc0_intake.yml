@@ -1,0 +1,60 @@
+name: CC0 Nature and Animal Intake
+on:
+  push:
+    branches:
+      - feature/nature-cc0-intake-20261111
+    paths:
+      - 'scripts/harvest_opengameart_cc0_to_r2.py'
+      - '.github/workflows/opengameart_cc0_intake.yml'
+  workflow_dispatch:
+    inputs:
+      max_pages:
+        description: Source pages to visit
+        type: string
+        default: '140'
+permissions:
+  contents: read
+concurrency:
+  group: whitenoisechoir-opengameart-cc0-intake
+  cancel-in-progress: false
+jobs:
+  download-originals:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+      R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+      AWS_EC2_METADATA_DISABLED: 'true'
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install intake dependencies
+        run: |
+          if ! command -v ffprobe >/dev/null; then
+            sudo apt-get update -qq
+            sudo apt-get install -y -qq ffmpeg
+          fi
+          python -m pip install -q 'boto3>=1.36,<2' 'requests>=2.32,<3' 'beautifulsoup4>=4.12,<5' 'py7zr>=1,<2'
+      - name: Download CC0 originals and save pending classification
+        env:
+          MAX_PAGES: ${{ github.event_name == 'workflow_dispatch' && inputs.max_pages || '140' }}
+        run: |
+          python -u scripts/harvest_opengameart_cc0_to_r2.py \
+            --max-pages "$MAX_PAGES" --max-files 5000 --max-total-mb 4096 \
+            --report audits/opengameart-harvest.json
+      - name: Count actual distinct R2 assets
+        if: always()
+        run: python -u scripts/audit_r2_asset_inventory.py
+      - name: Retain batch report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: opengameart-cc0-intake-report
+          path: audits/opengameart-harvest.json
+          if-no-files-found: warn
+          retention-days: 30
