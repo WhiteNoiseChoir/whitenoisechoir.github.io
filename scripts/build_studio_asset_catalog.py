@@ -123,14 +123,60 @@ def seal(payload, jwk):
     }
 
 
-def main():
-    s3 = boto3.client(
+
+def write_worker_catalog(s3, bucket, payload):
+    public = []
+    shards = {}
+    owner_rows = []
+    for row in payload["rows"]:
+        identifier = hashlib.sha256(("wnc-public-source-v1/" + row["id"]).encode()).hexdigest()[:32]
+        shards.setdefault(identifier[:2], {})[identifier] = row["key"]
+        owner_rows.append({**row, "publicId": "public-" + identifier})
+        public.append({
+            "id": identifier, "name": row["name"], "taxon": row["taxon"],
+            "duration": row["duration"], "aliases": row["aliases"],
+            "credit": row["credit"], "license": row["license"], "licenseUrl": row["licenseUrl"], "source": row["source"],
+        })
+
+    def put(key, value):
+        s3.put_object(Bucket=bucket, Key=key,
+                      Body=json.dumps(value, ensure_ascii=False, separators=(",", ":")).encode(),
+                      ContentType="application/json")
+
+    with ThreadPoolExecutor(max_workers=24) as pool:
+        list(pool.map(lambda pair: put("catalog/sources/" + pair[0] + ".json", pair[1]), shards.items()))
+    put("catalog/owner.json", {**payload, "rows": owner_rows})
+    put("catalog/public.json", {"version": 1, "generatedAt": payload["generatedAt"], "sounds": public})
+    print("STUDIO_WORKER_CATALOG_READY " + json.dumps({"internal": len(payload["rows"]), "public_sources": len(public)}), flush=True)
+
+
+def r2_client(access_key, secret_key):
+    return boto3.client(
         "s3", region_name="auto", endpoint_url=f"https://{ACCOUNT_ID}.r2.cloudflarestorage.com",
-        aws_access_key_id=os.environ["R2_ACCESS_KEY_ID"],
-        aws_secret_access_key=os.environ["R2_SECRET_ACCESS_KEY"],
+        aws_access_key_id=access_key,
+        aws_secret_access_key=secret_key,
         config=Config(signature_version="s3v4", max_pool_connections=48,
                       s3={"addressing_style": "path"}, retries={"max_attempts": 6, "mode": "standard"}),
     )
+
+
+def main():
+    s3 = r2_client(os.environ["R2_ACCESS_KEY_ID"], os.environ["R2_SECRET_ACCESS_KEY"])
+    state_access = os.environ.get("STUDIO_STATE_ACCESS_KEY_ID", "")
+    state_secret = os.environ.get("STUDIO_STATE_SECRET_ACCESS_KEY", "")
+    if bool(state_access) != bool(state_secret):
+        raise RuntimeError("Set both Studio state R2 credential secrets")
+    state_s3 = r2_client(state_access, state_secret) if state_access else s3
+    worker_bucket = os.environ.get("STUDIO_STATE_BUCKET", "").strip()
+    worker_only = os.environ.get("STUDIO_STATE_ONLY") == "true"
+    if worker_only and not worker_bucket:
+        raise RuntimeError("Studio state bucket is required for a private-only build")
+    if worker_bucket:
+        if worker_bucket == BUCKET:
+            raise RuntimeError("Studio state must use its own private bucket")
+        state_s3.list_objects_v2(Bucket=worker_bucket, MaxKeys=1)
+        print("STUDIO_STATE_BUCKET_ACCESS_OK", flush=True)
+
     catalog = {}
     stored = set()
     for prefix in PREFIXES.values():
@@ -164,6 +210,10 @@ def main():
         "version": 1, "generatedAt": datetime.now(timezone.utc).isoformat(),
         "inventoryCount": len(stored), "browserFormats": len(catalog), "rows": rows,
     }
+    if worker_bucket:
+        write_worker_catalog(state_s3, worker_bucket, payload)
+    if worker_only:
+        return
     jwk = json.loads((Path(__file__).parents[1] / "data" / "studio-catalog-public-key.json").read_text())
     encoded = json.dumps(seal(payload, jwk), separators=(",", ":")).encode()
     digest = hashlib.sha256(encoded).hexdigest()

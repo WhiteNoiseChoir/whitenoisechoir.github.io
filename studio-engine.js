@@ -17,18 +17,19 @@ assets.forEach((asset, index) => {
   }
 });
 function assetForRef(ref) {
-  if (!/^r2-[a-f0-9]{64}$/.test(ref || '')) return undefined;
+  if (!/^(?:r2-[a-f0-9]{64}|public-[a-f0-9]{32})$/.test(ref || '')) return undefined;
   let index = rawAssetIndex.get(ref);
   if (index === undefined) {
     index = assets.length;
-    assets.push({id:ref, name:studioEnglish?'Locked source':'Nguồn chưa mở khóa', duration:0, group:'other', pending:true});
+    assets.push({id:ref, name:studioEnglish?'Source pending':'Đang tải nguồn', duration:0, group:'other', pending:true});
     rawAssetIndex.set(ref,index);
   }
   return index;
 }
 const media = 'https://media.whitenoisechoir.com/';
 const $ = id => document.getElementById(id);
-$('audio-check').src=media+assets[0].key;
+const ownerStudio = document.body.dataset.ownerStudio === '1';
+$('audio-check').src=sourceAddresses(0)[0];
 const clamp = (n, lo, hi) => Math.max(lo, Math.min(hi, n));
 const streamPrompt = 'Create an 8-second photorealistic 16:9 seamless loop of a shallow forest stream at dusk. Use a locked camera at bank level, with moss-covered stones and softly lit ferns framing the water. Keep exposure and focus fixed. Let only the flowing water and a few leaves move gently, with no sudden motion, cuts, people, text, or camera movement. Match the opening and closing composition and motion phase. Export a clean 1080p MP4 without audio.';
 const sample = () => ({
@@ -58,7 +59,7 @@ legacyStudioRecipes.forEach((recipe,index)=>{
 });
 const trialData = JSON.parse(document.getElementById('studio-trial')?.textContent || 'null');
 const projectStorageKey = studioEnglish ? 'wnc.studio.project.en.v1'
-  : (trialData ? 'wnc.studio.trial.' + trialData.slug : 'wnc.studio.project.v1');
+  : (trialData ? 'wnc.studio.trial.' + trialData.slug + (ownerStudio && trialData.updatedAt ? '.'+trialData.updatedAt : '') : 'wnc.studio.project.v1');
 function normalizeProject(saved) {
   if (!saved || !Number.isFinite(saved.length) || !Array.isArray(saved.tracks)) throw Error('Invalid project');
   const title = typeof saved.title === 'string' && saved.title.trim() ? saved.title.slice(0,100) : tr('Bản phối chưa đặt tên');
@@ -129,11 +130,19 @@ function tick(loopPreview=false){
   if(elapsed>=end) stop();
   else frame=requestAnimationFrame(()=>tick(loopPreview));
 }
+function publicCatalogGate(){return window.WNCPublicCatalog;}
+function needsPublicSession(asset){
+  return studioEnglish && publicCatalogGate()?.active &&
+    (asset.publicMedia || asset.key?.startsWith('asset-library/'));
+}
 function sourceAddresses(i){
   const asset=assets[i];
   if(asset.pending) return [];
-  const primary=asset.url || media+asset.key;
-  const url=new URL(primary);
+  const protectedSource = asset.key?.startsWith('asset-library/');
+  if (studioEnglish && publicCatalogGate()?.active && protectedSource) return ['/api/studio/legacy/'+i];
+  const primary = ownerStudio && protectedSource
+    ? '/vi/api/source/'+encodeURIComponent(asset.key) : asset.url || media+asset.key;
+  const url=new URL(primary,location.origin);
   url.searchParams.set('studio-audio','20261111');
   const localMasters=new Set(['audio/fireplace-real.mp3','audio/rain-on-window-real.mp3',
     'audio/rain-leaves-real.mp3','audio/rain-tin-roof-real.mp3','audio/distant-thunder-real.mp3']);
@@ -141,7 +150,8 @@ function sourceAddresses(i){
 }
 async function decodeRecording(i,decoder){
   const asset=assets[i];
-  if(asset.pending) throw Error(studioEnglish?'Unlock the source catalog in Vietnamese Studio.':'Mở kho âm thanh trong Studio tiếng Việt để tải nguồn.');
+  if(asset.pending) throw Error(studioEnglish?'The source catalog is still loading.':'Danh mục âm thanh đang tải.');
+  if(needsPublicSession(asset)) await publicCatalogGate().verify();
   let failure=tr('Không có phản hồi');
   for(const address of sourceAddresses(i)){
     try {

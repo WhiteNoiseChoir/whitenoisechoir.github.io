@@ -5,6 +5,7 @@ import {existsSync} from 'node:fs';
 import {fileURLToPath} from 'node:url';
 import path from 'node:path';
 import {createRequire} from 'node:module';
+import ownerShell from '../cloudflare/studio/owner-shell.mjs';
 
 const root = fileURLToPath(new URL('../',import.meta.url));
 const require = createRequire(import.meta.url);
@@ -21,6 +22,34 @@ const server = http.createServer(async (req,res) => {
   try {
     let p = new URL(req.url,'http://localhost').pathname;
     if (p === '/') p = '/index.html';
+    if (p === '/api/studio/catalog' || p === '/api/studio/session') {
+      const data = p.endsWith('/session') ? {expiresAt:Date.now()/1000+600}
+        : {version:1,sounds:[{id:'0'.repeat(32),name:'Shared WAV fixture',duration:8}]};
+      res.writeHead(200,{'Content-Type':'application/json'});
+      res.end(JSON.stringify(data));
+      return;
+    }
+    if (p.startsWith('/api/studio/sources/') || p.startsWith('/api/studio/legacy/')) {
+      res.writeHead(200,{'Content-Type':'audio/wav'});
+      res.end(wav);
+      return;
+    }
+    if (p === '/vi/' || p === '/vi/cabin-rain-night-v3/') {
+      const trial = '<script type="application/json" id="studio-trial">{"slug":"cabin-rain-night-v3","preset":"cabin-rain-night-v3"}</script>';
+      res.writeHead(200,{'Content-Type':'text/html; charset=utf-8'});
+      res.end(ownerShell.replace('<!--STUDIO_DRAFT-->',p==='/vi/'?'':trial));
+      return;
+    }
+    if (p === '/vi/api/catalog') {
+      res.writeHead(200,{'Content-Type':'application/json'});
+      res.end('{"rows":[]}');
+      return;
+    }
+    if (p.startsWith('/vi/api/source/')) {
+      res.writeHead(200,{'Content-Type':'audio/wav'});
+      res.end(wav);
+      return;
+    }
     if (p.startsWith('/audio/')) {res.writeHead(200,{'Content-Type':'audio/wav'}); res.end(wav); return;}
     const file = path.resolve(root, '.' + (p.endsWith('/') ? p + 'index.html' : p));
     if (!file.startsWith(path.resolve(root) + path.sep)) {res.writeHead(404);res.end();return;}
@@ -126,16 +155,23 @@ try {
   assert.equal(await publicPage.locator('#preset optgroup option').count(),45);
   await publicPage.locator('#preset').selectOption('cabin-rain-night-v3');
   assert.equal(await publicPage.locator('#layer-count').textContent(),'24 tracks');
-  assert.equal(await publicPage.locator('#library-count').textContent(),'55/55');
+  await publicPage.waitForFunction(()=>document.querySelector('#library-count').textContent==='56/56');
+  await publicPage.locator('#library-query').fill('Shared WAV fixture');
+  await publicPage.locator('.add-source').click();
+  assert.equal(await publicPage.locator('#layer-count').textContent(),'25 tracks');
+  await publicPage.getByRole('button',{name:'Preview Shared WAV fixture',exact:true}).click();
+  await publicPage.waitForFunction(()=>!document.querySelector('#library-audio').paused);
   await publicPage.goto(host+'/vi/cabin-rain-night-v3/');
   assert.equal(await publicPage.locator('#layer-count').textContent(),'24 lớp');
+  assert.equal(await publicPage.locator('#vault-form').count(),0);
+  assert.ok(await publicPage.getByRole('button',{name:'Public',exact:true}).isVisible());
   assert.equal(await publicPage.locator('meta[name=robots]').getAttribute('content'),'noindex,nofollow');
   await publicPage.goto(host+'/sounds/');
   await publicPage.waitForURL(host+'/library/');
   const reviewed=JSON.parse(await readFile(path.join(root,'data/published-mixes.json'),'utf8')).filter(row=>row.status==='published');
   assert.equal(await publicPage.locator('article').count(),reviewed.length);
   assert.equal(await publicPage.locator('a[href*="/vi/cabin-rain-night-v3/"]').count(),0);
-  console.log('PASS English audio mixer, Vietnamese trial and approval-only public library');
+  console.log('PASS public audio mixer with shared WAV source, Vietnamese trial and approval-only public library');
   const mobile=await context.newPage();
   await mobile.setViewportSize({width:390,height:844});
   await mobile.goto(host+'/vi/#mix=cabin-rain-night-v3');
