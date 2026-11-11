@@ -10,12 +10,12 @@ const BASE="http://127.0.0.1:8787";
  const browser=await chromium.launch({headless:true,executablePath:binary,args:["--no-sandbox","--autoplay-policy=no-user-gesture-required"]});
  try{
   const cases=[
-   {name:"core-r2-outage",id:"white-noise",url:"/",contact:true,localHLS:true,blockLocal:false},
-   {name:"core-both-hls-out",id:"white-noise",url:"/",contact:true,localHLS:false,blockLocal:true},
-   {name:"core-emergency-gh",id:"white-noise",url:"/?audio_origin=github",contact:false,localHLS:true,blockLocal:false},
-   {name:"retired-blue-r2-outage",id:"blue-noise",url:"/",contact:true,localHLS:false,blockLocal:false},
-   {name:"retired-rain-r2-outage",id:"rain-leaves-real",url:"/",contact:true,localHLS:false,blockLocal:false},
-   {name:"retired-blue-emergency-gh",id:"blue-noise",url:"/?audio_origin=github",contact:false,localHLS:false,blockLocal:false}
+   {name:"core-r2-outage",id:"white-noise",url:"/listen.html",contact:true,localHLS:true,blockLocal:false},
+   {name:"core-both-hls-out",id:"white-noise",url:"/listen.html",contact:true,localHLS:false,blockLocal:true},
+   {name:"core-emergency-gh",id:"white-noise",url:"/listen.html?audio_origin=github",contact:false,localHLS:true,blockLocal:false},
+   {name:"retired-blue-r2-outage",id:"blue-noise",url:"/listen.html",contact:true,localHLS:false,blockLocal:false},
+   {name:"retired-rain-r2-outage",id:"rain-leaves-real",url:"/listen.html",contact:true,localHLS:false,blockLocal:false},
+   {name:"retired-blue-emergency-gh",id:"blue-noise",url:"/listen.html?audio_origin=github",contact:false,localHLS:false,blockLocal:false}
   ];
   for(const t of cases){
    const page=await browser.newPage({viewport:{width:390,height:800},reducedMotion:"reduce"});
