@@ -10,6 +10,8 @@ const byId=Object.fromEntries(catalog.sounds.map(s=>[s.id,s]));
  const browser=await chromium.launch({headless:true,executablePath:exec,args:["--no-sandbox","--autoplay-policy=no-user-gesture-required"]});
  try{
   const page=await browser.newPage({viewport:{width:390,height:844},reducedMotion:"reduce"});
+  // This historical playback test uses the archived sound listing.
+  await page.route(ROOT+"/sounds/",route=>route.continue({url:ROOT+"/sounds/archive.html"}));
   const errors=[];page.on("pageerror",e=>errors.push(String(e)));
   for(const id of batch.editorially_upgraded){
     const s=byId[id],url=ROOT+"/sounds/"+s.slug+"/";
