@@ -28,6 +28,7 @@ ACCOUNT_ID="7483501ad8365fe26b0448b96b54fb9f"
 MIRROR_REPO="Mcamento8/open-game-sfx-index"
 MIRROR_SHA="34bbe8b525b5ceff3804915ea745532af11f6055"
 ROOT="asset-library/cc0-github-mirror/"
+RAW_ROOT="asset-library/raw/sha256/"
 EXTENSIONS={".wav":"audio/wav", ".ogg":"audio/ogg", ".oga":"audio/ogg",
             ".opus":"audio/ogg", ".flac":"audio/flac", ".mp3":"audio/mpeg",
             ".aiff":"audio/aiff", ".aif":"audio/aiff", ".m4a":"audio/mp4"}
@@ -106,7 +107,7 @@ def head(s3,key):
 def digest_map(s3):
     # Prevent duplicate payloads, even if first uploaded from Wikimedia Commons.
     found={}
-    prefixes=["asset-library/commons/sha256/","asset-library/kenney/sha256/",ROOT+"sha256/"]
+    prefixes=["asset-library/commons/sha256/","asset-library/kenney/sha256/",ROOT+"sha256/",RAW_ROOT]
     for prefix in prefixes:
         for page in s3.get_paginator("list_objects_v2").paginate(Bucket=BUCKET,Prefix=prefix):
             for item in page.get("Contents",[]):
@@ -164,6 +165,7 @@ def main():
           "https://github.com/"+MIRROR_REPO+"/blob/"+MIRROR_SHA+"/ATTRIBUTION.md"],
       "approved_pack_ids":list(PACKS),
       "unreviewed_content":True,"audio_bytes_unchanged":True,
+      "classification_status":"pending","human_review_required_for_intake":False,
       "existing_production_untouched":True,
       "ready_for_public_website":False,"ready_for_mixer":False,
       "counts":{"NEW_R2":0,"REUSED_R2":0,"DUPLICATE_IN_BATCH":0,
@@ -202,7 +204,7 @@ def main():
                     key=existing
                 else:
                     ext=path.suffix.lower()
-                    key=ROOT+"sha256/"+digest[:2]+"/"+digest+ext
+                    key=RAW_ROOT+digest[:2]+"/"+digest+ext
                     with path.open("rb") as handle:
                         s3.put_object(Bucket=BUCKET,Key=key,Body=handle,
                                       ContentLength=size,ContentType=EXTENSIONS[ext],
@@ -215,7 +217,9 @@ def main():
                     pack["new"]+=1
                     report["new_bytes"]+=size
                 provenance={
-                  "schema_version":1,"audio_sha256":digest,"audio_storage_key":key,
+                  "schema_version":2,"audio_sha256":digest,"audio_storage_key":key,
+                  "classification_status":"pending","classification_labels":[],
+                  "source_pack":slug,"original_extension":path.suffix.lower(),
                   "source_provider":provider,"creator":creator,
                   "source_page":original_page,
                   "license":"CC0-1.0","license_evidence_url":original_page,

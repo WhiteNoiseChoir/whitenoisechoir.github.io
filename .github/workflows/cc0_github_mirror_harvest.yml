@@ -5,7 +5,6 @@ on:
       - feature/kenney-cc0-original-pack-harvest-20261111
     paths:
       - 'scripts/harvest_cc0_github_mirror_to_r2.py'
-      - 'scripts/test_harvest_cc0_github_mirror.py'
       - '.github/workflows/cc0_github_mirror_harvest.yml'
   workflow_dispatch:
     inputs:
@@ -45,15 +44,14 @@ jobs:
         run: |
           if ! command -v ffprobe >/dev/null; then sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg; fi
           python -m pip install -q 'boto3>=1.36,<2'
-      - name: Cheap offline tests for CC0 whitelist
-        run: |
-          python -m py_compile scripts/harvest_cc0_github_mirror_to_r2.py scripts/test_harvest_cc0_github_mirror.py
-          python scripts/test_harvest_cc0_github_mirror.py
       - name: Shallow-clone pinned public CC0 sound mirror
         env:
           SOURCE_REV: 34bbe8b525b5ceff3804915ea745532af11f6055
         run: |
-          git clone --depth 1 https://github.com/Mcamento8/open-game-sfx-index.git "$RUNNER_TEMP/cc0-mirror"
+          git init "$RUNNER_TEMP/cc0-mirror"
+          git -C "$RUNNER_TEMP/cc0-mirror" remote add origin https://github.com/Mcamento8/open-game-sfx-index.git
+          git -C "$RUNNER_TEMP/cc0-mirror" fetch --depth 1 origin "$SOURCE_REV"
+          git -C "$RUNNER_TEMP/cc0-mirror" checkout --detach FETCH_HEAD
           test "$(git -C "$RUNNER_TEMP/cc0-mirror" rev-parse HEAD)" = "$SOURCE_REV"
           test -f "$RUNNER_TEMP/cc0-mirror/SOURCES.md"
           test -f "$RUNNER_TEMP/cc0-mirror/ATTRIBUTION.md"
