@@ -1,0 +1,56 @@
+name: Studio export verification
+on:
+  push:
+    branches: [qa/studio-video-export-20261111]
+    paths: ['.github/workflows/verify-studio-video-export.yml']
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Verify WAV source, 10-minute silent background, and final MP4
+        run: |
+          set -euo pipefail
+          curl -fsSL --retry 2 https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.10/dist/esm/ffmpeg-core.js -o ffmpeg-core.mjs
+          curl -fsSL --retry 2 https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.10/dist/esm/ffmpeg-core.wasm -o ffmpeg-core.wasm
+          curl -fsSL --retry 2 https://whitenoisechoir.com/audio/rain-on-window-real.mp3 -o rain.mp3
+          ffmpeg -v error -f lavfi -i testsrc2=size=160x90:rate=30:duration=10 -f lavfi -i sine=frequency=888:duration=10 -c:v libx264 -c:a aac clip.mp4
+          ffmpeg -v error -i rain.mp3 -t 600 -ac 2 -ar 44100 mix.wav
+          node --input-type=module <<'NODE'
+          import { readFile, writeFile } from 'node:fs/promises';
+          import createCore from './ffmpeg-core.mjs';
+          globalThis.self={location:{href:new URL('./ffmpeg-core.mjs',import.meta.url).href}};
+          const wasm=await readFile('ffmpeg-core.wasm');
+          const core=await createCore({wasmBinary:new Uint8Array(wasm)});
+          let logs=[];
+          core.setLogger(({message})=>logs.push(message));
+          function run(label,args) {
+            logs=[];
+            const result=core.exec(...args);
+            core.reset();
+            if(result!==0) throw Error(label+': '+logs.slice(-10).join('\n'));
+            console.log(label+' succeeded');
+          }
+          core.FS.writeFile('clip',await readFile('clip.mp4'));
+          run('Normalize silent clip',["-i","clip","-map","0:v:0","-an","-vf","scale=trunc(iw/2)*2:trunc(ih/2)*2","-r","24","-c:v","libx264","-preset","ultrafast","-crf","21","-maxrate","3M","-bufsize","6M","-bf","0","-pix_fmt","yuv420p","short.mp4"]);
+          core.FS.unlink('clip');
+          run('Loop silent background to 600 seconds',["-stream_loop","-1","-i","short.mp4","-map","0:v:0","-an","-t","600","-c:v","copy","background.mp4"]);
+          await writeFile('background.mp4',core.FS.readFile('background.mp4'));
+          core.FS.writeFile('mix.wav',await readFile('mix.wav'));
+          run('Mux WAV into MP4',["-i","background.mp4","-i","mix.wav","-map","0:v:0","-map","1:a:0","-t","600","-c:v","copy","-c:a","aac","-b:a","192k","-movflags","+faststart","final.mp4"]);
+          await writeFile('final.mp4',core.FS.readFile('final.mp4'));
+          NODE
+          ffprobe -v error -show_entries stream=codec_type,codec_name,duration:format=duration -of json background.mp4 > background.json
+          ffprobe -v error -show_entries stream=codec_type,codec_name,duration:format=duration -of json final.mp4 > final.json
+          node --input-type=module <<'NODE'
+          import { readFileSync } from 'node:fs';
+          const background=JSON.parse(readFileSync('background.json','utf8')), final=JSON.parse(readFileSync('final.json','utf8'));
+          console.log(JSON.stringify({background,final}));
+          if(background.streams.length!==1 || background.streams[0].codec_name!=='h264' || Number(background.format.duration)!==600 ||
+             final.streams.length!==2 || final.streams[0].codec_name!=='h264' || final.streams[1].codec_name!=='aac' || Number(final.format.duration)!==600) throw Error('Unexpected output');
+          NODE
