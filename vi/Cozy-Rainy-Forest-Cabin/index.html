@@ -168,7 +168,7 @@ document.getElementById('trial-load-latest').addEventListener('click', () => {
       const bytes=await response.arrayBuffer();
       if(bytes.byteLength<10000)throw Error('File âm thanh không hợp lệ hoặc quá ngắn');
       const audio=new (window.AudioContext||window.webkitAudioContext)();
-      try{await audio.decodeAudioData(bytes);}finally{await audio.close().catch(()=>{});}
+      try{const decoded=await audio.decodeAudioData(bytes);if(decoded.duration<454)throw Error('Bản preview dế ngắn hơn phần timeline cần phối ('+Math.round(decoded.duration)+' giây). Cần file gốc dài hơn.');}finally{await audio.close().catch(()=>{});}
       change(()=>{for(const track of mix.tracks)if(track.asset===57)track.mute=false;});
       status.textContent='Đã xác minh nguồn dế và bật 2 lớp. Có thể phát thử và xuất WAV.';
     }catch(error){status.textContent='Chưa bật dế: '+(error.message||'Lỗi tải âm thanh')+'. Các lớp đã có vẫn sử dụng bình thường.';}
