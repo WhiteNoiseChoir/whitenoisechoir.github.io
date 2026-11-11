@@ -14,7 +14,7 @@
 <h1>Phòng phối âm</h1>
 <div id="mix-controls" class="row">
 <label>Tên bản phối <input id="title" type="text" maxlength="100"></label>
-<a href="#video-studio" id="export-link">Đến phần xuất</a>
+<button id="export-link">Đến phần xuất</button>
 <button id="share" class="primary">Sao chép liên kết</button>
 <button id="clear">Tạo bản phối mới</button>
 </div>
@@ -560,6 +560,7 @@ $('mux-video').onclick=async()=>{
   } catch(error){stageError('mux',error);}
   finally {exportBusy(false);}
 };
+$('export-link').onclick=()=>$('video-studio').scrollIntoView({behavior:'smooth'});
 $('play').onclick=()=>play();
 $('reset').onclick=()=>locate(0);
 $('seek').oninput=()=>locate(Number($('seek').value));
