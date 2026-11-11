@@ -20,6 +20,9 @@ assert h.decide(page("CC BY-NC 4.0","https://creativecommons.org/licenses/by-nc/
 assert h.decide(page(size=100000000),"nature",1000000)["state"]=="SKIP_SIZE_LIMIT"
 assert h.decide(page(mime="image/jpeg"),"nature",1000000)["state"]=="SKIP_NOT_AUDIO"
 assert h.decide(page(filename="Cat.jpg"),"nature",1000000)["state"]=="SKIP_NOT_SUPPORTED_AUDIO"
+assert h.decide(page(filename="LL-Q1860 (eng)-Speaker-frog.wav"),"frogs",1000000)["state"]=="SKIP_SPOKEN_DICTIONARY"
+assert h.decide(page(filename="Pronunciation of Wolf in Spanish.ogg"),"wolves",1000000)["state"]=="SKIP_SPOKEN_DICTIONARY"
+assert h.decide(page(filename="Frog (avk).wav"),"frogs",1000000)["state"]=="SKIP_SPOKEN_DICTIONARY"
 blocked=page()
 blocked["imageinfo"][0]["extmetadata"]["Restrictions"]={"value":"Personality rights"}
 assert h.decide(blocked,"nature",1000000)["state"]=="SKIP_RESTRICTIONS"
