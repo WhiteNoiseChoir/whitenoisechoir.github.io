@@ -32,7 +32,7 @@ const pairs=[
  ["<!-- WNC_FOUNDATION_SOURCES_BEGIN -->","<!-- WNC_FOUNDATION_SOURCES_END -->",renderSources(sounds)],
  ["<!-- WNC_FOUNDATION_ROADMAP_BEGIN -->","<!-- WNC_FOUNDATION_ROADMAP_END -->",renderRoadmap(fam,plan,mix,sounds)]
 ];
-let html=file("sounds/index.html"),changed=false;
+let html=file("sounds/archive.html"),changed=false;
 const expectedDescription="Browse "+(sounds.length+10)+" playable sound sources (35 original catalog plus 10 approved synthetic additions) in 13 families, including noise colors, rain, fan, water and environmental audio. Discover "+plan.length+" future source concepts.";
 const oldDescription=html.match(/<meta name="description" content="([^"]*)"/)?.[1];
 assert.ok(oldDescription,"Missing library meta description");
@@ -44,7 +44,7 @@ for(const [start,end,body] of pairs){
  if(current!==expected){changed=true;html=html.slice(0,begin+start.length)+expected+html.slice(finish)}
 }
 if(process.argv.includes("--write")){
- if(changed)fs.writeFileSync("sounds/index.html",html);
+ if(changed)fs.writeFileSync("sounds/archive.html",html);
  console.log("FOUNDATION_RENDER_WRITTEN "+JSON.stringify({changed,families:fam.length,planned:plan.length,mixes:mix.length,sounds:sounds.length}));
 }else{
  assert.ok(!changed,"Static family HTML drifted from JSON registries. Run node scripts/build_sound_library_foundation.cjs --write");

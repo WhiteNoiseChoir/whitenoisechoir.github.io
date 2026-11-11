@@ -25,6 +25,14 @@ function list(file) {
   }
   return value;
 }
+function removeStaleRoutes(section,records,marker) {
+  const active = new Set(records.map(record=>record.slug));
+  for (const entry of fs.readdirSync(path.join(root,section),{withFileTypes:true})) {
+    if (!entry.isDirectory() || !slugPattern.test(entry.name) || active.has(entry.name)) continue;
+    const index = path.join(root,section,entry.name,'index.html');
+    if (fs.existsSync(index) && fs.readFileSync(index,'utf8').includes(marker)) fs.unlinkSync(index);
+  }
+}
 const shell = read('scripts/templates/studio.html.in');
 const translations = JSON.parse(read('data/studio-shell.en.json'));
 const viVault = '<details class="vault"><summary>Kho âm thanh nội bộ</summary><p id="vault-status" class="message" role="status"></p><form id="vault-form"><label>Mã mở kho <input id="vault-key" type="password" autocomplete="off" spellcheck="false"></label><button id="vault-submit" type="submit">Mở kho</button></form></details>';
@@ -42,7 +50,7 @@ function studio(locale,trial) {
   if (trial) template=template.replace('<title>WhiteNoiseChoir Studio · Phòng phối âm</title>','<title>'+escape(trial.title)+' · WhiteNoiseChoir Studio</title>');
   const keys = {
     LANG:locale, ROUTE_HEAD:'<link rel="canonical" href="'+origin+route+'">'+
-      (trial?'<meta name="robots" content="noindex,nofollow">':alternate),
+      (trial?'<!-- Generated Studio trial --><meta name="robots" content="noindex,nofollow">':alternate),
     STUDIO_ROOT:studioRoot, NAV_LABEL:vi?'Điều hướng':'Navigation',
     LIBRARY:vi?'Bản phối công khai':'Published mixes', MORE:vi?'Hiện thêm':'Show more',
     LANG_LINK:vi?'<a href="/" lang="en">English</a>':'<a href="/vi/" lang="vi">Tiếng Việt</a>',
@@ -87,9 +95,11 @@ for (const mix of published) {
   const player = new URL(mix.media).pathname.toLowerCase().endsWith('.mp4')?'video':'audio';
   const route = '/library/'+mix.slug+'/';
   write(route.slice(1)+'index.html',libraryPage(route,mix.title,mix.description,
-    '<a href="/library/">Published mixes</a><h1>'+escape(mix.title)+'</h1><p>'+escape(mix.description)+'</p>'+
+    '<!-- Generated published mix --><a href="/library/">Published mixes</a><h1>'+escape(mix.title)+'</h1><p>'+escape(mix.description)+'</p>'+
     '<'+player+' controls preload="metadata" src="'+escape(mix.media)+'"></'+player+'>'));
 }
+removeStaleRoutes('vi',trials,'<!-- Generated Studio trial -->');
+removeStaleRoutes('library',published,'<!-- Generated published mix -->');
 const cards=published.map(mix=>'<article class="panel published-card"><h2><a href="/library/'+mix.slug+'/">'+escape(mix.title)+'</a></h2><p>'+escape(mix.description)+'</p></article>').join('');
 write('library/index.html',libraryPage('/library/','Published mixes','A collection of reviewed and published WhiteNoiseChoir mixes.',
   '<h1>Published mixes</h1><p>Soundscapes created and reviewed in WhiteNoiseChoir Studio.</p>'+
