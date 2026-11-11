@@ -10,6 +10,7 @@ from __future__ import annotations
 import argparse
 import datetime as dt
 import hashlib
+import http.cookiejar
 import html
 import json
 import mimetypes
@@ -83,9 +84,13 @@ def pack_zip_url(slug, page_html):
             return url
     raise ValueError("No verified original publisher ZIP download link")
 
-def request(url, timeout=120):
-    req = urllib.request.Request(url, headers={"User-Agent": UA, "Accept": "*/*"})
-    return urllib.request.urlopen(req, timeout=timeout)
+COOKIE_OPENER = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(http.cookiejar.CookieJar()))
+def request(url, timeout=120, referer=None):
+    headers = {"User-Agent": UA, "Accept": "*/*"}
+    if referer:
+        headers["Referer"] = referer
+    req = urllib.request.Request(url, headers=headers)
+    return COOKIE_OPENER.open(req, timeout=timeout)
 
 def download_pack(slug, max_bytes):
     with request(source_page(slug), 45) as response:
@@ -106,7 +111,7 @@ def download_pack(slug, max_bytes):
         path = pathlib.Path(out.name)
     try:
         total = 0
-        with request(url) as response, path.open("wb") as out:
+        with request(url, referer=source_page(slug)) as response, path.open("wb") as out:
             if not check_zip_url(response.geturl(), slug):
                 raise ValueError("unexpected archive redirect host/path: " + urllib.parse.urlparse(response.geturl()).netloc + urllib.parse.urlparse(response.geturl()).path[:120])
             while True:
