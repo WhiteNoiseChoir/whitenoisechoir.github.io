@@ -1,0 +1,73 @@
+name: CC0 GitHub Sound Mirror — Verified R2 Bulk Ingest
+on:
+  push:
+    branches:
+      - feature/kenney-cc0-original-pack-harvest-20261111
+    paths:
+      - 'scripts/harvest_cc0_github_mirror_to_r2.py'
+      - '.github/workflows/cc0_github_mirror_harvest.yml'
+  workflow_dispatch:
+    inputs:
+      max_files:
+        description: New R2 audio assets per batch
+        type: choice
+        required: true
+        default: '1500'
+        options: ['150', '500', '1000', '1500']
+permissions:
+  contents: read
+concurrency:
+  group: whitenoisechoir-cc0-github-mirror-r2
+  cancel-in-progress: false
+jobs:
+  original-audio-mirror-to-r2:
+    runs-on: ubuntu-latest
+    timeout-minutes: 65
+    env:
+      R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+      R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+      AWS_EC2_METADATA_DISABLED: 'true'
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Check approved R2 credentials
+        run: |
+          set -euo pipefail
+          test -n "$R2_ACCESS_KEY_ID"
+          test -n "$R2_SECRET_ACCESS_KEY"
+      - name: Install only ffprobe and R2 client
+        run: |
+          if ! command -v ffprobe >/dev/null; then sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg; fi
+          python -m pip install -q 'boto3>=1.36,<2'
+      - name: Shallow-clone pinned public CC0 sound mirror
+        env:
+          SOURCE_REV: 34bbe8b525b5ceff3804915ea745532af11f6055
+        run: |
+          git init "$RUNNER_TEMP/cc0-mirror"
+          git -C "$RUNNER_TEMP/cc0-mirror" remote add origin https://github.com/Mcamento8/open-game-sfx-index.git
+          git -C "$RUNNER_TEMP/cc0-mirror" fetch --depth 1 origin "$SOURCE_REV"
+          git -C "$RUNNER_TEMP/cc0-mirror" checkout --detach FETCH_HEAD
+          test "$(git -C "$RUNNER_TEMP/cc0-mirror" rev-parse HEAD)" = "$SOURCE_REV"
+          test -f "$RUNNER_TEMP/cc0-mirror/SOURCES.md"
+          test -f "$RUNNER_TEMP/cc0-mirror/ATTRIBUTION.md"
+      - name: Upload actual original SFX bytes with R2 HEAD and per-file metadata
+        env:
+          MAX_FILES: ${{ github.event_name == 'workflow_dispatch' && inputs.max_files || '1500' }}
+        run: |
+          python -u scripts/harvest_cc0_github_mirror_to_r2.py \
+            --source-root "$RUNNER_TEMP/cc0-mirror" \
+            --max-files "$MAX_FILES" --max-file-mb 50 --max-total-mb 900 \
+            --report audits/cc0-mirror-harvest-report.json
+      - name: Retain report artifact (durable copy also in R2)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cc0-github-mirror-r2-harvest-report
+          path: audits/cc0-mirror-harvest-report.json
+          if-no-files-found: warn
+          retention-days: 30

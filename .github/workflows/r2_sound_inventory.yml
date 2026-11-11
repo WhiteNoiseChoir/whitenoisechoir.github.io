@@ -1,0 +1,30 @@
+name: R2 Sound Intake Inventory — Read-Only Count
+on:
+  push:
+    branches:
+      - feature/kenney-cc0-original-pack-harvest-20261111
+    paths:
+      - 'scripts/audit_r2_asset_inventory.py'
+      - '.github/workflows/r2_sound_inventory.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  count-actual-sound-assets:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    env:
+      R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+      R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+      AWS_EC2_METADATA_DISABLED: 'true'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install read-only inventory client
+        run: python -m pip install -q 'boto3>=1.36,<2'
+      - name: Count actual verified-name R2 intake objects
+        run: python -u scripts/audit_r2_asset_inventory.py
