@@ -1,5 +1,5 @@
 name: Coverage-first multi-source metadata discovery
-run-name: Coverage-first 2026-11-11 v1
+run-name: Coverage-first 2026-11-11 v2 (MediaWiki adapter fixed)
 on:
   push:
     branches: [feature/coverage-first-multisource-20261111]
@@ -40,6 +40,7 @@ jobs:
           R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
           R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
           XENO_CANTO_API_KEY: ${{ secrets.XENO_CANTO_API_KEY }}
+          FREESOUND_API_KEY: ${{ secrets.FREESOUND_API_KEY }}
         run: python -u scripts/coverage_first_multisource.py --max-targets 50
 
   discovery-2:
@@ -66,6 +67,7 @@ jobs:
           R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
           R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
           XENO_CANTO_API_KEY: ${{ secrets.XENO_CANTO_API_KEY }}
+          FREESOUND_API_KEY: ${{ secrets.FREESOUND_API_KEY }}
         run: python -u scripts/coverage_first_multisource.py --max-targets 50
 
   discovery-3:
@@ -92,6 +94,7 @@ jobs:
           R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
           R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
           XENO_CANTO_API_KEY: ${{ secrets.XENO_CANTO_API_KEY }}
+          FREESOUND_API_KEY: ${{ secrets.FREESOUND_API_KEY }}
         run: python -u scripts/coverage_first_multisource.py --max-targets 50
 
   discovery-4:
@@ -118,4 +121,5 @@ jobs:
           R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
           R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
           XENO_CANTO_API_KEY: ${{ secrets.XENO_CANTO_API_KEY }}
+          FREESOUND_API_KEY: ${{ secrets.FREESOUND_API_KEY }}
         run: python -u scripts/coverage_first_multisource.py --max-targets 50
