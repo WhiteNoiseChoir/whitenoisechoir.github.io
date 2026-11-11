@@ -129,33 +129,68 @@ function tick(loopPreview=false){
   if(elapsed>=end) stop();
   else frame=requestAnimationFrame(()=>tick(loopPreview));
 }
+// Approved 60-second Signature sources are a safe, same-origin fallback for
+// corresponding ten-minute masters that a particular browser cannot decode.
+const approvedAudioFallbacks = {
+  'audio/fireplace-real.mp3': '/signature/audio/fireplace.mp3',
+  'audio/rain-on-window-real.mp3': '/signature/audio/rain-window.mp3'
+};
 function sourceAddresses(i){
   const asset=assets[i];
   if(asset.pending) return [];
   const primary=asset.url || media+asset.key;
-  const url=new URL(primary);
+  const url=new URL(primary,location.origin);
   url.searchParams.set('studio-audio','20261111');
   const localMasters=new Set(['audio/fireplace-real.mp3','audio/rain-on-window-real.mp3',
     'audio/rain-leaves-real.mp3','audio/rain-tin-roof-real.mp3','audio/distant-thunder-real.mp3']);
-  return localMasters.has(asset.key) ? ['/'+asset.key,url.href] : [primary,url.href];
+  const sources=localMasters.has(asset.key) ? ['/'+asset.key,url.href] : [primary,url.href];
+  if(approvedAudioFallbacks[asset.key]) sources.push(approvedAudioFallbacks[asset.key]);
+  return [...new Set(sources)];
 }
-async function decodeRecording(i,decoder){
+// Decode audio with the original decoder first. Some Chromium derivatives reject
+// long MP3 files in OfflineAudioContext even when a regular AudioContext works.
+async function decodeRecording(i,decoder,onSource){
   const asset=assets[i];
   if(asset.pending) throw Error(studioEnglish?'Unlock the source catalog in Vietnamese Studio.':'Mở kho âm thanh trong Studio tiếng Việt để tải nguồn.');
-  let failure=tr('Không có phản hồi');
+  const attempts=[];
   for(const address of sourceAddresses(i)){
-    try {
-      const response=await fetch(address,{cache:'reload',signal:AbortSignal.timeout(45000)});
-      if(!response.ok){failure='HTTP '+response.status;continue;}
+    try{
+      const response=await fetch(address,{cache:'no-store',signal:AbortSignal.timeout(60000)});
+      if(!response.ok){attempts.push('HTTP '+response.status+' · '+new URL(address,location.href).pathname);continue;}
+      const type=(response.headers.get('content-type')||'').toLowerCase();
+      if(type.includes('text/html')||type.includes('application/json')){
+        attempts.push('Trang HTML thay vì file âm thanh · '+new URL(address,location.href).pathname);
+        continue;
+      }
       const bytes=await response.arrayBuffer();
-      try {return await decoder.decodeAudioData(bytes);}
-      catch {failure=tr('Không giải mã được tệp âm thanh');}
-    } catch(error) {
-      failure=error.name==='TimeoutError' || error.name==='AbortError'
-        ? tr('Tải quá thời gian chờ') : tr('Lỗi mạng hoặc quyền truy cập tệp');
+      if(bytes.byteLength<1024){
+        attempts.push('File rỗng hoặc quá ngắn · '+new URL(address,location.href).pathname);
+        continue;
+      }
+      let decoded, originalError;
+      try{decoded=await decoder.decodeAudioData(bytes.slice(0));}
+      catch(error){originalError=error;}
+      if(!decoded){
+        const AudioEngine=window.AudioContext||window.webkitAudioContext;
+        if(AudioEngine){
+          const fallbackDecoder=new AudioEngine({sampleRate:44100});
+          try{decoded=await fallbackDecoder.decodeAudioData(bytes.slice(0));}
+          catch(error){originalError=error;}
+          finally{await fallbackDecoder.close().catch(()=>{});}
+        }
+      }
+      if(decoded && decoded.duration>0 && decoded.numberOfChannels){
+        if(onSource)onSource({address,fallback:address===approvedAudioFallbacks[asset.key],duration:decoded.duration});
+        return decoded;
+      }
+      attempts.push('Không giải mã được '+Math.round(bytes.byteLength/1024)+' KB · '+new URL(address,location.href).pathname+
+        (originalError?.name?' ('+originalError.name+')':''));
+    }catch(error){
+      attempts.push((error.name==='TimeoutError'||error.name==='AbortError'?'Tải quá thời gian chờ':
+        error.message||'Lỗi mạng hoặc quyền truy cập tệp')+' · '+new URL(address,location.href).pathname);
     }
   }
-  throw Error(asset.name+' · '+failure);
+  throw Error(asset.name+' · '+attempts.join(' | '));
 }
 function load(i){
   if(!buffers.has(i)) buffers.set(i,decodeRecording(i,context).catch(error=>{
@@ -163,8 +198,16 @@ function load(i){
   }));
   return buffers.get(i);
 }
+function clipOffset(track,sourceDuration){
+  const wanted=track.offset || 0;
+  // A short approved fallback may be used instead of the original ten-minute
+  // master; retain the event and choose a valid section inside the fallback.
+  if(wanted<sourceDuration) return wanted;
+  const length=Math.min(track.duration || 1,sourceDuration);
+  return wanted%Math.max(1,sourceDuration-length);
+}
 function clipDuration(track,sourceDuration,projectLength){
-  const available=track.loop ? Infinity : sourceDuration-(track.offset || 0);
+  const available=track.loop ? Infinity : sourceDuration-clipOffset(track,sourceDuration);
   return Math.max(0,Math.min(projectLength-track.start,track.duration ?? Infinity,available));
 }
 function scheduleTrack(engine,buffer,track,from,to,base,projectLength,destination=engine.destination){
@@ -206,7 +249,7 @@ function scheduleTrack(engine,buffer,track,from,to,base,projectLength,destinatio
     output.connect(envelope);output=envelope;
   }
   output.connect(destination);
-  const offset=(track.offset || 0)+elapsed;
+  const offset=clipOffset(track,buffer.duration)+elapsed;
   source.start(when,track.loop ? offset%buffer.duration : offset,span);
   return {node:source,gain,track};
 }
@@ -274,11 +317,14 @@ async function buildWav(project,progress){
   const decoder=new Offline(2,1,rate);
   const mixLeft=new Float32Array(frames), mixRight=new Float32Array(frames);
   const sourceCount=bySource.size;
+  const fallbackSources=[];
   let sourceNumber=0;
   for(const [id,tracks] of bySource){
     const name=assets[id].name;
     progress(sourceNumber/sourceCount*86,tr('Đang tải nguồn ')+(sourceNumber+1)+'/'+sourceCount+' · '+name);
-    const buffer=await decodeRecording(id,decoder);
+    const buffer=await decodeRecording(id,decoder,details=>{
+      if(details.fallback)fallbackSources.push(name+' ('+Math.round(details.duration)+'s Signature)');
+    });
     for(let first=0;first<frames;first+=blockSize){
       const count=Math.min(blockSize,frames-first);
       const lead=Math.min(first,Math.round(rate*.25));
@@ -326,7 +372,7 @@ async function buildWav(project,progress){
     progress(86+(first+count)/frames*13,tr('Đang đóng gói tệp WAV'));
     await new Promise(resolve=>setTimeout(resolve,0));
   }
-  return {blob:new Blob(parts,{type:'audio/wav'}),silence:longest/rate,clipped:peak>1,duration:frames/rate};
+  return {blob:new Blob(parts,{type:'audio/wav'}),silence:longest/rate,clipped:peak>1,duration:frames/rate,fallbackSources};
 }
 const videoEnabled = Boolean($('video-input'));
 let exporting=false, audioExport=null, videoExport=null, clipUrl=null;
@@ -409,7 +455,8 @@ $('render').onclick=async()=>{
     const silence=result.silence.toFixed(3).replace('.',',');
     progressStage('audio',100,tr('Đã xuất WAV · ')+durationLabel(result.duration)+
       tr(' · Khoảng lặng dài nhất ở 10 giây cuối: ')+silence+tr(' giây dưới −60 dBFS.')+
-      (result.clipped?tr(' Có đỉnh âm bị cắt.'):''));
+      (result.clipped?tr(' Có đỉnh âm bị cắt.'):'')+
+      (result.fallbackSources.length?' · Đã dùng nguồn dự phòng: '+result.fallbackSources.join(', '):''));
     showDownload('audio',result.blob,project.title,'wav',tr('Tải WAV'));
     resetVideo();
   } catch(error) {stageError('audio',error);}
