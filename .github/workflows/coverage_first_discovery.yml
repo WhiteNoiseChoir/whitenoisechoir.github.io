@@ -1,5 +1,5 @@
 name: Coverage-first multi-source metadata discovery
-run-name: Coverage-first continuation from cursor 1400
+run-name: Coverage-first continuation from cursor 1600
 on:
   push:
     branches: [feature/coverage-first-multisource-20261111]
