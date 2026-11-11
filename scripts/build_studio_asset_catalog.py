@@ -123,6 +123,33 @@ def seal(payload, jwk):
     }
 
 
+
+def write_worker_catalog(s3, bucket, payload):
+    public = []
+    shards = {}
+    for row in payload["rows"]:
+        if not row["key"].lower().endswith(".mp3"):
+            continue
+        identifier = hashlib.sha256(("wnc-public-mp3-v1/" + row["id"]).encode()).hexdigest()[:32]
+        shards.setdefault(identifier[:2], {})[identifier] = row["key"]
+        public.append({
+            "id": identifier, "title": row["name"], "category": row["taxon"] or "Recordings",
+            "duration": row["duration"], "keywords": row["aliases"],
+            "credit": row["credit"], "license": row["license"], "licenseUrl": row["licenseUrl"], "source": row["source"],
+        })
+
+    def put(key, value):
+        s3.put_object(Bucket=bucket, Key=key,
+                      Body=json.dumps(value, ensure_ascii=False, separators=(",", ":")).encode(),
+                      ContentType="application/json")
+
+    with ThreadPoolExecutor(max_workers=24) as pool:
+        list(pool.map(lambda pair: put("catalog/mp3/" + pair[0] + ".json", pair[1]), shards.items()))
+    put("catalog/owner.json", payload)
+    put("catalog/public.json", {"version": 1, "generatedAt": payload["generatedAt"], "sounds": public})
+    print("STUDIO_WORKER_CATALOG_READY " + json.dumps({"internal": len(payload["rows"]), "public_mp3": len(public)}), flush=True)
+
+
 def main():
     s3 = boto3.client(
         "s3", region_name="auto", endpoint_url=f"https://{ACCOUNT_ID}.r2.cloudflarestorage.com",
@@ -164,6 +191,11 @@ def main():
         "version": 1, "generatedAt": datetime.now(timezone.utc).isoformat(),
         "inventoryCount": len(stored), "browserFormats": len(catalog), "rows": rows,
     }
+    worker_bucket = os.environ.get("STUDIO_STATE_BUCKET", "").strip()
+    if worker_bucket:
+        if worker_bucket == BUCKET:
+            raise RuntimeError("Studio state must use its own private bucket")
+        write_worker_catalog(s3, worker_bucket, payload)
     jwk = json.loads((Path(__file__).parents[1] / "data" / "studio-catalog-public-key.json").read_text())
     encoded = json.dumps(seal(payload, jwk), separators=(",", ":")).encode()
     digest = hashlib.sha256(encoded).hexdigest()

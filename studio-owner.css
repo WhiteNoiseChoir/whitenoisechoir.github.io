@@ -1,0 +1,6 @@
+#owner-dialog{width:min(460px,calc(100% - 30px));border:1px solid var(--line);border-radius:16px;background:var(--panel);color:var(--text);padding:22px}
+#owner-dialog::backdrop{background:#0009}
+#owner-dialog h2{margin-top:0}
+#owner-dialog label{display:grid;gap:8px}
+#owner-dialog input{width:100%;margin-bottom:12px}
+#owner-result:not(:empty){padding:10px 24px}

@@ -1,0 +1,28 @@
+name: Studio access and publication QA
+on:
+  pull_request:
+    paths:
+      - 'cloudflare/studio/**'
+      - 'studio-owner.js'
+      - '.github/workflows/studio_access_qa.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'cloudflare/studio/**'
+      - 'studio-owner.js'
+permissions:
+  contents: read
+jobs:
+  studio-access:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node --check public-sounds.js && node --check studio-owner.js && node --check studio-engine.js
+      - run: node --test cloudflare/studio/worker.test.mjs
+      - run: node scripts/build_studio_routes.cjs && git diff --exit-code -- index.html vi library sitemap.xml
+      - run: python3 -m py_compile scripts/build_studio_asset_catalog.py

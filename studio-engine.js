@@ -28,7 +28,8 @@ function assetForRef(ref) {
 }
 const media = 'https://media.whitenoisechoir.com/';
 const $ = id => document.getElementById(id);
-$('audio-check').src=media+assets[0].key;
+const ownerStudio = document.body.dataset.ownerStudio === '1';
+$('audio-check').src=sourceAddresses(0)[0];
 const clamp = (n, lo, hi) => Math.max(lo, Math.min(hi, n));
 const streamPrompt = 'Create an 8-second photorealistic 16:9 seamless loop of a shallow forest stream at dusk. Use a locked camera at bank level, with moss-covered stones and softly lit ferns framing the water. Keep exposure and focus fixed. Let only the flowing water and a few leaves move gently, with no sudden motion, cuts, people, text, or camera movement. Match the opening and closing composition and motion phase. Export a clean 1080p MP4 without audio.';
 const sample = () => ({
@@ -58,7 +59,7 @@ legacyStudioRecipes.forEach((recipe,index)=>{
 });
 const trialData = JSON.parse(document.getElementById('studio-trial')?.textContent || 'null');
 const projectStorageKey = studioEnglish ? 'wnc.studio.project.en.v1'
-  : (trialData ? 'wnc.studio.trial.' + trialData.slug : 'wnc.studio.project.v1');
+  : (trialData ? 'wnc.studio.trial.' + trialData.slug + (ownerStudio && trialData.updatedAt ? '.'+trialData.updatedAt : '') : 'wnc.studio.project.v1');
 function normalizeProject(saved) {
   if (!saved || !Number.isFinite(saved.length) || !Array.isArray(saved.tracks)) throw Error('Invalid project');
   const title = typeof saved.title === 'string' && saved.title.trim() ? saved.title.slice(0,100) : tr('Bản phối chưa đặt tên');
@@ -132,8 +133,9 @@ function tick(loopPreview=false){
 function sourceAddresses(i){
   const asset=assets[i];
   if(asset.pending) return [];
-  const primary=asset.url || media+asset.key;
-  const url=new URL(primary);
+  const primary=ownerStudio && asset.key?.startsWith('asset-library/')
+    ? '/vi/api/source/'+encodeURIComponent(asset.key) : asset.url || media+asset.key;
+  const url=new URL(primary,location.origin);
   url.searchParams.set('studio-audio','20261111');
   const localMasters=new Set(['audio/fireplace-real.mp3','audio/rain-on-window-real.mp3',
     'audio/rain-leaves-real.mp3','audio/rain-tin-roof-real.mp3','audio/distant-thunder-real.mp3']);
@@ -141,7 +143,7 @@ function sourceAddresses(i){
 }
 async function decodeRecording(i,decoder){
   const asset=assets[i];
-  if(asset.pending) throw Error(studioEnglish?'Unlock the source catalog in Vietnamese Studio.':'Mở kho âm thanh trong Studio tiếng Việt để tải nguồn.');
+  if(asset.pending) throw Error(studioEnglish?'Unlock the source catalog in Vietnamese Studio.':'Đang tải nguồn từ danh mục R2. Hãy thử lại khi danh mục đã tải.');
   let failure=tr('Không có phản hồi');
   for(const address of sourceAddresses(i)){
     try {

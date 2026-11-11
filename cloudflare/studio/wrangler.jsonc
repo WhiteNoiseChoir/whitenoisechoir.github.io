@@ -1,0 +1,63 @@
+{
+  "name": "whitenoisechoir-studio",
+  "main": "worker.mjs",
+  "compatibility_date": "2026-11-11",
+  "workers_dev": false,
+  "preview_urls": false,
+  "r2_buckets": [
+    {
+      "binding": "MEDIA",
+      "bucket_name": "whitenoisechoir-media"
+    },
+    {
+      "binding": "STUDIO_STATE",
+      "bucket_name": "whitenoisechoir-studio-state"
+    }
+  ],
+  "ratelimits": [
+    {
+      "name": "DOWNLOAD_RATE",
+      "namespace_id": "28111",
+      "simple": {
+        "limit": 40,
+        "period": 60
+      }
+    }
+  ],
+  "vars": {
+    "PUBLIC_CATALOG_ENABLED": "false",
+    "ACCESS_TEAM_DOMAIN": "",
+    "ACCESS_AUD": "",
+    "STUDIO_OWNER_EMAILS": ""
+  },
+  "routes": [
+    {
+      "pattern": "whitenoisechoir.com/vi",
+      "zone_name": "whitenoisechoir.com"
+    },
+    {
+      "pattern": "whitenoisechoir.com/vi/*",
+      "zone_name": "whitenoisechoir.com"
+    },
+    {
+      "pattern": "whitenoisechoir.com/api/studio/*",
+      "zone_name": "whitenoisechoir.com"
+    },
+    {
+      "pattern": "whitenoisechoir.com/library",
+      "zone_name": "whitenoisechoir.com"
+    },
+    {
+      "pattern": "whitenoisechoir.com/library/*",
+      "zone_name": "whitenoisechoir.com"
+    },
+    {
+      "pattern": "media.whitenoisechoir.com/asset-library/*",
+      "zone_name": "whitenoisechoir.com"
+    },
+    {
+      "pattern": "media.whitenoisechoir.com/internal/studio-catalog/*",
+      "zone_name": "whitenoisechoir.com"
+    }
+  ]
+}

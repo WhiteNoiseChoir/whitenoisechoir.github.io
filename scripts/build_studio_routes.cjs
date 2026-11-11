@@ -33,38 +33,7 @@ function removeStaleRoutes(section,records,marker) {
     if (fs.existsSync(index) && fs.readFileSync(index,'utf8').includes(marker)) fs.unlinkSync(index);
   }
 }
-const shell = read('scripts/templates/studio.html.in');
-const translations = JSON.parse(read('data/studio-shell.en.json'));
-const viVault = '<details class="vault"><summary>Kho âm thanh nội bộ</summary><p id="vault-status" class="message" role="status"></p><form id="vault-form"><label>Mã mở kho <input id="vault-key" type="password" autocomplete="off" spellcheck="false"></label><button id="vault-submit" type="submit">Mở kho</button></form></details>';
-const alternate = '<link rel="alternate" hreflang="en" href="'+origin+'/"><link rel="alternate" hreflang="vi" href="'+origin+'/vi/"><link rel="alternate" hreflang="x-default" href="'+origin+'/">';
-function studio(locale,trial) {
-  const vi = locale === 'vi';
-  const studioRoot = vi ? '/vi/' : '/';
-  const route = trial ? studioRoot+trial.slug+'/' : studioRoot;
-  let template = shell;
-  if (!vi) {
-    for (const [value,english] of Object.entries(translations).sort(([a],[b])=>b.length-a.length)) {
-      template = template.replaceAll(value,escape(english));
-    }
-  }
-  if (trial) template=template.replace('<title>WhiteNoiseChoir Studio · Phòng phối âm</title>','<title>'+escape(trial.title)+' · WhiteNoiseChoir Studio</title>');
-  const keys = {
-    LANG:locale, ROUTE_HEAD:'<link rel="canonical" href="'+origin+route+'">'+
-      (trial?'<!-- Generated Studio trial --><meta name="robots" content="noindex,nofollow">':alternate),
-    STUDIO_ROOT:studioRoot, NAV_LABEL:vi?'Điều hướng':'Navigation',
-    LIBRARY:vi?'Bản phối công khai':'Published mixes', MORE:vi?'Hiện thêm':'Show more',
-    LANG_LINK:vi?'<a href="/" lang="en">English</a>':'<a href="/vi/" lang="vi">Tiếng Việt</a>',
-    TRIAL_BADGE:trial?'<p class="trial-label">Bản thử · '+escape(trial.title)+'</p>':'',
-    TRIAL_DATA:trial?'<script type="application/json" id="studio-trial">'+JSON.stringify(trial).replaceAll('<','\\u003c')+'</script>':'',
-    VAULT:vi?viVault:'', VAULT_SCRIPT:vi?'<script src="/studio-vault.js"></script>':'',
-  };
-  const html = template.replace(/\{\{([A-Z_]+)\}\}/g,(_,key)=>{
-    if (!Object.hasOwn(keys,key)) throw Error('Unknown Studio template token '+key);
-    return keys[key];
-  });
-  write(route.slice(1)+'index.html',html);
-}
-
+const signIn = read('scripts/templates/studio-sign-in.html');
 function validPublicMedia(value) {
   const link = new URL(value);
   return link.protocol === 'https:' && link.hostname === 'media.whitenoisechoir.com' &&
@@ -80,12 +49,13 @@ function libraryPage(route,title,description,body) {
     '<main class="published-library">'+body+'</main></body></html>';
 }
 write('index.html',read('scripts/templates/public-sounds.html'));
-studio('vi');
+write('vi/index.html',signIn);
 const trials = list('data/studio-trials.json');
 for (const trial of trials) {
   if (Boolean(trial.preset)===Boolean(trial.project)) throw Error('A trial needs one preset or project');
   if (trial.project && (!Number.isFinite(trial.project.length)||!Array.isArray(trial.project.tracks))) throw Error('Invalid trial project');
-  studio('vi',trial);
+  write('vi/'+trial.slug+'/index.html',signIn.replace('<html lang="vi">','<html lang="vi">\n<!-- Generated Studio trial -->')
+    .replace('/vi/">Mở','/vi/'+trial.slug+'/">Mở'));
 }
 const published = list('data/published-mixes.json').filter(m=>m.status==='published');
 for (const mix of published) {
@@ -105,6 +75,6 @@ write('library/index.html',libraryPage('/library/','Published mixes','A collecti
   '<h1>Published mixes</h1><p>Soundscapes created and reviewed in WhiteNoiseChoir Studio.</p>'+
   (cards?'<div class="published-grid">'+cards+'</div>':'<p class="panel published-card">No mixes have been published yet.</p>')));
 write('sounds/index.html','<!doctype html>\n<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="refresh" content="0; url=/library/"><link rel="canonical" href="'+origin+'/library/"><title>Published mixes · WhiteNoiseChoir</title></head><body><a href="/library/">Open published mixes</a></body></html>');
-const urls=['/','/vi/','/library/',...published.map(mix=>'/library/'+mix.slug+'/')];
+const urls=['/','/library/',...published.map(mix=>'/library/'+mix.slug+'/')];
 write('sitemap.xml','<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'+
   urls.map(route=>'  <url><loc>'+origin+route+'</loc></url>').join('\n')+'\n</urlset>');

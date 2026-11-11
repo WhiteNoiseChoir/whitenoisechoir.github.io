@@ -36,4 +36,5 @@ jobs:
         env:
           R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
           R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          STUDIO_STATE_BUCKET: ${{ vars.STUDIO_STATE_BUCKET }}
         run: python scripts/build_studio_asset_catalog.py
