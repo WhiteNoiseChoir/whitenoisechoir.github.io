@@ -16,48 +16,51 @@ GROUPS = {
     "rain": (
         ("Sounds of rain",),
         ("rain drizzle", "rain heavy", "rain on roof", "rain on window", "rain on leaves",
-         "rain tent", "rain car", "rain puddles", "rain umbrella"),
+         "rain tent", "rain car", "rain puddles", "rain umbrella", "intitle:rain", "intitle:pluie", "intitle:regen"),
         r"\b(rain|raining|rainfall|drizzle|regen|lluvia|pluie|raindrops?)\b",
     ),
     "thunder-and-weather": (
         ("Sounds of thunder",),
-        ("thunderstorm", "distant thunder", "rolling thunder", "thunder and rain", "hail storm"),
+        ("thunderstorm", "distant thunder", "rolling thunder", "thunder and rain", "hail storm", "intitle:thunder", "intitle:gewitter"),
         r"\b(thunder|thunderstorms?|thunderclap|lightning|hail|donner|tonnerre|tormenta)\b",
     ),
     "streams-and-lakes": (
         ("Sounds of rivers and streams",),
         ("mountain stream", "brook babbling", "river rapids", "creek water", "lake shore waves",
-         "pond ambience", "river flowing", "water trickling rocks"),
+         "pond ambience", "river flowing", "water trickling rocks", "intitle:brook", "intitle:creek", "intitle:rapids"),
         r"\b(streams?|rivers?|brooks?|creeks?|rapids|lakes?|ponds?|rivulet|bach|riviere|rivière)\b",
     ),
     "waterfalls": (
         ("Audio files of waterfalls",),
-        ("waterfall field recording", "waterfall sound", "cascade water", "wasserfall"),
+        ("waterfall field recording", "waterfall sound", "cascade water", "wasserfall", "intitle:waterfall", "intitle:cascade"),
         r"\b(waterfalls?|cataract|cascade|wasserfall|cascada)\b",
     ),
     "wind": (
         (),
         ("wind in trees", "wind gust", "wind rustling leaves", "wind in grass", "wind on mountain",
-         "wind in reeds", "wind on beach", "forest wind ambience"),
+         "wind in reeds", "wind on beach", "forest wind ambience", "intitle:wind ambience", "intitle:windgeräusch"),
         r"\b(wind|winds|windy|gusts?|breeze|windgeräusch|vent|viento)\b",
     ),
     "coast": (
         ("Sounds of sea waves",),
         ("ocean surf", "waves rocky shore", "pebble beach waves", "waves washing shore",
-         "sea waves wind", "waves sandy beach", "coastal ambience"),
+         "sea waves wind", "waves sandy beach", "coastal ambience", "intitle:waves", "intitle:shoreline"),
         r"\b(ocean|sea waves|surf|shore|shoreline|beach|coast|seaside|mare|meer)\b",
     ),
     "forest": (
         ("Rainforest sounds",),
         ("forest ambience", "forest dawn chorus", "night forest soundscape", "rainforest sounds",
-         "woodland soundscape", "jungle ambience", "forest morning sounds", "meadow soundscape"),
+         "woodland soundscape", "jungle ambience", "forest morning sounds", "meadow soundscape", "intitle:soundscape forest"),
         r"\b(forest|rainforest|woodland|woods|jungle|meadow|dawn chorus)\b",
     ),
 }
 EXCLUDED = re.compile(
     r"^(?:[a-z]{2,3}-(?:us|uk|gb|au)-|nl-|de-|fr-|es-|ru-)"
+    r"|^.+ - \d{1,2} - "
     r"|\b(?:pronunciation|phonetic|lingua libre|wiktionary|dictionary|consonant|"
-    r"piano|guitar|musical instrument|song by|track from|video game|wind instrument)\b",
+    r"piano|guitar|musical instrument|song by|track from|video game|wind instrument|"
+    r"isrc|future bass|surf rock|soundtrack|royalty.free music|background music|"
+    r"alma mater|talk nation radio|radio broadcast|news report|thunderstorm watch|weather alert)\b",
     re.I,
 )
 
@@ -69,7 +72,7 @@ def candidates_for_group(intake, group, spec, report):
     lookups = [(name, category_pages(name, 0)) for name in categories]
     for query in queries:
         try:
-            rows = commons.candidates(query, 0, 28)
+            rows = commons.candidates(query, 0, 50)
             lookups.append((query, [(page, query) for page in rows]))
         except Exception as exc:
             report["errors"].append({"group": group, "query": query, "error": str(exc)[:350]})
