@@ -10,11 +10,11 @@ assert.equal(m.status,"REVIEW_ONLY_PENDING_OWNER");assert.equal(m.tracks.length,
 assert.equal(catalog.sounds.length,35);assert.equal(hls.records.length,35);assert.equal(hls.applies_to.length,35);
 assert.equal(plans.filter(x=>!x.playable).length,57);assert.equal(plans.filter(x=>x.playable).length,13);
 assert.equal(JSON.parse(read("listen.html").split("var recipes=")[1].split("];")[0]+"]").length,45);
-assert.equal((read("sitemap.xml").match(/<loc>/g)||[]).length,18);
+assert.equal((read("audits/sitemap-before-studio.xml").match(/<loc>/g)||[]).length,18);
 assert.ok(html.includes('name="robots" content="noindex,nofollow"'));
 assert.ok(html.includes("Tua tới 9:55")&&html.includes('id="copy"'));
 assert.ok(html.includes("BLOCKED_SOURCE_NOT_VERIFIED")&&html.includes("NEW-11"));
-assert.ok(!read("sitemap.xml").includes(dir));
+assert.ok(!read("audits/sitemap-before-studio.xml").includes(dir));
 const bamboo=plans.find(x=>x.plan_id==="NEW-11");assert.equal(bamboo.playable,false);assert.equal(bamboo.production_id,null);
 for(let i=0;i<rows.length;i++){
  const [plan,id,creator,sourceId]=rows[i],x=m.tracks[i],target=resolve(dir+"/"+id+".mp3"),p=plans.find(x=>x.plan_id===plan);

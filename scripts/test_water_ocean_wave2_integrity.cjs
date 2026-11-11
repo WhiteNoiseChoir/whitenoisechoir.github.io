@@ -10,7 +10,7 @@ assert.equal(review.status,"REVIEW_ONLY_PENDING_OWNER");assert.equal(review.trac
 assert.equal(catalog.sounds.length,35);assert.equal(hls.records.length,35);assert.equal(hls.applies_to.length,35);
 assert.equal(plans.filter(x=>!x.playable).length,57);
 assert.equal(JSON.parse(read("listen.html").split("var recipes=")[1].split("];")[0]+"]").length,45);
-assert.equal((read("sitemap.xml").match(/<loc>/g)||[]).length,18);
+assert.equal((read("audits/sitemap-before-studio.xml").match(/<loc>/g)||[]).length,18);
 const checks=[
 {id:"bodetal-brook-review",plan:"NEW-10",creator:"Borgory",src:"https://freesound.org/people/Borgory/sounds/651194/",sha256:"e3e1bb330426a363842cb93890a40f33049c37a0c4d7351b802428914e4f5725",duration:637.542},
 {id:"wakanui-surf-review",plan:"NEW-13",creator:"Desmond178",src:"https://freesound.org/people/Desmond178/sounds/721591/",sha256:"4969a0791d0a7bedfffc79ea5aca581ac3aeb9e23dff5c610f151ef48f7faed1",duration:2726.3}
@@ -37,8 +37,8 @@ const html=read(dir+"/index.html");
 assert.ok(html.includes("NEW-11")&&html.includes("Bamboo Water Fountain")&&html.includes("CHƯA CÓ MASTER"));
 assert.ok(html.includes('name="robots" content="noindex,nofollow"'));
 assert.equal((html.match(/data-track="/g)||[]).length,2);
-assert.ok(!read("sitemap.xml").includes(dir));assert.ok(!read("index.html").includes("bodetal-brook-review"));
-assert.ok(!read("sounds/index.html").includes("wakanui-surf-review"));
+assert.ok(!read("audits/sitemap-before-studio.xml").includes(dir));assert.ok(!read("index.html").includes("bodetal-brook-review"));
+assert.ok(!read("sounds/archive.html").includes("wakanui-surf-review"));
 const mainManifest=hls.records.map(x=>x.id);
 assert.ok(!mainManifest.includes("bodetal-brook-review"));assert.ok(!mainManifest.includes("wakanui-surf-review"));
 console.log("WATER_OCEAN_WAVE2_INDEPENDENT_INTEGRITY_PASS 2 owner-approved CC0 masters pinned, 33 old production sources preserved, 45 mixes, partial source bitrate unknown, bamboo unverified.");

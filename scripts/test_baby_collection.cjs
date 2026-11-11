@@ -64,7 +64,7 @@ assert.ok(!/guaranteed safe volume|guaranteed to sleep|prevent(?:s)? sids/i.test
 const plain=html.replace(/<script[\s\S]*?<\/script>/g," ").replace(/<[^>]+>/g," ").replace(/&[a-z]+;/g," ").replace(/\s+/g," ").trim();
 const words=plain.split(" ").filter(Boolean).length;
 assert.ok(words>=720&&words<1800,"Informative but focused parent guide words="+words);
-const loc=[...read("sitemap.xml").matchAll(/<loc>([^<]+)<\/loc>/g)].map(x=>x[1]);
+const loc=[...read("audits/sitemap-before-studio.xml").matchAll(/<loc>([^<]+)<\/loc>/g)].map(x=>x[1]);
 assert.equal(loc.filter(x=>x===url).length,1,"Existing canonical in sitemap exactly once");
 assert.equal(loc.length,18,"Shower pilot added; baby collection remains unchanged");
 assert.match(read("collections/index.html"),/3 playable sounds · safety first/);

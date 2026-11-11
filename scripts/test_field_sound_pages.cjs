@@ -16,7 +16,7 @@ const examples=[
 ];
 const all=library.sounds;
 assert.equal(all.length,35);
-const sitemap=[...read("sitemap.xml").matchAll(/<loc>([^<]+)<\/loc>/g)].map(x=>x[1]);
+const sitemap=[...read("audits/sitemap-before-studio.xml").matchAll(/<loc>([^<]+)<\/loc>/g)].map(x=>x[1]);
 assert.equal(sitemap.length,18,"18 URL selective sitemap including Shower phase");
 const report=[];
 for(const [id,slug,iso,indexable] of examples){

@@ -61,16 +61,16 @@ for(const entry of provenance.tracks){
  assert.ok(page.includes('rel="canonical" href="https://whitenoisechoir.com/sounds/'+s.slug+'/'));
  assert.ok(page.includes('"@type":"AudioObject"'));
  assert.ok(page.includes(entry.source_page));
- assert.equal(read("sitemap.xml").includes("/sounds/"+s.slug+"/"),false);
+ assert.equal(read("audits/sitemap-before-studio.xml").includes("/sounds/"+s.slug+"/"),false);
  const planned=plans.find(x=>x.plan_id===entry.plan_id);
  assert.equal(planned.production_id,s.id);
  assert.equal(planned.owner_listening_approval,"APPROVED_BY_OWNER_2026-11-08");
  assert.equal(planned.qa.master_sha256,entry.master_sha256);
  assert.equal(planned.seo_status,"noindex,follow");
 }
-assert.equal((read("sitemap.xml").match(/<loc>/g)||[]).length,18);
+assert.equal((read("audits/sitemap-before-studio.xml").match(/<loc>/g)||[]).length,18);
 for(const slug of ["light-rain","rain-on-tin-roof","distant-thunder"])assert.ok(read("sounds/rain/index.html").includes('href="/sounds/'+slug+'/"'));
-assert.equal((read("sounds/index.html").match(/data-wnc-existing-id="/g)||[]).length,35);
+assert.equal((read("sounds/archive.html").match(/data-wnc-existing-id="/g)||[]).length,35);
 assert.ok(read("listen.html").includes("13 families · 45 playable sources (35 original catalog + 10 new DSP)"));
 assert.equal(JSON.parse(read("listen.html").split("var recipes=")[1].split("];")[0]+"]").length,45);
 for(const r of added)assert.ok(read("listen.html").includes('["'+r+'",'),"continuous player row missing "+r);

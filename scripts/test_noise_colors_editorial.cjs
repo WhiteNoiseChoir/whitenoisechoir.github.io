@@ -7,7 +7,7 @@ const root="https://whitenoisechoir.com";
 const catalog=json("catalog/library.json"),extended=json("audio/extended-dsp-manifest.json"),hls=json("audio/continuous/manifest.json");
 const byId=Object.fromEntries(catalog.sounds.map(x=>[x.id,x]));
 const byExtended=Object.fromEntries(extended.tracks.map(x=>[x.id,x]));
-const sitemap=[...read("sitemap.xml").matchAll(/<loc>([^<]+)<\/loc>/g)].map(x=>x[1]);
+const sitemap=[...read("audits/sitemap-before-studio.xml").matchAll(/<loc>([^<]+)<\/loc>/g)].map(x=>x[1]);
 const pilot=[
  ["blue-noise",true],["violet-noise",true],["soft-white-noise",false],
  ["deep-brown-noise",false],["warm-pink-noise",false],["mid-noise",false]

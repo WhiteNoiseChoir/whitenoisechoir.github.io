@@ -16,12 +16,12 @@ assert.equal(manifest.status,"REVIEW_ONLY_PENDING_OWNER");
 assert.equal(manifest.tracks.length,3);
 assert.equal(catalog.sounds.length,35);
 assert.equal(hls.records.length,35);
-assert.equal((read("sitemap.xml").match(/<loc>/g)||[]).length,18);
+assert.equal((read("audits/sitemap-before-studio.xml").match(/<loc>/g)||[]).length,18);
 assert.ok(html.includes('name="robots" content="noindex,nofollow"'));
 assert.ok(html.includes("Tua tới 9:55")&&html.includes('id="copy"'));
-assert.ok(!read("sitemap.xml").includes("/signature/rain-wave2-review/"));
+assert.ok(!read("audits/sitemap-before-studio.xml").includes("/signature/rain-wave2-review/"));
 assert.ok(!read("index.html").includes("rain-on-tent-review"));
-assert.ok(!read("sounds/index.html").includes("rain-on-tent-review"));
+assert.ok(!read("sounds/archive.html").includes("rain-on-tent-review"));
 const oldIds=new Set(catalog.sounds.map(x=>x.id));
 for(let i=0;i<expected.length;i++){
  const [planId,id,creator,soundId,channels]=expected[i],m=manifest.tracks[i];

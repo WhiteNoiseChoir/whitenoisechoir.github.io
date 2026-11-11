@@ -43,7 +43,7 @@ for(let i=0;i<names.length;i++){
  assert.ok(page.includes(track.source_page));assert.ok(page.includes('"@type":"AudioObject"'));
  assert.ok(page.includes("lossy Freesound HQ MP3 preview"));
  assert.ok(hub.includes('href="/sounds/'+slug+'/"]')||hub.includes('href="/sounds/'+slug+'/"'));
- assert.ok(!read("sitemap.xml").includes("/sounds/"+slug+"/"));
+ assert.ok(!read("audits/sitemap-before-studio.xml").includes("/sounds/"+slug+"/"));
  const ff=JSON.parse(cp.execFileSync("ffprobe",["-v","error","-show_entries","format=duration:stream=codec_name,channels,sample_rate","-of","json",metadata.production_mp3],{encoding:"utf8"}));
  assert.ok(Math.abs(Number(ff.format.duration)-600)<=1);assert.ok(ff.streams.some(x=>x.codec_name==="mp3"&&Number(x.channels)===2&&Number(x.sample_rate)===44100));
  console.log("WATER_OCEAN_WAVE2_PRODUCTION_TRACK_PASS "+JSON.stringify({id,master_sha256:track.master_sha256,hls_hours:rec.native_stream_duration_hours,independent_seconds:605}));
@@ -51,8 +51,8 @@ for(let i=0;i<names.length;i++){
 assert.equal(fams.find(x=>x.id==="water").existing_ids.slice(-1)[0],"bodetal-brook-real");
 assert.equal(fams.find(x=>x.id==="ocean").existing_ids.slice(-1)[0],"crashing-ocean-real");
 assert.equal(fams.find(x=>x.id==="ocean").route,"/sounds/#ocean-waves");
-assert.equal((read("sounds/index.html").match(/data-wnc-existing-id="/g)||[]).length,35);
+assert.equal((read("sounds/archive.html").match(/data-wnc-existing-id="/g)||[]).length,35);
 assert.ok(read("listen.html").includes("13 families · 45 playable sources (35 original catalog + 10 new DSP)"));
 assert.equal(JSON.parse(read("listen.html").split("var recipes=")[1].split("];")[0]+"]").length,45);
-assert.equal((read("sitemap.xml").match(/<loc>/g)||[]).length,18);
+assert.equal((read("audits/sitemap-before-studio.xml").match(/<loc>/g)||[]).length,18);
 console.log("WATER_OCEAN_WAVE2_PRODUCTION_QA_PASS original33 SHA pinned, 35 HLS, 2 reviewed CC0 WAV-source MP3 derivatives promoted byte-identically, 45 presets, noindex SEO and blocked Bamboo.");

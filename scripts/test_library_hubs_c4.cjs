@@ -3,7 +3,7 @@
 const fs=require("node:fs"),assert=require("node:assert/strict"),vm=require("node:vm");
 const read=p=>fs.readFileSync(p,"utf8"),data=JSON.parse(read("framework-preview/master-inventory.json")),config=JSON.parse(read("catalog/framework-hubs-c4.json")),lib=JSON.parse(read("catalog/library.json"));
 const columns=Object.fromEntries(data.columns.map((c,i)=>[c,i]));
-const sitemap=read("sitemap.xml"),explorer=read("sounds/explore/index.html"),index=read("sounds/index.html");
+const sitemap=read("audits/sitemap-before-studio.xml"),explorer=read("sounds/explore/index.html"),index=read("sounds/archive.html");
 assert.equal(config.hubs.length,6);assert.equal(config.expected_total_records,182);
 assert.equal(data.rows.length,532);assert.equal(lib.sounds.length,35);
 assert.ok(!sitemap.includes("/sounds/explore/"));

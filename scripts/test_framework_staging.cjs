@@ -5,8 +5,8 @@ const data=JSON.parse(fs.readFileSync("framework-preview/master-inventory.json",
 const lib=JSON.parse(fs.readFileSync("catalog/library.json","utf8"));
 const reg=JSON.parse(fs.readFileSync("catalog/family-registry.json","utf8"));
 const html=fs.readFileSync("framework-preview/index.html","utf8");
-const current=fs.readFileSync("sounds/index.html","utf8");
-const sitemap=fs.readFileSync("sitemap.xml","utf8");
+const current=fs.readFileSync("sounds/archive.html","utf8");
+const sitemap=fs.readFileSync("audits/sitemap-before-studio.xml","utf8");
 assert.equal(data.rows.length,532,"532 editorial records");
 assert.equal(data.logical_families.length,28,"28 logical family names");
 assert.equal(lib.sounds.length,35,"35 production records unchanged");

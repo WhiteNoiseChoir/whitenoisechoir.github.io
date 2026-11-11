@@ -26,7 +26,7 @@ for(const id of ids){
  assert.ok(lib.sounds.some(x=>x.id===id),id+" not in production catalog");
  assert.ok(hls.records.some(x=>x.id===id),id+" no live HLS source");
 }
-assert.equal((fs.readFileSync("sitemap.xml","utf8").match(/<loc>/g)||[]).length,18);
+assert.equal((fs.readFileSync("audits/sitemap-before-studio.xml","utf8").match(/<loc>/g)||[]).length,18);
 assert.equal(lib.sounds.length,35);
 assert.equal(hls.records.length,35);
 assert.match(main,/function playTracks\(/);

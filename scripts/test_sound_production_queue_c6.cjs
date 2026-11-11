@@ -7,7 +7,7 @@ const reg=parse("catalog/sound-production-registry-c5.json");
 const lib=parse("catalog/library.json");
 const approval=parse("catalog/sound-release-approvals.json");
 const html=read("framework-preview/c6-listening/index.html");
-const sitemap=read("sitemap.xml");
+const sitemap=read("audits/sitemap-before-studio.xml");
 assert.equal(q.items.length,10);assert.equal(q.summary.total_p0_candidates,10);
 assert.equal(new Set(q.items.map(x=>x.record_id)).size,10);
 assert.equal(reg.records.length,532);assert.equal(lib.sounds.length,35);

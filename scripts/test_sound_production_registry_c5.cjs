@@ -3,7 +3,7 @@
 const fs=require("node:fs"),assert=require("node:assert/strict"),vm=require("node:vm"),cp=require("node:child_process");
 const read=p=>fs.readFileSync(p,"utf8"),parse=p=>JSON.parse(read(p));
 const inv=parse("framework-preview/master-inventory.json"),reg=parse("catalog/sound-production-registry-c5.json"),lib=parse("catalog/library.json"),plans=parse("catalog/planned-sounds.json").planned,ledger=parse("catalog/sound-release-approvals.json");
-const site=read("framework-preview/sound-detail/index.html"),explore=read("sounds/explore/index.html"),sitemap=read("sitemap.xml");
+const site=read("framework-preview/sound-detail/index.html"),explore=read("sounds/explore/index.html"),sitemap=read("audits/sitemap-before-studio.xml");
 const c=Object.fromEntries(inv.columns.map((k,i)=>[k,i]));
 assert.equal(reg.records.length,532);assert.equal(reg.summary.total_records,532);
 assert.equal(reg.summary.production_catalog,35);assert.equal(reg.summary.production_listening_pending,1);

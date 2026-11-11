@@ -5,7 +5,7 @@ const load=p=>fs.readFileSync(p,"utf8");
 const html=load("signature/c6b-online-review/index.html");
 const upl=load("scripts/c6b_publish_review_r2.py");
 const w=load(".github/workflows/c6b_online_audition.yml");
-const sitemap=load("sitemap.xml");
+const sitemap=load("audits/sitemap-before-studio.xml");
 const lib=JSON.parse(load("catalog/library.json"));
 const ledger=JSON.parse(load("catalog/sound-release-approvals.json"));
 const q=JSON.parse(load("catalog/sound-production-queue-c6.json"));

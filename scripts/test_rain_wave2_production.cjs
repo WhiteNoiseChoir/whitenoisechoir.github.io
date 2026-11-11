@@ -48,12 +48,12 @@ for(let i=0;i<3;i++){
  assert.ok(page.includes('/audio/'+id+'.mp3')&&page.includes('/audio/continuous/'+id+'/continuous.m3u8'));
  assert.ok(page.includes('<audio controls loop preload="none"'));
  assert.ok(page.includes(a.source_page)&&page.includes('"@type":"AudioObject"'));
- assert.ok(!txt("sitemap.xml").includes("/sounds/"+catalogRow.slug+"/"));
+ assert.ok(!txt("audits/sitemap-before-studio.xml").includes("/sounds/"+catalogRow.slug+"/"));
 }
 assert.ok(txt("sounds/rain/index.html").includes("Rolling Thunder"));
-assert.equal((txt("sounds/index.html").match(/data-wnc-existing-id="/g)||[]).length,35);
+assert.equal((txt("sounds/archive.html").match(/data-wnc-existing-id="/g)||[]).length,35);
 assert.ok(txt("listen.html").includes("13 families · 45 playable sources (35 original catalog + 10 new DSP)"));
 const recipes=JSON.parse(txt("listen.html").split("var recipes=")[1].split("];")[0]+"]");
 assert.equal(recipes.length,45);
-assert.equal((txt("sitemap.xml").match(/<loc>/g)||[]).length,18);
+assert.equal((txt("audits/sitemap-before-studio.xml").match(/<loc>/g)||[]).length,18);
 console.log("RAIN_WAVE2_PRODUCTION_QA_PASS 28 HLS, original 25 protected, 3 SHA-identical approved masters, 45 presets, noindex review separation");
