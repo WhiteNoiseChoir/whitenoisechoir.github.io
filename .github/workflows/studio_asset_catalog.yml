@@ -36,6 +36,8 @@ jobs:
         env:
           R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
           R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          STUDIO_STATE_ACCESS_KEY_ID: ${{ secrets.STUDIO_STATE_ACCESS_KEY_ID }}
+          STUDIO_STATE_SECRET_ACCESS_KEY: ${{ secrets.STUDIO_STATE_SECRET_ACCESS_KEY }}
           STUDIO_STATE_BUCKET: ${{ vars.STUDIO_STATE_BUCKET || 'whitenoisechoir-studio-state' }}
           STUDIO_STATE_ONLY: ${{ github.ref == 'refs/heads/feature/owner-studio-and-public-mp3-catalog' && 'true' || 'false' }}
         run: python scripts/build_studio_asset_catalog.py
