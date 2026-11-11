@@ -76,10 +76,10 @@ function libraryPage(route,title,description,body) {
     '<title>'+escape(title)+' · WhiteNoiseChoir</title><meta name="description" content="'+escape(description)+'">'+
     '<link rel="canonical" href="'+origin+route+'"><link rel="stylesheet" href="/studio.css"></head><body>'+
     '<header class="studio-header"><a class="brand" href="/">WhiteNoiseChoir <span>Studio</span></a>'+
-    '<nav class="studio-nav" aria-label="Navigation"><a href="/">Sound Studio</a><a href="/vi/" lang="vi">Tiếng Việt</a></nav></header>'+
+    '<nav class="studio-nav" aria-label="Navigation"><a href="/">MP3 Sounds</a><a href="/vi/" lang="vi">Studio nội bộ</a></nav></header>'+
     '<main class="published-library">'+body+'</main></body></html>';
 }
-studio('en');
+write('index.html',read('scripts/templates/public-sounds.html'));
 studio('vi');
 const trials = list('data/studio-trials.json');
 for (const trial of trials) {

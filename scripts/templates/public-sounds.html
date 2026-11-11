@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Find, preview and download MP3 sounds for sleep, focus and relaxation.">
+<link rel="canonical" href="https://whitenoisechoir.com/">
+<title>MP3 Sounds for Sleep, Focus &amp; Relaxation · WhiteNoiseChoir</title>
+<link rel="stylesheet" href="/studio.css">
+<link rel="stylesheet" href="/public-sounds.css">
+<script src="/public-sounds.js" defer></script>
+</head>
+<body>
+<header class="studio-header">
+  <a class="brand" href="/"><span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>WhiteNoiseChoir</a>
+  <nav class="studio-nav" aria-label="Navigation"><a href="/library/">Published mixes</a><a href="/vi/" lang="vi">Studio nội bộ</a></nav>
+</header>
+<main class="public-sounds">
+  <h1>Find a sound</h1>
+  <p class="public-intro">Preview and download MP3 sounds for sleep, focus and relaxation.</p>
+  <section aria-label="MP3 sounds">
+    <div class="public-filters">
+      <label>Search sounds <input id="sound-query" type="search" placeholder="Rain, fan, ocean…" autocomplete="off"></label>
+      <label>Category <select id="sound-category"><option value="">All categories</option></select></label>
+    </div>
+    <audio id="sound-player" preload="none" hidden></audio>
+    <p id="sound-status" class="message" role="status">Loading sounds…</p>
+    <p id="sound-feedback" class="message" role="status"></p>
+    <ul id="sound-list" class="public-list"></ul>
+    <button id="sound-more" type="button" hidden>Show more</button>
+  </section>
+</main>
+</body>
+</html>
