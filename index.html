@@ -1,51 +1,79 @@
 <!doctype html>
-<html lang="en">
+<html lang="vi">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="description" content="Arrange, listen to and share layered nature soundscapes.">
-<title>WhiteNoiseChoir Studio</title>
+<meta name="description" content="Phối âm thanh, lặp clip nền và xuất video.">
+<title>WhiteNoiseChoir · Phòng phối âm</title>
 <style>
 :root{color-scheme:dark;font:15px "Instrument Sans",system-ui,sans-serif;background:#151b19;color:#f2f1e8;--panel:#202824;--line:#38443d;--accent:#d5e99c}*{box-sizing:border-box}body{margin:0}header,main{max-width:1320px;margin:auto;padding:22px clamp(16px,4vw,56px)}header{border-bottom:1px solid var(--line);font-weight:750;letter-spacing:-.04em}h1{font-size:clamp(34px,7vw,70px);font-weight:550;letter-spacing:-.07em;margin:8px 0 20px}button,input,select{font:inherit;color:inherit}button,select,input[type=number],input[type=text]{background:#27312b;border:1px solid var(--line);border-radius:8px;padding:9px 12px}button{cursor:pointer}button:hover{border-color:var(--accent)}button.primary{background:var(--accent);color:#1b2516;font-weight:750}button[aria-pressed=true]{border-color:var(--accent);color:var(--accent)}label{display:inline-flex;gap:7px;align-items:center}input[type=number]{width:82px}input[type=range]{accent-color:var(--accent)}.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}.shell{display:grid;grid-template-columns:minmax(0,1fr) 240px;gap:16px;margin-top:20px}.panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px}aside h2{font-size:16px;margin:0 0 12px}aside .row{justify-content:space-between;margin:12px 0}#seek{width:100%}.track{padding:12px 0;border-top:1px solid var(--line)}.lane{position:relative;height:35px;background:repeating-linear-gradient(90deg,#19211c 0,#19211c calc(10% - 1px),#38443d calc(10% - 1px),#38443d 10%);border-radius:5px;margin:10px 0}.clip{position:absolute;top:3px;height:29px;padding:2px 5px;background:#779b73;color:#101b10;white-space:nowrap;overflow:hidden;min-width:6px;cursor:grab;touch-action:none}.needle{position:absolute;top:0;bottom:0;width:2px;background:#f1dc8e;pointer-events:none}.muted,small{color:#aab9ad}#status{min-height:22px}a{color:var(--accent)}@media(max-width:760px){.shell{grid-template-columns:1fr}}
 #video-studio{margin-top:18px}#video-studio h2{margin-top:0}#video-studio textarea{display:block;width:100%;min-height:130px;resize:vertical;padding:12px;background:#19211c;color:inherit;border:1px solid var(--line);border-radius:8px;font:inherit;margin:8px 0 12px}#video-preview{display:block;width:min(100%,500px);max-height:280px;margin:14px 0}#video-preview[hidden]{display:none}#video-status{overflow-wrap:anywhere}
+.export-step{padding:18px 0;border-top:1px solid var(--line)}.export-step h3{margin:0 0 10px;font-size:17px}.export-step p{margin:9px 0}.export-step progress{display:block;width:100%;height:12px;margin-top:12px;accent-color:var(--accent)}button:disabled{opacity:.5;cursor:default}.video-actions{margin-top:12px}.file-picker{position:relative;background:#27312b;border:1px solid var(--line);border-radius:8px;padding:9px 12px;cursor:pointer}.file-picker:focus-within{outline:2px solid var(--accent)}.file-picker input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer}#clip-name{overflow-wrap:anywhere}
 </style>
-<header>WhiteNoiseChoir / Studio</header>
+<header>WhiteNoiseChoir</header>
 <main>
-<h1>Soundscape Studio</h1>
-<div class="row">
-<label>Mix name <input id="title" type="text" maxlength="100"></label>
-<label>Length (min) <input id="minutes" type="number" min="0.1" max="180" step="0.1"></label>
-<button id="share" class="primary">Copy draft link</button>
-<button id="clear">New blank mix</button>
+<h1>Phòng phối âm</h1>
+<div id="mix-controls" class="row">
+<label>Tên bản phối <input id="title" type="text" maxlength="100"></label>
+<label>Thời lượng (phút) <input id="minutes" type="number" min="0.1" max="180" step="0.1"></label>
+<button id="share" class="primary">Sao chép liên kết</button>
+<button id="clear">Tạo bản phối mới</button>
 </div>
-<div class="shell">
-<section class="panel" aria-label="Timeline">
-<div class="row"><button id="play" class="primary">Play</button><button id="reset">Back to start</button><button id="tail">Preview loop seam</button><button id="render">Render WAV</button><output id="time"></output></div>
-<input id="seek" type="range" min="0" step=".01" aria-label="Playback position">
+<div id="mix-editor" class="shell">
+<section class="panel" aria-label="Dòng thời gian">
+<div class="row"><button id="play" class="primary">Phát</button><button id="reset">Về đầu</button><button id="tail">Nghe chỗ nối vòng</button><output id="time"></output></div>
+<input id="seek" type="range" min="0" step=".01" aria-label="Vị trí phát">
 <div id="tracks"></div>
 </section>
-<aside class="panel"><h2>Sound library</h2><div id="library"></div><a href="/#mix=streamside">Open Streamside draft</a><br><a href="/#mix=cabin-rain-night">Open Rainy Cabin draft</a><br><a href="/#mix=cabin-rain-night-v2">Open Rainy Cabin V2</a><br><a href="/#mix=cabin-rain-night-v3">Open Rainy Cabin V3</a></aside>
+<aside class="panel"><h2>Thư viện âm thanh</h2><div id="library"></div><a href="/#mix=streamside">Mở bản Suối rừng</a><br><a href="/#mix=cabin-rain-night">Mở bản Cabin trong mưa đêm</a><br><a href="/#mix=cabin-rain-night-v2">Mở bản Cabin V2</a><br><a href="/#mix=cabin-rain-night-v3">Mở bản Cabin V3</a></aside>
 </div>
 <p id="status" role="status" class="muted"></p>
-<section id="video-studio" class="panel">
-<h2>Video</h2>
-<label for="video-prompt">AI video prompt</label>
-<textarea id="video-prompt" maxlength="3000" placeholder="Add a prompt for this mix"></textarea>
-<div class="row"><button id="copy-prompt">Copy prompt</button><label>Upload a short clip <input type="file" id="video-input" accept="video/*,.mov,.mkv"></label><button id="render-video" class="primary" disabled>Render MP4</button></div>
-<p class="muted">The clip repeats to match the mix. The exported video uses the mix audio.</p>
-<video id="video-preview" controls muted loop playsinline hidden></video>
-<p id="video-status" role="status" aria-live="polite"></p>
+<section id="video-studio" class="panel" aria-labelledby="export-heading">
+<h2 id="export-heading">Xuất âm thanh và video</h2>
+<div class="export-step">
+<h3>1. Xuất âm thanh WAV</h3>
+<p class="muted">Đặt thời lượng ở đầu trang, rồi xuất bản phối. Thời lượng đã xuất sẽ dùng cho video.</p>
+<button id="render" class="primary">Xuất WAV</button>
+<progress id="audio-progress" max="100" value="0" aria-label="Tiến độ xuất âm thanh"></progress>
+<p id="audio-status" role="status">Chưa xuất âm thanh.</p>
+<div id="audio-result"></div>
+</div>
+<div class="export-step">
+<h3>2. Tải clip lên và kéo dài video nền</h3>
+<label for="video-prompt">Câu lệnh tạo clip bằng AI</label>
+<textarea id="video-prompt" maxlength="3000" placeholder="Nhập câu lệnh cho bản phối này"></textarea>
+<div class="row">
+<button id="copy-prompt">Sao chép câu lệnh</button><span id="prompt-status" role="status" class="muted"></span>
+</div>
+<div class="row video-actions">
+<label class="file-picker">Chọn clip ngắn <input type="file" id="video-input" accept="video/*,.mov,.mkv" aria-label="Chọn clip ngắn"></label>
+<span id="clip-name" class="muted">Chưa chọn clip</span>
+<button id="render-video" class="primary" disabled>Kéo dài video nền</button>
+</div>
+<video id="video-preview" controls muted loop playsinline hidden aria-label="Xem trước clip ngắn"></video>
+<progress id="video-progress" max="100" value="0" aria-label="Tiến độ kéo dài video nền"></progress>
+<p id="video-status" role="status">Xuất WAV và chọn clip để bắt đầu.</p>
+<div id="video-result"></div>
+</div>
+<div class="export-step">
+<h3>3. Ghép âm thanh vào video</h3>
+<p class="muted">Ghép bản WAV ở bước 1 vào video nền ở bước 2. Video thành phẩm dùng âm thanh của bản phối.</p>
+<button id="mux-video" class="primary" disabled>Ghép và xuất MP4</button>
+<progress id="mux-progress" max="100" value="0" aria-label="Tiến độ ghép âm thanh và video"></progress>
+<p id="mux-status" role="status">Đang chờ video nền.</p>
+<div id="mux-result"></div>
+</div>
 </section>
-<details><summary>Check audio output</summary><p>Play the original stream recording.</p><audio id="audio-check" controls preload="none"></audio></details>
+<details><summary>Kiểm tra âm thanh</summary><p>Phát thử bản ghi tiếng suối gốc.</p><audio id="audio-check" controls preload="none"></audio></details>
 </main>
 <script>
-const assets = [{"name":"Stream close-up","key":"asset-library/raw/sha256/be/be201d2fd0d110fc3ef5d8af060e5ac48439fd54e9f26ce6b69825182748a95b.wav","duration":68.889,"source":"https://commons.wikimedia.org/wiki/File:433589_jackthemurray_stream-river-water-up-close.wav"},{"name":"Clicking Stream Frog","key":"asset-library/raw/sha256/0a/0a3c133128b94306396567cfc22ded8363645869d762c2bbc76b5c3519017cff.m4a","duration":11.865011,"source":"https://www.inaturalist.org/observations/111319279"},{"name":"American Robin","key":"asset-library/raw/sha256/0b/0bf24b2b08299380add4e29b6ed0c9ed37ffaa26a19e3908e5b572d75ef7cabe.m4a","duration":24.960998,"source":"https://www.inaturalist.org/observations/402220192"},{"name":"Barred Owl","key":"asset-library/raw/sha256/06/06c95f291596cfc813ff54d636ae926493ed6cd9c8a10d30f049a70460048af1.mp3","duration":62.261875,"source":"https://www.inaturalist.org/observations/349447210"},{"name":"Common Eastern Bumble Bee","key":"asset-library/raw/sha256/2b/2b5e3902314cbb5d54c26164dc4264a1fdebf61f5012e6f378f6f3e313c7e91a.m4a","duration":23.04,"source":"https://www.inaturalist.org/observations/243621492"},{"name":"Fireplace crackle","key":"audio/fireplace-real.mp3","duration":600,"source":"https://freesound.org/people/visionear/sounds/501417/","license":"CC0"},{"name":"Rain on the window","key":"audio/rain-on-window-real.mp3","duration":600,"source":"https://freesound.org/people/ikayuka/sounds/273333/","license":"CC0"},{"name":"Wolves howling in Denali","key":"asset-library/raw/sha256/bf/bfc073e6226f2a21a87567b898c5e5674a53284353128da0d1e0f69b97e8b62f.mp3","duration":8.36,"source":"https://www.nps.gov/subjects/sound/sounds-wolf.htm","license":"NPS recording"},{"name":"Distant train passing","url":"https://upload.wikimedia.org/wikipedia/commons/transcoded/6/67/Train_passing_by_in_the_Wirikuta_Desert_(Mexico%2C_SLP).wav/Train_passing_by_in_the_Wirikuta_Desert_(Mexico%2C_SLP).wav.mp3","duration":154.25,"source":"https://commons.wikimedia.org/wiki/File:Train_passing_by_in_the_Wirikuta_Desert_(Mexico,_SLP).wav","license":"CC0"},{"name":"Rain in the trees","key":"audio/rain-leaves-real.mp3","duration":600,"source":"https://freesound.org/people/Garuda1982/sounds/757276/"},{"name":"Rain on the roof","key":"audio/rain-tin-roof-real.mp3","duration":600,"source":"https://freesound.org/people/archerjosiah/sounds/843483/"},{"name":"Distant rolling thunder","key":"audio/distant-thunder-real.mp3","duration":600,"source":"https://freesound.org/people/moxobna/sounds/107518/"},{"name":"Close timber creak","url":"https://cdn.freesound.org/previews/506/506660_4921277-hq.mp3","duration":1.75,"source":"https://freesound.org/people/Rudmer_Rotteveel/sounds/506660/","license":"CC0"},{"name":"Water dripping from the gutter","url":"https://cdn.freesound.org/previews/180/180948_2596329-hq.mp3","duration":33.25,"source":"https://freesound.org/people/jc144940/sounds/180948/","license":"CC0"},{"name":"Wolves howling · distant reply","url":"https://upload.wikimedia.org/wikipedia/commons/transcoded/8/87/Wolf_howls.ogg/Wolf_howls.ogg.mp3","duration":28.35,"source":"https://commons.wikimedia.org/wiki/File:Wolf_howls.ogg","license":"Public domain"}];
+const assets = [{"name":"Suối chảy gần","key":"asset-library/raw/sha256/be/be201d2fd0d110fc3ef5d8af060e5ac48439fd54e9f26ce6b69825182748a95b.wav","duration":68.889,"source":"https://commons.wikimedia.org/wiki/File:433589_jackthemurray_stream-river-water-up-close.wav"},{"name":"Ếch suối kêu","key":"asset-library/raw/sha256/0a/0a3c133128b94306396567cfc22ded8363645869d762c2bbc76b5c3519017cff.m4a","duration":11.865011,"source":"https://www.inaturalist.org/observations/111319279"},{"name":"Chim cổ đỏ Mỹ","key":"asset-library/raw/sha256/0b/0bf24b2b08299380add4e29b6ed0c9ed37ffaa26a19e3908e5b572d75ef7cabe.m4a","duration":24.960998,"source":"https://www.inaturalist.org/observations/402220192"},{"name":"Cú vằn","key":"asset-library/raw/sha256/06/06c95f291596cfc813ff54d636ae926493ed6cd9c8a10d30f049a70460048af1.mp3","duration":62.261875,"source":"https://www.inaturalist.org/observations/349447210"},{"name":"Ong nghệ","key":"asset-library/raw/sha256/2b/2b5e3902314cbb5d54c26164dc4264a1fdebf61f5012e6f378f6f3e313c7e91a.m4a","duration":23.04,"source":"https://www.inaturalist.org/observations/243621492"},{"name":"Lò sưởi tí tách","key":"audio/fireplace-real.mp3","duration":600,"source":"https://freesound.org/people/visionear/sounds/501417/","license":"CC0"},{"name":"Mưa trên cửa kính","key":"audio/rain-on-window-real.mp3","duration":600,"source":"https://freesound.org/people/ikayuka/sounds/273333/","license":"CC0"},{"name":"Sói tru ở Denali","key":"asset-library/raw/sha256/bf/bfc073e6226f2a21a87567b898c5e5674a53284353128da0d1e0f69b97e8b62f.mp3","duration":8.36,"source":"https://www.nps.gov/subjects/sound/sounds-wolf.htm","license":"NPS recording"},{"name":"Tàu hỏa đi qua ở xa","url":"https://upload.wikimedia.org/wikipedia/commons/transcoded/6/67/Train_passing_by_in_the_Wirikuta_Desert_(Mexico%2C_SLP).wav/Train_passing_by_in_the_Wirikuta_Desert_(Mexico%2C_SLP).wav.mp3","duration":154.25,"source":"https://commons.wikimedia.org/wiki/File:Train_passing_by_in_the_Wirikuta_Desert_(Mexico,_SLP).wav","license":"CC0"},{"name":"Mưa trên tán cây","key":"audio/rain-leaves-real.mp3","duration":600,"source":"https://freesound.org/people/Garuda1982/sounds/757276/"},{"name":"Mưa trên mái","key":"audio/rain-tin-roof-real.mp3","duration":600,"source":"https://freesound.org/people/archerjosiah/sounds/843483/"},{"name":"Sấm lăn từ xa","key":"audio/distant-thunder-real.mp3","duration":600,"source":"https://freesound.org/people/moxobna/sounds/107518/"},{"name":"Gỗ kẽo kẹt gần","url":"https://cdn.freesound.org/previews/506/506660_4921277-hq.mp3","duration":1.75,"source":"https://freesound.org/people/Rudmer_Rotteveel/sounds/506660/","license":"CC0"},{"name":"Nước nhỏ từ mái hiên","url":"https://cdn.freesound.org/previews/180/180948_2596329-hq.mp3","duration":33.25,"source":"https://freesound.org/people/jc144940/sounds/180948/","license":"CC0"},{"name":"Sói tru đáp từ xa","url":"https://upload.wikimedia.org/wikipedia/commons/transcoded/8/87/Wolf_howls.ogg/Wolf_howls.ogg.mp3","duration":28.35,"source":"https://commons.wikimedia.org/wiki/File:Wolf_howls.ogg","license":"Public domain"}];
 const media = 'https://media.whitenoisechoir.com/';
 const $ = id => document.getElementById(id);
 $('audio-check').src=media+assets[0].key;
 const clamp = (n, lo, hi) => Math.max(lo, Math.min(hi, n));
 const streamPrompt = 'Create an 8-second photorealistic 16:9 seamless loop of a shallow forest stream at dusk. Use a locked camera at bank level, with moss-covered stones and softly lit ferns framing the water. Keep exposure and focus fixed. Let only the flowing water and a few leaves move gently, with no sudden motion, cuts, people, text, or camera movement. Match the opening and closing composition and motion phase. Export a clean 1080p MP4 without audio.';
 const sample = () => ({
-  title: 'Streamside', length: 1800, videoPrompt:streamPrompt,
+  title: 'Suối rừng', length: 1800, videoPrompt:streamPrompt,
   tracks: assets.slice(0, 4).map((_, i) => ({asset:i, start:[0,42,105,180][i], gain:[.72,.23,.30,.18][i], loop:i===0, mute:false}))
 });
 const cabinSample = () => ({"title":"Cabin trong mưa đêm","length":600,"videoPrompt":"Generate an 8-second photorealistic seamless loop, 16:9, 1920×1080, 24 fps. Night inside a remote timber cabin. From a locked tripod at seated eye level with a 35 mm lens, frame a stone hearth on the left third and a rain-streaked window on the right third. Place a few split logs beside the hearth and a plain wool throw in the lower foreground. Outside the glass, show only dark spruce silhouettes and a faint blue-grey sky. Balance soft amber firelight against cool blue light at the window.\n\nKeep camera, focus, exposure and composition fixed. Animate low flames, a soft ember glow, subtle warm reflections on the wood and fine rain trailing down the window. Keep the motion gentle and continuous. Match the light and motion at the opening and closing so the clip repeats without a visible jump, reverse motion or fade to black. The wolf and the passing train stay off screen. No people, animals, vehicles, lightning, abrupt sparks, text or logos. Export MP4 without sound.","tracks":[{"asset":5,"start":0,"gain":0.46,"loop":true,"mute":false},{"asset":6,"start":0,"gain":0.34,"loop":true,"mute":false},{"asset":7,"start":135,"gain":0.18,"loop":false,"mute":false},{"asset":8,"start":305,"gain":0.14,"loop":false,"mute":false}]});
@@ -73,12 +101,12 @@ function readMix(){
       return {title:String(saved.title).slice(0,100), videoPrompt:typeof saved.videoPrompt==='string' ? saved.videoPrompt.slice(0,3000) : (/suối|stream/i.test(String(saved.title)) ? streamPrompt : ''), length,
         tracks:saved.tracks.slice(0,32).filter(t=>assets[t.asset] && Number.isFinite(t.start) && Number.isFinite(t.gain))
           .map(t=>({
-            asset:Number(t.asset),start:clamp(t.start,0,length),gain:clamp(t.gain,0,1),loop:!!t.loop,mute:!!t.mute,
+            asset:Number(t.asset),start:clamp(t.start,0,10800),gain:clamp(t.gain,0,1),loop:!!t.loop,mute:!!t.mute,
             ...(typeof t.label==='string'?{label:t.label.slice(0,100)}:{}),
             ...readClipOptions(t)
           }))};
     }
-  } catch { $('status').textContent='This draft link could not be read. Streamside was loaded.'; }
+  } catch { $('status').textContent='Không đọc được liên kết bản phối. Đã mở bản Suối rừng.'; }
   return sample();
 }
 let mix = readMix(), position=0, playing=false, anchor=0, frame=0, generation=0;
@@ -88,8 +116,8 @@ function stop(){
   generation++;
   playing=false;
   cancelAnimationFrame(frame);
-  for(const {node} of active.splice(0)) { try {node.stop();} catch {} }
-  $('play').textContent='Play';
+  for(const {node} of active.splice(0)) { try {node.stop();node.disconnect();} catch {} }
+  $('play').textContent='Phát';
 }
 const format = n => [Math.floor(n/60), Math.floor(n%60)].map(v=>String(v).padStart(2,'0')).join(':');
 function display(){
@@ -105,11 +133,33 @@ function tick(loopPreview=false){
   if(elapsed>=end) stop();
   else frame=requestAnimationFrame(()=>tick(loopPreview));
 }
+async function decodeRecording(i,decoder){
+  const asset=assets[i];
+  const primary=asset.url || media+asset.key;
+  const url=new URL(primary);
+  url.searchParams.set('studio-audio','20261111');
+  const localMasters=new Set(['audio/fireplace-real.mp3','audio/rain-on-window-real.mp3',
+    'audio/rain-leaves-real.mp3','audio/rain-tin-roof-real.mp3','audio/distant-thunder-real.mp3']);
+  const candidates=localMasters.has(asset.key) ? ['/'+asset.key,url.href] : [primary,url.href];
+  let failure='Không có phản hồi';
+  for(const address of candidates){
+    try {
+      const response=await fetch(address,{cache:'reload',signal:AbortSignal.timeout(45000)});
+      if(!response.ok){failure='HTTP '+response.status;continue;}
+      const bytes=await response.arrayBuffer();
+      try {return await decoder.decodeAudioData(bytes);}
+      catch {failure='Không giải mã được tệp âm thanh';}
+    } catch(error) {
+      failure=error.name==='TimeoutError' || error.name==='AbortError'
+        ? 'Tải quá thời gian chờ' : 'Lỗi mạng hoặc quyền truy cập tệp';
+    }
+  }
+  throw Error(asset.name+' · '+failure);
+}
 function load(i){
-  if(!buffers.has(i)) buffers.set(i,fetch(assets[i].url || media+assets[i].key).then(r=>{
-    if(!r.ok) throw Error(assets[i].name);
-    return r.arrayBuffer();
-  }).then(b=>context.decodeAudioData(b)).catch(e=>{buffers.delete(i);throw e;}));
+  if(!buffers.has(i)) buffers.set(i,decodeRecording(i,context).catch(error=>{
+    buffers.delete(i);throw error;
+  }));
   return buffers.get(i);
 }
 function clipDuration(track,sourceDuration,projectLength){
@@ -162,7 +212,7 @@ async function play(loopPreview=false){
   if(!mix.tracks.some(t=>!t.mute)) return;
   if(position>=mix.length) position=0;
   const token=++generation;
-  $('status').textContent='Loading audio…';
+  $('status').textContent='Đang tải âm thanh…';
   try {
     const AudioEngine=window.AudioContext || window.webkitAudioContext;
     context ||= new AudioEngine();
@@ -182,12 +232,12 @@ async function play(loopPreview=false){
     }
     schedule(position,mix.length,anchor);
     if(loopPreview) schedule(0,5,anchor+mix.length);
-    if(decoded.every(r=>r.status==='rejected')) throw Error('Audio decoding failed');
-    playing=true;$('play').textContent='Pause';
+    if(decoded.every(r=>r.status==='rejected')) throw Error('Không giải mã được âm thanh');
+    playing=true;$('play').textContent='Tạm dừng';
     const skipped=tracks.filter((_,i)=>decoded[i].status==='rejected').map(t=>assets[t.asset].name);
-    $('status').textContent=skipped.length?'Unavailable tracks: '+[...new Set(skipped)].join(', '):'';
+    $('status').textContent=skipped.length?'Không tải được các lớp: '+[...new Set(skipped)].join(', '):'';
     tick(loopPreview);
-  } catch(e){if(token===generation){stop();$('status').textContent='Audio could not load. Try again or replace the source.';}}
+  } catch(e){if(token===generation){stop();$('status').textContent='Không tải được âm thanh. Hãy thử lại hoặc đổi nguồn.';}}
 }
 function locate(value){
   const resume=playing;
@@ -214,25 +264,27 @@ function render(){
   $('title').value=mix.title;$('minutes').value=mix.length/60;
   $('seek').max=mix.length;
   $('tracks').replaceChildren();
-  if(!mix.tracks.length) $('tracks').append(node('p','Add a sound from the library.','muted'));
+  if(!mix.tracks.length) $('tracks').append(node('p','Thêm âm thanh từ thư viện.','muted'));
   mix.tracks.forEach((t,i)=>{
     const asset=assets[t.asset], card=node('div','','track'), top=node('div','','row');
-    const select=node('select');select.setAttribute('aria-label','Sound source');
+    const select=node('select');select.setAttribute('aria-label','Nguồn âm thanh');
     assets.forEach((a,j)=>{const o=node('option',a.name);o.value=j;select.append(o);});
     select.value=t.asset;select.onchange=()=>change(()=>{t.asset=Number(select.value);});
-    const start=node('input');start.type='number';start.min=0;start.max=mix.length;start.step='.1';start.value=t.start;
-    start.onchange=()=>change(()=>{t.start=clamp(Number(start.value),0,mix.length);});
+    const start=node('input');start.type='number';start.min=0;start.max=Math.max(mix.length,t.start);start.step='.1';start.value=t.start;
+    start.onchange=()=>change(()=>{t.start=clamp(Number(start.value),0,Number(start.max));});
     const volume=node('input');volume.type='range';volume.min=0;volume.max=1;volume.step='.01';volume.value=t.gain;
-    volume.oninput=()=>{t.gain=Number(volume.value);for(const playingTrack of active){if(playingTrack.track===t) playingTrack.gain.gain.value=t.gain;}};
-    const loop=button('Loop',()=>change(()=>{t.loop=!t.loop;}));loop.setAttribute('aria-pressed',t.loop);
-    const mute=button('Mute',()=>change(()=>{t.mute=!t.mute;}));mute.setAttribute('aria-pressed',t.mute);
-    const source=node('a',(asset.license || 'CC0')+' source');source.href=asset.source;source.target='_blank';source.rel='noopener noreferrer';
-    top.append(select,field('Start (s)',start),field('Volume',volume),loop,mute,button('Remove',()=>change(()=>mix.tracks.splice(i,1))),source);
+    volume.oninput=()=>{t.gain=Number(volume.value);for(const playingTrack of active){if(playingTrack.track===t) playingTrack.gain.gain.value=t.gain;}syncWorkflow();};
+    const loop=button('Lặp',()=>change(()=>{t.loop=!t.loop;}));loop.setAttribute('aria-pressed',t.loop);
+    const mute=button('Tắt tiếng',()=>change(()=>{t.mute=!t.mute;}));mute.setAttribute('aria-pressed',t.mute);
+    const source=node('a',(asset.license || 'CC0')+' · Nguồn');source.href=asset.source;source.target='_blank';source.rel='noopener noreferrer';
+    top.append(select,field('Bắt đầu (giây)',start),field('Âm lượng',volume),loop,mute,button('Xóa lớp',()=>change(()=>mix.tracks.splice(i,1))),source);
     const lane=node('div','','lane'), clip=node('div',t.label || asset.name,'clip');
     if(t.label) card.append(node('div',t.label,'muted'));
     const place = value => {
-      clip.style.left=100*value/mix.length+'%';
-      clip.style.width=100*clipDuration({...t,start:value},asset.duration,mix.length)/mix.length+'%';
+      const length=clipDuration({...t,start:value},asset.duration,mix.length);
+      clip.hidden=length<=0;
+      clip.style.left=100*Math.min(value,mix.length)/mix.length+'%';
+      clip.style.width=100*length/mix.length+'%';
     };
     place(t.start);
     clip.onpointerdown=e=>{
@@ -246,6 +298,7 @@ function render(){
     lane.append(clip,node('div','','needle'));card.append(top,lane);$('tracks').append(card);
   });
   display();
+  syncWorkflow();
 }
 
 $('tail').onclick=()=>{
@@ -256,80 +309,154 @@ $('tail').onclick=()=>{
 };
 
 async function buildWav(project,progress){
-  const tracks=project.tracks.filter(t=>!t.mute && t.gain>0 && t.start<project.length);
-  if(!tracks.length) throw Error('Add an audible track before rendering.');
-    const Engine=window.AudioContext || window.webkitAudioContext;
-    const Offline=window.OfflineAudioContext || window.webkitOfflineAudioContext;
-    context ||= new Engine();
-    const decoded=await Promise.all(tracks.map(t=>load(t.asset).catch(()=>{
-      throw Error('Unable to load '+assets[t.asset].name);
-    })));
-    const rate=44100, frames=Math.ceil(project.length*rate);
-    const header=new DataView(new ArrayBuffer(44));
-    const tag=(offset,value)=>{for(let i=0;i<value.length;i++) header.setUint8(offset+i,value.charCodeAt(i));};
-    tag(0,'RIFF');header.setUint32(4,36+frames*4,true);tag(8,'WAVE');tag(12,'fmt ');
-    header.setUint32(16,16,true);header.setUint16(20,1,true);header.setUint16(22,2,true);
-    header.setUint32(24,rate,true);header.setUint32(28,rate*4,true);
-    header.setUint16(32,4,true);header.setUint16(34,16,true);tag(36,'data');
-    header.setUint32(40,frames*4,true);
-    const parts=[header.buffer];
-    const tailStart=Math.max(0,frames-10*rate);
-    let quiet=0,longest=0,peak=0;
-    for(let first=0;first<frames;first+=30*rate){
-      const count=Math.min(30*rate,frames-first);
+  const bySource=new Map();
+  for(const track of project.tracks){
+    if(track.mute || track.gain<=0 || track.start>=project.length) continue;
+    if(!bySource.has(track.asset)) bySource.set(track.asset,[]);
+    bySource.get(track.asset).push(track);
+  }
+  if(!bySource.size) throw Error('Hãy bật ít nhất một lớp âm thanh.');
+  const Offline=window.OfflineAudioContext || window.webkitOfflineAudioContext;
+  if(!Offline) throw Error('Trình duyệt này không hỗ trợ xuất âm thanh.');
+  const rate=44100, frames=Math.ceil(project.length*rate), blockSize=30*rate;
+  const decoder=new Offline(2,1,rate);
+  const mixLeft=new Float32Array(frames), mixRight=new Float32Array(frames);
+  const sourceCount=bySource.size;
+  let sourceNumber=0;
+  for(const [id,tracks] of bySource){
+    const name=assets[id].name;
+    progress(sourceNumber/sourceCount*86,'Đang tải nguồn '+(sourceNumber+1)+'/'+sourceCount+' · '+name);
+    const buffer=await decodeRecording(id,decoder);
+    for(let first=0;first<frames;first+=blockSize){
+      const count=Math.min(blockSize,frames-first);
       const lead=Math.min(first,Math.round(rate*.25));
-      const blockStart=(first-lead)/rate;
-      const offline=new Offline(2,count+lead,rate);
-      tracks.forEach((track,i)=>{
-        scheduleTrack(offline,decoded[i],track,blockStart,(first+count)/rate,-blockStart,project.length);
-      });
-      const rendered=await offline.startRendering();
-      const left=rendered.getChannelData(0).subarray(lead),right=rendered.getChannelData(1).subarray(lead);
-      const pcm=new DataView(new ArrayBuffer(count*4));
-      for(let i=0;i<count;i++){
-        const amplitude=Math.max(Math.abs(left[i]),Math.abs(right[i]));
-        peak=Math.max(peak,amplitude);
-        pcm.setInt16(i*4,Math.round(clamp(left[i],-1,1)*32767),true);
-        pcm.setInt16(i*4+2,Math.round(clamp(right[i],-1,1)*32767),true);
-        if(first+i>=tailStart){
-          quiet=amplitude<.001?quiet+1:0;
-          longest=Math.max(longest,quiet);
+      const from=(first-lead)/rate, to=(first+count)/rate;
+      const audible=tracks.filter(t=>t.start<to && t.start+clipDuration(t,buffer.duration,project.length)>from);
+      if(audible.length){
+        const offline=new Offline(2,count+lead,rate);
+        for(const track of audible) scheduleTrack(offline,buffer,track,from,to,-from,project.length);
+        const rendered=await offline.startRendering();
+        const left=rendered.getChannelData(0), right=rendered.getChannelData(1);
+        for(let i=0;i<count;i++){
+          mixLeft[first+i]+=left[i+lead];
+          mixRight[first+i]+=right[i+lead];
         }
       }
-      parts.push(pcm.buffer);
-      progress(Math.round(100*(first+count)/frames));
+      progress((sourceNumber+(first+count)/frames)/sourceCount*86,'Đang phối nguồn '+(sourceNumber+1)+'/'+sourceCount+' · '+name);
     }
-
-  return {blob:new Blob(parts,{type:'audio/wav'}), silence:longest/rate, clipped:peak>1};
+    sourceNumber++;
+  }
+  const header=new DataView(new ArrayBuffer(44));
+  const tag=(offset,value)=>{for(let i=0;i<value.length;i++) header.setUint8(offset+i,value.charCodeAt(i));};
+  tag(0,'RIFF');header.setUint32(4,36+frames*4,true);tag(8,'WAVE');tag(12,'fmt ');
+  header.setUint32(16,16,true);header.setUint16(20,1,true);header.setUint16(22,2,true);
+  header.setUint32(24,rate,true);header.setUint32(28,rate*4,true);
+  header.setUint16(32,4,true);header.setUint16(34,16,true);tag(36,'data');
+  header.setUint32(40,frames*4,true);
+  const parts=[header.buffer], tailStart=Math.max(0,frames-10*rate);
+  let quiet=0,longest=0,peak=0;
+  for(let first=0;first<frames;first+=blockSize){
+    const count=Math.min(blockSize,frames-first);
+    const pcm=new DataView(new ArrayBuffer(count*4));
+    for(let i=0;i<count;i++){
+      const index=first+i,left=mixLeft[index],right=mixRight[index];
+      const amplitude=Math.max(Math.abs(left),Math.abs(right));
+      peak=Math.max(peak,amplitude);
+      pcm.setInt16(i*4,Math.round(clamp(left,-1,1)*32767),true);
+      pcm.setInt16(i*4+2,Math.round(clamp(right,-1,1)*32767),true);
+      if(index>=tailStart){
+        quiet=amplitude<.001?quiet+1:0;
+        longest=Math.max(longest,quiet);
+      }
+    }
+    parts.push(pcm.buffer);
+    progress(86+(first+count)/frames*13,'Đang đóng gói tệp WAV');
+    await new Promise(resolve=>setTimeout(resolve,0));
+  }
+  return {blob:new Blob(parts,{type:'audio/wav'}),silence:longest/rate,clipped:peak>1,duration:frames/rate};
 }
-function downloadResult(status,blob,title,ext,description=''){
-  const url=URL.createObjectURL(blob);
+let exporting=false, audioExport=null, videoExport=null, clipUrl=null;
+const durationLabel=seconds=>{
+  const ms=Math.round(seconds*1000);
+  const whole=Math.floor(ms/1000);
+  return format(whole)+(ms%1000?','+String(ms%1000).padStart(3,'0').replace(/0+$/,''):'');
+};
+function progressStage(step,percent,message){
+  const bar=$(step+'-progress');
+  if(percent===null) bar.removeAttribute('value');
+  else bar.value=Math.round(clamp(percent,0,100));
+  $(step+'-status').textContent=message+(percent>0&&percent<100?' · '+bar.value+'%':'');
+}
+function stageError(step,error){
+  const progress=$(step+'-progress');
+  progressStage(step,progress.hasAttribute('value')?progress.value:0,'Lỗi · '+(error instanceof RangeError?'Trình duyệt không đủ bộ nhớ để xuất ở thời lượng này. Hãy thử bản ngắn hơn.':error.message));
+}
+function clearResult(step){
+  const result=$(step+'-result');
+  const previous=result.querySelector('a');
+  if(previous) URL.revokeObjectURL(previous.href);
+  result.replaceChildren();
+}
+function showDownload(step,blob,title,extension,label){
+  clearResult(step);
   const link=document.createElement('a');
-  link.href=url;
-  link.download=(title.replace(/[\\/:*?"<>|]/g,'-').trim() || 'soundscape')+'.'+ext;
-  link.textContent='Download '+ext.toUpperCase();
-  status.replaceChildren(link,document.createTextNode(description));
-  link.onclick=()=>setTimeout(()=>URL.revokeObjectURL(url),60000);
+  link.href=URL.createObjectURL(blob);
+  link.download=(title.replace(/[\\/:*?"<>|]/g,'-').trim() || 'ban-phoi')+'.'+extension;
+  link.textContent=label;
+  $(step+'-result').append(link);
+}
+const audioSignature=project=>JSON.stringify([project.length,project.tracks]);
+function resetVideo(){
+  videoExport=null;
+  clearResult('video');clearResult('mux');
+  progressStage('video',0,audioExport
+    ? ($('video-input').files.length?'Đã chọn clip. Có thể kéo dài đến '+durationLabel(audioExport.duration)+'.':'Chọn clip để kéo dài đến '+durationLabel(audioExport.duration)+'.')
+    : 'Xuất WAV và chọn clip để bắt đầu.');
+  progressStage('mux',0,'Đang chờ video nền.');
+}
+function syncWorkflow(){
+  if(!exporting && audioExport && audioExport.signature!==audioSignature(mix)){
+    audioExport=null;
+    clearResult('audio');
+    progressStage('audio',0,'Bản phối đã thay đổi. Hãy xuất lại WAV.');
+    resetVideo();
+  }
+  $('mix-controls').inert=exporting;
+  $('mix-editor').inert=exporting;
+  $('video-input').disabled=exporting;
+  $('render').disabled=exporting;
+  $('render-video').disabled=exporting || !audioExport || !$('video-input').files.length;
+  $('mux-video').disabled=exporting || !audioExport || !videoExport;
+}
+function exportBusy(value){
+  exporting=value;
+  if(value){stop();buffers.clear();}
+  syncWorkflow();
 }
 $('render').onclick=async()=>{
-  const status=$('status'), button=$('render'), project=structuredClone(mix);
-  stop();button.disabled=true;
-  status.textContent='Loading tracks for render…';
+  if(exporting) return;
+  const project=structuredClone(mix);
+  audioExport=null;clearResult('audio');resetVideo();exportBusy(true);
+  progressStage('audio',0,'Đang chuẩn bị xuất '+durationLabel(project.length)+' âm thanh');
   try {
-    const result=await buildWav(project,p=>{status.textContent='Rendering WAV · '+p+'%';});
-    downloadResult(status,result.blob,project.title,'wav',
-      ' · Last 10 s: longest interval below −60 dBFS '+result.silence.toFixed(3)+' s'+(result.clipped?' · Peaks clipped':''));
-  } catch(error) {status.textContent='Render failed · '+error.message;}
-  finally {button.disabled=false;}
+    const result=await buildWav(project,(percent,message)=>progressStage('audio',percent,message));
+    audioExport={...result,title:project.title,signature:audioSignature(project)};
+    const silence=result.silence.toFixed(3).replace('.',',');
+    progressStage('audio',100,'Đã xuất WAV · '+durationLabel(result.duration)+
+      ' · Khoảng lặng dài nhất ở 10 giây cuối: '+silence+' giây dưới −60 dBFS.'+
+      (result.clipped?' Có đỉnh âm bị cắt.':''));
+    showDownload('audio',result.blob,project.title,'wav','Tải WAV');
+    resetVideo();
+  } catch(error) {stageError('audio',error);}
+  finally {exportBusy(false);}
 };
 $('video-prompt').oninput=()=>{mix.videoPrompt=$('video-prompt').value;};
 $('copy-prompt').onclick=async()=>{
   const prompt=$('video-prompt');
   if(!prompt.value){prompt.focus();return;}
-  try {await navigator.clipboard.writeText(prompt.value);$('video-status').textContent='Prompt copied.';}
-  catch {prompt.select();$('video-status').textContent='Copy the selected prompt.';}
+  try {await navigator.clipboard.writeText(prompt.value);$('prompt-status').textContent='Đã sao chép câu lệnh.';}
+  catch {prompt.select();$('prompt-status').textContent='Hãy sao chép phần văn bản đã chọn.';}
 };
-let clipUrl;
 $('video-input').onchange=()=>{
   const file=$('video-input').files[0], preview=$('video-preview');
   if(clipUrl) URL.revokeObjectURL(clipUrl);
@@ -337,63 +464,117 @@ $('video-input').onchange=()=>{
   preview.hidden=!file;
   if(file) preview.src=clipUrl;
   else {preview.removeAttribute('src');preview.load();}
-  $('render-video').disabled=!file;
-  $('video-status').textContent=file ? 'Clip selected: '+file.name : '';
+  $('clip-name').textContent=file?.name || 'Chưa chọn clip';
+  resetVideo();
+  syncWorkflow();
 };
-$('render-video').onclick=async()=>{
-  const input=$('video-input'), button=$('render-video'), status=$('video-status');
-  const file=input.files[0], project=structuredClone(mix);
-  if(!file) return;
-  button.disabled=true;input.disabled=true;stop();
+async function withEncoder(work){
   let ffmpeg,worker;
   try {
-    status.textContent='Loading video renderer and mixing audio…';
     const cdn='https://cdn.jsdelivr.net/npm/';
-    const ff=cdn+'@ffmpeg/ffmpeg@0.12.15/dist/esm/';
+    const moduleBase=cdn+'@ffmpeg/ffmpeg@0.12.15/dist/esm/';
     const core=cdn+'@ffmpeg/core@0.12.10/dist/esm/';
-    const {FFmpeg}=await import(ff+'index.js');
-    worker=URL.createObjectURL(new Blob(['import '+JSON.stringify(ff+'worker.js')+';'],{type:'text/javascript'}));
+    const {FFmpeg}=await import(moduleBase+'index.js');
+    worker=URL.createObjectURL(new Blob(['import '+JSON.stringify(moduleBase+'worker.js')+';'],{type:'text/javascript'}));
     ffmpeg=new FFmpeg();
-    await ffmpeg.load({classWorkerURL:worker,coreURL:core+'ffmpeg-core.js',wasmURL:core+'ffmpeg-core.wasm'});
-    const audio=await buildWav(project,p=>{status.textContent='Mixing audio · '+p+'%';});
-    await ffmpeg.writeFile('clip',new Uint8Array(await file.arrayBuffer()));
-    await ffmpeg.writeFile('mix.wav',new Uint8Array(await audio.blob.arrayBuffer()));
-    status.textContent='Rendering video…';
-    ffmpeg.on('progress',({time})=>{
-      const percent=Math.max(0,Math.min(99,Math.round(time/10000/project.length)));
-      status.textContent='Rendering video · '+percent+'%';
-    });
-    const result=await ffmpeg.exec(['-stream_loop','-1','-i','clip','-i','mix.wav',
-      '-map','0:v:0','-map','1:a:0','-t',String(project.length),
-      '-vf','scale=trunc(iw/2)*2:trunc(ih/2)*2','-c:v','libx264','-preset','ultrafast',
-      '-pix_fmt','yuv420p','-c:a','aac','-b:a','192k','-movflags','+faststart','mix.mp4']);
-    if(result!==0) throw Error('Could not encode the uploaded clip.');
-    const output=await ffmpeg.readFile('mix.mp4');
-    if(!output.byteLength) throw Error('The renderer produced an empty file.');
-    downloadResult(status,new Blob([output],{type:'video/mp4'}),project.title,'mp4');
-  } catch(error){status.textContent='Video render failed · '+error.message;}
-  finally {
+    const deadline=AbortSignal.timeout(90000);
+    await ffmpeg.load({classWorkerURL:worker,coreURL:core+'ffmpeg-core.js',wasmURL:core+'ffmpeg-core.wasm'},{signal:deadline});
+  } catch {
     if(ffmpeg) ffmpeg.terminate();
     if(worker) URL.revokeObjectURL(worker);
-    input.disabled=false;button.disabled=!input.files.length;
+    throw Error('Không tải được bộ xuất video. Hãy kiểm tra kết nối rồi thử lại.');
   }
+  try {return await work(ffmpeg);}
+  finally {ffmpeg.terminate();URL.revokeObjectURL(worker);}
+}
+async function encodeStage(ffmpeg,args,step,message,length,start,end,errorMessage){
+  let latest=start;
+  progressStage(step,Number.isFinite(length)&&length>0?start:null,message);
+  const update=({time})=>{
+    if(!(length>0) || !Number.isFinite(time)) return;
+    latest=Math.max(latest,start+(end-start)*clamp(time/1e6/length,0,.99));
+    progressStage(step,latest,message);
+  };
+  ffmpeg.on('progress',update);
+  try {if(await ffmpeg.exec(args)!==0) throw Error(errorMessage);}
+  finally {ffmpeg.off('progress',update);}
+  progressStage(step,end,message);
+}
+const clipArgs=()=>['-i','clip','-map','0:v:0','-an','-vf','scale=trunc(iw/2)*2:trunc(ih/2)*2',
+  '-r','24','-c:v','libx264','-preset','ultrafast','-crf','21','-maxrate','3M','-bufsize','6M',
+  '-bf','0','-pix_fmt','yuv420p','short.mp4'];
+const loopArgs=duration=>['-stream_loop','-1','-i','short.mp4','-map','0:v:0','-an',
+  '-t',String(duration),'-c:v','copy','background.mp4'];
+const muxArgs=duration=>['-i','background.mp4','-i','mix.wav','-map','0:v:0','-map','1:a:0',
+  '-t',String(duration),'-c:v','copy','-c:a','aac','-b:a','192k','-movflags','+faststart','final.mp4'];
+async function readMp4(ffmpeg,name){
+  const data=await ffmpeg.readFile(name);
+  if(!data.byteLength) throw Error('Tệp MP4 xuất ra bị rỗng.');
+  return new Blob([data],{type:'video/mp4'});
+}
+$('render-video').onclick=async()=>{
+  const file=$('video-input').files[0], audio=audioExport;
+  if(exporting || !file || !audio) return;
+  const clipDuration=$('video-preview').duration;
+  $('video-preview').pause();
+  resetVideo();exportBusy(true);
+  progressStage('video',null,'Đang tải bộ xuất video');
+  try {
+    const blob=await withEncoder(async ffmpeg=>{
+      progressStage('video',4,'Đang đọc clip đã chọn');
+      await ffmpeg.writeFile('clip',new Uint8Array(await file.arrayBuffer()));
+      await encodeStage(ffmpeg,clipArgs(),'video','Đang chuẩn hóa clip và bỏ tiếng gốc',clipDuration,8,52,
+        'Không đọc hoặc mã hóa được clip đã chọn.');
+      await ffmpeg.deleteFile('clip');
+      await encodeStage(ffmpeg,loopArgs(audio.duration),'video','Đang lặp clip đến '+durationLabel(audio.duration),
+        audio.duration,52,96,'Không kéo dài được video nền.');
+      progressStage('video',98,'Đang lưu video nền');
+      return readMp4(ffmpeg,'background.mp4');
+    });
+    videoExport={blob};
+    progressStage('video',100,'Video nền đã sẵn sàng · '+durationLabel(audio.duration)+' · Không có tiếng.');
+    showDownload('video',blob,audio.title+' - video nen','mp4','Tải video nền');
+    progressStage('mux',0,'Có thể ghép bản WAV vào video nền.');
+  } catch(error){stageError('video',error);}
+  finally {exportBusy(false);}
+};
+$('mux-video').onclick=async()=>{
+  const audio=audioExport, video=videoExport;
+  if(exporting || !audio || !video) return;
+  clearResult('mux');exportBusy(true);
+  progressStage('mux',null,'Đang tải bộ xuất video');
+  try {
+    const blob=await withEncoder(async ffmpeg=>{
+      progressStage('mux',4,'Đang nạp video nền');
+      await ffmpeg.writeFile('background.mp4',new Uint8Array(await video.blob.arrayBuffer()));
+      progressStage('mux',10,'Đang nạp bản WAV');
+      await ffmpeg.writeFile('mix.wav',new Uint8Array(await audio.blob.arrayBuffer()));
+      await encodeStage(ffmpeg,muxArgs(audio.duration),'mux','Đang ghép âm thanh và đóng gói MP4',
+        audio.duration,15,96,'Không ghép được âm thanh vào video.');
+      progressStage('mux',98,'Đang lưu video thành phẩm');
+      return readMp4(ffmpeg,'final.mp4');
+    });
+    progressStage('mux',100,'Đã xuất video có âm thanh · '+durationLabel(audio.duration)+'.');
+    showDownload('mux',blob,audio.title,'mp4','Tải MP4 thành phẩm');
+  } catch(error){stageError('mux',error);}
+  finally {exportBusy(false);}
 };
 $('play').onclick=()=>play();
 $('reset').onclick=()=>locate(0);
 $('seek').oninput=()=>locate(Number($('seek').value));
 $('title').oninput=()=>{mix.title=$('title').value;};
-$('minutes').onchange=()=>change(()=>{mix.length=clamp(Number($('minutes').value)*60,6,10800);position=Math.min(position,mix.length);mix.tracks.forEach(t=>{t.start=Math.min(t.start,mix.length);});});
-$('clear').onclick=()=>{stop();position=0;mix={title:'Untitled mix',length:1800,tracks:[]};history.replaceState(null,'',location.pathname);render();};
+$('minutes').onchange=()=>change(()=>{mix.length=clamp(Number($('minutes').value)*60,6,10800);position=Math.min(position,mix.length);});
+$('clear').onclick=()=>{stop();position=0;mix={title:'Bản phối chưa đặt tên',length:1800,tracks:[]};history.replaceState(null,'',location.pathname);render();};
 $('share').onclick=async()=>{
   const url=new URL(location.href);url.hash='mix='+encodeURIComponent(JSON.stringify(mix));
   history.replaceState(null,'',url);
-  try{await navigator.clipboard.writeText(url.href);$('status').textContent='Draft link copied.';}
-  catch{$('status').textContent='Copy the draft link from the address bar.';}
+  try{await navigator.clipboard.writeText(url.href);$('status').textContent='Đã sao chép liên kết bản phối.';}
+  catch{$('status').textContent='Sao chép liên kết bản phối từ thanh địa chỉ.';}
 };
 assets.forEach((a,i)=>{
   const row=node('div','','row');
-  row.append(node('span',a.name),button('Add',()=>change(()=>{
-    if(mix.tracks.length>=32){$('status').textContent='This draft can hold up to 32 tracks.';return;}
+  row.append(node('span',a.name),button('Thêm',()=>change(()=>{
+    if(mix.tracks.length>=32){$('status').textContent='Mỗi bản phối có tối đa 32 lớp.';return;}
     mix.tracks.push({asset:i,start:position,gain:.35,loop:false,mute:false});
   })));$('library').append(row);
 });
