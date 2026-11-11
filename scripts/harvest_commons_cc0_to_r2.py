@@ -148,7 +148,29 @@ def upload(s3,row,path,size,digest,dur,stream):
     h2=head(s3,key)
     if not h2 or int(h2.get("ContentLength",0))!=size or h2.get("Metadata",{}).get("sha256")!=digest:
         raise ValueError("R2 write/readback verification failed")
-    return {"state":state,"storage_key":key,"sha256":digest,"duration_seconds":dur,
+    # Durable per-file provenance, not an expiring CI artifact. Each source may
+    # be retrieved by SHA ID from this small JSON sidecar without rescanning.
+    metadata_key="asset-library/commons/records/"+digest[:2]+"/"+digest+".json"
+    meta={
+      "schema_version":1,"audio_sha256":digest,"audio_storage_key":key,
+      "file_title":row["title"],"source_page":row["source_url"],
+      "original_filename":row["file_name"],"uploader":row.get("uploader"),
+      "creator":row.get("author"),"taxonomy_query_category":row["category"],
+      "license":"CC0-1.0","license_evidence_url":row["rights_evidence_url"],
+      "license_checked_at":row["license_checked_at"],"file_bytes":size,
+      "duration_seconds":dur,"codec":stream.get("codec_name"),
+      "sample_rate_hz":stream.get("sample_rate"),"channels":stream.get("channels"),
+      "source_metadata_not_subjectively_listened":True,
+      "ready_for_public_website":False,"ready_for_mixer":False
+    }
+    if not head(s3,metadata_key):
+        encoded=(json.dumps(meta,ensure_ascii=False,sort_keys=True)+"\n").encode("utf-8")
+        s3.put_object(Bucket=BUCKET,Key=metadata_key,Body=encoded,
+          ContentType="application/json",Metadata={"sha256":digest,"kind":"source-provenance"})
+    if not head(s3,metadata_key):
+        raise ValueError("R2 provenance sidecar missing after upload")
+    return {"state":state,"storage_key":key,"metadata_storage_key":metadata_key,
+      "sha256":digest,"duration_seconds":dur,
       "codec":stream.get("codec_name"),"sample_rate_hz":stream.get("sample_rate"),"channels":stream.get("channels")}
 def main():
     ap=argparse.ArgumentParser()
@@ -216,6 +238,12 @@ def main():
       bytes_verified=remote_bytes,elapsed_seconds=int(time.time()-start),generated_at=datetime.datetime.now(datetime.timezone.utc).isoformat())
     out=pathlib.Path(args.report);out.parent.mkdir(parents=True,exist_ok=True)
     out.write_text(json.dumps(report,ensure_ascii=False,indent=2)+"\n",encoding="utf8")
+    # Store full run provenance durably in R2; Actions artifacts expire.
+    run_key="asset-library/commons/runs/"+datetime.datetime.now(datetime.timezone.utc).strftime("%Y%m%dT%H%M%S%f")+".json"
+    s3.put_object(Bucket=BUCKET,Key=run_key,Body=out.read_bytes(),
+      ContentType="application/json",Metadata={"kind":"source-harvest-report"})
+    assert head(s3,run_key),"R2 run-report object not saved"
+    print("R2_REPORT_SAVED "+run_key,flush=True)
     print("HARVEST_FINAL "+json.dumps({"status":report["status"],"r2_new_uploads":report["r2_new_uploads"],"r2_preexisting_verified":report["r2_preexisting_verified"],
       "bytes_verified":remote_bytes,"queried_count":len(report["queried"]),"errors":len(report["errors"])},ensure_ascii=False),flush=True)
     if not report["r2_stored_or_reused"]:sys.exit(3)
