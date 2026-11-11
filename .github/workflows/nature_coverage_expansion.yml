@@ -1,4 +1,5 @@
 name: Nature Coverage Expansion
+run-name: Sequential harvest and catalog reconciliation
 on:
   push:
     branches: [feature/nature-coverage-expansion-20261111]
@@ -9,14 +10,16 @@ permissions:
 concurrency:
   group: whitenoisechoir-wide-nature-intake
   cancel-in-progress: false
+env:
+  AWS_EC2_METADATA_DISABLED: 'true'
+  PYTHONUNBUFFERED: '1'
 jobs:
-  baseline:
+  queue-1:
+    name: Harvest and reconcile segment 1
     runs-on: ubuntu-latest
-    env:
-      R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
-      R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
-      AWS_EC2_METADATA_DISABLED: 'true'
-      PYTHONUNBUFFERED: '1'
+    timeout-minutes: 145
+    outputs:
+      done: ${{ steps.harvest.outputs.done }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -25,63 +28,27 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      - name: Install intake dependencies
+      - name: Install existing collector dependencies
         run: |
           if ! command -v ffprobe >/dev/null; then
             sudo apt-get update -qq
             sudo apt-get install -y -qq ffmpeg
           fi
-          python -m pip install -q 'boto3>=1.36,<2' 'requests>=2.32,<3' 'beautifulsoup4>=4.12,<5'
-      - run: python -u scripts/audit_r2_asset_inventory.py
-  collect:
-    needs: baseline
-    runs-on: ubuntu-latest
-    timeout-minutes: 35
-    strategy:
-      fail-fast: false
-      max-parallel: 6
-      matrix:
-        batch: ['52', '53', '54', '55', '56', '57', '58', '59', '60', '61', '62', '63']
-    env:
-      R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
-      R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
-      AWS_EC2_METADATA_DISABLED: 'true'
-      PYTHONUNBUFFERED: '1'
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          persist-credentials: false
-          sparse-checkout: scripts
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-      - name: Install intake dependencies
-        run: |
-          if ! command -v ffprobe >/dev/null; then
-            sudo apt-get update -qq
-            sudo apt-get install -y -qq ffmpeg
-          fi
-          python -m pip install -q 'boto3>=1.36,<2' 'requests>=2.32,<3' 'beautifulsoup4>=4.12,<5'
-      - name: Collect originals and save metadata
+          python -m pip install -q 'boto3>=1.36,<2' 'requests>=2.32,<3' 'beautifulsoup4>=4.12,<5' cryptography
+      - name: Reconcile the previous batch and process the remaining queue
+        id: harvest
         env:
-          BATCH: ${{ matrix.batch }}
-        run: |
-          if [ "$BATCH" = commons ]; then
-            python -u scripts/harvest_targeted_nature_to_r2.py --batch-size 300
-          elif [ "$BATCH" = forest ] || [ "$BATCH" = nps ]; then
-            FOREST_PER_SLOT=12 python -u scripts/harvest_nature_diversity_to_r2.py --source "$BATCH"
-          else
-            python -u scripts/harvest_inaturalist_cc0_to_r2.py --page "$BATCH" --per-group 60
-          fi
-  inventory:
-    needs: [baseline, collect]
-    if: always()
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+        run: python -u scripts/run_catalog_harvest_queue.py
+  queue-2:
+    name: Harvest and reconcile segment 2
+    needs: queue-1
+    if: needs.queue-1.outputs.done == 'false'
     runs-on: ubuntu-latest
-    env:
-      R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
-      R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
-      AWS_EC2_METADATA_DISABLED: 'true'
-      PYTHONUNBUFFERED: '1'
+    timeout-minutes: 145
+    outputs:
+      done: ${{ steps.harvest.outputs.done }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -90,11 +57,74 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      - name: Install intake dependencies
+      - name: Install existing collector dependencies
         run: |
           if ! command -v ffprobe >/dev/null; then
             sudo apt-get update -qq
             sudo apt-get install -y -qq ffmpeg
           fi
-          python -m pip install -q 'boto3>=1.36,<2' 'requests>=2.32,<3' 'beautifulsoup4>=4.12,<5'
-      - run: python -u scripts/audit_r2_asset_inventory.py
+          python -m pip install -q 'boto3>=1.36,<2' 'requests>=2.32,<3' 'beautifulsoup4>=4.12,<5' cryptography
+      - name: Reconcile the previous batch and process the remaining queue
+        id: harvest
+        env:
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+        run: python -u scripts/run_catalog_harvest_queue.py
+  queue-3:
+    name: Harvest and reconcile segment 3
+    needs: queue-2
+    if: needs.queue-2.outputs.done == 'false'
+    runs-on: ubuntu-latest
+    timeout-minutes: 145
+    outputs:
+      done: ${{ steps.harvest.outputs.done }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          sparse-checkout: scripts
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install existing collector dependencies
+        run: |
+          if ! command -v ffprobe >/dev/null; then
+            sudo apt-get update -qq
+            sudo apt-get install -y -qq ffmpeg
+          fi
+          python -m pip install -q 'boto3>=1.36,<2' 'requests>=2.32,<3' 'beautifulsoup4>=4.12,<5' cryptography
+      - name: Reconcile the previous batch and process the remaining queue
+        id: harvest
+        env:
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+        run: python -u scripts/run_catalog_harvest_queue.py
+  queue-4:
+    name: Harvest and reconcile segment 4
+    needs: queue-3
+    if: needs.queue-3.outputs.done == 'false'
+    runs-on: ubuntu-latest
+    timeout-minutes: 145
+    outputs:
+      done: ${{ steps.harvest.outputs.done }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          sparse-checkout: scripts
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install existing collector dependencies
+        run: |
+          if ! command -v ffprobe >/dev/null; then
+            sudo apt-get update -qq
+            sudo apt-get install -y -qq ffmpeg
+          fi
+          python -m pip install -q 'boto3>=1.36,<2' 'requests>=2.32,<3' 'beautifulsoup4>=4.12,<5' cryptography
+      - name: Reconcile the previous batch and process the remaining queue
+        id: harvest
+        env:
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+        run: python -u scripts/run_catalog_harvest_queue.py
