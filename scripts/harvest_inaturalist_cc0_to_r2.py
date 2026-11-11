@@ -42,9 +42,9 @@ def parameters():
         yield name, {"taxon_name": name}
 
 
-def api_results(session, query):
+def api_results(session, query, endpoint=API):
     for attempt in range(4):
-        with session.get(API, params=query, timeout=(12, 50)) as response:
+        with session.get(endpoint, params=query, timeout=(12, 50)) as response:
             if response.status_code not in (429, 500, 502, 503, 504):
                 response.raise_for_status()
                 return response.json()["results"]
@@ -62,6 +62,14 @@ def candidates(page, per_group, report):
         for group, params in parameters():
             time.sleep(1.15)
             try:
+                if "taxon_name" in params:
+                    matches = api_results(session, {"q": group, "is_active": "true", "per_page": 12},
+                                          endpoint="https://api.inaturalist.org/v1/taxa")
+                    taxon = next((item for item in matches if item.get("name") == group), None)
+                    if not taxon:
+                        raise ValueError(f"iNaturalist did not resolve taxon {group}")
+                    params = {"taxon_id": taxon["id"]}
+                    time.sleep(1.15)
                 rows = api_results(session, {
                     "sounds": "true", "sound_license": "cc0", "quality_grade": "research",
                     "order_by": "id", "order": "desc", "per_page": 100, "page": page, **params,
