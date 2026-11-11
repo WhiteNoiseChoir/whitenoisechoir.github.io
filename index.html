@@ -18,7 +18,7 @@
 </div>
 <div class="shell">
 <section class="panel" aria-label="Timeline">
-<div class="row"><button id="play" class="primary">Play</button><button id="reset">Back to start</button><output id="time"></output></div>
+<div class="row"><button id="play" class="primary">Play</button><button id="reset">Back to start</button><button id="tail">Play last 10 seconds</button><button id="render">Render WAV</button><output id="time"></output></div>
 <input id="seek" type="range" min="0" step=".01" aria-label="Playback position">
 <div id="tracks"></div>
 </section>
@@ -172,6 +172,84 @@ function render(){
   });
   display();
 }
+
+$('tail').onclick=()=>{
+  stop();
+  position=Math.max(0,mix.length-10);
+  display();
+  play();
+};
+$('render').onclick=async()=>{
+  const button=$('render');
+  const status=$('status');
+  const project=structuredClone(mix);
+  const tracks=project.tracks.filter(t=>!t.mute && t.gain>0 && t.start<project.length);
+  if(!tracks.length){status.textContent='Add an audible track before rendering.';return;}
+  stop();
+  button.disabled=true;
+  status.textContent='Loading tracks for render…';
+  try {
+    const Engine=window.AudioContext || window.webkitAudioContext;
+    const Offline=window.OfflineAudioContext || window.webkitOfflineAudioContext;
+    context ||= new Engine();
+    const decoded=await Promise.all(tracks.map(t=>load(t.asset).catch(()=>{
+      throw Error('Unable to load '+assets[t.asset].name);
+    })));
+    const rate=44100, frames=Math.ceil(project.length*rate);
+    const header=new DataView(new ArrayBuffer(44));
+    const tag=(offset,value)=>{for(let i=0;i<value.length;i++) header.setUint8(offset+i,value.charCodeAt(i));};
+    tag(0,'RIFF');header.setUint32(4,36+frames*4,true);tag(8,'WAVE');tag(12,'fmt ');
+    header.setUint32(16,16,true);header.setUint16(20,1,true);header.setUint16(22,2,true);
+    header.setUint32(24,rate,true);header.setUint32(28,rate*4,true);
+    header.setUint16(32,4,true);header.setUint16(34,16,true);tag(36,'data');
+    header.setUint32(40,frames*4,true);
+    const parts=[header.buffer];
+    const tailStart=Math.max(0,frames-10*rate);
+    let quiet=0,longest=0,peak=0;
+    for(let first=0;first<frames;first+=30*rate){
+      const count=Math.min(30*rate,frames-first);
+      const offline=new Offline(2,count,rate);
+      tracks.forEach((track,i)=>{
+        const buffer=decoded[i];
+        const trackStart=Math.round(track.start*rate);
+        const start=Math.max(first,trackStart);
+        const elapsed=(start-trackStart)/rate;
+        const duration=Math.min((first+count-start)/rate,track.loop?Infinity:buffer.duration-elapsed);
+        if(duration<=0) return;
+        const source=offline.createBufferSource(), gain=offline.createGain();
+        source.buffer=buffer;source.loop=track.loop;gain.gain.value=track.gain;
+        source.connect(gain).connect(offline.destination);
+        source.start((start-first)/rate,track.loop?elapsed%buffer.duration:elapsed,duration);
+      });
+      const rendered=await offline.startRendering();
+      const left=rendered.getChannelData(0),right=rendered.getChannelData(1);
+      const pcm=new DataView(new ArrayBuffer(count*4));
+      for(let i=0;i<count;i++){
+        const amplitude=Math.max(Math.abs(left[i]),Math.abs(right[i]));
+        peak=Math.max(peak,amplitude);
+        pcm.setInt16(i*4,Math.round(clamp(left[i],-1,1)*32767),true);
+        pcm.setInt16(i*4+2,Math.round(clamp(right[i],-1,1)*32767),true);
+        if(first+i>=tailStart){
+          quiet=amplitude<.001?quiet+1:0;
+          longest=Math.max(longest,quiet);
+        }
+      }
+      parts.push(pcm.buffer);
+      status.textContent='Rendering WAV · '+Math.round(100*(first+count)/frames)+'%';
+    }
+    const url=URL.createObjectURL(new Blob(parts,{type:'audio/wav'}));
+    const download=document.createElement('a');
+    download.href=url;download.download=(project.title.replace(/[\\/:*?"<>|]/g,'-').trim() || 'soundscape')+'.wav';
+    download.textContent='Download WAV';
+    status.replaceChildren(download,document.createTextNode(
+      ' · Last 10 s: longest interval below −60 dBFS '+(longest/rate).toFixed(3)+' s'+(peak>1?' · Peaks clipped':'')
+    ));
+    download.onclick=()=>setTimeout(()=>URL.revokeObjectURL(url),60000);
+  } catch(error) {
+    status.textContent='Render failed · '+error.message;
+  } finally {button.disabled=false;}
+};
+
 $('play').onclick=play;
 $('reset').onclick=()=>locate(0);
 $('seek').oninput=()=>locate(Number($('seek').value));
