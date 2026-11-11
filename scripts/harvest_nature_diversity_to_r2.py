@@ -116,13 +116,24 @@ class Intake:
             known_key = self.known.get(digest)
         key = known_key or f"{RAW_ROOT}{digest[:2]}/{digest}{ext}"
         state = "reused"
+        license_name = meta.get("license", "CC0-1.0")
+        object_metadata = {
+            "sha256": digest,
+            "license": "public-domain" if license_name == "Public Domain" else license_name.lower(),
+        }
+        if license_name.startswith("CC-BY-"):
+            object_metadata.update({
+                "attribution": quote(meta["attribution"]),
+                "source-url": quote(meta["source_page"], safe=":/?&=%"),
+                "license-url": meta["license_url"],
+            })
         if known_key is None:
             try:
                 with path.open("rb") as data:
                     self.s3.put_object(
                         Bucket=BUCKET, Key=key, Body=data, ContentLength=size,
                         IfNoneMatch="*", ContentType=commons.EXT[ext],
-                        Metadata={"sha256": digest, "license": "public-domain" if meta.get("license") == "Public Domain" else "cc0-1.0"},
+                        Metadata=object_metadata,
                     )
                 state = "new"
             except ClientError as exc:
@@ -214,7 +225,7 @@ def find_group(intake, group, spec):
     return eligible
 
 
-def commons_assets(intake, report):
+def commons_media_downloader():
     # Coordinate spacing and cooldown across all Wikimedia media downloads.
     pacing_lock = threading.Lock()
     next_request = 0.0
@@ -241,6 +252,12 @@ def commons_assets(intake, report):
                     next_request = max(next_request, time.monotonic() + min(cooldown, 180))
                 if attempt == 2:
                     raise
+
+    return paced_download
+
+
+def commons_assets(intake, report):
+    paced_download = commons_media_downloader()
 
     def ingest(row):
         identity = row["direct_file_url"] + "\n" + row["revision"]
