@@ -48,7 +48,7 @@ for(const r of m.records){
  assert.ok(html.includes('data-hls="'+expectedHls),"Broken HLS data link "+r.id);
  assert.ok(html.includes('/audio/'+r.id+'.mp3'),"GitHub MP3 remains referenced "+r.id);
 }
-const player=fs.readFileSync("index.html","utf8");
+const player=fs.readFileSync("listen.html","utf8");
 for(const id of keep)assert.ok(player.includes('"'+id+'"'),"Critical fallback missing in player: "+id);
 assert.ok(player.includes("hasGitHubHLS?"));
 assert.ok(player.includes('audio_origin=github'));

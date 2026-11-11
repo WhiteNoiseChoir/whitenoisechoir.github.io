@@ -2,7 +2,8 @@
  * closure and its native HLS/MP3 transport; only HTML main content changes. */
 (()=>{"use strict";
 const origin=location.origin;
-const supported=/^\/(?:$|sounds\/|collections\/|soundscapes\/|audio-tools\/)/;
+const listenPath="/listen.html";
+const supported=/^\/(?:listen\.html$|sounds\/|collections\/|soundscapes\/|audio-tools\/)/;
 const $=id=>document.getElementById(id);
 let bridge=null,host=null,homeMain=null,routeMain=document.querySelector("main");
 let homeTemplate=null,initPromise=null,catalog=null,searchState={q:"",cat:"all"},blocked=false;
@@ -10,7 +11,7 @@ const originalHome=!!$("playingTitle");
 if(originalHome){homeMain=routeMain;homeTemplate=new DOMParser().parseFromString(document.documentElement.outerHTML,"text/html");}
 const mini=document.createElement("aside");
 mini.id="wnc-mini";mini.setAttribute("aria-label","Persistent audio player");
-mini.innerHTML='<div class="wnc-mini-inner"><div class="wnc-mini-info"><strong id="wnc-mini-title">White Noise</strong><small id="wnc-mini-status" aria-live="polite">Ready</small></div><button type="button" id="wnc-mini-toggle" aria-label="Play or pause">▶</button><label class="wnc-mini-volume">Volume <input id="wnc-mini-volume" type="range" min="0" max="100" value="28" aria-label="Volume"></label><label class="wnc-mini-timer">Timer <select id="wnc-mini-timer" aria-label="Sleep timer"><option value="0">Off</option><option value="900">15 min</option><option value="1800">30 min</option><option value="3600">1 hour</option><option value="7200">2 hours</option><option value="14400">4 hours</option><option value="28800">8 hours</option><option value="43200">12 hours</option></select></label><button type="button" id="wnc-mini-options" aria-label="Volume and timer settings" aria-expanded="false">⚙</button><button type="button" id="wnc-mini-dark" aria-label="Dark screen">☾</button><button type="button" id="wnc-mini-stop" aria-label="Stop sound">■</button></div>';
+mini.innerHTML='<div class="wnc-mini-inner"><div class="wnc-mini-info"><a id="wnc-mini-open" href="/listen.html" aria-label="Open continuous player"><strong id="wnc-mini-title">White Noise</strong></a><small id="wnc-mini-status" aria-live="polite">Ready</small></div><button type="button" id="wnc-mini-toggle" aria-label="Play or pause">▶</button><label class="wnc-mini-volume">Volume <input id="wnc-mini-volume" type="range" min="0" max="100" value="28" aria-label="Volume"></label><label class="wnc-mini-timer">Timer <select id="wnc-mini-timer" aria-label="Sleep timer"><option value="0">Off</option><option value="900">15 min</option><option value="1800">30 min</option><option value="3600">1 hour</option><option value="7200">2 hours</option><option value="14400">4 hours</option><option value="28800">8 hours</option><option value="43200">12 hours</option></select></label><button type="button" id="wnc-mini-options" aria-label="Volume and timer settings" aria-expanded="false">⚙</button><button type="button" id="wnc-mini-dark" aria-label="Dark screen">☾</button><button type="button" id="wnc-mini-stop" aria-label="Stop sound">■</button></div>';
 document.body.append(mini);
 const dark=document.createElement("div");dark.id="wnc-screen-dark";dark.hidden=true;
 dark.innerHTML='<strong id="wnc-screen-title">WhiteNoiseChoir</strong><p>Dark screen mode. System lock-screen playback still depends on your device.</p><button type="button" id="wnc-screen-toggle">Pause / Play</button><button type="button" id="wnc-screen-exit">Exit dark screen</button>';
@@ -46,7 +47,7 @@ async function bootBridge(){
  if(window.WNCBridge){bridge=window.WNCBridge;sync();return bridge;}
  if(initPromise)return initPromise;
  initPromise=(async()=>{
-  const res=await fetch("/",{credentials:"same-origin"});
+  const res=await fetch(listenPath,{credentials:"same-origin"});
   if(!res.ok)throw Error("Cannot load audio player ("+res.status+")");
   const doc=new DOMParser().parseFromString(await res.text(),"text/html");
   homeTemplate=doc;
@@ -99,6 +100,7 @@ function routePath(url){return url.pathname+url.search+url.hash}
 function normalizeClick(e){
  const a=e.target.closest&&e.target.closest("a[href]");if(!a||e.defaultPrevented||e.button!==0||e.metaKey||e.ctrlKey||e.shiftKey||e.altKey||a.target||a.hasAttribute("download"))return null;
  const url=new URL(a.href,location.href);
+ if(url.origin===origin&&url.pathname==="/"&&url.searchParams.has("sound"))url.pathname=listenPath;
  if(url.origin!==origin||!supported.test(url.pathname)||/\.(?:mp3|m3u8|json|xml|txt|png|pdf|zip)$/i.test(url.pathname))return null;
  if(url.pathname===location.pathname&&url.search===location.search&&url.hash)return null;
  return url;
@@ -108,7 +110,7 @@ async function navigate(url,push=true){
  blocked=true;
  try{
   const b=await bootBridge();if(!b){location.assign(url.href);return}
-  const path=url.pathname,goHome=path==="/";
+  const path=url.pathname,goHome=path===listenPath;
   let doc,main;
   if(goHome&&originalHome&&homeMain){doc=homeTemplate;main=homeMain}
   else{
@@ -153,7 +155,7 @@ async function navigate(url,push=true){
    const requested=url.searchParams.get("sound");if(requested&&(!bridge.snapshot().hasAudio)&&typeof bridge.prepare==="function")bridge.prepare(requested);
    sync();
   }else enhance(main);
-  document.querySelectorAll("header nav a").forEach(a=>{const selected=path==="/"?a.getAttribute("href")==="/":path.startsWith(new URL(a.href).pathname);if(selected)a.setAttribute("aria-current","page");else a.removeAttribute("aria-current")});
+  document.querySelectorAll("header nav a").forEach(a=>{const selected=path===listenPath?new URL(a.href).pathname===listenPath:path.startsWith(new URL(a.href).pathname);if(selected)a.setAttribute("aria-current","page");else a.removeAttribute("aria-current")});
   if(url.hash){const target=document.getElementById(decodeURIComponent(url.hash.slice(1)));if(target)target.scrollIntoView({block:"start",behavior:"auto"});else window.scrollTo({top:0,behavior:"auto"})}else window.scrollTo({top:0,behavior:"auto"});
   const h1=main.querySelector("h1");if(h1){h1.setAttribute("tabindex","-1");h1.focus({preventScroll:true})}
  }catch(err){console.warn("Route navigation fallback",err);location.assign(url.href)}
@@ -245,7 +247,11 @@ function installEvents(){
   const url=normalizeClick(e);if(!url)return;
   e.preventDefault();navigate(url,true);
  });
- window.addEventListener("popstate",()=>navigate(new URL(location.href),false));
+ window.addEventListener("popstate",()=>{
+  const url=new URL(location.href);
+  if(supported.test(url.pathname))navigate(url,false);
+  else location.reload();
+ });
  window.addEventListener("pageshow",sync);
  window.addEventListener("focus",sync);
  document.addEventListener("visibilitychange",sync);

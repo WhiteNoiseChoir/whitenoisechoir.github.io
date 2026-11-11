@@ -40,7 +40,7 @@ for(const name of ["nature","urban","gentle-sounds","fire","fan-noise"])assert.o
 for(const slug of ["deep-sleep-sounds","focus-sounds","noise-masking","pet-calming-sounds"])assert.ok(file("collections/"+slug+"/index.html").includes('noindex,follow'),"hold weak collection "+slug);
 new vm.Script(file("assets/persistent-router.js"),{filename:"assets/persistent-router.js"});
 new vm.Script(file("assets/library-player.js"),{filename:"assets/library-player.js"});
-const home=file("index.html");assert.match(home,/window\.WNCBridge\s*=/,"legacy audio engine exports a shared bridge");
+const home=file("listen.html");assert.match(home,/window\.WNCBridge\s*=/,"legacy audio engine exports a shared bridge");
 assert.match(home,/function playTracks\(ids,name\)/,"original stream engine preserved");
 assert.match(file("assets/persistent-router.js"),/history\.pushState/);
 assert.match(file("assets/persistent-router.js"),/new DOMParser/);
