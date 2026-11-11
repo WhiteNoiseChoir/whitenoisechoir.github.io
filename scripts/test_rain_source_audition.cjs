@@ -9,12 +9,13 @@ assert.ok(html.includes("không phải 10 phút"),"source preview is not a maste
 assert.ok(html.includes("KHÔNG")||html.includes("không"),"discloses not production");
 assert.ok(html.includes("Tua gần cuối nguồn"));
 assert.ok(html.includes('id="copy"')&&html.includes('id="save"'));
+const production=new Set(JSON.parse(file("catalog/library.json")).sounds.map(sound=>sound.id));
 for(const [id,code] of [["light-rain-review","430/430765_1218676-hq.mp3"],["rain-tin-roof-review","843/843483_9671929-hq.mp3"],["distant-thunder-review","107/107518_43834-hq.mp3"]]){
  assert.ok(html.includes('data-select="'+id+'"'),id+" button");
+ assert.ok(!production.has(id),id+" stays in the audition room");
  assert.ok(html.includes("https://cdn.freesound.org/previews/"+code),id+" real HQ source URL");
 }
 assert.ok(!sitemap.includes("/signature/rain-source-review/"));
-assert.ok(!file("catalog/library.json").includes("light-rain-review"));
+assert.ok(!file("sitemap.xml").includes("/signature/rain-source-review/"));
 assert.equal((sitemap.match(/<loc>/g)||[]).length,18);
-assert.equal(JSON.parse(file("catalog/library.json")).sounds.length,22);
-console.log("RAIN_SOURCE_AUDITION_PASS 3 authentic CC0 Freesound links; source durations disclosed, noindex, 22 production IDs unchanged");
+console.log("RAIN_SOURCE_AUDITION_PASS 3 authentic CC0 Freesound links; source durations disclosed, noindex, review IDs excluded from production");
