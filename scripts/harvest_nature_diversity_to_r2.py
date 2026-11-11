@@ -368,9 +368,17 @@ def forest_assets(intake, report):
                 with session.get(f"https://zenodo.org/api/records/{record_id}", timeout=(15, 50)) as response:
                     response.raise_for_status()
                     metadata = response.json().get("metadata", {})
-                license_id = metadata.get("license", {}).get("id")
-                rights = {right.get("id", "").lower() for right in metadata.get("rights", [])}
-                if str(license_id).lower() not in {"cc-zero", "cc0-1.0"} and not rights.intersection({"cc-zero", "cc0-1.0"}):
+                license_ids = {(metadata.get("license") or {}).get("id")}
+                license_ids.update(right.get("id") for right in (metadata.get("rights") or []))
+                license_ids = {value.lower() for value in license_ids if value}
+                if license_ids - {"cc-zero", "cc0-1.0"}:
+                    raise ValueError("Forest source has a conflicting license identifier")
+                description = BeautifulSoup(metadata.get("description") or "", "html.parser").get_text(" ", strip=True)
+                description_declares_cc0 = re.search(
+                    r"\ball audio files\b.{0,120}\breleased under (?:creative commons 0|cc0)\b",
+                    " ".join(description.split()), re.I,
+                )
+                if not license_ids and not description_declares_cc0:
                     raise ValueError("Forest source metadata does not explicitly declare CC0")
                 with ZenodoZipReader(session, url) as reader, ZipFile(reader) as archive:
                     slots = {i: [] for i in range(4)}
@@ -401,6 +409,7 @@ def forest_assets(intake, report):
                                 audio, duration = probe(path)
                                 result = intake.save(path, identity, {
                                     "source_provider": "Sensing the Forest / Zenodo", "source_page": page,
+                                    "license_evidence_field": "rights" if license_ids else "description",
                                     "license_evidence_url": page, "download_url": url,
                                     "original_filename": PurePosixPath(item.filename).name,
                                     "archive_member": item.filename, "archive_member_crc32": f"{item.CRC:08x}",
