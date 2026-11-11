@@ -118,7 +118,8 @@ async function publish(request,env,slug) {
     await env.STUDIO_STATE.delete(key).catch(()=>{});
     return json({error:'Tệp thành phẩm rỗng.'},400);
   }
-  const record = {slug,title:draft.title,key,extension,publishedAt:new Date().toISOString()};
+  const publicTitle = new URL(request.url).searchParams.get('title')?.trim().slice(0,100);
+  const record = {slug,title:publicTitle || draft.title,key,extension,publishedAt:new Date().toISOString()};
   try {
     await env.STUDIO_STATE.put(releaseKey(slug),JSON.stringify(record),{
       httpMetadata:{contentType:'application/json'},

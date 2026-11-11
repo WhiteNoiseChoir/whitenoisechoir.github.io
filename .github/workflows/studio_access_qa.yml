@@ -22,7 +22,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - run: node --check public-sounds.js && node --check studio-owner.js && node --check studio-engine.js
+      - run: node --check studio-public-catalog.js && node --check studio-ui.js && node --check studio-owner.js && node --check studio-engine.js
       - run: node --test cloudflare/studio/worker.test.mjs
       - run: node scripts/build_studio_routes.cjs && git diff --exit-code -- index.html vi library sitemap.xml
       - run: python3 -m py_compile scripts/build_studio_asset_catalog.py

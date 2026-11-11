@@ -70,6 +70,9 @@ const mediaExtensions = new Map([['mp3','audio/mpeg'],['wav','audio/wav'],['m4a'
 const ownerSlugOf = title => title.toLowerCase().replaceAll('đ','d').normalize('NFD')
   .replace(/\p{M}/gu,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,100).replace(/-$/,'');
 let publishMode = false;
+function currentAudioExport(){
+  return audioExport?.signature===audioSignature(mix) ? audioExport.blob : null;
+}
 
 async function loadOwnerCatalog() {
   try {
@@ -92,7 +95,10 @@ function showOwnerForm(publish) {
   ownerSlug.readOnly = Boolean(slug);
   ownerMedia.value = '';
   $('owner-publish-fields').hidden = !publish;
-  ownerMedia.required = publish;
+  const audio = publish ? currentAudioExport() : null;
+  ownerMedia.required = publish && !audio;
+  $('owner-public-title').value = publish ? mix.title : '';
+  $('owner-media-hint').textContent = audio ? 'Sẽ dùng bản WAV vừa xuất nếu bạn để trống ô tệp.' : '';
   ownerFeedback.textContent = '';
   $('owner-dialog-title').textContent = publish ? 'Public bản phối' : 'Lưu bản thử';
   ownerSubmit.textContent = publish ? 'Public bản phối' : 'Lưu bản thử';
@@ -123,8 +129,9 @@ ownerForm.addEventListener('submit',async event => {
   const slug = ownerSlug.value.trim();
   const url = '/vi/api/drafts/'+encodeURIComponent(slug);
   const project = structuredClone(mix);
-  const file = ownerMedia.files[0];
-  const mime = file && mediaExtensions.get(file.name.split('.').at(-1).toLowerCase());
+  const selectedFile = ownerMedia.files[0];
+  const file = selectedFile || (publishMode && currentAudioExport());
+  const mime = selectedFile ? mediaExtensions.get(selectedFile.name.split('.').at(-1).toLowerCase()) : file?.type;
   if (publishMode && !mime) {
     ownerFeedback.textContent = 'Chọn tệp MP3, WAV, M4A hoặc MP4 thành phẩm.';
     return;
@@ -138,7 +145,8 @@ ownerForm.addEventListener('submit',async event => {
     });
     if (publishMode) {
       ownerFeedback.textContent = 'Đang tải tệp và Public bản phối…';
-      const released = await ownerRequest(url+'/publish',{
+      const title = $('owner-public-title').value.trim();
+      const released = await ownerRequest(url+'/publish?title='+encodeURIComponent(title),{
         method:'POST',headers:{'Content-Type':mime,'X-Studio-Draft':saved.revision},body:file,
       });
       showPublished(released.url);
