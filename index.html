@@ -23,7 +23,7 @@
 <input id="seek" type="range" min="0" step=".01" aria-label="Playback position">
 <div id="tracks"></div>
 </section>
-<aside class="panel"><h2>Sound library</h2><div id="library"></div><a href="/#mix=streamside">Open Streamside draft</a><br><a href="/#mix=cabin-rain-night">Open Rainy Cabin draft</a></aside>
+<aside class="panel"><h2>Sound library</h2><div id="library"></div><a href="/#mix=streamside">Open Streamside draft</a><br><a href="/#mix=cabin-rain-night">Open Rainy Cabin draft</a><br><a href="/#mix=cabin-rain-night-v2">Open Rainy Cabin V2</a></aside>
 </div>
 <p id="status" role="status" class="muted"></p>
 <section id="video-studio" class="panel">
@@ -38,7 +38,7 @@
 <details><summary>Check audio output</summary><p>Play the original stream recording.</p><audio id="audio-check" controls preload="none"></audio></details>
 </main>
 <script>
-const assets = [{"name":"Stream close-up","key":"asset-library/raw/sha256/be/be201d2fd0d110fc3ef5d8af060e5ac48439fd54e9f26ce6b69825182748a95b.wav","duration":68.889,"source":"https://commons.wikimedia.org/wiki/File:433589_jackthemurray_stream-river-water-up-close.wav"},{"name":"Clicking Stream Frog","key":"asset-library/raw/sha256/0a/0a3c133128b94306396567cfc22ded8363645869d762c2bbc76b5c3519017cff.m4a","duration":11.865011,"source":"https://www.inaturalist.org/observations/111319279"},{"name":"American Robin","key":"asset-library/raw/sha256/0b/0bf24b2b08299380add4e29b6ed0c9ed37ffaa26a19e3908e5b572d75ef7cabe.m4a","duration":24.960998,"source":"https://www.inaturalist.org/observations/402220192"},{"name":"Barred Owl","key":"asset-library/raw/sha256/06/06c95f291596cfc813ff54d636ae926493ed6cd9c8a10d30f049a70460048af1.mp3","duration":62.261875,"source":"https://www.inaturalist.org/observations/349447210"},{"name":"Common Eastern Bumble Bee","key":"asset-library/raw/sha256/2b/2b5e3902314cbb5d54c26164dc4264a1fdebf61f5012e6f378f6f3e313c7e91a.m4a","duration":23.04,"source":"https://www.inaturalist.org/observations/243621492"},{"name":"Fireplace crackle","key":"audio/fireplace-real.mp3","duration":600,"source":"https://freesound.org/people/visionear/sounds/501417/","license":"CC0"},{"name":"Rain on the window","key":"audio/rain-on-window-real.mp3","duration":600,"source":"https://freesound.org/people/ikayuka/sounds/273333/","license":"CC0"},{"name":"Wolves howling in Denali","key":"asset-library/raw/sha256/bf/bfc073e6226f2a21a87567b898c5e5674a53284353128da0d1e0f69b97e8b62f.mp3","duration":8.36,"source":"https://www.nps.gov/subjects/sound/sounds-wolf.htm","license":"NPS recording"},{"name":"Distant train passing","url":"https://upload.wikimedia.org/wikipedia/commons/transcoded/6/67/Train_passing_by_in_the_Wirikuta_Desert_(Mexico%2C_SLP).wav/Train_passing_by_in_the_Wirikuta_Desert_(Mexico%2C_SLP).wav.mp3","duration":154.25,"source":"https://commons.wikimedia.org/wiki/File:Train_passing_by_in_the_Wirikuta_Desert_(Mexico,_SLP).wav","license":"CC0"}];
+const assets = [{"name":"Stream close-up","key":"asset-library/raw/sha256/be/be201d2fd0d110fc3ef5d8af060e5ac48439fd54e9f26ce6b69825182748a95b.wav","duration":68.889,"source":"https://commons.wikimedia.org/wiki/File:433589_jackthemurray_stream-river-water-up-close.wav"},{"name":"Clicking Stream Frog","key":"asset-library/raw/sha256/0a/0a3c133128b94306396567cfc22ded8363645869d762c2bbc76b5c3519017cff.m4a","duration":11.865011,"source":"https://www.inaturalist.org/observations/111319279"},{"name":"American Robin","key":"asset-library/raw/sha256/0b/0bf24b2b08299380add4e29b6ed0c9ed37ffaa26a19e3908e5b572d75ef7cabe.m4a","duration":24.960998,"source":"https://www.inaturalist.org/observations/402220192"},{"name":"Barred Owl","key":"asset-library/raw/sha256/06/06c95f291596cfc813ff54d636ae926493ed6cd9c8a10d30f049a70460048af1.mp3","duration":62.261875,"source":"https://www.inaturalist.org/observations/349447210"},{"name":"Common Eastern Bumble Bee","key":"asset-library/raw/sha256/2b/2b5e3902314cbb5d54c26164dc4264a1fdebf61f5012e6f378f6f3e313c7e91a.m4a","duration":23.04,"source":"https://www.inaturalist.org/observations/243621492"},{"name":"Fireplace crackle","key":"audio/fireplace-real.mp3","duration":600,"source":"https://freesound.org/people/visionear/sounds/501417/","license":"CC0"},{"name":"Rain on the window","key":"audio/rain-on-window-real.mp3","duration":600,"source":"https://freesound.org/people/ikayuka/sounds/273333/","license":"CC0"},{"name":"Wolves howling in Denali","key":"asset-library/raw/sha256/bf/bfc073e6226f2a21a87567b898c5e5674a53284353128da0d1e0f69b97e8b62f.mp3","duration":8.36,"source":"https://www.nps.gov/subjects/sound/sounds-wolf.htm","license":"NPS recording"},{"name":"Distant train passing","url":"https://upload.wikimedia.org/wikipedia/commons/transcoded/6/67/Train_passing_by_in_the_Wirikuta_Desert_(Mexico%2C_SLP).wav/Train_passing_by_in_the_Wirikuta_Desert_(Mexico%2C_SLP).wav.mp3","duration":154.25,"source":"https://commons.wikimedia.org/wiki/File:Train_passing_by_in_the_Wirikuta_Desert_(Mexico,_SLP).wav","license":"CC0"},{"name":"Rain in the trees","key":"audio/rain-leaves-real.mp3","duration":600,"source":"https://freesound.org/people/Garuda1982/sounds/757276/"},{"name":"Rain on the roof","key":"audio/rain-tin-roof-real.mp3","duration":600,"source":"https://freesound.org/people/archerjosiah/sounds/843483/"},{"name":"Distant rolling thunder","key":"audio/distant-thunder-real.mp3","duration":600,"source":"https://freesound.org/people/moxobna/sounds/107518/"}];
 const media = 'https://media.whitenoisechoir.com/';
 const $ = id => document.getElementById(id);
 $('audio-check').src=media+assets[0].key;
@@ -49,16 +49,32 @@ const sample = () => ({
   tracks: assets.slice(0, 4).map((_, i) => ({asset:i, start:[0,42,105,180][i], gain:[.72,.23,.30,.18][i], loop:i===0, mute:false}))
 });
 const cabinSample = () => ({"title":"Cabin trong mưa đêm","length":600,"videoPrompt":"Generate an 8-second photorealistic seamless loop, 16:9, 1920×1080, 24 fps. Night inside a remote timber cabin. From a locked tripod at seated eye level with a 35 mm lens, frame a stone hearth on the left third and a rain-streaked window on the right third. Place a few split logs beside the hearth and a plain wool throw in the lower foreground. Outside the glass, show only dark spruce silhouettes and a faint blue-grey sky. Balance soft amber firelight against cool blue light at the window.\n\nKeep camera, focus, exposure and composition fixed. Animate low flames, a soft ember glow, subtle warm reflections on the wood and fine rain trailing down the window. Keep the motion gentle and continuous. Match the light and motion at the opening and closing so the clip repeats without a visible jump, reverse motion or fade to black. The wolf and the passing train stay off screen. No people, animals, vehicles, lightning, abrupt sparks, text or logos. Export MP4 without sound.","tracks":[{"asset":5,"start":0,"gain":0.46,"loop":true,"mute":false},{"asset":6,"start":0,"gain":0.34,"loop":true,"mute":false},{"asset":7,"start":135,"gain":0.18,"loop":false,"mute":false},{"asset":8,"start":305,"gain":0.14,"loop":false,"mute":false}]});
+const cabinV2Sample = () => ({"title":"Cabin trong mưa đêm · V2","length":600,"videoPrompt":"Generate an 8-second photorealistic seamless loop for a quiet 16:9 ambient video, 1920×1080 at 24 fps. View from a seated position inside a remote timber cabin on a rainy night. Locked tripod, natural 35 mm perspective, medium-wide composition. An old stone fireplace occupies the left third, with low amber flames, glowing embers and half-burned logs. A rain-streaked window occupies the right third, with dim blue spruce silhouettes beyond. Show warm reflections moving softly on rough floorboards, a wool blanket in the lower foreground and a few split logs by the hearth. Leave the center calm and uncluttered.\n\nKeep camera, exposure, focus and framing fixed. Small flames and reflections move gently while fine drops follow the glass. Match lighting and the overall motion phase from end to start, with continuous forward motion and no dissolve, blackout or abrupt brightness change. No people, animals, train, lightning, lettering, logos or exaggerated sparks. All distant events are heard in the soundtrack only. Export a silent MP4.","tracks":[{"label":"Lò sưởi · sát bên trái","asset":5,"start":0,"gain":0.42,"loop":true,"mute":false,"pan":-0.28},{"label":"Mưa · cửa kính bên phải","asset":6,"start":0,"gain":0.27,"loop":true,"mute":false,"pan":0.35},{"label":"Mưa · tán cây ngoài nhà","asset":9,"start":0,"gain":0.087,"loop":true,"mute":false,"pan":0.12,"lowpass":3400},{"label":"Cú · rìa rừng","asset":3,"start":54,"gain":0.15,"loop":false,"mute":false,"duration":27,"fadeIn":3,"fadeOut":9,"pan":-0.34,"lowpass":2300},{"label":"Mưa dày lên trên mái","asset":10,"start":80,"gain":0.16,"loop":false,"mute":false,"duration":66,"offset":17,"fadeIn":16,"fadeOut":24,"pan":0.18,"lowpass":4900},{"label":"Sấm lăn · sau sườn đồi","asset":11,"start":102,"gain":0.11,"loop":false,"mute":false,"duration":54,"fadeIn":8,"fadeOut":20,"pan":0.24,"lowpass":1300},{"label":"Sói tru · ngoài thung lũng","asset":7,"start":165,"gain":0.22,"loop":false,"mute":false,"fadeIn":0.45,"fadeOut":2.4,"pan":-0.45,"lowpass":2600},{"label":"Củi bén lửa · trong phòng","asset":5,"start":199,"gain":0.095,"loop":false,"mute":false,"duration":26,"offset":213,"fadeIn":6,"fadeOut":8,"pan":-0.42},{"label":"Tàu · xa, đi từ trái sang phải","asset":8,"start":282,"gain":0.21,"loop":false,"mute":false,"fadeIn":24,"fadeOut":47,"pan":-0.44,"panEnd":0.43,"lowpass":2200},{"label":"Mưa lướt trên mái · đợt hai","asset":10,"start":439,"gain":0.105,"loop":false,"mute":false,"duration":65,"offset":153,"fadeIn":15,"fadeOut":24,"pan":0.2,"lowpass":4600},{"label":"Cú · vọng lại xa hơn","asset":3,"start":512,"gain":0.092,"loop":false,"mute":false,"duration":23,"offset":32,"fadeIn":4,"fadeOut":10,"pan":0.29,"lowpass":1700}]});
+function readClipOptions(track){
+  const ranges={duration:[.01,10800],offset:[0,10800],fadeIn:[0,10800],fadeOut:[0,10800],
+    pan:[-1,1],panEnd:[-1,1],lowpass:[80,20000]};
+  const options={};
+  for(const [name,[min,max]] of Object.entries(ranges)){
+    if(Number.isFinite(track[name])) options[name]=clamp(track[name],min,max);
+  }
+  return options;
+}
 function readMix(){
   try {
+    if(location.hash === '#mix=cabin-rain-night-v2') return cabinV2Sample();
     if(location.hash === '#mix=cabin-rain-night') return cabinSample();
     const code = location.hash.slice(5);
     if (location.hash.startsWith('#mix=') && code !== 'streamside') {
       const saved = JSON.parse(decodeURIComponent(code));
       if (!Number.isFinite(saved.length) || !Array.isArray(saved.tracks)) throw Error();
-      return {title:String(saved.title).slice(0,100), videoPrompt:typeof saved.videoPrompt==='string' ? saved.videoPrompt.slice(0,3000) : (/suối|stream/i.test(String(saved.title)) ? streamPrompt : ''), length:clamp(saved.length,6,10800),
+      const length=clamp(saved.length,6,10800);
+      return {title:String(saved.title).slice(0,100), videoPrompt:typeof saved.videoPrompt==='string' ? saved.videoPrompt.slice(0,3000) : (/suối|stream/i.test(String(saved.title)) ? streamPrompt : ''), length,
         tracks:saved.tracks.slice(0,32).filter(t=>assets[t.asset] && Number.isFinite(t.start) && Number.isFinite(t.gain))
-          .map(t=>({asset:Number(t.asset),start:clamp(t.start,0,saved.length),gain:clamp(t.gain,0,1),loop:!!t.loop,mute:!!t.mute}))};
+          .map(t=>({
+            asset:Number(t.asset),start:clamp(t.start,0,length),gain:clamp(t.gain,0,1),loop:!!t.loop,mute:!!t.mute,
+            ...(typeof t.label==='string'?{label:t.label.slice(0,100)}:{}),
+            ...readClipOptions(t)
+          }))};
     }
   } catch { $('status').textContent='This draft link could not be read. Streamside was loaded.'; }
   return sample();
@@ -94,6 +110,51 @@ function load(i){
   }).then(b=>context.decodeAudioData(b)).catch(e=>{buffers.delete(i);throw e;}));
   return buffers.get(i);
 }
+function clipDuration(track,sourceDuration,projectLength){
+  const available=track.loop ? Infinity : sourceDuration-(track.offset || 0);
+  return Math.max(0,Math.min(projectLength-track.start,track.duration ?? Infinity,available));
+}
+function scheduleTrack(engine,buffer,track,from,to,base,projectLength){
+  const duration=clipDuration(track,buffer.duration,projectLength);
+  const start=Math.max(from,track.start);
+  const finish=Math.min(to,track.start+duration);
+  if(finish<=start) return null;
+  const when=Math.max(0,base+start), elapsed=start-track.start, span=finish-start;
+  const source=engine.createBufferSource();
+  const gain=engine.createGain();
+  source.buffer=buffer;source.loop=track.loop;
+  gain.gain.value=track.gain;
+  source.connect(gain);
+  let output=gain;
+  if(track.lowpass){
+    const filter=engine.createBiquadFilter();
+    filter.type='lowpass';filter.frequency.value=track.lowpass;filter.Q.value=Math.SQRT1_2;
+    output.connect(filter);output=filter;
+  }
+  if(track.pan!==undefined && engine.createStereoPanner){
+    const panner=engine.createStereoPanner();
+    const panAt=t=>track.pan+((track.panEnd ?? track.pan)-track.pan)*clamp(t/duration,0,1);
+    panner.pan.setValueAtTime(panAt(elapsed),when);
+    if(track.panEnd!==undefined) panner.pan.linearRampToValueAtTime(panAt(elapsed+span),when+span);
+    output.connect(panner);output=panner;
+  }
+  if(track.fadeIn || track.fadeOut){
+    const envelope=engine.createGain();
+    const fadeIn=Math.min(track.fadeIn || 0,duration/2);
+    const fadeOut=Math.min(track.fadeOut || 0,duration/2);
+    const envelopeAt=t=>clamp(Math.min(fadeIn?t/fadeIn:1,fadeOut?(duration-t)/fadeOut:1),0,1);
+    envelope.gain.setValueAtTime(envelopeAt(elapsed),when);
+    for(const point of [fadeIn,duration-fadeOut,elapsed+span]){
+      if(point>elapsed && point<=elapsed+span)
+        envelope.gain.linearRampToValueAtTime(envelopeAt(point),when+point-elapsed);
+    }
+    output.connect(envelope);output=envelope;
+  }
+  output.connect(engine.destination);
+  const offset=(track.offset || 0)+elapsed;
+  source.start(when,track.loop ? offset%buffer.duration : offset,span);
+  return {node:source,gain,track};
+}
 async function play(loopPreview=false){
   if(playing){stop();return;}
   if(!mix.tracks.some(t=>!t.mute)) return;
@@ -110,21 +171,12 @@ async function play(loopPreview=false){
     const now=context.currentTime+.05;
     anchor=now-position;
     function schedule(from,to,base){
-    tracks.forEach((t,i)=>{
-      const buffer=decoded[i].value;
-      if(!buffer) return;
-      const elapsed=Math.max(0,from-t.start);
-      const offset=t.loop ? elapsed%buffer.duration : elapsed;
-      const when=base+Math.max(from,t.start);
-      const span=Math.min(base+to-when,t.loop ? Infinity : buffer.duration-offset);
-      if(span<=0) return;
-      const node=context.createBufferSource(), gain=context.createGain();
-      node.buffer=buffer;node.loop=t.loop;
-      gain.gain.value=t.gain;
-      node.connect(gain).connect(context.destination);
-      node.start(when,offset,span);
-      active.push({node,gain,track:t});
-    });
+      tracks.forEach((track,i)=>{
+        const buffer=decoded[i].value;
+        if(!buffer) return;
+        const entry=scheduleTrack(context,buffer,track,from,to,base,mix.length);
+        if(entry) active.push(entry);
+      });
     }
     schedule(position,mix.length,anchor);
     if(loopPreview) schedule(0,5,anchor+mix.length);
@@ -169,15 +221,16 @@ function render(){
     const start=node('input');start.type='number';start.min=0;start.max=mix.length;start.step='.1';start.value=t.start;
     start.onchange=()=>change(()=>{t.start=clamp(Number(start.value),0,mix.length);});
     const volume=node('input');volume.type='range';volume.min=0;volume.max=1;volume.step='.01';volume.value=t.gain;
-    volume.oninput=()=>{t.gain=Number(volume.value);const playingTrack=active.find(x=>x.track===t);if(playingTrack) playingTrack.gain.gain.value=t.gain;};
+    volume.oninput=()=>{t.gain=Number(volume.value);for(const playingTrack of active){if(playingTrack.track===t) playingTrack.gain.gain.value=t.gain;}};
     const loop=button('Loop',()=>change(()=>{t.loop=!t.loop;}));loop.setAttribute('aria-pressed',t.loop);
     const mute=button('Mute',()=>change(()=>{t.mute=!t.mute;}));mute.setAttribute('aria-pressed',t.mute);
     const source=node('a',(asset.license || 'CC0')+' source');source.href=asset.source;source.target='_blank';source.rel='noopener noreferrer';
     top.append(select,field('Start (s)',start),field('Volume',volume),loop,mute,button('Remove',()=>change(()=>mix.tracks.splice(i,1))),source);
-    const lane=node('div','','lane'), clip=node('div',asset.name,'clip');
+    const lane=node('div','','lane'), clip=node('div',t.label || asset.name,'clip');
+    if(t.label) card.append(node('div',t.label,'muted'));
     const place = value => {
       clip.style.left=100*value/mix.length+'%';
-      clip.style.width=100*Math.min(mix.length-value,t.loop?mix.length:asset.duration)/mix.length+'%';
+      clip.style.width=100*clipDuration({...t,start:value},asset.duration,mix.length)/mix.length+'%';
     };
     place(t.start);
     clip.onpointerdown=e=>{
@@ -222,21 +275,14 @@ async function buildWav(project,progress){
     let quiet=0,longest=0,peak=0;
     for(let first=0;first<frames;first+=30*rate){
       const count=Math.min(30*rate,frames-first);
-      const offline=new Offline(2,count,rate);
+      const lead=Math.min(first,Math.round(rate*.25));
+      const blockStart=(first-lead)/rate;
+      const offline=new Offline(2,count+lead,rate);
       tracks.forEach((track,i)=>{
-        const buffer=decoded[i];
-        const trackStart=Math.round(track.start*rate);
-        const start=Math.max(first,trackStart);
-        const elapsed=(start-trackStart)/rate;
-        const duration=Math.min((first+count-start)/rate,track.loop?Infinity:buffer.duration-elapsed);
-        if(duration<=0) return;
-        const source=offline.createBufferSource(), gain=offline.createGain();
-        source.buffer=buffer;source.loop=track.loop;gain.gain.value=track.gain;
-        source.connect(gain).connect(offline.destination);
-        source.start((start-first)/rate,track.loop?elapsed%buffer.duration:elapsed,duration);
+        scheduleTrack(offline,decoded[i],track,blockStart,(first+count)/rate,-blockStart,project.length);
       });
       const rendered=await offline.startRendering();
-      const left=rendered.getChannelData(0),right=rendered.getChannelData(1);
+      const left=rendered.getChannelData(0).subarray(lead),right=rendered.getChannelData(1).subarray(lead);
       const pcm=new DataView(new ArrayBuffer(count*4));
       for(let i=0;i<count;i++){
         const amplitude=Math.max(Math.abs(left[i]),Math.abs(right[i]));
