@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Collect diverse CC0 nature recordings and retain the original source bytes."""
+"""Collect openly licensed nature recordings and retain the original source bytes."""
 import argparse
 from collections import Counter, deque
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -443,6 +443,9 @@ def nps_page(url, library):
                     children[target] = group
                 if library == "rocky-mountain" and parts.path.startswith("/romo/learn/photosmultimedia/sounds-"):
                     children[target] = group
+                if library == "yellowstone" and parts.path.startswith("/yell/learn/photosmultimedia/sounds-"):
+                    if not re.search(r"snowmobile|wagon", parts.path, re.I):
+                        children[target] = group
     return title, assets, children
 
 
