@@ -1,0 +1,52 @@
+name: Metadata Nature Intake
+on:
+  push:
+    branches:
+      - feature/metadata-nature-intake-20261111
+    paths:
+      - '.github/workflows/metadata_nature_intake.yml'
+      - 'scripts/harvest_targeted_nature_to_r2.py'
+  workflow_dispatch:
+    inputs:
+      batch_size:
+        description: Maximum recordings to select for this run
+        default: '180'
+        type: string
+permissions:
+  contents: read
+concurrency:
+  group: whitenoisechoir-wide-nature-intake
+  cancel-in-progress: false
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    env:
+      R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+      R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+      AWS_EC2_METADATA_DISABLED: 'true'
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          sparse-checkout: scripts
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install intake dependencies
+        run: |
+          if ! command -v ffprobe >/dev/null; then
+            sudo apt-get update -qq
+            sudo apt-get install -y -qq ffmpeg
+          fi
+          python -m pip install -q 'boto3>=1.36,<2' 'requests>=2.32,<3' 'beautifulsoup4>=4.12,<5'
+      - name: Count R2 objects before collection
+        run: python -u scripts/audit_r2_asset_inventory.py
+      - name: Collect originals by nature metadata
+        env:
+          BATCH_SIZE: ${{ inputs.batch_size || '180' }}
+        run: python -u scripts/harvest_targeted_nature_to_r2.py --batch-size "$BATCH_SIZE"
+      - name: Count R2 objects after collection
+        if: always()
+        run: python -u scripts/audit_r2_asset_inventory.py

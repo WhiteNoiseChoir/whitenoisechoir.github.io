@@ -62,7 +62,7 @@ def candidates(query,offset,page_size):
     data=get_json({"generator":"search","gsrsearch":query+" filetype:audio","gsrnamespace":"6","gsroffset":str(offset),
        "gsrlimit":str(page_size),"prop":"imageinfo","iiprop":"url|mime|size|extmetadata|user"})
     return data.get("query",{}).get("pages",[])
-def decide(p,category,max_bytes):
+def decide(p,category,max_bytes,*,allow_cc_by=False):
     result={"title":p.get("title"),"category":category}
     ii=(p.get("imageinfo") or [{}])[0]
     filename=str(p.get("title","")).removeprefix("File:")
@@ -84,8 +84,16 @@ def decide(p,category,max_bytes):
     meta=ii.get("extmetadata") or {}
     license_name=val(meta,"LicenseShortName").lower().replace(" ","").replace("-","")
     license_url=val(meta,"LicenseUrl").lower().rstrip("/")
-    license_ref="creativecommons.org/publicdomain/zero/1.0"
-    if license_name not in {"cc0","cc01.0","cczero","creativecommonzero"} or license_ref not in license_url:
+    attribution=plain(val(meta,"Attribution")) or plain(val(meta,"Artist"))
+    cc_url=urllib.parse.urlsplit(license_url)
+    cc_by=re.fullmatch(r"/licenses/by/(3\.0|4\.0)",cc_url.path)
+    if (license_name in {"cc0","cc01.0","cczero","creativecommonzero"}
+            and cc_url.hostname=="creativecommons.org" and cc_url.path=="/publicdomain/zero/1.0"):
+        source_license="CC0-1.0"
+    elif (allow_cc_by and cc_url.hostname=="creativecommons.org" and cc_by and attribution
+          and license_name=="ccby"+cc_by.group(1)):
+        source_license="CC-BY-"+cc_by.group(1)
+    else:
         result.update(state="SKIP_LICENSE_NOT_CC0",license_name=val(meta,"LicenseShortName"));return result
     restrictions=val(meta,"Restrictions")
     if restrictions:
@@ -95,7 +103,7 @@ def decide(p,category,max_bytes):
         result["state"]="SKIP_UNEXPECTED_ORIGIN";return result
     original_page=str(ii.get("descriptionurl") or ("https://commons.wikimedia.org/wiki/"+urllib.parse.quote(p["title"].replace(" ","_"))))
     result.update(state="ELIGIBLE",source_url=original_page,direct_file_url=url,
-      size=size,mime=ii.get("mime"),extension=ext,source_license="CC0-1.0",
+      size=size,mime=ii.get("mime"),extension=ext,source_license=source_license,attribution=attribution or None,
       license_url=val(meta,"LicenseUrl"),license_short=val(meta,"LicenseShortName"),
       author=plain(val(meta,"Artist")) or None,uploader=ii.get("user"),
       rights_evidence_url=original_page,license_checked_at=datetime.datetime.now(datetime.timezone.utc).isoformat(),
