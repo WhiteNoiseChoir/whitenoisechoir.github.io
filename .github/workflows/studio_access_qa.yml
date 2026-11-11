@@ -26,3 +26,5 @@ jobs:
       - run: node --test cloudflare/studio/worker.test.mjs
       - run: node scripts/build_studio_routes.cjs && git diff --exit-code -- index.html vi library sitemap.xml
       - run: python3 -m py_compile scripts/build_studio_asset_catalog.py
+      - run: npm install --no-save --no-package-lock playwright
+      - run: node scripts/test_studio_browser.mjs

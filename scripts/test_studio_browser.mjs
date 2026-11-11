@@ -5,6 +5,7 @@ import {existsSync} from 'node:fs';
 import {fileURLToPath} from 'node:url';
 import path from 'node:path';
 import {createRequire} from 'node:module';
+import ownerShell from '../cloudflare/studio/owner-shell.mjs';
 
 const root = fileURLToPath(new URL('../',import.meta.url));
 const require = createRequire(import.meta.url);
@@ -21,6 +22,22 @@ const server = http.createServer(async (req,res) => {
   try {
     let p = new URL(req.url,'http://localhost').pathname;
     if (p === '/') p = '/index.html';
+    if (p === '/vi/' || p === '/vi/cabin-rain-night-v3/') {
+      const trial = '<script type="application/json" id="studio-trial">{"slug":"cabin-rain-night-v3","preset":"cabin-rain-night-v3"}</script>';
+      res.writeHead(200,{'Content-Type':'text/html; charset=utf-8'});
+      res.end(ownerShell.replace('<!--STUDIO_DRAFT-->',p==='/vi/'?'':trial));
+      return;
+    }
+    if (p === '/vi/api/catalog') {
+      res.writeHead(200,{'Content-Type':'application/json'});
+      res.end('{"rows":[]}');
+      return;
+    }
+    if (p.startsWith('/vi/api/source/')) {
+      res.writeHead(200,{'Content-Type':'audio/wav'});
+      res.end(wav);
+      return;
+    }
     if (p.startsWith('/audio/')) {res.writeHead(200,{'Content-Type':'audio/wav'}); res.end(wav); return;}
     const file = path.resolve(root, '.' + (p.endsWith('/') ? p + 'index.html' : p));
     if (!file.startsWith(path.resolve(root) + path.sep)) {res.writeHead(404);res.end();return;}
@@ -130,6 +147,8 @@ try {
   assert.equal(await page.locator('#preset optgroup option').count(),45);
   await publicPage.goto(host+'/vi/cabin-rain-night-v3/');
   assert.equal(await publicPage.locator('#layer-count').textContent(),'24 lớp');
+  assert.equal(await publicPage.locator('#vault-form').count(),0);
+  assert.ok(await publicPage.getByRole('button',{name:'Public',exact:true}).isVisible());
   assert.equal(await publicPage.locator('meta[name=robots]').getAttribute('content'),'noindex,nofollow');
   await publicPage.goto(host+'/sounds/');
   await publicPage.waitForURL(host+'/library/');
