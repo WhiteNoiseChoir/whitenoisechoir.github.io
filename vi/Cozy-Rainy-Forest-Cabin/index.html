@@ -14,7 +14,7 @@
   </a>
   <nav class="studio-nav" aria-label="Điều hướng"><a href="/library/">Bản phối công khai</a><a href="/" lang="en">English</a><button id="export-link" class="primary" type="button">Xuất bản phối <span aria-hidden="true">↘</span></button></nav>
 </header>
-<main><section role="note" style="padding:1rem;margin:1rem 0;border:1px solid #907c65;border-radius:12px"><strong>BẢN NHÁP — Cozy Rainy Forest Cabin (10 phút)</strong><p>21 lớp, gồm 19 lớp Studio và 2 đoạn chó thở thật từ nguồn Freesound có ghi công. Hai đoạn ngoài được TẮT tiếng mặc định vì chưa xác minh tải/giải mã trên trình duyệt; có thể bỏ tắt tiếng trên timeline để nghe thử. Chưa dùng file preview nén thấp làm master chính thức. Bạn có thể phát thử, sửa lớp và xuất WAV.</p><p>Chỉnh sửa được lưu trên trình duyệt này: hãy dùng “Tải dự án JSON” để sao lưu. Chưa đăng vào kho công khai; bất kỳ ai có đường dẫn vẫn có thể truy cập vì trang chưa có đăng nhập.</p></section>
+<main><section role="note" style="padding:1rem;margin:1rem 0;border:1px solid #907c65;border-radius:12px"><strong>BẢN NHÁP — Cozy Rainy Forest Cabin (10 phút)</strong><p><button id="trial-load-latest" type="button" style="padding:.7rem 1rem;font-weight:700;cursor:pointer">Nạp bản cập nhật 21 lớp (giữ bản JSON nếu đã chỉnh)</button></p><p>21 lớp, gồm 19 lớp Studio và 2 đoạn chó thở thật từ nguồn Freesound có ghi công. Hai đoạn ngoài được TẮT tiếng mặc định vì chưa xác minh tải/giải mã trên trình duyệt; có thể bỏ tắt tiếng trên timeline để nghe thử. Chưa dùng file preview nén thấp làm master chính thức. Bạn có thể phát thử, sửa lớp và xuất WAV.</p><p>Chỉnh sửa được lưu trên trình duyệt này: hãy dùng “Tải dự án JSON” để sao lưu. Chưa đăng vào kho công khai; bất kỳ ai có đường dẫn vẫn có thể truy cập vì trang chưa có đăng nhập.</p></section>
   <div id="mix-controls" class="project-bar">
     <div class="project-name">
       <h1>Phòng phối âm</h1>
@@ -146,5 +146,12 @@
 <script src="/studio-engine.js"></script>
 <script src="/studio-ui.js"></script>
 <script src="/studio-vault.js"></script>
+<script>
+document.getElementById('trial-load-latest').addEventListener('click', () => {
+  if (!window.confirm('Nạp cấu hình mới nhất từ website? Thay thế các chỉnh sửa trên trình duyệt này. Hãy tải dự án JSON trước nếu muốn giữ bản cũ.')) return;
+  replaceProject(normalizeProject(trialData.project));
+  document.getElementById('status').textContent = 'Đã nạp bản cập nhật 21 lớp. Hai đoạn âm thanh ngoài đang được tắt tiếng chờ nghe thử.';
+});
+</script>
 </body>
 </html>
