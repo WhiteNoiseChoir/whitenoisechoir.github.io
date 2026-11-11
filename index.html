@@ -388,8 +388,16 @@ function progressStage(step,percent,message){
   $(step+'-status').textContent=message+(percent>0&&percent<100?' · '+bar.value+'%':'');
 }
 function stageError(step,error){
-  const progress=$(step+'-progress');
-  progressStage(step,progress.hasAttribute('value')?progress.value:0,'Lỗi · '+(error instanceof RangeError?'Trình duyệt không đủ bộ nhớ để xuất ở thời lượng này. Hãy thử bản ngắn hơn.':error.message));
+  const progress=$(step+'-progress'),status=$(step+'-status').textContent.split(' · ')[0];
+  console.error('WhiteNoiseChoir export',step,status,error);
+  const detail=typeof error==='string'?error:error?.message;
+  let message=detail || 'Trình duyệt dừng xử lý. Hãy thử lại bước này.';
+  if(error?.name==='QuotaExceededError'){
+    message='Không đủ dung lượng lưu tệp MP4 trên thiết bị.';
+  } else if(/out of memory|memory access out of bounds|array buffer allocation|allocation failed|^Aborted\(\)/i.test(detail || '')){
+    message='Trình duyệt hết bộ nhớ khi xử lý tệp.';
+  }
+  progressStage(step,progress.hasAttribute('value')?progress.value:0,'Lỗi ở bước «'+status+'» · '+message);
 }
 function clearResult(step){
   const result=$(step+'-result');
@@ -501,17 +509,130 @@ async function encodeStage(ffmpeg,args,step,message,length,start,end,errorMessag
   finally {ffmpeg.off('progress',update);}
   progressStage(step,end,message);
 }
-const clipArgs=()=>['-i','clip','-map','0:v:0','-an','-vf','scale=trunc(iw/2)*2:trunc(ih/2)*2',
-  '-r','24','-c:v','libx264','-preset','ultrafast','-crf','21','-maxrate','3M','-bufsize','6M',
+const exportFps=24;
+const clipArgs=()=>['-i','/source/clip','-map','0:v:0','-an','-vf','scale=trunc(iw/2)*2:trunc(ih/2)*2',
+  '-r',String(exportFps),'-c:v','libx264','-preset','ultrafast','-crf','21','-maxrate','3M','-bufsize','6M',
   '-bf','0','-pix_fmt','yuv420p','short.mp4'];
-const loopArgs=duration=>['-stream_loop','-1','-i','short.mp4','-map','0:v:0','-an',
-  '-t',String(duration),'-c:v','copy','background.mp4'];
-const muxArgs=duration=>['-i','background.mp4','-i','mix.wav','-map','0:v:0','-map','1:a:0',
-  '-t',String(duration),'-c:v','copy','-c:a','aac','-b:a','192k','-movflags','+faststart','final.mp4'];
+const audioArgs=()=>['-i','/source/mix.wav','-map','0:a:0','-c:a','aac','-b:a','192k','sound.m4a'];
+async function mountEncoderInput(ffmpeg,name,blob){
+  await ffmpeg.createDir('/source');
+  const mounted=await ffmpeg.mount('WORKERFS',{blobs:[{name,data:blob}]},'/source');
+  if(!mounted) await ffmpeg.writeFile('/source/'+name,new Uint8Array(await blob.arrayBuffer()));
+}
 async function readMp4(ffmpeg,name){
   const data=await ffmpeg.readFile(name);
-  if(!data.byteLength) throw Error('Tệp MP4 xuất ra bị rỗng.');
+  if(!data.byteLength) throw Error('Tệp trung gian bị rỗng.');
   return new Blob([data],{type:'video/mp4'});
+}
+async function loadMp4(){
+  try {return await import('https://cdn.jsdelivr.net/npm/mediabunny@1.65.2/dist/bundles/mediabunny.mjs');}
+  catch {throw Error('Không tải được bộ ghi MP4. Hãy kiểm tra kết nối rồi thử lại.');}
+}
+async function readClip(mp4,blob){
+  const input=new mp4.Input({formats:[mp4.MP4],source:new mp4.BlobSource(blob)});
+  try {
+    const track=await input.getPrimaryVideoTrack();
+    if(!track) throw Error('Clip đã chuẩn hóa không có luồng hình.');
+    const decoderConfig=await track.getDecoderConfig();
+    const packets=[];
+    for await(const packet of new mp4.EncodedPacketSink(track).packets()) packets.push(packet);
+    if(!decoderConfig || packets[0]?.type!=='key') throw Error('Clip đã chuẩn hóa thiếu khung hình mở đầu.');
+    return {packets,decoderConfig};
+  } finally {input.dispose();}
+}
+let exportDirectory;
+async function openMp4Target(mp4){
+  if(!exportDirectory){
+    exportDirectory=(async()=>{
+      try {
+        const root=await navigator.storage.getDirectory();
+        const dir=await root.getDirectoryHandle('wnc-video-exports',{create:true});
+        const cutoff=Date.now()-2*24*60*60*1000;
+        for await(const [name,handle] of dir.entries()){
+          if(handle.kind==='file' && Number(name.split('-')[0])<cutoff){
+            await dir.removeEntry(name).catch(()=>{});
+          }
+        }
+        return dir;
+      } catch {return null;}
+    })();
+  }
+  const dir=await exportDirectory;
+  if(dir && typeof FileSystemFileHandle.prototype.createWritable==='function'){
+    const name=Date.now()+'-'+crypto.randomUUID()+'.mp4';
+    const handle=await dir.getFileHandle(name,{create:true});
+    try {
+      const writer=await handle.createWritable();
+      return {
+        target:new mp4.StreamTarget(writer,{chunked:true}),
+        finish:async()=>{const file=await handle.getFile();return file.slice(0,file.size,'video/mp4');},
+        discard:async()=>{await writer.abort().catch(()=>{});await dir.removeEntry(name).catch(()=>{});}
+      };
+    } catch(error){
+      await dir.removeEntry(name).catch(()=>{});
+      throw error;
+    }
+  }
+  const target=new mp4.BufferTarget();
+  return {target,finish:()=>new Blob([target.buffer],{type:'video/mp4'})};
+}
+async function writeVideoMp4(mp4,clip,duration,step,aac){
+  const start=aac?72:55, message=aac?'Đang ghép âm thanh và ghi MP4':'Đang lặp clip và ghi video nền';
+  progressStage(step,start,message);
+  const frames=Math.ceil(duration*exportFps);
+  let input,audioTrack,audioPackets,output,destination;
+  try {
+    if(aac){
+      input=new mp4.Input({formats:[mp4.MP4],source:new mp4.BlobSource(aac)});
+      audioTrack=await input.getPrimaryAudioTrack();
+      if(!audioTrack) throw Error('Bản phối đã mã hóa không có luồng âm thanh.');
+    }
+    destination=await openMp4Target(mp4);
+    output=new mp4.Output({target:destination.target,format:new mp4.Mp4OutputFormat({fastStart:'reserve'})});
+    const videoSource=new mp4.EncodedVideoPacketSource('avc');
+    output.addVideoTrack(videoSource,{maximumPacketCount:frames});
+    const audioSource=audioTrack?new mp4.EncodedAudioPacketSource('aac'):null;
+    let audioConfig,nextAudio,hasAudio=false;
+    if(audioSource){
+      audioConfig=await audioTrack.getDecoderConfig();
+      if(!audioConfig) throw Error('Không đọc được thông số âm thanh AAC.');
+      const maxAudioPackets=Math.ceil(duration*audioConfig.sampleRate/1024)+4;
+      output.addAudioTrack(audioSource,{maximumPacketCount:maxAudioPackets});
+      audioPackets=new mp4.EncodedPacketSink(audioTrack).packets();
+      nextAudio=(await audioPackets.next()).value;
+      // The AAC encoder may expose a negative-timestamp priming packet.
+      while(nextAudio?.timestamp<0) nextAudio=(await audioPackets.next()).value;
+    }
+    await output.start();
+    for(let frame=0;frame<frames;frame++){
+      const timestamp=frame/exportFps, end=Math.min(duration,(frame+1)/exportFps);
+      const packet=clip.packets[frame%clip.packets.length];
+      await videoSource.add(packet.clone({timestamp,duration:end-timestamp}),frame===0?{decoderConfig:clip.decoderConfig}:undefined);
+      while(nextAudio && nextAudio.timestamp<end){
+        const packetDuration=Math.min(nextAudio.duration,duration-nextAudio.timestamp);
+        await audioSource.add(nextAudio.clone({duration:packetDuration}),hasAudio?undefined:{decoderConfig:audioConfig});
+        hasAudio=true;
+        nextAudio=(await audioPackets.next()).value;
+      }
+      if(frame%exportFps===0){
+        progressStage(step,start+(97-start)*frame/frames,message);
+        await new Promise(resolve=>setTimeout(resolve,0));
+      }
+    }
+    if(audioSource && !hasAudio) throw Error('Không tìm thấy gói âm thanh để ghép.');
+    progressStage(step,98,'Đang hoàn tất tệp MP4');
+    await output.finalize();
+    const blob=await destination.finish();
+    if(!blob.size) throw Error('Tệp MP4 xuất ra bị rỗng.');
+    return blob;
+  } catch(error){
+    if(output) await output.cancel().catch(()=>{});
+    if(destination?.discard) await destination.discard();
+    throw error;
+  } finally {
+    if(audioPackets) await audioPackets.return();
+    if(input) input.dispose();
+  }
 }
 $('render-video').onclick=async()=>{
   const file=$('video-input').files[0], audio=audioExport;
@@ -521,20 +642,19 @@ $('render-video').onclick=async()=>{
   resetVideo();exportBusy(true);
   progressStage('video',null,'Đang tải bộ xuất video');
   try {
-    const blob=await withEncoder(async ffmpeg=>{
-      progressStage('video',4,'Đang đọc clip đã chọn');
-      await ffmpeg.writeFile('clip',new Uint8Array(await file.arrayBuffer()));
+    const mp4=await loadMp4();
+    const short=await withEncoder(async ffmpeg=>{
+      progressStage('video',4,'Đang mở clip đã chọn');
+      await mountEncoderInput(ffmpeg,'clip',file);
       await encodeStage(ffmpeg,clipArgs(),'video','Đang chuẩn hóa clip và bỏ tiếng gốc',clipDuration,8,52,
         'Không đọc hoặc mã hóa được clip đã chọn.');
-      await ffmpeg.deleteFile('clip');
-      await encodeStage(ffmpeg,loopArgs(audio.duration),'video','Đang lặp clip đến '+durationLabel(audio.duration),
-        audio.duration,52,96,'Không kéo dài được video nền.');
-      progressStage('video',98,'Đang lưu video nền');
-      return readMp4(ffmpeg,'background.mp4');
+      return readMp4(ffmpeg,'short.mp4');
     });
-    videoExport={blob};
-    progressStage('video',100,'Video nền đã sẵn sàng · '+durationLabel(audio.duration)+' · Không có tiếng.');
+    const clip=await readClip(mp4,short);
+    const blob=await writeVideoMp4(mp4,clip,audio.duration,'video');
     showDownload('video',blob,audio.title+' - video nen','mp4','Tải video nền');
+    videoExport={clip};
+    progressStage('video',100,'Video nền đã sẵn sàng · '+durationLabel(audio.duration)+' · Không có tiếng.');
     progressStage('mux',0,'Có thể ghép bản WAV vào video nền.');
   } catch(error){stageError('video',error);}
   finally {exportBusy(false);}
@@ -545,18 +665,17 @@ $('mux-video').onclick=async()=>{
   clearResult('mux');exportBusy(true);
   progressStage('mux',null,'Đang tải bộ xuất video');
   try {
-    const blob=await withEncoder(async ffmpeg=>{
-      progressStage('mux',4,'Đang nạp video nền');
-      await ffmpeg.writeFile('background.mp4',new Uint8Array(await video.blob.arrayBuffer()));
-      progressStage('mux',10,'Đang nạp bản WAV');
-      await ffmpeg.writeFile('mix.wav',new Uint8Array(await audio.blob.arrayBuffer()));
-      await encodeStage(ffmpeg,muxArgs(audio.duration),'mux','Đang ghép âm thanh và đóng gói MP4',
-        audio.duration,15,96,'Không ghép được âm thanh vào video.');
-      progressStage('mux',98,'Đang lưu video thành phẩm');
-      return readMp4(ffmpeg,'final.mp4');
+    const mp4=await loadMp4();
+    const aac=await withEncoder(async ffmpeg=>{
+      progressStage('mux',4,'Đang mở bản WAV');
+      await mountEncoderInput(ffmpeg,'mix.wav',audio.blob);
+      await encodeStage(ffmpeg,audioArgs(),'mux','Đang mã hóa âm thanh AAC',audio.duration,8,70,
+        'Không mã hóa được âm thanh từ bản WAV.');
+      return readMp4(ffmpeg,'sound.m4a');
     });
-    progressStage('mux',100,'Đã xuất video có âm thanh · '+durationLabel(audio.duration)+'.');
+    const blob=await writeVideoMp4(mp4,video.clip,audio.duration,'mux',aac);
     showDownload('mux',blob,audio.title,'mp4','Tải MP4 thành phẩm');
+    progressStage('mux',100,'Đã xuất video có âm thanh · '+durationLabel(audio.duration)+'.');
   } catch(error){stageError('mux',error);}
   finally {exportBusy(false);}
 };
