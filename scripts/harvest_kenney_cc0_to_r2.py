@@ -108,7 +108,7 @@ def download_pack(slug, max_bytes):
         total = 0
         with request(url) as response, path.open("wb") as out:
             if not check_zip_url(response.geturl(), slug):
-                raise ValueError("unexpected archive redirect host/path")
+                raise ValueError("unexpected archive redirect host/path: " + urllib.parse.urlparse(response.geturl()).netloc + urllib.parse.urlparse(response.geturl()).path[:120])
             while True:
                 piece = response.read(1024 * 1024)
                 if not piece:
