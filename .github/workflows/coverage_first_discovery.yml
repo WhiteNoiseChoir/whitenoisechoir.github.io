@@ -1,0 +1,121 @@
+name: Coverage-first multi-source metadata discovery
+run-name: Coverage-first 2026-11-11 v1
+on:
+  push:
+    branches: [feature/coverage-first-multisource-20261111]
+    paths:
+      - '.github/workflows/coverage_first_discovery.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: whitenoisechoir-coverage-first-metadata
+  cancel-in-progress: false
+env:
+  AWS_EC2_METADATA_DISABLED: 'true'
+  PYTHONUNBUFFERED: '1'
+
+jobs:
+  discovery-1:
+    name: Metadata discovery segment 1
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    outputs:
+      complete: ${{ steps.scan.outputs.complete }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          sparse-checkout: scripts
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install minimal API and R2 dependencies
+        run: python -m pip install -q 'boto3>=1.36,<2' 'requests>=2.32,<3' 'beautifulsoup4>=4.12,<5' cryptography
+      - name: Test metadata matching and licensing
+        run: python scripts/coverage_first_multisource.py --self-test
+      - name: Discover candidates without downloading audio
+        id: scan
+        env:
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          XENO_CANTO_API_KEY: ${{ secrets.XENO_CANTO_API_KEY }}
+        run: python -u scripts/coverage_first_multisource.py --max-targets 50
+
+  discovery-2:
+    name: Metadata discovery segment 2
+    needs: discovery-1
+    if: needs.discovery-1.outputs.complete == 'false'
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    outputs:
+      complete: ${{ steps.scan.outputs.complete }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          sparse-checkout: scripts
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install minimal API and R2 dependencies
+        run: python -m pip install -q 'boto3>=1.36,<2' 'requests>=2.32,<3' 'beautifulsoup4>=4.12,<5' cryptography
+      - name: Discover next set of metadata targets
+        id: scan
+        env:
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          XENO_CANTO_API_KEY: ${{ secrets.XENO_CANTO_API_KEY }}
+        run: python -u scripts/coverage_first_multisource.py --max-targets 50
+
+  discovery-3:
+    name: Metadata discovery segment 3
+    needs: discovery-2
+    if: needs.discovery-2.outputs.complete == 'false'
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    outputs:
+      complete: ${{ steps.scan.outputs.complete }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          sparse-checkout: scripts
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install minimal API and R2 dependencies
+        run: python -m pip install -q 'boto3>=1.36,<2' 'requests>=2.32,<3' 'beautifulsoup4>=4.12,<5' cryptography
+      - name: Discover next set of metadata targets
+        id: scan
+        env:
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          XENO_CANTO_API_KEY: ${{ secrets.XENO_CANTO_API_KEY }}
+        run: python -u scripts/coverage_first_multisource.py --max-targets 50
+
+  discovery-4:
+    name: Metadata discovery segment 4
+    needs: discovery-3
+    if: needs.discovery-3.outputs.complete == 'false'
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    outputs:
+      complete: ${{ steps.scan.outputs.complete }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          sparse-checkout: scripts
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install minimal API and R2 dependencies
+        run: python -m pip install -q 'boto3>=1.36,<2' 'requests>=2.32,<3' 'beautifulsoup4>=4.12,<5' cryptography
+      - name: Discover next set of metadata targets
+        id: scan
+        env:
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          XENO_CANTO_API_KEY: ${{ secrets.XENO_CANTO_API_KEY }}
+        run: python -u scripts/coverage_first_multisource.py --max-targets 50
