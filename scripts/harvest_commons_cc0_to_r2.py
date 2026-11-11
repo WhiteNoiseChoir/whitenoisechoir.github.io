@@ -66,6 +66,13 @@ def decide(p,category,max_bytes):
     result={"title":p.get("title"),"category":category}
     ii=(p.get("imageinfo") or [{}])[0]
     filename=str(p.get("title","")).removeprefix("File:")
+    # Cheap semantic exclusion, NOT subjective listening QA: Commons search can
+    # match a *spoken dictionary word* ("frog", "stream", "owl") instead of its sound.
+    # Never bulk-store Lingua Libre/Wiktionary pronunciations as wildlife ambience.
+    if (re.match(r"^(?:LL-Q\d+|Kcg-|Lingua[ _-]?Libre|Wiktionary)",filename,re.IGNORECASE)
+        or re.search(r"\b(?:pronunciation|spoken[ _-]word|how[ _-]to[ _-]say)\b",filename,re.IGNORECASE)
+        or re.fullmatch(r"[A-Za-z][A-Za-z ]{1,23} \([a-z]{2,3}\)\.(?:ogg|oga|wav|mp3)",filename)):
+        result["state"]="SKIP_SPOKEN_DICTIONARY";return result
     ext=pathlib.Path(filename).suffix.lower()
     if ext not in EXT:
         result["state"]="SKIP_NOT_SUPPORTED_AUDIO";return result
@@ -191,8 +198,9 @@ def main():
                     continue
                 seen_hashes.add(digest)
                 result=upload(s3,record,local,size,digest,duration,stream)
-                remote_bytes+=size
-                count+=1
+                if result["state"]=="UPLOADED_R2":
+                    remote_bytes+=size
+                    count+=1
                 row={**{k:v for k,v in record.items() if k!="direct_file_url"},**result,"size_bytes":size}
                 report["files"].append(row)
                 report["counts"][result["state"]]=report["counts"].get(result["state"],0)+1
@@ -203,12 +211,12 @@ def main():
                 if local:local.unlink(missing_ok=True)
         report["queried"].append({"category":cat,"query":query,"candidates":len(pages),"eligible_distinct":candidates_count})
         print("CATEGORY_SCAN "+json.dumps({"category":cat,"pages":len(pages),"eligible_distinct":candidates_count,"stored_or_reused":count},ensure_ascii=False),flush=True)
-    report.update(status="COMPLETE" if count else "ZERO_FILES",r2_stored_or_reused=count,
+    report.update(status="COMPLETE" if count else ("NO_NEW_FILES" if report["counts"].get("REUSED_R2",0) else "ZERO_FILES"),r2_stored_or_reused=report["counts"].get("UPLOADED_R2",0)+report["counts"].get("REUSED_R2",0),
       r2_new_uploads=report["counts"].get("UPLOADED_R2",0),r2_preexisting_verified=report["counts"].get("REUSED_R2",0),
       bytes_verified=remote_bytes,elapsed_seconds=int(time.time()-start),generated_at=datetime.datetime.now(datetime.timezone.utc).isoformat())
     out=pathlib.Path(args.report);out.parent.mkdir(parents=True,exist_ok=True)
     out.write_text(json.dumps(report,ensure_ascii=False,indent=2)+"\n",encoding="utf8")
     print("HARVEST_FINAL "+json.dumps({"status":report["status"],"r2_new_uploads":report["r2_new_uploads"],"r2_preexisting_verified":report["r2_preexisting_verified"],
       "bytes_verified":remote_bytes,"queried_count":len(report["queried"]),"errors":len(report["errors"])},ensure_ascii=False),flush=True)
-    if not count:sys.exit(3)
+    if not report["r2_stored_or_reused"]:sys.exit(3)
 if __name__=="__main__":main()
