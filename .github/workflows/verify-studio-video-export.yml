@@ -13,6 +13,10 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
+      - name: Install media inspector
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq ffmpeg
       - name: Verify WAV source, 10-minute silent background, and final MP4
         run: |
           set -euo pipefail
@@ -45,14 +49,14 @@ jobs:
           core.FS.unlink('clip');
           run('Loop silent background to 600 seconds',["-stream_loop","-1","-i","short.mp4","-map","0:v:0","-an","-t","600","-c:v","copy","background.mp4"]);
           run('Mux WAV into MP4',["-i","background.mp4","-i","mix.wav","-map","0:v:0","-map","1:a:0","-t","600","-c:v","copy","-c:a","aac","-b:a","192k","-movflags","+faststart","final.mp4"]);
-          function probe(name){
-            logs=[];
-            const ret=core.ffprobe('-v','error','-of','json','-show_entries','stream=codec_type,codec_name,duration:format=duration',name);
-            core.reset();
-            if(ret!==0)throw Error('Cannot probe '+name);
-            return JSON.parse(logs.join('\n'));
-          }
-          const background=probe('background.mp4'),final=probe('final.mp4');
+          await writeFile('background.mp4',core.FS.readFile('background.mp4'));
+          await writeFile('final.mp4',core.FS.readFile('final.mp4'));
+          NODE
+          ffprobe -v error -show_entries stream=codec_type,codec_name,duration:format=duration -of json background.mp4 > background.json
+          ffprobe -v error -show_entries stream=codec_type,codec_name,duration:format=duration -of json final.mp4 > final.json
+          node --input-type=module <<'NODE'
+          import { readFileSync } from 'node:fs';
+          const background=JSON.parse(readFileSync('background.json','utf8')),final=JSON.parse(readFileSync('final.json','utf8'));
           console.log(JSON.stringify({background,final}));
           if(background.streams.length!==1 || background.streams[0].codec_name!=='h264' || Number(background.format.duration)!==600 ||
              final.streams.length!==2 || final.streams[0].codec_name!=='h264' || final.streams[1].codec_name!=='aac' || Number(final.format.duration)!==600) throw Error('Unexpected output');
