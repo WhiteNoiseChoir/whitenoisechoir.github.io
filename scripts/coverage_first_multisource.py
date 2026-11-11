@@ -46,7 +46,7 @@ SYNONYMS = {"rain": "rainfall", "wave": "surf", "stream": "brook",
             "waterfall": "cascade", "wind": "breeze",
             "crackle": "crackling", "thunder": "thunderstorm",
             "footstep": "walking", "howl": "howling"}
-PER_SOURCE = ("openverse", "commons", "internet_archive", "xeno_canto")
+PER_SOURCE = ("openverse", "commons", "internet_archive", "freesound", "xeno_canto")
 
 
 def utcnow():
@@ -234,8 +234,35 @@ def xeno_canto(session, code, english, query):
             yield rec
 
 
+
+def freesound(session, code, english, query):
+    key = os.getenv("FREESOUND_API_KEY")
+    if not key:
+        return
+    # Freesound read-only metadata search. The API key is never logged or put in R2.
+    result = request_json(session, "https://freesound.org/apiv2/search/",
+        {"query": query, "page_size": 20,
+         "filter": 'license:"Creative Commons 0" OR license:"Attribution"',
+         "fields": "id,name,tags,username,license,url,description,previews",
+         "token": key})
+    for item in result.get("results", []):
+        license_url = str(item.get("license") or "")
+        if not permitted_license(license_url):
+            continue
+        previews = item.get("previews") or {}
+        if not isinstance(previews, dict):
+            previews = {}
+        rec = source_record("freesound", code, item.get("name") or "",
+            " ".join(str(t) for t in (item.get("tags") or [])[:35]),
+            str(item.get("description") or "")[:1200],
+            item.get("url") or "", previews.get("preview-hq-mp3"),
+            "", license_url, item.get("username") or "", item.get("id") or "", english)
+        if rec:
+            yield rec
+
+
 SEARCH = {"openverse": openverse, "commons": wikimedia,
-          "internet_archive": internet_archive, "xeno_canto": xeno_canto}
+          "internet_archive": internet_archive, "freesound": freesound, "xeno_canto": xeno_canto}
 
 
 def state_read(s3):
@@ -292,7 +319,7 @@ def run(max_targets, dry_run=False):
             for source in PER_SOURCE:
                 if any(r["source"].split(":")[0] == {"commons": "wikimedia_commons", "internet_archive": "internet_archive_item"}.get(source, source) for r in candidates):
                     continue
-                if source == "xeno_canto" and not os.getenv("XENO_CANTO_API_KEY"):
+                if (source == "xeno_canto" and not os.getenv("XENO_CANTO_API_KEY")) or (source == "freesound" and not os.getenv("FREESOUND_API_KEY")):
                     continue
                 if len(candidates) >= MAX_CANDIDATES_PER_CODE:
                     break
