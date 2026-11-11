@@ -166,10 +166,12 @@ def openverse(session, code, english, query):
 
 def wikimedia(session, code, english, query):
     result = request_json(session, "https://commons.wikimedia.org/w/api.php",
-        {"action": "query", "format": "json", "generator": "search",
+        {"action": "query", "format": "json", "formatversion": "2", "generator": "search",
          "gsrsearch": query + " filetype:audio", "gsrnamespace": "6", "gsrlimit": "30",
          "prop": "imageinfo", "iiprop": "url|mime|size|sha1|extmetadata"})
     for item in (result.get("query") or {}).get("pages", []):
+        if not isinstance(item, dict):
+            continue
         try:
             row = commons.decide(item, code, 160 * 1024 ** 2, allow_cc_by=True)
             if row.get("state") != "ELIGIBLE":
