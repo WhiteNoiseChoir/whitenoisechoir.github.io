@@ -8,94 +8,93 @@ permissions:
 jobs:
   verify:
     runs-on: ubuntu-24.04
-    timeout-minutes: 12
+    timeout-minutes: 10
     steps:
+      - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - name: Install media inspector
-        run: |
-          sudo apt-get update -qq
-          sudo apt-get install -y -qq ffmpeg
-      - name: Verify WAV source, 10-minute silent background, and final MP4
-        run: |
-          set -euo pipefail
-          curl -fsSL --retry 2 https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.10/dist/esm/ffmpeg-core.js -o ffmpeg-core.mjs
-          curl -fsSL --retry 2 https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.10/dist/esm/ffmpeg-core.wasm -o ffmpeg-core.wasm
-          curl -fsSL --retry 2 https://whitenoisechoir.com/audio/rain-on-window-real.mp3 -o rain.mp3
-          node --input-type=module <<'NODE'
-          import { readFile, writeFile } from 'node:fs/promises';
-          import createCore from './ffmpeg-core.mjs';
-          globalThis.self={location:{href:new URL('./ffmpeg-core.mjs',import.meta.url).href}};
-          const wasm=await readFile('ffmpeg-core.wasm');
-          const core=await createCore({wasmBinary:new Uint8Array(wasm)});
-          let logs=[];
-          core.setLogger(({message})=>logs.push(message));
-          function run(label,args) {
-            logs=[];
-            const result=core.exec(...args);
-            core.reset();
-            if(result!==0) throw Error(label+': '+logs.slice(-10).join('\n'));
-            console.log(label+' succeeded');
-          }
-          run('Generate clip with original sound',['-f','lavfi','-i','testsrc2=size=160x90:rate=30:duration=10',
-            '-f','lavfi','-i','sine=frequency=888:duration=10','-c:v','libx264','-c:a','aac','clip.mp4']);
-          await writeFile('clip.mp4',core.FS.readFile('clip.mp4'));
-          core.FS.rename('clip.mp4','clip');
-          core.FS.writeFile('rain.mp3',await readFile('rain.mp3'));
-          run('Decode the same-origin rain file',['-i','rain.mp3','-t','600','-ac','2','-ar','44100','mix.wav']);
-          core.FS.unlink('rain.mp3');
-          run('Normalize silent clip',["-i","clip","-map","0:v:0","-an","-vf","scale=trunc(iw/2)*2:trunc(ih/2)*2","-r","24","-c:v","libx264","-preset","ultrafast","-crf","21","-maxrate","3M","-bufsize","6M","-bf","0","-pix_fmt","yuv420p","short.mp4"]);
-          core.FS.unlink('clip');
-          run('Loop silent background to 600 seconds',["-stream_loop","-1","-i","short.mp4","-map","0:v:0","-an","-t","600","-c:v","copy","background.mp4"]);
-          run('Mux WAV into MP4',["-i","background.mp4","-i","mix.wav","-map","0:v:0","-map","1:a:0","-t","600","-c:v","copy","-c:a","aac","-b:a","192k","-movflags","+faststart","final.mp4"]);
-          await writeFile('background.mp4',core.FS.readFile('background.mp4'));
-          await writeFile('final.mp4',core.FS.readFile('final.mp4'));
-          NODE
-          ffprobe -v error -show_entries stream=codec_type,codec_name,duration:format=duration -of json background.mp4 > background.json
-          ffprobe -v error -show_entries stream=codec_type,codec_name,duration:format=duration -of json final.mp4 > final.json
-          node --input-type=module <<'NODE'
-          import { readFileSync } from 'node:fs';
-          const background=JSON.parse(readFileSync('background.json','utf8')),final=JSON.parse(readFileSync('final.json','utf8'));
-          console.log(JSON.stringify({background,final}));
-          if(background.streams.length!==1 || background.streams[0].codec_name!=='h264' || Number(background.format.duration)!==600 ||
-             final.streams.length!==2 || final.streams[0].codec_name!=='h264' || final.streams[1].codec_name!=='aac' || Number(final.format.duration)!==600) throw Error('Unexpected output');
-          NODE
-      - name: Verify live browser flow with a 12-second mix
+      - name: Prepare Chromium and a 10-second 1080p clip
         run: |
           set -euo pipefail
           npm install --no-save playwright@1.58.2
-          npx playwright install --with-deps chromium
+          npx playwright install chromium
+          if ! command -v ffmpeg; then sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg; fi
+          ffmpeg -v error -f lavfi -i testsrc2=size=1920x1080:rate=24:duration=10 \
+            -f lavfi -i sine=frequency=888:duration=10 -c:v libx264 -preset ultrafast \
+            -c:a aac -pix_fmt yuv420p clip.mp4
+      - name: Export the Cabin V3 mix and download both ten-minute MP4 files
+        run: |
+          set -euo pipefail
           node --input-type=module <<'NODE'
           import { chromium } from 'playwright';
           import { readFile } from 'node:fs/promises';
           const browser=await chromium.launch({headless:true});
           const page=await browser.newPage();
-          page.on('pageerror',e=>console.log('Page error:',e.message));
-          page.on('requestfailed',r=>console.log('Request failed:',r.url().slice(0,240),r.failure()?.errorText));
+          const url='https://whitenoisechoir.com/?streaming-export-qa=1#mix=cabin-rain-night-v3';
+          const html=await readFile('index.html','utf8');
+          await page.route('https://whitenoisechoir.com/?streaming-export-qa=1',route=>route.fulfill({
+            contentType:'text/html; charset=utf-8',body:html
+          }));
+          page.on('pageerror',error=>console.log('Page error:',error.message));
+          page.on('console',message=>{if(message.type()==='error') console.log('Browser error:',message.text());});
+          page.on('requestfailed',request=>console.log('Request failed:',request.url(),request.failure()?.errorText));
           async function stage(button,output,expected){
             await page.locator(button).click({timeout:20000});
             await page.waitForFunction(({output,expected})=>{
               const text=document.querySelector(output).textContent;
               return text.startsWith(expected)||text.startsWith('Lỗi');
-            },{output,expected},{timeout:150000});
+            },{output,expected},{timeout:200000});
             const text=await page.locator(output).textContent();
             console.log(text);
-            if(!text.startsWith(expected))throw Error(text);
+            if(!text.startsWith(expected)) throw Error(text);
+          }
+          async function download(selector,name){
+            const pending=page.waitForEvent('download',{timeout:20000});
+            await page.locator(selector).click();
+            const download=await pending;
+            await download.saveAs(name);
           }
           try{
-            await page.goto('https://whitenoisechoir.com/?xuat=6b2e254#mix=cabin-rain-night-v3',{waitUntil:'domcontentloaded',timeout:30000});
-            await page.locator('#minutes').fill('0.2');
+            await page.goto(url,{waitUntil:'domcontentloaded',timeout:30000});
+            await page.locator('#minutes').fill('10');
             await page.locator('#minutes').press('Tab');
-            await stage('#render','#audio-status','Đã xuất WAV · 00:12');
+            await stage('#render','#audio-status','Đã xuất WAV · 10:00');
             await page.locator('#video-input').setInputFiles('clip.mp4');
-            await stage('#render-video','#video-status','Video nền đã sẵn sàng · 00:12');
-            await stage('#mux-video','#mux-status','Đã xuất video có âm thanh · 00:12');
-            const pending=page.waitForEvent('download',{timeout:20000});
-            await page.locator('#mux-result a').click();
-            const file=await (await pending).path();
-            const output=await readFile(file);
-            if(output.toString('ascii',4,8)!=='ftyp'||output.length<5000)throw Error('Missing MP4 result');
-            console.log('Downloaded browser MP4 bytes:',output.length);
-          }finally{await browser.close();}
+            await stage('#render-video','#video-status','Video nền đã sẵn sàng · 10:00');
+            await download('#video-result a','background.mp4');
+            await stage('#mux-video','#mux-status','Đã xuất video có âm thanh · 10:00');
+            await download('#mux-result a','final.mp4');
+            const disk=await page.evaluate(async()=>{
+              const root=await navigator.storage.getDirectory();
+              const dir=await root.getDirectoryHandle('wnc-video-exports');
+              const files=[];
+              for await(const handle of dir.values()) files.push((await handle.getFile()).size);
+              return files.sort((a,b)=>a-b);
+            });
+            console.log('Disk-backed MP4 sizes:',disk);
+            if(disk.length!==2 || disk[0]<100000000) throw Error('Expected two disk-backed outputs');
+          } finally {await browser.close();}
           NODE
+          for file in background final; do
+            ffprobe -v error -show_entries stream=codec_type,codec_name,width,height,channels,duration:format=duration,size -of json "$file.mp4" > "$file.json"
+          done
+          node --input-type=module <<'NODE'
+          import { readFileSync } from 'node:fs';
+          const bg=JSON.parse(readFileSync('background.json','utf8'));
+          const final=JSON.parse(readFileSync('final.json','utf8'));
+          console.log(JSON.stringify({bg,final}));
+          for(const result of [bg,final]){
+            const video=result.streams[0];
+            if(video.codec_name!=='h264'||video.width!==1920||video.height!==1080||
+               Math.abs(Number(result.format.duration)-600)>.03||Math.abs(Number(video.duration)-600)>.03){
+              throw Error('Incorrect video metadata');
+            }
+          }
+          const audio=final.streams[1];
+          if(bg.streams.length!==1||final.streams.length!==2||audio.codec_name!=='aac'||audio.channels!==2||
+             Math.abs(Number(audio.duration)-600)>.03) throw Error('Incorrect audio metadata');
+          NODE
+          ffmpeg -v error -xerror -ss 595 -i final.mp4 -map 0:v:0 -map 0:a:0 -t 5 -f null -
+          ffmpeg -hide_banner -ss 595 -i final.mp4 -vn -t 5 -af volumedetect -f null - 2>tail.log
+          grep -E 'mean_volume: -[0-5]?[0-9]\.[0-9] dB' tail.log
