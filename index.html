@@ -1,34 +1,119 @@
 <!doctype html>
 <html lang="en">
-<head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="Find, preview and download MP3 sounds for sleep, focus and relaxation.">
-<link rel="canonical" href="https://whitenoisechoir.com/">
-<title>MP3 Sounds for Sleep, Focus &amp; Relaxation · WhiteNoiseChoir</title>
+<meta name="description" content="Find sounds, arrange layers on a timeline, and export your audio mix.">
+<title>WhiteNoiseChoir Studio · Sound Studio</title>
+<link rel="canonical" href="https://whitenoisechoir.com/"><link rel="alternate" hreflang="en" href="https://whitenoisechoir.com/"><link rel="alternate" hreflang="vi" href="https://whitenoisechoir.com/vi/"><link rel="alternate" hreflang="x-default" href="https://whitenoisechoir.com/">
 <link rel="stylesheet" href="/studio.css">
-<link rel="stylesheet" href="/public-sounds.css">
-<script src="/public-sounds.js" defer></script>
-</head>
 <body>
 <header class="studio-header">
-  <a class="brand" href="/"><span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>WhiteNoiseChoir</a>
-  <nav class="studio-nav" aria-label="Navigation"><a href="/library/">Published mixes</a><a href="/vi/" lang="vi">Studio nội bộ</a></nav>
+  <a class="brand" href="/" aria-label="WhiteNoiseChoir Studio">
+    <span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+    WhiteNoiseChoir <span>Studio</span>
+  </a>
+  <nav class="studio-nav" aria-label="Navigation"><a href="/library/">Published mixes</a><a href="/vi/" lang="vi">Tiếng Việt</a><button id="export-link" class="primary" type="button">Export mix <span aria-hidden="true">↘</span></button></nav>
 </header>
-<main class="public-sounds">
-  <h1>Find a sound</h1>
-  <p class="public-intro">Preview and download MP3 sounds for sleep, focus and relaxation.</p>
-  <section aria-label="MP3 sounds">
-    <div class="public-filters">
-      <label>Search sounds <input id="sound-query" type="search" placeholder="Rain, fan, ocean…" autocomplete="off"></label>
-      <label>Category <select id="sound-category"><option value="">All categories</option></select></label>
+<main>
+  <div id="mix-controls" class="project-bar">
+    <div class="project-name">
+      <h1>Sound Studio</h1>
+      <input id="title" type="text" aria-label="Project name" maxlength="100" placeholder="Name your mix">
     </div>
-    <audio id="sound-player" preload="none" hidden></audio>
-    <p id="sound-status" class="message" role="status">Loading sounds…</p>
-    <p id="sound-feedback" class="message" role="status"></p>
-    <ul id="sound-list" class="public-list"></ul>
-    <button id="sound-more" type="button" hidden>Show more</button>
-  </section>
+    <div class="project-actions">
+      <label class="preset-picker"><span>Presets</span>
+        <select id="preset" aria-label="Open a preset">
+          <option value="">Choose a preset</option>
+          <option value="streamside">Forest Stream</option>
+          <option value="cabin-rain-night">Rainy Cabin</option>
+          <option value="cabin-rain-night-v2">Rainy Cabin · V2</option>
+          <option value="cabin-rain-night-v3">Rainy Cabin · V3</option>
+        </select>
+      </label>
+      <button id="undo" type="button" aria-label="Undo" title="Undo (Ctrl+Z)">↶</button>
+      <button id="redo" type="button" aria-label="Redo" title="Redo (Ctrl+Shift+Z)">↷</button>
+      <button id="share" type="button">Share</button>
+      <details class="project-menu">
+        <summary>Project</summary>
+        <div class="project-menu-items">
+          <button id="clear" type="button">New mix</button>
+          <button id="save-project" type="button">Download project JSON</button>
+          <label class="file-picker">Open project JSON<input type="file" id="open-project" accept=".json,application/json" aria-label="Open project JSON"></label>
+        </div>
+      </details>
+    </div>
+  </div>
+
+  <div id="mix-editor" class="studio-grid">
+    <aside class="panel library-panel" aria-labelledby="library-heading">
+      <div class="panel-heading">
+        <h2 id="library-heading">Sound sources</h2>
+        <output id="library-count" aria-live="polite"></output>
+      </div>
+      <label class="library-search">
+        <span aria-hidden="true">⌕</span>
+        <input id="library-query" type="search" placeholder="Search rain, waves, fans…" autocomplete="off" aria-label="Search sounds">
+        <kbd aria-hidden="true">/</kbd>
+      </label>
+      <select id="library-group" aria-label="Filter sound groups"><option value="">All groups</option></select>
+      <p id="library-status" class="message" role="status"></p>
+      
+      <div id="library" class="library-list"></div><button id="library-more" class="library-more" type="button" hidden>Show more</button>
+      <audio id="library-audio" preload="none" hidden></audio>
+    </aside>
+
+    <section class="panel timeline-panel" aria-labelledby="timeline-heading">
+      <div class="panel-heading timeline-heading">
+        <div><h2 id="timeline-heading">Timeline</h2><output id="layer-count"></output></div>
+        <label class="zoom-control"><span>Zoom</span>
+          <select id="zoom" aria-label="Zoom timeline">
+            <option value="1">Fit</option><option value="2">2×</option><option value="4">4×</option><option value="8">8×</option>
+          </select>
+        </label>
+      </div>
+      <div class="transport">
+        <button id="play" class="primary" type="button" aria-keyshortcuts="Space">Play</button>
+        <button id="reset" type="button" title="Rewind">Rewind</button>
+        <button id="tail" type="button">Preview loop seam</button>
+        <output id="time" class="transport-time"></output>
+      </div>
+      <input id="seek" type="range" min="0" step=".01" aria-label="Playhead position">
+      <div id="timeline-scroll" class="timeline-scroll" tabindex="0" aria-label="Tracks on the timeline">
+        <div id="timeline-canvas">
+          <div class="timeline-row timeline-ruler"><span class="track-column">Track</span><div id="time-ruler"></div></div>
+          <div id="tracks"></div>
+        </div>
+      </div>
+      <div class="master-strip">
+        <label for="master">Master volume</label>
+        <input id="master" type="range" min="0" max="100" step="1" value="100">
+        <output id="master-value" for="master">100%</output>
+        <meter id="peak" min="-60" max="0" low="-24" high="-3" optimum="-12" value="-60" aria-label="Peak level (dBFS)"></meter>
+      </div>
+      <p id="status" class="message studio-status" role="status"></p>
+    </section>
+
+    <aside class="panel inspector-panel" aria-labelledby="inspector-heading">
+      <div class="panel-heading"><h2 id="inspector-heading">Track settings</h2></div>
+      <div id="inspector"></div>
+    </aside>
+  </div>
+
+<section id="audio-studio" class="panel" aria-labelledby="export-heading"><h2 id="export-heading">Audio export</h2><div class="export-step">
+
+<div class="row"><label>Duration (minutes) <input id="minutes" type="number" min="0.1" max="180" step="0.1"></label><button id="render" class="primary">Render WAV</button></div>
+<progress id="audio-progress" max="100" value="0" aria-label="Audio render progress"></progress>
+<p id="audio-status" role="status">Audio has not been rendered yet.</p>
+<div id="audio-result"></div>
+</div></section>
+<details class="audio-check"><summary>Audio check</summary><p>Preview the original stream recording.</p><audio id="audio-check" controls preload="none"></audio></details>
 </main>
+
+<script src="/studio-locale.js"></script>
+<script src="/studio-catalog.js"></script>
+<script src="/studio-legacy-recipes.js"></script>
+<script src="/studio-engine.js"></script>
+<script src="/studio-ui.js"></script>
+<script src="/studio-public-catalog.js"></script>
 </body>
 </html>

@@ -22,6 +22,18 @@ const server = http.createServer(async (req,res) => {
   try {
     let p = new URL(req.url,'http://localhost').pathname;
     if (p === '/') p = '/index.html';
+    if (p === '/api/studio/catalog' || p === '/api/studio/session') {
+      const data = p.endsWith('/session') ? {expiresAt:Date.now()/1000+600}
+        : {version:1,sounds:[{id:'0'.repeat(32),name:'Shared WAV fixture',duration:8}]};
+      res.writeHead(200,{'Content-Type':'application/json'});
+      res.end(JSON.stringify(data));
+      return;
+    }
+    if (p.startsWith('/api/studio/sources/') || p.startsWith('/api/studio/legacy/')) {
+      res.writeHead(200,{'Content-Type':'audio/wav'});
+      res.end(wav);
+      return;
+    }
     if (p === '/vi/' || p === '/vi/cabin-rain-night-v3/') {
       const trial = '<script type="application/json" id="studio-trial">{"slug":"cabin-rain-night-v3","preset":"cabin-rain-night-v3"}</script>';
       res.writeHead(200,{'Content-Type':'text/html; charset=utf-8'});
@@ -137,14 +149,18 @@ try {
   const publicPage=await context.newPage();
   await publicPage.goto(host+'/');
   assert.equal(await publicPage.locator('html').getAttribute('lang'),'en');
-  assert.equal(await publicPage.locator('h1').textContent(),'Find a sound');
-  assert.equal(await publicPage.locator('#vault-form,#video-studio,#render,#render-video,#mux-video').count(),0);
-  await publicPage.locator('#sound-list li').first().waitFor();
-  assert.equal(await publicPage.locator('#sound-list li').count(),35);
-  await publicPage.locator('#sound-query').fill('pink noise');
-  assert.equal(await publicPage.getByRole('link',{name:'Download Pink Noise MP3',exact:true}).getAttribute('download'),'pink-noise.mp3');
-  assert.equal(await publicPage.locator('script[src="/studio-engine.js"]').count(),0);
-  assert.equal(await page.locator('#preset optgroup option').count(),45);
+  assert.equal(await publicPage.locator('h1').textContent(),'Sound Studio');
+  assert.equal(await publicPage.locator('#vault-form,#video-studio,#video-input,#render-video,#mux-video,#video-prompt').count(),0);
+  assert.ok(await publicPage.locator('#render').isVisible());
+  assert.equal(await publicPage.locator('#preset optgroup option').count(),45);
+  await publicPage.locator('#preset').selectOption('cabin-rain-night-v3');
+  assert.equal(await publicPage.locator('#layer-count').textContent(),'24 tracks');
+  await publicPage.waitForFunction(()=>document.querySelector('#library-count').textContent==='56/56');
+  await publicPage.locator('#library-query').fill('Shared WAV fixture');
+  await publicPage.locator('.add-source').click();
+  assert.equal(await publicPage.locator('#layer-count').textContent(),'25 tracks');
+  await publicPage.getByRole('button',{name:'Preview Shared WAV fixture',exact:true}).click();
+  await publicPage.waitForFunction(()=>!document.querySelector('#library-audio').paused);
   await publicPage.goto(host+'/vi/cabin-rain-night-v3/');
   assert.equal(await publicPage.locator('#layer-count').textContent(),'24 lớp');
   assert.equal(await publicPage.locator('#vault-form').count(),0);
@@ -155,7 +171,7 @@ try {
   const reviewed=JSON.parse(await readFile(path.join(root,'data/published-mixes.json'),'utf8')).filter(row=>row.status==='published');
   assert.equal(await publicPage.locator('article').count(),reviewed.length);
   assert.equal(await publicPage.locator('a[href*="/vi/cabin-rain-night-v3/"]').count(),0);
-  console.log('PASS English MP3 home, Vietnamese trial and approval-only public library');
+  console.log('PASS public audio mixer with shared WAV source, Vietnamese trial and approval-only public library');
   const mobile=await context.newPage();
   await mobile.setViewportSize({width:390,height:844});
   await mobile.goto(host+'/vi/#mix=cabin-rain-night-v3');

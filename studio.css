@@ -236,3 +236,6 @@ kbd { font: 11px var(--mono); border: 1px solid var(--line); color: var(--muted)
   .studio-nav { gap:8px; }
   .studio-nav a { font-size:12px; }
 }
+
+#audio-studio{margin:16px 0;padding:18px}
+#audio-studio h2{margin:0 0 14px;font-size:1.2rem}

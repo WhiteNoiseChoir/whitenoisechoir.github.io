@@ -17,11 +17,11 @@ assets.forEach((asset, index) => {
   }
 });
 function assetForRef(ref) {
-  if (!/^r2-[a-f0-9]{64}$/.test(ref || '')) return undefined;
+  if (!/^(?:r2-[a-f0-9]{64}|public-[a-f0-9]{32})$/.test(ref || '')) return undefined;
   let index = rawAssetIndex.get(ref);
   if (index === undefined) {
     index = assets.length;
-    assets.push({id:ref, name:studioEnglish?'Locked source':'Nguồn chưa mở khóa', duration:0, group:'other', pending:true});
+    assets.push({id:ref, name:studioEnglish?'Source pending':'Đang tải nguồn', duration:0, group:'other', pending:true});
     rawAssetIndex.set(ref,index);
   }
   return index;
@@ -130,10 +130,17 @@ function tick(loopPreview=false){
   if(elapsed>=end) stop();
   else frame=requestAnimationFrame(()=>tick(loopPreview));
 }
+function publicCatalogGate(){return window.WNCPublicCatalog;}
+function needsPublicSession(asset){
+  return studioEnglish && publicCatalogGate()?.active &&
+    (asset.publicMedia || asset.key?.startsWith('asset-library/'));
+}
 function sourceAddresses(i){
   const asset=assets[i];
   if(asset.pending) return [];
-  const primary=ownerStudio && asset.key?.startsWith('asset-library/')
+  const protectedSource = asset.key?.startsWith('asset-library/');
+  if (studioEnglish && publicCatalogGate()?.active && protectedSource) return ['/api/studio/legacy/'+i];
+  const primary = ownerStudio && protectedSource
     ? '/vi/api/source/'+encodeURIComponent(asset.key) : asset.url || media+asset.key;
   const url=new URL(primary,location.origin);
   url.searchParams.set('studio-audio','20261111');
@@ -143,7 +150,8 @@ function sourceAddresses(i){
 }
 async function decodeRecording(i,decoder){
   const asset=assets[i];
-  if(asset.pending) throw Error(studioEnglish?'Unlock the source catalog in Vietnamese Studio.':'Đang tải nguồn từ danh mục R2. Hãy thử lại khi danh mục đã tải.');
+  if(asset.pending) throw Error(studioEnglish?'The source catalog is still loading.':'Danh mục âm thanh đang tải.');
+  if(needsPublicSession(asset)) await publicCatalogGate().verify();
   let failure=tr('Không có phản hồi');
   for(const address of sourceAddresses(i)){
     try {
@@ -330,6 +338,7 @@ async function buildWav(project,progress){
   }
   return {blob:new Blob(parts,{type:'audio/wav'}),silence:longest/rate,clipped:peak>1,duration:frames/rate};
 }
+const videoEnabled = Boolean($('video-input'));
 let exporting=false, audioExport=null, videoExport=null, clipUrl=null;
 const durationLabel=seconds=>{
   const ms=Math.round(seconds*1000);
@@ -370,6 +379,7 @@ function showDownload(step,blob,title,extension,label){
 }
 const audioSignature=project=>JSON.stringify([project.length,project.master ?? 1,project.tracks]);
 function resetVideo(){
+  if(!videoEnabled) return;
   videoExport=null;
   clearResult('video');clearResult('mux');
   progressStage('video',0,audioExport
@@ -386,9 +396,10 @@ function syncWorkflow(){
   }
   $('mix-controls').inert=exporting;
   $('mix-editor').inert=exporting;
-  $('video-input').disabled=exporting;
   $('minutes').disabled=exporting;
   $('render').disabled=exporting;
+  if(!videoEnabled) return;
+  $('video-input').disabled=exporting;
   $('render-video').disabled=exporting || !audioExport || !$('video-input').files.length;
   $('mux-video').disabled=exporting || !audioExport || !videoExport;
 }
@@ -414,13 +425,13 @@ $('render').onclick=async()=>{
   } catch(error) {stageError('audio',error);}
   finally {exportBusy(false);}
 };
-$('copy-prompt').onclick=async()=>{
+if(videoEnabled) $('copy-prompt').onclick=async()=>{
   const prompt=$('video-prompt');
   if(!prompt.value){prompt.focus();return;}
   try {await navigator.clipboard.writeText(prompt.value);$('prompt-status').textContent=tr('Đã sao chép câu lệnh.');}
   catch {prompt.select();$('prompt-status').textContent=tr('Hãy sao chép phần văn bản đã chọn.');}
 };
-$('video-input').onchange=()=>{
+if(videoEnabled) $('video-input').onchange=()=>{
   const file=$('video-input').files[0], preview=$('video-preview');
   if(clipUrl) URL.revokeObjectURL(clipUrl);
   clipUrl=file ? URL.createObjectURL(file) : null;
@@ -588,7 +599,7 @@ async function writeVideoMp4(mp4,clip,duration,step,aac){
     if(input) input.dispose();
   }
 }
-$('render-video').onclick=async()=>{
+if(videoEnabled) $('render-video').onclick=async()=>{
   const file=$('video-input').files[0], audio=audioExport;
   if(exporting || !file || !audio) return;
   const clipDuration=$('video-preview').duration;
@@ -613,7 +624,7 @@ $('render-video').onclick=async()=>{
   } catch(error){stageError('video',error);}
   finally {exportBusy(false);}
 };
-$('mux-video').onclick=async()=>{
+if(videoEnabled) $('mux-video').onclick=async()=>{
   const audio=audioExport, video=videoExport;
   if(exporting || !audio || !video) return;
   clearResult('mux');exportBusy(true);
@@ -633,4 +644,4 @@ $('mux-video').onclick=async()=>{
   } catch(error){stageError('mux',error);}
   finally {exportBusy(false);}
 };
-$('export-link').onclick=()=>$('video-studio').scrollIntoView({behavior:'smooth'});
+$('export-link').onclick=()=>($('audio-studio') || $('video-studio')).scrollIntoView({behavior:'smooth'});

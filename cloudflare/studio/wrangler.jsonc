@@ -19,7 +19,7 @@
       "name": "DOWNLOAD_RATE",
       "namespace_id": "28111",
       "simple": {
-        "limit": 40,
+        "limit": 120,
         "period": 60
       }
     }

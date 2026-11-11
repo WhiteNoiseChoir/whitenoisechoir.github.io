@@ -104,11 +104,11 @@ test('anonymous public catalog has no raw origin fallback',async()=>{
   env.PUBLIC_CATALOG_ENABLED='true';
   env.TURNSTILE_SECRET_KEY='test-only-secret';
   env.DOWNLOAD_RATE={limit:async()=>({success:true})};
-  const request = new Request(main+'/api/studio/mp3/'+'0'.repeat(32),{headers:{'CF-Connecting-IP':'203.0.113.1'}});
+  const request = new Request(main+'/api/studio/sources/'+'0'.repeat(32),{headers:{'CF-Connecting-IP':'203.0.113.1'}});
   assert.equal((await worker.fetch(request,env)).status,401);
   const id = '0'.repeat(32);
   const source = 'asset-library/raw/sha256/be/'+'be'+'0'.repeat(62)+'.mp3';
-  await env.STUDIO_STATE.put('catalog/mp3/00.json',JSON.stringify({[id]:source}));
+  await env.STUDIO_STATE.put('catalog/sources/00.json',JSON.stringify({[id]:source}));
   await env.STUDIO_STATE.put('catalog/public.json',JSON.stringify({version:1,sounds:[{id,title:'Fixture MP3'}]}));
   await env.MEDIA.put(source,new Uint8Array([0xff,0xfb,0,1]));
   const metadata = await worker.fetch(new Request(main+'/api/studio/catalog'),env);
@@ -123,6 +123,12 @@ test('anonymous public catalog has no raw origin fallback',async()=>{
   assert.equal(allowed.status,200);
   assert.match(allowed.headers.get('Content-Disposition'),/^attachment;/);
   assert.equal(allowed.headers.get('Content-Type'),'audio/mpeg');
+  const wavKey = source.replace(/\.mp3$/,'.wav');
+  await env.STUDIO_STATE.put('catalog/sources/00.json',JSON.stringify({[id]:wavKey}));
+  await env.MEDIA.put(wavKey,new Uint8Array([82,73,70,70]));
+  const preview = new Request(request.url,{headers:{Cookie:cookie,'CF-Connecting-IP':'203.0.113.1'}});
+  assert.equal((await worker.fetch(preview,env)).headers.get('Content-Type'),'audio/wav');
+  assert.equal((await worker.fetch(download,env)).status,404);
   env.DOWNLOAD_RATE={limit:async()=>({success:false})};
   assert.equal((await worker.fetch(download,env)).status,429);
   const raw = new Request('https://media.whitenoisechoir.com/asset-library/raw/');

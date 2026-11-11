@@ -127,14 +127,14 @@ def seal(payload, jwk):
 def write_worker_catalog(s3, bucket, payload):
     public = []
     shards = {}
+    owner_rows = []
     for row in payload["rows"]:
-        if not row["key"].lower().endswith(".mp3"):
-            continue
-        identifier = hashlib.sha256(("wnc-public-mp3-v1/" + row["id"]).encode()).hexdigest()[:32]
+        identifier = hashlib.sha256(("wnc-public-source-v1/" + row["id"]).encode()).hexdigest()[:32]
         shards.setdefault(identifier[:2], {})[identifier] = row["key"]
+        owner_rows.append({**row, "publicId": "public-" + identifier})
         public.append({
-            "id": identifier, "title": row["name"], "category": row["taxon"] or "Recordings",
-            "duration": row["duration"], "keywords": row["aliases"],
+            "id": identifier, "name": row["name"], "taxon": row["taxon"],
+            "duration": row["duration"], "aliases": row["aliases"],
             "credit": row["credit"], "license": row["license"], "licenseUrl": row["licenseUrl"], "source": row["source"],
         })
 
@@ -144,10 +144,10 @@ def write_worker_catalog(s3, bucket, payload):
                       ContentType="application/json")
 
     with ThreadPoolExecutor(max_workers=24) as pool:
-        list(pool.map(lambda pair: put("catalog/mp3/" + pair[0] + ".json", pair[1]), shards.items()))
-    put("catalog/owner.json", payload)
+        list(pool.map(lambda pair: put("catalog/sources/" + pair[0] + ".json", pair[1]), shards.items()))
+    put("catalog/owner.json", {**payload, "rows": owner_rows})
     put("catalog/public.json", {"version": 1, "generatedAt": payload["generatedAt"], "sounds": public})
-    print("STUDIO_WORKER_CATALOG_READY " + json.dumps({"internal": len(payload["rows"]), "public_mp3": len(public)}), flush=True)
+    print("STUDIO_WORKER_CATALOG_READY " + json.dumps({"internal": len(payload["rows"]), "public_sources": len(public)}), flush=True)
 
 
 def main():

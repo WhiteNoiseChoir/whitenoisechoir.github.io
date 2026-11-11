@@ -22,21 +22,27 @@ function addOwnerRows(rows) {
   for (const row of rows) {
     if (!row || !validKey.test(row.key || '') || row.id !== 'r2-' + rawDigest(row.key) ||
         typeof row.name !== 'string' || !Number.isFinite(row.duration) || row.duration <= 0) continue;
-    const index = rawAssetIndex.get(row.id);
+    const publicId = /^public-[a-f0-9]{32}$/.test(row.publicId || '') ? row.publicId : null;
+    const nativeIndex = rawAssetIndex.get(row.id);
+    const publicIndex = publicId ? rawAssetIndex.get(publicId) : undefined;
+    const index = nativeIndex ?? publicIndex;
     const source = safeExternal(row.source);
     const licenseUrl = safeExternal(row.licenseUrl);
     if (!source) continue;
-    if (index !== undefined && !assets[index].pending) continue;
+    if (index !== undefined && !assets[index].pending) {
+      if (publicId) rawAssetIndex.set(publicId,index);
+      if (publicIndex!==undefined && publicIndex!==index && assets[publicIndex].pending) assets[publicIndex]={...assets[index],aliasOnly:true};
+      continue;
+    }
     const item = {
       id:row.id, key:row.key, name:row.name, duration:row.duration, group:soundGroup(row),
       aliases:row.aliases || '', source, licenseUrl, license:row.license, credit:row.credit,
     };
-    if (index === undefined) {
-      rawAssetIndex.set(row.id,assets.length);
-      assets.push(item);
-    } else {
-      assets[index] = item;
-    }
+    const slot = index ?? assets.length;
+    rawAssetIndex.set(row.id,slot);
+    if (publicId) rawAssetIndex.set(publicId,slot);
+    assets[slot] = item;
+    if (publicIndex!==undefined && publicIndex!==slot && assets[publicIndex].pending) assets[publicIndex]={...item,aliasOnly:true};
   }
   rebuildCatalog();
   refreshLibraryGroups();
@@ -72,7 +78,7 @@ async function loadOwnerCatalog() {
     const catalog = await response.json();
     if (!Array.isArray(catalog.rows)) throw Error();
     addOwnerRows(catalog.rows);
-    ownerCatalogStatus.textContent = assets.filter(asset=>!asset.pending).length.toLocaleString('vi-VN')+' nguồn trong Studio.';
+    ownerCatalogStatus.textContent = assets.filter(asset=>!asset.pending && !asset.aliasOnly).length.toLocaleString('vi-VN')+' nguồn trong Studio.';
   } catch {
     ownerCatalogStatus.textContent = 'Danh mục R2 chưa tải được. Hãy tải lại trang để thử lại.';
   }

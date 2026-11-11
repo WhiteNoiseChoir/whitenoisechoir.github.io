@@ -149,6 +149,17 @@ async function audition(index) {
   refreshPreviewButtons();
   const ticket = previewRequest;
   const audio = $('library-audio');
+  if (needsPublicSession(assets[index])) {
+    try { await publicCatalogGate().verify(); }
+    catch (error) {
+      if (ticket === previewRequest) {
+        stopPreview();
+        $('library-status').textContent = error.message;
+      }
+      return;
+    }
+    if (ticket !== previewRequest) return;
+  }
   for (const address of sourceAddresses(index)) {
     audio.src = address;
     try {
@@ -173,7 +184,7 @@ function renderLibrary() {
   const words = query.split(/\s+/).filter(Boolean);
   const group = $('library-group').value;
   const matches = catalog.map((entry, i) => ({...entry, i}))
-    .filter(entry => !assets[entry.i].pending && (!group || group === entry.group) && words.every(word => entry.text.includes(word)));
+    .filter(entry => !assets[entry.i].pending && !assets[entry.i].aliasOnly && (!group || group === entry.group) && words.every(word => entry.text.includes(word)));
   if (query) {
     const rank = entry => {
       const name = entry.name;
@@ -183,7 +194,7 @@ function renderLibrary() {
     };
     matches.sort((a, b) => rank(a) - rank(b));
   }
-  const available = assets.filter(asset=>!asset.pending).length;
+  const available = assets.filter(asset=>!asset.pending && !asset.aliasOnly).length;
   $('library-count').textContent = matches.length.toLocaleString(document.documentElement.lang) + '/' + available.toLocaleString(document.documentElement.lang);
   $('library-more').hidden = matches.length <= libraryPage * libraryPageSize;
   $('library').replaceChildren();
@@ -397,7 +408,7 @@ function renderInspector() {
 function render(keepInspector = false) {
   $('title').value = mix.title;
   $('minutes').value = mix.length / 60;
-  $('video-prompt').value = mix.videoPrompt || '';
+  if ($('video-prompt')) $('video-prompt').value = mix.videoPrompt || '';
   $('seek').max = mix.length;
   $('master').value = Math.round((mix.master ?? 1) * 100);
   $('master-value').value = $('master').value + '%';
@@ -424,7 +435,7 @@ $('time-ruler').onclick = event => seekFromPointer(event, $('time-ruler'));
 $('zoom').onchange = () => { zoom = Number($('zoom').value); renderTimeline(); };
 $('title').onchange = () => change(() => { mix.title = $('title').value.trim() || tr('Bản phối chưa đặt tên'); });
 $('minutes').onchange = () => change(() => { mix.length = clamp(Number($('minutes').value) * 60, 6, 10800); });
-$('video-prompt').onchange = () => change(() => { mix.videoPrompt = $('video-prompt').value; });
+if ($('video-prompt')) $('video-prompt').onchange = () => change(() => { mix.videoPrompt = $('video-prompt').value; });
 $('master').oninput = () => {
   $('master-value').value = $('master').value + '%';
   if (monitorGain) monitorGain.gain.value = Number($('master').value) / 100;

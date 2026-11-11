@@ -1,4 +1,5 @@
 import ownerShell from './owner-shell.mjs';
+import legacySourceKeys from './legacy-sources.mjs';
 import {createSession, hasSession, headersFor, readMedia} from './media.mjs';
 
 const origin = 'https://whitenoisechoir.com';
@@ -134,7 +135,7 @@ function libraryHtml(title,body) {
   return '<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'+
     '<title>'+htmlEscape(title)+' · WhiteNoiseChoir</title><link rel="stylesheet" href="/studio.css"><body>'+
     '<header class="studio-header"><a class="brand" href="/">WhiteNoiseChoir</a><nav class="studio-nav" aria-label="Navigation">'+
-    '<a href="/">MP3 Sounds</a><a href="/library/">Published mixes</a></nav></header>'+
+    '<a href="/">Sound Studio</a><a href="/library/">Published mixes</a></nav></header>'+
     '<main class="published-library">'+body+'</main></body></html>';
 }
 async function listPublished(bucket) {
@@ -158,18 +159,22 @@ async function catalog(bucket,key,publicCatalog=false) {
     'Content-Type':'application/json','Cache-Control':publicCatalog?'public, max-age=120':'private, no-store'}});
 }
 
-async function publicMedia(request,env,url,id) {
+async function publicMedia(request,env,url,id,legacyIndex) {
   const limit = env.DOWNLOAD_RATE;
   const ip = request.headers.get('CF-Connecting-IP');
   if (!env.TURNSTILE_SECRET_KEY || !limit || !ip || env.PUBLIC_CATALOG_ENABLED!=='true') return empty(503);
   if (!await hasSession(request,env.TURNSTILE_SECRET_KEY)) return empty(401);
   if (!(await limit.limit({key:ip})).success) return new Response(null,{status:429,headers:{...noStore,'Retry-After':'60'}});
-  const map = await objectJson(env.STUDIO_STATE,'catalog/mp3/'+id.slice(0,2)+'.json');
-  const key = map?.[id];
+  const key = legacyIndex===undefined
+    ? (await objectJson(env.STUDIO_STATE,'catalog/sources/'+id.slice(0,2)+'.json'))?.[id]
+    : legacySourceKeys[legacyIndex];
   const match = sourcePattern.exec(key || '');
-  if (!match || !match[2].startsWith(match[1]) || match[3]!=='mp3') return empty(404);
-  if (url.searchParams.has('download')) url.searchParams.set('download','WhiteNoiseChoir-'+id.slice(0,12));
-  return readMedia(request,env,new Headers(noStore),key,'mp3',url);
+  if (!match || !match[2].startsWith(match[1])) return empty(404);
+  if (url.searchParams.has('download')) {
+    if (match[3]!=='mp3') return empty(404);
+    url.searchParams.set('download','WhiteNoiseChoir-'+(id || 'source-'+legacyIndex).slice(0,20));
+  }
+  return readMedia(request,env,new Headers(noStore),key,match[3],url);
 }
 
 export default {
@@ -188,11 +193,16 @@ export default {
         if (env.PUBLIC_CATALOG_ENABLED!=='true' || !env.TURNSTILE_SECRET_KEY) return empty(503);
         const headers = headersFor(request.headers.get('Origin'));
         if (method==='POST') return createSession(request,env,headers,request.headers.get('Origin'));
-        if (method==='GET') return await hasSession(request,env.TURNSTILE_SECRET_KEY) ? json({verified:true}) : empty(401);
+        if (method==='GET') {
+          const expiresAt = await hasSession(request,env.TURNSTILE_SECRET_KEY);
+          return expiresAt ? json({expiresAt}) : empty(401);
+        }
         return empty(405);
       }
-      const audio = /^\/api\/studio\/mp3\/([a-f0-9]{32})$/.exec(path);
+      const audio = /^\/api\/studio\/sources\/([a-f0-9]{32})$/.exec(path);
       if (audio && (method==='GET' || method==='HEAD')) return publicMedia(request,env,url,audio[1]);
+      const legacy = /^\/api\/studio\/legacy\/(\d{1,2})$/.exec(path);
+      if (legacy && (method==='GET' || method==='HEAD')) return publicMedia(request,env,url,undefined,Number(legacy[1]));
       const media = /^\/api\/studio\/mixes\/([^/]+)\/media$/.exec(path);
       if (media && allowedSlug(media[1]) && (method==='GET' || method==='HEAD')) {
         const record = await objectJson(env.STUDIO_STATE,releaseKey(media[1]));
