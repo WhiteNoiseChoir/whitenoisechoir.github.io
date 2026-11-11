@@ -6,7 +6,7 @@
 <title>WhiteNoiseChoir · Phòng phối âm</title>
 <style>
 :root{color-scheme:dark;font:15px "Instrument Sans",system-ui,sans-serif;background:#151b19;color:#f2f1e8;--panel:#202824;--line:#38443d;--accent:#d5e99c}*{box-sizing:border-box}body{margin:0}header,main{max-width:1320px;margin:auto;padding:22px clamp(16px,4vw,56px)}header{border-bottom:1px solid var(--line);font-weight:750;letter-spacing:-.04em}h1{font-size:clamp(34px,7vw,70px);font-weight:550;letter-spacing:-.07em;margin:8px 0 20px}button,input,select{font:inherit;color:inherit}button,select,input[type=number],input[type=text]{background:#27312b;border:1px solid var(--line);border-radius:8px;padding:9px 12px}button{cursor:pointer}button:hover{border-color:var(--accent)}button.primary{background:var(--accent);color:#1b2516;font-weight:750}button[aria-pressed=true]{border-color:var(--accent);color:var(--accent)}label{display:inline-flex;gap:7px;align-items:center}input[type=number]{width:82px}input[type=range]{accent-color:var(--accent)}.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}.shell{display:grid;grid-template-columns:minmax(0,1fr) 240px;gap:16px;margin-top:20px}.panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px}aside h2{font-size:16px;margin:0 0 12px}aside .row{justify-content:space-between;margin:12px 0}#seek{width:100%}.track{padding:12px 0;border-top:1px solid var(--line)}.lane{position:relative;height:35px;background:repeating-linear-gradient(90deg,#19211c 0,#19211c calc(10% - 1px),#38443d calc(10% - 1px),#38443d 10%);border-radius:5px;margin:10px 0}.clip{position:absolute;top:3px;height:29px;padding:2px 5px;background:#779b73;color:#101b10;white-space:nowrap;overflow:hidden;min-width:6px;cursor:grab;touch-action:none}.needle{position:absolute;top:0;bottom:0;width:2px;background:#f1dc8e;pointer-events:none}.muted,small{color:#aab9ad}#status{min-height:22px}a{color:var(--accent)}@media(max-width:760px){.shell{grid-template-columns:1fr}}
-#video-studio{margin-top:18px}#video-studio h2{margin-top:0}#video-studio textarea{display:block;width:100%;min-height:130px;resize:vertical;padding:12px;background:#19211c;color:inherit;border:1px solid var(--line);border-radius:8px;font:inherit;margin:8px 0 12px}#video-preview{display:block;width:min(100%,500px);max-height:280px;margin:14px 0}#video-preview[hidden]{display:none}#video-status{overflow-wrap:anywhere}
+#video-studio{margin-top:18px;scroll-margin-top:16px}#video-studio h2{margin-top:0}#video-studio textarea{display:block;width:100%;min-height:130px;resize:vertical;padding:12px;background:#19211c;color:inherit;border:1px solid var(--line);border-radius:8px;font:inherit;margin:8px 0 12px}#video-preview{display:block;width:min(100%,500px);max-height:280px;margin:14px 0}#video-preview[hidden]{display:none}#video-status{overflow-wrap:anywhere}
 .export-step{padding:18px 0;border-top:1px solid var(--line)}.export-step h3{margin:0 0 10px;font-size:17px}.export-step p{margin:9px 0}.export-step progress{display:block;width:100%;height:12px;margin-top:12px;accent-color:var(--accent)}button:disabled{opacity:.5;cursor:default}.video-actions{margin-top:12px}.file-picker{position:relative;background:#27312b;border:1px solid var(--line);border-radius:8px;padding:9px 12px;cursor:pointer}.file-picker:focus-within{outline:2px solid var(--accent)}.file-picker input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer}#clip-name{overflow-wrap:anywhere}
 </style>
 <header>WhiteNoiseChoir</header>
@@ -14,7 +14,7 @@
 <h1>Phòng phối âm</h1>
 <div id="mix-controls" class="row">
 <label>Tên bản phối <input id="title" type="text" maxlength="100"></label>
-<label>Thời lượng (phút) <input id="minutes" type="number" min="0.1" max="180" step="0.1"></label>
+<a href="#video-studio" id="export-link">Đến phần xuất</a>
 <button id="share" class="primary">Sao chép liên kết</button>
 <button id="clear">Tạo bản phối mới</button>
 </div>
@@ -31,8 +31,8 @@
 <h2 id="export-heading">Xuất âm thanh và video</h2>
 <div class="export-step">
 <h3>1. Xuất âm thanh WAV</h3>
-<p class="muted">Đặt thời lượng ở đầu trang, rồi xuất bản phối. Thời lượng đã xuất sẽ dùng cho video.</p>
-<button id="render" class="primary">Xuất WAV</button>
+<p class="muted">Thời lượng WAV đã xuất sẽ dùng cho video nền và video thành phẩm.</p>
+<div class="row"><label>Thời lượng (phút) <input id="minutes" type="number" min="0.1" max="180" step="0.1"></label><button id="render" class="primary">Xuất WAV</button></div>
 <progress id="audio-progress" max="100" value="0" aria-label="Tiến độ xuất âm thanh"></progress>
 <p id="audio-status" role="status">Chưa xuất âm thanh.</p>
 <div id="audio-result"></div>
@@ -424,6 +424,7 @@ function syncWorkflow(){
   $('mix-controls').inert=exporting;
   $('mix-editor').inert=exporting;
   $('video-input').disabled=exporting;
+  $('minutes').disabled=exporting;
   $('render').disabled=exporting;
   $('render-video').disabled=exporting || !audioExport || !$('video-input').files.length;
   $('mux-video').disabled=exporting || !audioExport || !videoExport;
