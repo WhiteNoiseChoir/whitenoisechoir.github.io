@@ -173,7 +173,7 @@ def category_pages(root, depth):
                 break
 
 
-def find_group(group, spec):
+def find_group(intake, group, spec):
     categories, queries = spec
     streams = [iter(category_pages(category, 1 if group in {"amphibians", "crickets", "insects", "owls"} else 0))
                for category in categories]
@@ -199,6 +199,15 @@ def find_group(group, spec):
             entry["description"] = commons.plain(commons.val(metadata, "ImageDescription"))
             entry["tags"] = commons.val(metadata, "Categories").split("|")[:40]
             entry["revision"] = info.get("sha1") or str(entry["size"])
+            title = entry["file_name"]
+            description = entry["description"]
+            if (re.match(r"^(?:[a-z]{2,3}-(?:us|uk|gb|au)-|nl-|de-|fr-|es-|ru-)", title, re.I)
+                    or re.search(r"\b(?:pronunciation|phonetic|consonant|wiktionary|dictionary|lingua libre)\b",
+                                 title + " " + description, re.I)):
+                continue
+            identity = entry["direct_file_url"] + "\n" + entry["revision"]
+            if intake.cached(identity):
+                continue
             eligible.append(entry)
             if len(eligible) >= 15:
                 break
@@ -250,7 +259,7 @@ def commons_assets(intake, report):
             path.unlink(missing_ok=True)
 
     with ThreadPoolExecutor(max_workers=3) as discovery, ThreadPoolExecutor(max_workers=2) as download:
-        group_jobs = {discovery.submit(find_group, group, spec): group for group, spec in GROUPS.items()}
+        group_jobs = {discovery.submit(find_group, intake, group, spec): group for group, spec in GROUPS.items()}
         submitted = set()
         jobs = {}
         for future in as_completed(group_jobs):
@@ -346,6 +355,9 @@ def probe(path):
 
 
 def forest_assets(intake, report):
+    samples_per_slot = int(os.environ.get("FOREST_PER_SLOT", "3"))
+    if not 1 <= samples_per_slot <= 60:
+        raise ValueError("FOREST_PER_SLOT must be between 1 and 60")
     with requests.Session() as session:
         session.headers["User-Agent"] = commons.USER_AGENT
         for record_id, part in FOREST:
@@ -353,6 +365,13 @@ def forest_assets(intake, report):
             filename = f"42937__sensingtheforest__natural-soundscape-dataset-part-{part}.zip"
             url = f"{page}/files/{quote(filename)}?download=1"
             try:
+                with session.get(f"https://zenodo.org/api/records/{record_id}", timeout=(15, 50)) as response:
+                    response.raise_for_status()
+                    metadata = response.json().get("metadata", {})
+                license_id = metadata.get("license", {}).get("id")
+                rights = {right.get("id", "").lower() for right in metadata.get("rights", [])}
+                if str(license_id).lower() not in {"cc-zero", "cc0-1.0"} and not rights.intersection({"cc-zero", "cc0-1.0"}):
+                    raise ValueError("Forest source metadata does not explicitly declare CC0")
                 with ZenodoZipReader(session, url) as reader, ZipFile(reader) as archive:
                     slots = {i: [] for i in range(4)}
                     for item in sorted(archive.infolist(), key=lambda entry: entry.filename):
@@ -362,7 +381,8 @@ def forest_assets(intake, report):
                             slots[min(3, int(hour) // 6)].append((item, date, hour + ":" + minute))
                     selected = []
                     for slot, entries in slots.items():
-                        sample = [entries[((2 * i + 1) * len(entries)) // 6] for i in range(3)] if len(entries) >= 3 else entries
+                        sample = [entries[((2 * i + 1) * len(entries)) // (2 * samples_per_slot)]
+                                  for i in range(samples_per_slot)] if len(entries) >= samples_per_slot else entries
                         selected.extend((slot, *entry) for entry in sample)
                     report["candidates"][str(record_id)] = len(selected)
                     emit("FOREST_SELECTION", {"record": record_id, "archive_wav_count": sum(map(len, slots.values())),

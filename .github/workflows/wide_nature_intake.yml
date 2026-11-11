@@ -1,0 +1,87 @@
+name: Wide Nature Audio Intake
+on:
+  push:
+    branches:
+      - feature/wide-nature-intake-20261111
+    paths:
+      - '.github/workflows/wide_nature_intake.yml'
+      - 'scripts/harvest_inaturalist_cc0_to_r2.py'
+      - 'scripts/harvest_nature_diversity_to_r2.py'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: whitenoisechoir-wide-nature-intake
+  cancel-in-progress: false
+env:
+  R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+  R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+  AWS_EC2_METADATA_DISABLED: 'true'
+  PYTHONUNBUFFERED: '1'
+jobs:
+  baseline:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          sparse-checkout: scripts
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install -q 'boto3>=1.36,<2'
+      - name: Count distinct audio before collection
+        run: python -u scripts/audit_r2_asset_inventory.py
+  collect:
+    needs: baseline
+    name: Collect originals from ${{ matrix.source }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        source: [inaturalist, forest, commons]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          sparse-checkout: scripts
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install intake dependencies
+        run: |
+          if ! command -v ffprobe >/dev/null; then
+            sudo apt-get update -qq
+            sudo apt-get install -y -qq ffmpeg
+          fi
+          python -m pip install -q 'boto3>=1.36,<2' 'requests>=2.32,<3' 'beautifulsoup4>=4.12,<5'
+      - name: Save source audio and metadata to R2
+        env:
+          INTAKE_SOURCE: ${{ matrix.source }}
+          FOREST_PER_SLOT: '6'
+        run: |
+          if [ "$INTAKE_SOURCE" = inaturalist ]; then
+            for page in 2 3; do
+              python -u scripts/harvest_inaturalist_cc0_to_r2.py --page "$page" --per-group 45
+            done
+          else
+            python -u scripts/harvest_nature_diversity_to_r2.py --source "$INTAKE_SOURCE"
+          fi
+  inventory:
+    needs: [baseline, collect]
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          sparse-checkout: scripts
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install -q 'boto3>=1.36,<2'
+      - name: Count distinct audio after collection
+        run: python -u scripts/audit_r2_asset_inventory.py
