@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="vi">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Dự án phối âm 10 phút với lò sưởi, suối rừng và mưa, chỉnh lớp âm thanh và xuất WAV."><meta name="robots" content="noindex,nofollow">
+<title>Cozy Rainy Forest Cabin — Bản phối thử | WhiteNoiseChoir Studio</title>
+<link rel="canonical" href="https://whitenoisechoir.com/vi/Cozy-Rainy-Forest-Cabin/">
+<link rel="stylesheet" href="/studio.css">
+<body>
+<header class="studio-header">
+  <a class="brand" href="/vi/" aria-label="WhiteNoiseChoir Studio">
+    <span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+    WhiteNoiseChoir <span>Studio</span>
+  </a>
+  <nav class="studio-nav" aria-label="Điều hướng"><a href="/library/">Bản phối công khai</a><a href="/" lang="en">English</a><button id="export-link" class="primary" type="button">Xuất bản phối <span aria-hidden="true">↘</span></button></nav>
+</header>
+<main><section role="note" style="padding:1rem;margin:1rem 0;border:1px solid #907c65;border-radius:12px"><strong>BẢN NHÁP — Cozy Rainy Forest Cabin (10 phút)</strong><p>19 lớp âm thanh từ các nguồn Studio có sẵn: lò sưởi, suối rừng, mưa, gió và sự kiện rời. Không gán tiếng thở người thành tiếng chó vì chưa xác nhận nguồn đúng. Bạn có thể phát thử, sửa lớp và xuất WAV.</p><p>Chỉnh sửa được lưu trên trình duyệt này: hãy dùng “Tải dự án JSON” để sao lưu. Chưa đăng vào kho công khai; bất kỳ ai có đường dẫn vẫn có thể truy cập vì trang chưa có đăng nhập.</p></section>
+  <div id="mix-controls" class="project-bar">
+    <div class="project-name">
+      <h1>Phòng phối âm</h1>
+      <input id="title" type="text" aria-label="Tên bản phối" maxlength="100" placeholder="Đặt tên bản phối">
+    </div>
+    <div class="project-actions">
+      <label class="preset-picker"><span>Bản mẫu</span>
+        <select id="preset" aria-label="Mở bản mẫu">
+          <option value="">Chọn bản mẫu</option>
+          <option value="streamside">Suối rừng</option>
+          <option value="cabin-rain-night">Cabin mưa đêm</option>
+          <option value="cabin-rain-night-v2">Cabin mưa đêm · V2</option>
+          <option value="cabin-rain-night-v3">Cabin mưa đêm · V3</option>
+        </select>
+      </label>
+      <button id="undo" type="button" aria-label="Hoàn tác" title="Hoàn tác (Ctrl+Z)">↶</button>
+      <button id="redo" type="button" aria-label="Làm lại" title="Làm lại (Ctrl+Shift+Z)">↷</button>
+      <button id="share" type="button">Chia sẻ</button>
+      <details class="project-menu">
+        <summary>Dự án</summary>
+        <div class="project-menu-items">
+          <button id="clear" type="button">Tạo bản phối mới</button>
+          <button id="save-project" type="button">Tải dự án JSON</button>
+          <label class="file-picker">Mở dự án JSON<input type="file" id="open-project" accept=".json,application/json" aria-label="Mở dự án JSON"></label>
+        </div>
+      </details>
+    </div>
+  </div>
+
+  <div id="mix-editor" class="studio-grid">
+    <aside class="panel library-panel" aria-labelledby="library-heading">
+      <div class="panel-heading">
+        <h2 id="library-heading">Thư viện âm thanh</h2>
+        <output id="library-count" aria-live="polite"></output>
+      </div>
+      <label class="library-search">
+        <span aria-hidden="true">⌕</span>
+        <input id="library-query" type="search" placeholder="Tìm mưa, sóng, tiếng quạt…" autocomplete="off" aria-label="Tìm âm thanh">
+        <kbd aria-hidden="true">/</kbd>
+      </label>
+      <select id="library-group" aria-label="Lọc nhóm âm thanh"><option value="">Tất cả nhóm</option></select>
+      <p id="library-status" class="message" role="status"></p>
+      <details class="vault"><summary>Kho âm thanh nội bộ</summary><p id="vault-status" class="message" role="status"></p><form id="vault-form"><label>Mã mở kho <input id="vault-key" type="password" autocomplete="off" spellcheck="false"></label><button id="vault-submit" type="submit">Mở kho</button></form></details>
+      <div id="library" class="library-list"></div><button id="library-more" class="library-more" type="button" hidden>Hiện thêm</button>
+      <audio id="library-audio" preload="none" hidden></audio>
+    </aside>
+
+    <section class="panel timeline-panel" aria-labelledby="timeline-heading">
+      <div class="panel-heading timeline-heading">
+        <div><h2 id="timeline-heading">Dòng thời gian</h2><output id="layer-count"></output></div>
+        <label class="zoom-control"><span>Thu phóng</span>
+          <select id="zoom" aria-label="Thu phóng dòng thời gian">
+            <option value="1">Vừa khung</option><option value="2">2×</option><option value="4">4×</option><option value="8">8×</option>
+          </select>
+        </label>
+      </div>
+      <div class="transport">
+        <button id="play" class="primary" type="button" aria-keyshortcuts="Space">Phát</button>
+        <button id="reset" type="button" title="Về đầu">Về đầu</button>
+        <button id="tail" type="button">Nghe điểm lặp</button>
+        <output id="time" class="transport-time"></output>
+      </div>
+      <input id="seek" type="range" min="0" step=".01" aria-label="Vị trí phát">
+      <div id="timeline-scroll" class="timeline-scroll" tabindex="0" aria-label="Các lớp trên dòng thời gian">
+        <div id="timeline-canvas">
+          <div class="timeline-row timeline-ruler"><span class="track-column">Lớp âm thanh</span><div id="time-ruler"></div></div>
+          <div id="tracks"></div>
+        </div>
+      </div>
+      <div class="master-strip">
+        <label for="master">Âm lượng tổng</label>
+        <input id="master" type="range" min="0" max="100" step="1" value="100">
+        <output id="master-value" for="master">100%</output>
+        <meter id="peak" min="-60" max="0" low="-24" high="-3" optimum="-12" value="-60" aria-label="Mức đỉnh âm thanh (dBFS)"></meter>
+      </div>
+      <p id="status" class="message studio-status" role="status"></p>
+    </section>
+
+    <aside class="panel inspector-panel" aria-labelledby="inspector-heading">
+      <div class="panel-heading"><h2 id="inspector-heading">Thông số lớp</h2></div>
+      <div id="inspector"></div>
+    </aside>
+  </div>
+
+<section id="video-studio" class="panel" aria-labelledby="export-heading">
+<h2 id="export-heading">Xuất âm thanh và video</h2>
+<div class="export-grid">
+<div class="export-step">
+<h3>1. Xuất âm thanh WAV</h3>
+<p class="muted">Thời lượng WAV đã xuất sẽ dùng cho video nền và video thành phẩm.</p>
+<div class="row"><label>Thời lượng (phút) <input id="minutes" type="number" min="0.1" max="180" step="0.1"></label><button id="render" class="primary">Xuất WAV</button></div>
+<progress id="audio-progress" max="100" value="0" aria-label="Tiến độ xuất âm thanh"></progress>
+<p id="audio-status" role="status">Chưa xuất âm thanh.</p>
+<div id="audio-result"></div>
+</div>
+<div class="export-step">
+<h3>2. Tải clip lên và kéo dài video nền</h3>
+<label for="video-prompt">Câu lệnh tạo clip bằng AI</label>
+<textarea id="video-prompt" maxlength="3000" placeholder="Nhập câu lệnh cho bản phối này"></textarea>
+<div class="row">
+<button id="copy-prompt">Sao chép câu lệnh</button><span id="prompt-status" role="status" class="muted"></span>
+</div>
+<div class="row video-actions">
+<label class="file-picker">Chọn clip ngắn <input type="file" id="video-input" accept="video/*,.mov,.mkv" aria-label="Chọn clip ngắn"></label>
+<span id="clip-name" class="muted">Chưa chọn clip</span>
+<button id="render-video" class="primary" disabled>Kéo dài video nền</button>
+</div>
+<video id="video-preview" controls muted loop playsinline hidden aria-label="Xem trước clip ngắn"></video>
+<progress id="video-progress" max="100" value="0" aria-label="Tiến độ kéo dài video nền"></progress>
+<p id="video-status" role="status">Xuất WAV và chọn clip để bắt đầu.</p>
+<div id="video-result"></div>
+</div>
+<div class="export-step">
+<h3>3. Ghép âm thanh vào video</h3>
+<p class="muted">Ghép bản WAV ở bước 1 vào video nền ở bước 2. Video thành phẩm dùng âm thanh của bản phối.</p>
+<button id="mux-video" class="primary" disabled>Ghép và xuất MP4</button>
+<progress id="mux-progress" max="100" value="0" aria-label="Tiến độ ghép âm thanh và video"></progress>
+<p id="mux-status" role="status">Đang chờ video nền.</p>
+<div id="mux-result"></div>
+</div>
+</div>
+</section>
+<details class="audio-check"><summary>Kiểm tra âm thanh</summary><p>Phát thử bản ghi tiếng suối gốc.</p><audio id="audio-check" controls preload="none"></audio></details>
+</main>
+
+<script id="studio-trial" type="application/json">{"slug":"Cozy-Rainy-Forest-Cabin","project":{"title":"Cozy Rainy Forest Cabin — Lửa ấm, suối rừng & mưa","length":600,"master":0.62,"videoPrompt":"Animate the approved cozy cabin reference image without camera movement. From the first frame, the large stone fireplace has vivid dancing flames, the forest creek clearly flows over mossy rocks, rain falls outside and drips from the porch roof, green leaves sway gently, and the Golden Retriever breathes while sleeping. Keep furniture, rocks, window, architecture and framing absolutely fixed. No cuts, no zoom, no sound. Do not invent a dog's tail if hidden by its body. Make a short photorealistic ambience clip to loop beneath separately mixed audio.","tracks":[{"asset":5,"start":0,"gain":0.43,"loop":true,"mute":false,"label":"01 · Bếp lửa đá — gần bên trái","pan":-0.32,"lowpass":11000},{"asset":41,"start":0,"gain":0.29,"loop":true,"mute":false,"label":"02 · Suối rừng — ngoài cửa kính","pan":0.28,"lowpass":4800},{"asset":35,"start":0,"gain":0.17,"loop":true,"mute":false,"label":"03 · Mưa rừng êm","pan":0.12,"lowpass":6800},{"asset":9,"start":0,"gain":0.095,"loop":true,"mute":false,"label":"04 · Mưa trên tán cây","pan":0.23,"lowpass":3900},{"asset":6,"start":0,"gain":0.13,"loop":true,"mute":false,"label":"05 · Mưa trên kính","pan":0.37,"lowpass":6500},{"asset":31,"start":0,"gain":0.043,"loop":true,"mute":false,"label":"06 · Gió rừng nhẹ","pan":0.11,"lowpass":1900},{"asset":5,"start":7,"gain":0.085,"loop":false,"mute":false,"label":"07 · Củi nổ khe khẽ · 00:07","duration":17,"offset":118,"fadeIn":1.5,"fadeOut":6,"pan":-0.43},{"asset":13,"start":13,"gain":0.084,"loop":false,"mute":false,"label":"08 · Nước nhỏ từ mái hiên · 00:13","duration":12,"offset":2,"fadeIn":2,"fadeOut":4,"pan":0.39,"lowpass":4300},{"asset":13,"start":65,"gain":0.065,"loop":false,"mute":false,"label":"09 · Giọt nước · 01:05","duration":11,"offset":13,"fadeIn":2,"fadeOut":4,"pan":0.43,"lowpass":3900},{"asset":5,"start":78,"gain":0.072,"loop":false,"mute":false,"label":"10 · Củi nứt thưa · 01:18","duration":16,"offset":243,"fadeIn":2,"fadeOut":5,"pan":-0.38},{"asset":31,"start":100,"gain":0.035,"loop":false,"mute":false,"label":"11 · Gió khẽ tăng · 01:40","duration":25,"offset":145,"fadeIn":8,"fadeOut":10,"pan":0.22,"lowpass":2300},{"asset":13,"start":132,"gain":0.059,"loop":false,"mute":false,"label":"12 · Giọt mái hiên · 02:12","duration":11,"offset":4,"fadeIn":2,"fadeOut":5,"pan":0.35,"lowpass":4100},{"asset":5,"start":190,"gain":0.074,"loop":false,"mute":false,"label":"13 · Củi lách tách · 03:10","duration":19,"offset":334,"fadeIn":3,"fadeOut":7,"pan":-0.43},{"asset":35,"start":215,"gain":0.085,"loop":false,"mute":false,"label":"14 · Mưa dày dần · 03:35–04:45","duration":70,"offset":85,"fadeIn":20,"fadeOut":25,"pan":0.17,"lowpass":4900},{"asset":0,"start":285,"gain":0.085,"loop":false,"mute":false,"label":"15 · Suối gần rõ hơn · 04:45","duration":69,"offset":0,"fadeIn":15,"fadeOut":18,"pan":0.36,"lowpass":4800},{"asset":5,"start":338,"gain":0.055,"loop":false,"mute":false,"label":"16 · Củi nổ dịu · 05:38","duration":12,"offset":460,"fadeIn":2,"fadeOut":5,"pan":-0.38},{"asset":5,"start":360,"gain":0.06,"loop":false,"mute":false,"label":"17 · Lửa ấm hơn · 06:00","duration":40,"offset":205,"fadeIn":12,"fadeOut":15,"pan":-0.3,"lowpass":7100},{"asset":5,"start":402,"gain":0.049,"loop":false,"mute":false,"label":"18 · Củi nứt nhẹ · 06:42","duration":15,"offset":330,"fadeIn":2,"fadeOut":7,"pan":-0.43},{"asset":12,"start":437,"gain":0.026,"loop":false,"mute":false,"label":"19 · Gỗ trong phòng khẽ kêu · 07:17","duration":1.5,"offset":0,"fadeIn":0.15,"fadeOut":0.4,"pan":-0.12,"lowpass":2000}]}}</script><script src="/studio-locale.js"></script>
+<script src="/studio-catalog.js"></script>
+<script src="/studio-legacy-recipes.js"></script>
+<script src="/studio-engine.js"></script>
+<script src="/studio-ui.js"></script>
+<script src="/studio-vault.js"></script>
+</body>
+</html>
