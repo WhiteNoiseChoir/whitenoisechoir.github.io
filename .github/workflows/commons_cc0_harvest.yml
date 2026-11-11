@@ -1,0 +1,80 @@
+name: Commons CC0 Sound Harvest — Real R2 Ingest
+on:
+  push:
+    branches:
+      - feature/commons-first-bulk-harvest-20261111
+    paths:
+      - 'scripts/harvest_commons_cc0_to_r2.py'
+      - 'scripts/test_harvest_commons_cc0.py'
+      - '.github/workflows/commons_cc0_harvest.yml'
+  workflow_dispatch:
+    inputs:
+      max_files:
+        description: Maximum original CC0 audio files to store in one batch
+        required: true
+        type: choice
+        default: '50'
+        options: ['25','50','100','200']
+      offset:
+        description: Wikimedia Commons search pagination offset per query
+        required: true
+        default: '0'
+        type: string
+permissions:
+  contents: read
+concurrency:
+  group: whitenoisechoir-commons-cc0-harvest
+  cancel-in-progress: false
+jobs:
+  original-audio-to-r2:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    env:
+      R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+      R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+      AWS_EC2_METADATA_DISABLED: 'true'
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Ensure approved R2 connection exists
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$R2_ACCESS_KEY_ID" || { echo "::error::Missing R2_ACCESS_KEY_ID"; exit 1; }
+          test -n "$R2_SECRET_ACCESS_KEY" || { echo "::error::Missing R2_SECRET_ACCESS_KEY"; exit 1; }
+      - name: Install only FFprobe and R2 client
+        run: |
+          if ! command -v ffprobe >/dev/null; then
+            sudo apt-get update -qq
+            sudo apt-get install -y -qq ffmpeg
+          fi
+          python -m pip install -q 'boto3>=1.36,<2'
+      - name: Source license and format filter smoke test
+        run: |
+          python -m py_compile scripts/harvest_commons_cc0_to_r2.py scripts/test_harvest_commons_cc0.py
+          python scripts/test_harvest_commons_cc0.py
+      - name: Download actual CC0 original audio bytes and upload to verified R2 objects
+        env:
+          MAX_FILES: ${{ github.event_name == 'workflow_dispatch' && inputs.max_files || '25' }}
+          OFFSET: ${{ github.event_name == 'workflow_dispatch' && inputs.offset || '0' }}
+        run: |
+          python -u scripts/harvest_commons_cc0_to_r2.py \
+            --max-files "$MAX_FILES" \
+            --per-query 50 \
+            --offset "$OFFSET" \
+            --max-file-mb 15 \
+            --max-total-mb 160 \
+            --report audits/commons-first-harvest-report.json
+      - name: Preserve file-level provenance and actual R2 counts (JSON only)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: commons-cc0-real-r2-harvest-report
+          path: audits/commons-first-harvest-report.json
+          if-no-files-found: warn
+          retention-days: 30
