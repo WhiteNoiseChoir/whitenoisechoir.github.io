@@ -7,7 +7,18 @@ const assets = [{"name":"Suối chảy gần","key":"asset-library/raw/sha256/be
 assets.push(...studioPublishedAssets);
 const media = 'https://media.whitenoisechoir.com/';
 const $ = id => document.getElementById(id);
-$('audio-check').src=media+assets[0].key;
+$('audio-check-start').onclick=async()=>{
+  const control=$('audio-check-start'),audio=$('audio-check'),status=$('audio-check-status');
+  control.disabled=true;
+  try {
+    await protectedMedia.ready();
+    audio.src=protectedMedia.urlFor(assets[0].key);
+    audio.hidden=false;
+    status.textContent='';
+    await audio.play().catch(()=>{});
+  } catch(error) { status.textContent=error.message; }
+  finally { control.disabled=false; }
+};
 const clamp = (n, lo, hi) => Math.max(lo, Math.min(hi, n));
 const streamPrompt = 'Create an 8-second photorealistic 16:9 seamless loop of a shallow forest stream at dusk. Use a locked camera at bank level, with moss-covered stones and softly lit ferns framing the water. Keep exposure and focus fixed. Let only the flowing water and a few leaves move gently, with no sudden motion, cuts, people, text, or camera movement. Match the opening and closing composition and motion phase. Export a clean 1080p MP4 without audio.';
 const sample = () => ({
@@ -110,6 +121,11 @@ function sourceAddresses(i){
 }
 async function decodeRecording(i,decoder){
   const asset=assets[i];
+  if(protectedMedia.manages(asset.key)){
+    const response=await protectedMedia.fetchRecording(asset.key);
+    if(!response.ok)throw Error(asset.name+' · HTTP '+response.status);
+    return decoder.decodeAudioData(await response.arrayBuffer());
+  }
   let failure='Không có phản hồi';
   for(const address of sourceAddresses(i)){
     try {
@@ -215,13 +231,13 @@ async function play(loopPreview=false){
     }
     schedule(position,mix.length,anchor);
     if(loopPreview) schedule(0,5,anchor+mix.length);
-    if(decoded.every(r=>r.status==='rejected')) throw Error('Không giải mã được âm thanh');
+    if(decoded.every(r=>r.status==='rejected')) throw decoded[0].reason;
     loading=false;
     playing=true;$('play').textContent='Tạm dừng';
     const skipped=tracks.filter((_,i)=>decoded[i].status==='rejected').map(t=>assets[t.asset].name);
     $('status').textContent=skipped.length?'Không tải được các lớp: '+[...new Set(skipped)].join(', '):'';
     tick(loopPreview);
-  } catch(e){if(token===generation){stop();$('status').textContent='Không tải được âm thanh. Hãy thử lại hoặc đổi nguồn.';}}
+  } catch(e){if(token===generation){stop();$('status').textContent=e.message || 'Không tải được âm thanh. Hãy thử lại hoặc đổi nguồn.';}}
 }
 function locate(value){
   const resume=playing || loading;

@@ -215,3 +215,5 @@ kbd { font: 11px var(--mono); border: 1px solid var(--line); color: var(--muted)
   .transport-time { font-size: 11px; }
   .export-grid { grid-template-columns: minmax(0, 1fr); }
 }
+
+#media-verification { position: fixed; right: 12px; bottom: 12px; z-index: 10; }

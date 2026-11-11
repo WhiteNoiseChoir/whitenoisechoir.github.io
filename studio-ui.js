@@ -144,7 +144,20 @@ async function audition(index) {
   refreshPreviewButtons();
   const ticket = previewRequest;
   const audio = $('library-audio');
-  for (const address of sourceAddresses(index)) {
+  let addresses = sourceAddresses(index);
+  if (protectedMedia.manages(assets[index].key)) {
+    try {
+      await protectedMedia.ready();
+      if (ticket !== previewRequest) return;
+      addresses = [protectedMedia.urlFor(assets[index].key)];
+    } catch (error) {
+      if (ticket !== previewRequest) return;
+      stopPreview();
+      $('library-status').textContent = error.message;
+      return;
+    }
+  }
+  for (const address of addresses) {
     audio.src = address;
     try {
       await audio.play();
@@ -318,6 +331,21 @@ function removeSelected() {
   change(() => { mix.tracks.splice(selected, 1); });
 }
 
+async function downloadOriginal(asset, control) {
+  control.disabled = true;
+  try {
+    await protectedMedia.ready();
+    const link = node('a');
+    link.href = protectedMedia.urlFor(asset.key, asset.name);
+    link.download = '';
+    document.body.append(link);
+    link.click();
+    link.remove();
+  } catch (error) {
+    $('status').textContent = error.message;
+  } finally { control.disabled = false; }
+}
+
 function renderInspector() {
   const inspector = $('inspector');
   inspector.replaceChildren();
@@ -356,6 +384,10 @@ function renderInspector() {
   });
   actions.append(mute, loop, solo, duplicate, button('Xóa', removeSelected, 'Xóa lớp đã chọn'));
 
+  if (protectedMedia.manages(asset.key)) {
+    const download = button('Tải tệp nguồn', () => downloadOriginal(asset, download));
+    actions.append(download);
+  }
   const fields = node('div', '', 'inspector-fields');
   const name = node('label', 'Tên lớp', 'full');
   const label = node('input');

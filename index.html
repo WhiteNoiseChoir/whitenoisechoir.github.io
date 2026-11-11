@@ -137,9 +137,11 @@
 </div>
 </div>
 </section>
-<details class="audio-check"><summary>Kiểm tra âm thanh</summary><p>Phát thử bản ghi tiếng suối gốc.</p><audio id="audio-check" controls preload="none"></audio></details>
+<details class="audio-check"><summary>Kiểm tra âm thanh</summary><p>Phát thử bản ghi tiếng suối gốc.</p><button id="audio-check-start" type="button">Phát thử</button><audio id="audio-check" controls preload="none" hidden></audio><p id="audio-check-status" class="message" role="status"></p></details>
+<div id="media-verification"></div>
 </main>
 <script src="studio-catalog.js"></script>
+<script src="protected-media.js"></script>
 <script src="studio-engine.js"></script>
 <script src="studio-ui.js"></script>
 </body>
