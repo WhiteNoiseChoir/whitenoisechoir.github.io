@@ -18,7 +18,7 @@
 </div>
 <div class="shell">
 <section class="panel" aria-label="Timeline">
-<div class="row"><button id="play" class="primary">Play</button><button id="reset">Back to start</button><button id="tail">Play last 10 seconds</button><button id="render">Render WAV</button><output id="time"></output></div>
+<div class="row"><button id="play" class="primary">Play</button><button id="reset">Back to start</button><button id="tail">Preview loop seam</button><button id="render">Render WAV</button><output id="time"></output></div>
 <input id="seek" type="range" min="0" step=".01" aria-label="Playback position">
 <div id="tracks"></div>
 </section>
@@ -66,11 +66,13 @@ function display(){
   $('time').textContent=format(position)+' / '+format(mix.length);
   document.querySelectorAll('.needle').forEach(el=>el.style.left=(100*position/mix.length)+'%');
 }
-function tick(){
-  position=clamp(context.currentTime-anchor,0,mix.length);
+function tick(loopPreview=false){
+  const elapsed=context.currentTime-anchor;
+  const end=mix.length+(loopPreview?5:0);
+  position=loopPreview && elapsed>=mix.length ? Math.min(5,elapsed-mix.length) : clamp(elapsed,0,mix.length);
   display();
-  if(position>=mix.length) stop();
-  else frame=requestAnimationFrame(tick);
+  if(elapsed>=end) stop();
+  else frame=requestAnimationFrame(()=>tick(loopPreview));
 }
 function load(i){
   if(!buffers.has(i)) buffers.set(i,fetch(media+assets[i].key).then(r=>{
@@ -79,7 +81,7 @@ function load(i){
   }).then(b=>context.decodeAudioData(b)).catch(e=>{buffers.delete(i);throw e;}));
   return buffers.get(i);
 }
-async function play(){
+async function play(loopPreview=false){
   if(playing){stop();return;}
   if(!mix.tracks.some(t=>!t.mute)) return;
   if(position>=mix.length) position=0;
@@ -94,13 +96,14 @@ async function play(){
     if(token!==generation) return;
     const now=context.currentTime+.05;
     anchor=now-position;
+    function schedule(from,to,base){
     tracks.forEach((t,i)=>{
       const buffer=decoded[i].value;
       if(!buffer) return;
-      const elapsed=Math.max(0,position-t.start);
+      const elapsed=Math.max(0,from-t.start);
       const offset=t.loop ? elapsed%buffer.duration : elapsed;
-      const when=Math.max(now,anchor+t.start);
-      const span=Math.min(anchor+mix.length-when,t.loop ? Infinity : buffer.duration-offset);
+      const when=base+Math.max(from,t.start);
+      const span=Math.min(base+to-when,t.loop ? Infinity : buffer.duration-offset);
       if(span<=0) return;
       const node=context.createBufferSource(), gain=context.createGain();
       node.buffer=buffer;node.loop=t.loop;
@@ -109,11 +112,14 @@ async function play(){
       node.start(when,offset,span);
       active.push({node,gain,track:t});
     });
+    }
+    schedule(position,mix.length,anchor);
+    if(loopPreview) schedule(0,5,anchor+mix.length);
     if(decoded.every(r=>r.status==='rejected')) throw Error('Audio decoding failed');
     playing=true;$('play').textContent='Pause';
     const skipped=tracks.filter((_,i)=>decoded[i].status==='rejected').map(t=>assets[t.asset].name);
     $('status').textContent=skipped.length?'Unavailable tracks: '+[...new Set(skipped)].join(', '):'';
-    tick();
+    tick(loopPreview);
   } catch(e){if(token===generation){stop();$('status').textContent='Audio could not load. Try again or replace the source.';}}
 }
 function locate(value){
@@ -175,9 +181,9 @@ function render(){
 
 $('tail').onclick=()=>{
   stop();
-  position=Math.max(0,mix.length-10);
+  position=Math.max(0,mix.length-5);
   display();
-  play();
+  play(true);
 };
 $('render').onclick=async()=>{
   const button=$('render');
@@ -250,7 +256,7 @@ $('render').onclick=async()=>{
   } finally {button.disabled=false;}
 };
 
-$('play').onclick=play;
+$('play').onclick=()=>play();
 $('reset').onclick=()=>locate(0);
 $('seek').oninput=()=>locate(Number($('seek').value));
 $('title').oninput=()=>{mix.title=$('title').value;};
