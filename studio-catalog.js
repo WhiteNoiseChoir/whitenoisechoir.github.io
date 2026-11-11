@@ -319,5 +319,25 @@ const studioPublishedAssets = [
     "aliases": "Electrical Hum — Synthetic",
     "license": "WhiteNoiseChoir · Tổng hợp",
     "duration": 600.033
+  },
+  {
+    "name": "Chó ngủ · hơi thở thật (nghe thử, CC BY 4.0)",
+    "url": "https://cdn.freesound.org/previews/642/642326_3655844-lq.mp3",
+    "group": "wildlife",
+    "aliases": "Dog Sleeping Breathing iainmccurdy Luna dog sleep breathe 51 seconds external audio preview",
+    "duration": 51.293,
+    "source": "https://freesound.org/people/iainmccurdy/sounds/642326/",
+    "license": "CC BY 4.0 · preview MP3",
+    "credit": "Tác giả: iainmccurdy (Freesound) · Foley artist: Luna. Cần ghi công khi xuất bản. Đây là preview bitrate thấp; để làm master nên tải WAV gốc sau khi đăng nhập Freesound."
+  },
+  {
+    "name": "Chó ngủ · tiếng thở/ngáy thật (CC0)",
+    "url": "https://cdn.freesound.org/previews/482/482998_6150892-lq.mp3",
+    "group": "wildlife",
+    "aliases": "Sleeping Dog 1 SpaceJoe snoring dog breathing 3min external audio preview",
+    "duration": 191.618,
+    "source": "https://freesound.org/people/SpaceJoe/sounds/482998/",
+    "license": "CC0 · preview MP3",
+    "credit": "Tác giả: SpaceJoe (Freesound). Giấy phép CC0. Đây là preview bitrate thấp; để làm master nên tải WAV gốc sau khi đăng nhập Freesound."
   }
 ];
