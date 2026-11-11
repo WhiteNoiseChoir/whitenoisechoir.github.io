@@ -339,5 +339,25 @@ const studioPublishedAssets = [
     "source": "https://freesound.org/people/SpaceJoe/sounds/482998/",
     "license": "CC0 · preview MP3",
     "credit": "Tác giả: SpaceJoe (Freesound). Giấy phép CC0. Đây là preview bitrate thấp; để làm master nên tải WAV gốc sau khi đăng nhập Freesound."
+  },
+  {
+    "name": "Dế đêm dịu · rừng gần suối · thử nguồn ngoài",
+    "url": "https://cdn.freesound.org/previews/857/857163_12970089-lq.mp3",
+    "group": "wildlife",
+    "aliases": "quiet night soft crickets forest insects natural background Goldenboy76 external preview",
+    "duration": 535.769,
+    "source": "https://freesound.org/people/Goldenboy76/sounds/857163/",
+    "license": "CC0 · MP3 preview",
+    "credit": "Goldenboy76 · Quiet Night Atmosphere — Soft Crickets · Freesound (2026). Original WAV 48kHz mono. Bản Studio hiện dùng MP3 preview để nghe thử; khi xuất bản chính thức nên sử dụng WAV gốc."
+  },
+  {
+    "name": "Dế kêu đêm · bản ghi sạch dự phòng",
+    "url": "https://cdn.freesound.org/previews/522/522298_9084007-lq.mp3",
+    "group": "wildlife",
+    "aliases": "crickets at night clean sound Defelozedd94 insects forest outdoors alternative CC0",
+    "duration": 169.002,
+    "source": "https://freesound.org/people/Defelozedd94/sounds/522298/",
+    "license": "CC0 · MP3 preview",
+    "credit": "Defelozedd94 · Crickets At Night — Clean sound · Freesound (2020). Bản gốc WAV 48 kHz stereo. MP3 preview có thể nén thấp hơn."
   }
 ];
