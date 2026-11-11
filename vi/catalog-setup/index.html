@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'self'; script-src 'unsafe-inline'; base-uri 'none'; form-action 'none'">
+<title>Thiết lập kho nội bộ · WhiteNoiseChoir Studio</title>
+<link rel="stylesheet" href="/studio.css">
+</head>
+<body>
+<main class="published-library">
+  <h1>Thiết lập kho nội bộ</h1>
+  <p>Trình duyệt tạo cặp khóa trên thiết bị. Đăng ký khóa công khai trước khi dùng liên kết mở kho.</p>
+  <button class="primary" id="generate" type="button">Tạo khóa mở kho</button>
+  <div id="keys" hidden>
+    <p><label for="access">Liên kết mở kho · lưu riêng</label></p>
+    <input id="access" type="password" size="42" readonly autocomplete="off" spellcheck="false">
+    <button id="copy-access" type="button">Sao chép liên kết riêng</button>
+    <p><label for="public-key">Khóa công khai · gửi lại trong chat</label></p>
+    <textarea id="public-key" rows="4" cols="42" readonly spellcheck="false"></textarea>
+    <button id="copy-public" type="button">Sao chép khóa công khai</button>
+  </div>
+  <p id="status" role="status"></p>
+  <p><a href="/vi/">Về Studio</a></p>
+</main>
+<script>
+const byId = id => document.getElementById(id);
+const status = byId('status');
+const button = byId('generate');
+button.addEventListener('click', async () => {
+  button.disabled = true;
+  try {
+    const pair = await crypto.subtle.generateKey({name:'ECDH',namedCurve:'P-256'},true,['deriveBits']);
+    const [publicKey, privateKey] = await Promise.all([
+      crypto.subtle.exportKey('jwk',pair.publicKey),
+      crypto.subtle.exportKey('jwk',pair.privateKey),
+    ]);
+    const {kty,crv,x,y} = publicKey;
+    byId('public-key').value = JSON.stringify({kty,crv,x,y});
+    byId('access').value = new URL('/vi/#catalog='+privateKey.d,location.origin).href;
+    byId('keys').hidden = false;
+    status.textContent = 'Đã tạo khóa. Hãy lưu liên kết riêng và gửi khóa công khai trong chat.';
+  } catch {
+    button.disabled = false;
+    status.textContent = 'Trình duyệt chưa tạo được khóa. Hãy thử lại trong Chrome hoặc Cốc Cốc.';
+  }
+});
+async function copy(id, message) {
+  const field = byId(id);
+  try {
+    await navigator.clipboard.writeText(field.value);
+    status.textContent = message;
+  } catch {
+    if (field.type==='password') field.type='text';
+    field.focus();
+    field.select();
+    status.textContent = 'Nhấn Ctrl+C để sao chép nội dung đã chọn.';
+  }
+}
+byId('copy-access').addEventListener('click',()=>copy('access','Đã sao chép liên kết riêng.'));
+byId('copy-public').addEventListener('click',()=>copy('public-key','Đã sao chép khóa công khai.'));
+</script>
+</body>
+</html>
