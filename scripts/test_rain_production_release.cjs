@@ -71,9 +71,9 @@ for(const entry of provenance.tracks){
 assert.equal((read("sitemap.xml").match(/<loc>/g)||[]).length,18);
 for(const slug of ["light-rain","rain-on-tin-roof","distant-thunder"])assert.ok(read("sounds/rain/index.html").includes('href="/sounds/'+slug+'/"'));
 assert.equal((read("sounds/index.html").match(/data-wnc-existing-id="/g)||[]).length,35);
-assert.ok(read("index.html").includes("13 families · 45 playable sources (35 original catalog + 10 new DSP)"));
-assert.equal(JSON.parse(read("index.html").split("var recipes=")[1].split("];")[0]+"]").length,45);
-for(const r of added)assert.ok(read("index.html").includes('["'+r+'",'),"homepage row missing "+r);
+assert.ok(read("listen.html").includes("13 families · 45 playable sources (35 original catalog + 10 new DSP)"));
+assert.equal(JSON.parse(read("listen.html").split("var recipes=")[1].split("];")[0]+"]").length,45);
+for(const r of added)assert.ok(read("listen.html").includes('["'+r+'",'),"continuous player row missing "+r);
 assert.ok(read("sources.html").includes("The nine recordings"));
 assert.ok(!read("audio/rain-first-wave-provenance.json").includes("lossless_WAV_source"));
 console.log("RAIN_PRODUCTION_QA_PASS "+JSON.stringify({newSounds:added.length,existingProtected:22,hls:35,soundPages:35,indexableSoundPages:10,sitemap:18,presets:45,unreleasedPlanned:57,approval:"OWNER_2026_11_08"}));

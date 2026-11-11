@@ -50,8 +50,8 @@ for(let i=0;i<ids.length;i++){
  assert.ok(probe.streams.some(x=>x.codec_name==="mp3"&&Number(x.channels)===2&&Number(x.sample_rate)===44100));
 }
 assert.equal((read("sounds/index.html").match(/data-wnc-existing-id="/g)||[]).length,35);
-assert.ok(read("index.html").includes("13 families · 35 catalog sources"));
-const recipes=JSON.parse(read("index.html").split("var recipes=")[1].split("];")[0]+"]");
+assert.ok(read("listen.html").includes("13 families · 45 playable sources (35 original catalog + 10 new DSP)"));
+const recipes=JSON.parse(read("listen.html").split("var recipes=")[1].split("];")[0]+"]");
 assert.equal(recipes.length,45);
 assert.equal((read("sitemap.xml").match(/<loc>/g)||[]).length,18);
 console.log("RAIN_WAVE3_PRODUCTION_QA_PASS: 33 sources and HLS, original 28 pinned, 2 exact owner-audition MP3, 45 presets, noindex pages, true CC0 licenses");

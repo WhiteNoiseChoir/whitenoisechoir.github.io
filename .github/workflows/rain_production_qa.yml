@@ -9,6 +9,7 @@ on:
       - "audio/rain-first-wave-provenance.json"
       - "catalog/**"
       - "index.html"
+      - "listen.html"
       - "sounds/**"
       - "sources.html"
       - "scripts/test_rain_production_release.cjs"

@@ -3,6 +3,7 @@ on:
   push:
     branches: [main, 'feature/dedup-approved-review-audio-20261109']
     paths:
+      - 'listen.html'
       - 'audio/review-media-dedup.json'
       - 'scripts/test_media_dedup.cjs'
       - 'scripts/resolve_review_media.cjs'

@@ -9,7 +9,7 @@ const rows=[["NEW-10","bodetal-brook-review","Borgory",651194],["NEW-13","wakanu
 assert.equal(m.status,"REVIEW_ONLY_PENDING_OWNER");assert.equal(m.tracks.length,2);
 assert.equal(catalog.sounds.length,35);assert.equal(hls.records.length,35);assert.equal(hls.applies_to.length,35);
 assert.equal(plans.filter(x=>!x.playable).length,57);assert.equal(plans.filter(x=>x.playable).length,13);
-assert.equal(JSON.parse(read("index.html").split("var recipes=")[1].split("];")[0]+"]").length,45);
+assert.equal(JSON.parse(read("listen.html").split("var recipes=")[1].split("];")[0]+"]").length,45);
 assert.equal((read("sitemap.xml").match(/<loc>/g)||[]).length,18);
 assert.ok(html.includes('name="robots" content="noindex,nofollow"'));
 assert.ok(html.includes("Tua tới 9:55")&&html.includes('id="copy"'));

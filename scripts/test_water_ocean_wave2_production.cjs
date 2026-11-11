@@ -52,7 +52,7 @@ assert.equal(fams.find(x=>x.id==="water").existing_ids.slice(-1)[0],"bodetal-bro
 assert.equal(fams.find(x=>x.id==="ocean").existing_ids.slice(-1)[0],"crashing-ocean-real");
 assert.equal(fams.find(x=>x.id==="ocean").route,"/sounds/#ocean-waves");
 assert.equal((read("sounds/index.html").match(/data-wnc-existing-id="/g)||[]).length,35);
-assert.ok(read("index.html").includes("13 families · 35 catalog sources"));
-assert.equal(JSON.parse(read("index.html").split("var recipes=")[1].split("];")[0]+"]").length,45);
+assert.ok(read("listen.html").includes("13 families · 45 playable sources (35 original catalog + 10 new DSP)"));
+assert.equal(JSON.parse(read("listen.html").split("var recipes=")[1].split("];")[0]+"]").length,45);
 assert.equal((read("sitemap.xml").match(/<loc>/g)||[]).length,18);
 console.log("WATER_OCEAN_WAVE2_PRODUCTION_QA_PASS original33 SHA pinned, 35 HLS, 2 reviewed CC0 WAV-source MP3 derivatives promoted byte-identically, 45 presets, noindex SEO and blocked Bamboo.");

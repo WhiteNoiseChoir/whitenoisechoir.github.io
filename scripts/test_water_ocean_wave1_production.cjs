@@ -36,7 +36,7 @@ assert.ok(oceanPage.includes('<link rel="canonical" href="https://whitenoisechoi
 assert.ok(oceanPage.includes('"contentUrl":"https://media.whitenoisechoir.com/audio/ocean-waves-real.mp3"'),"Ocean structured audio URL must use approved R2 media hostname");
 assert.ok(!oceanPage.includes("whitenoisechoir.github.io"),"Retired Ocean SEO hostname must not recur");
 assert.ok(oceanPage.includes('name="robots" content="noindex,follow"'),"Ocean existing robots directive unchanged");
-assert.equal(gitblob("assets/persistent-router.js"),"e7c039730a8869ab037736cabbce9eb7b6cef65d","Persistent playback code must be unchanged");
+assert.equal(gitblob("assets/persistent-router.js"),"ba81a3a6d230b7e26a8fb9c770ea681570b41027","Preserve the verified continuous-player router");
 // Sitemap 1dc9eadc8c721d2ea2de27c91e46deeb6a6e5836
 // (blob a3aebac7cc125f357d858730f4480f415ea298ea) became this blob at
 // d37468ebd4ca09bb90ef4056406f3313358312cd via hostname substitution ONLY.
@@ -96,7 +96,7 @@ assert.deepEqual(fams.find(f=>f.id==="water").existing_ids.slice(-3,-1),newIDs.s
 assert.equal(fams.find(f=>f.id==="ocean").existing_ids.slice(-2,-1)[0],newIDs[2]);
 assert.equal(fams.find(f=>f.id==="ocean").route,"/sounds/#ocean-waves");
 assert.equal((read("sounds/index.html").match(/data-wnc-existing-id="/g)||[]).length,35);
-assert.ok(read("index.html").includes("13 families · 35 catalog sources"));
-assert.equal(JSON.parse(read("index.html").split("var recipes=")[1].split("];")[0]+"]").length,45);
+assert.ok(read("listen.html").includes("13 families · 45 playable sources (35 original catalog + 10 new DSP)"));
+assert.equal(JSON.parse(read("listen.html").split("var recipes=")[1].split("];")[0]+"]").length,45);
 assert.equal((read("sitemap.xml").match(/<loc>/g)||[]).length,18);
 console.log("WATER_OCEAN_WAVE1_PRODUCTION_QA_PASS original30 protected, 3 owner-approved exact MP3, 33 HLS with static 7day, 45 original presets, Ocean canonical migrated with verified provenance; 18 sitemap paths preserved.");
