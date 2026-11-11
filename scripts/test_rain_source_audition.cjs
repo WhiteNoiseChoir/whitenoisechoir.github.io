@@ -2,7 +2,7 @@
 "use strict";
 const fs=require("node:fs"),assert=require("node:assert/strict");
 const file=p=>fs.readFileSync(p,"utf8");
-const html=file("signature/rain-source-review/index.html"),sitemap=file("sitemap.xml");
+const html=file("signature/rain-source-review/index.html"),sitemap=file("audits/sitemap-before-studio.xml");
 assert.match(html,/<meta name="robots" content="noindex,nofollow">/);
 assert.ok(html.includes("<h1>Nghe và so sánh 3 nguồn âm gốc</h1>"));
 assert.ok(html.includes("không phải 10 phút"),"source preview is not a master");

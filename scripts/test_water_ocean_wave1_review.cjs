@@ -9,9 +9,9 @@ const expectRows=[["NEW-08","rushing-river-review","orlandorizo",864312],["NEW-0
 assert.equal(m.status,"REVIEW_ONLY_PENDING_OWNER");assert.equal(m.tracks.length,3);assert.equal(sound.sounds.length,35);
 assert.equal(hls.records.length,35);assert.equal(hls.applies_to.length,35);
 const recipes=JSON.parse(read("listen.html").split("var recipes=")[1].split("];")[0]+"]");assert.equal(recipes.length,45);
-assert.equal((read("sitemap.xml").match(/<loc>/g)||[]).length,18);
+assert.equal((read("audits/sitemap-before-studio.xml").match(/<loc>/g)||[]).length,18);
 assert.ok(html.includes('name="robots" content="noindex,nofollow"'));assert.ok(html.includes("Tua tới 9:55"));assert.ok(html.includes('id="copy"'));
-assert.ok(!read("sitemap.xml").includes(root));
+assert.ok(!read("audits/sitemap-before-studio.xml").includes(root));
 const names=new Set(sound.sounds.map(s=>s.id));
 for(let i=0;i<3;i++){
  const [plan,id,creator,soundId]=expectRows[i],track=m.tracks[i],path=resolve(root+"/"+id+".mp3");

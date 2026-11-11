@@ -8,6 +8,8 @@ const BASE="http://127.0.0.1:8787";
  const browser=await chromium.launch({headless:true,executablePath,args:["--no-sandbox","--autoplay-policy=no-user-gesture-required"]});
  try{
   const page=await browser.newPage({viewport:{width:390,height:844},reducedMotion:"reduce"});
+  // Exercise the legacy browser against its archived listing.
+  await page.route(BASE+"/sounds/",route=>route.continue({url:BASE+"/sounds/archive.html"}));
   const errors=[];page.on("pageerror",e=>errors.push(String(e)));
   await page.goto(BASE+"/sounds/",{waitUntil:"domcontentloaded"});
   await page.waitForFunction(()=>!!window.WNCBridge&&!!document.querySelector("#wnc-library-search"),null,{timeout:30000});

@@ -41,7 +41,7 @@ try {
   const page=await context.newPage();
   const errors=[];
   page.on('pageerror',e=>errors.push(e.message));
-  await page.goto(host+'/#mix=cabin-rain-night-v3');
+  await page.goto(host+'/vi/#mix=cabin-rain-night-v3');
   await page.locator('#layer-count').waitFor();
   assert.equal(await page.locator('#layer-count').textContent(),'24 lớp');
   assert.equal(await page.locator('#library-count').textContent(),'55/55');
@@ -117,9 +117,24 @@ try {
   assert.ok(left<15&&right>3300&&right<3900&&opening<450,JSON.stringify({left,right,opening}));
   console.log('PASS preview, live peak meter and 6-second stereo WAV master gain, fade and pan');
 
+  const publicPage=await context.newPage();
+  await publicPage.goto(host+'/');
+  assert.equal(await publicPage.locator('html').getAttribute('lang'),'en');
+  assert.equal(await publicPage.locator('h1').textContent(),'Sound Studio');
+  assert.equal(await publicPage.locator('#vault-form').count(),0);
+  assert.equal(await publicPage.locator('#preset optgroup option').count(),45);
+  await publicPage.goto(host+'/vi/cabin-rain-night-v3/');
+  assert.equal(await publicPage.locator('#layer-count').textContent(),'24 lớp');
+  assert.equal(await publicPage.locator('meta[name=robots]').getAttribute('content'),'noindex,nofollow');
+  await publicPage.goto(host+'/sounds/');
+  await publicPage.waitForURL(host+'/library/');
+  const reviewed=JSON.parse(await readFile(path.join(root,'data/published-mixes.json'),'utf8')).filter(row=>row.status==='published');
+  assert.equal(await publicPage.locator('article').count(),reviewed.length);
+  assert.equal(await publicPage.locator('a[href*="/vi/cabin-rain-night-v3/"]').count(),0);
+  console.log('PASS English home, Vietnamese trial and approval-only public library');
   const mobile=await context.newPage();
   await mobile.setViewportSize({width:390,height:844});
-  await mobile.goto(host+'/#mix=cabin-rain-night-v3');
+  await mobile.goto(host+'/vi/#mix=cabin-rain-night-v3');
   assert.equal(await mobile.locator('#layer-count').textContent(),'24 lớp');
   assert.ok(await mobile.evaluate(()=>document.documentElement.scrollWidth===innerWidth));
   const listener=await context.newPage();

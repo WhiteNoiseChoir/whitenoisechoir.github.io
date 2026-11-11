@@ -7,6 +7,8 @@ const executablePath=["/usr/bin/google-chrome","/usr/bin/google-chrome-stable","
 const browser=await chromium.launch({headless:true,executablePath,args:["--no-sandbox","--autoplay-policy=no-user-gesture-required"]});
 try{
  const page=await browser.newPage({viewport:{width:390,height:844},reducedMotion:"reduce"});
+  // Exercise the legacy browser against its archived listing.
+  await page.route(BASE+"/sounds/",route=>route.continue({url:BASE+"/sounds/archive.html"}));
  const errors=[];page.on("pageerror",e=>errors.push(String(e)));
  for(let i=0;i<3;i++){
   await page.goto(BASE+"/sounds/"+slugs[i]+"/",{waitUntil:"domcontentloaded"});

@@ -8,6 +8,8 @@ const BASE="http://127.0.0.1:8787";
  const errors=[];
  try{
   const page=await browser.newPage({viewport:{width:390,height:844},reducedMotion:"reduce"});
+  // Exercise the legacy browser against its archived listing.
+  await page.route(BASE+"/sounds/",route=>route.continue({url:BASE+"/sounds/archive.html"}));
   page.on("pageerror",e=>errors.push(String(e)));
   await page.goto(BASE+"/sounds/explore/",{waitUntil:"domcontentloaded"});
   await page.waitForFunction(()=>document.querySelector("#stat-items")?.textContent==="532",{timeout:30000}).catch(async()=>{

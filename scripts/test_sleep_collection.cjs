@@ -48,7 +48,7 @@ assert.equal([...html.matchAll(/<details>/g)].length,4,"Four focused FAQ disclos
 const stripped=html.replace(/<script[\s\S]*?<\/script>/g," ").replace(/<[^>]*>/g," ").replace(/&[a-z]+;/g," ").replace(/\s+/g," ").trim();
 const words=stripped.split(" ").filter(Boolean).length;
 assert.ok(words>=650&&words<1800,"Substantive but intent-specific text: "+words);
-const sitemap=read("sitemap.xml"), loc=[...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map(x=>x[1]);
+const sitemap=read("audits/sitemap-before-studio.xml"), loc=[...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map(x=>x[1]);
 assert.equal(loc.filter(x=>x===url).length,1,"Preserve existing sitemap canonical");
 assert.equal(loc.length,18,"Shower pilot added; adult collection remains unchanged");
 assert.ok(read("collections/index.html").includes("6 playable sounds · listen instantly"),"Collection card updated");

@@ -21,7 +21,7 @@ const cat=JSON.parse(read("catalog/library.json"));
 const hls=JSON.parse(read("audio/continuous/manifest.json"));
 assert.equal(cat.sounds.length,35);assert.equal(hls.records.length,35);assert.equal(hls.applies_to.length,35);
 assert.equal(JSON.parse(read("listen.html").split("var recipes=")[1].split("];")[0]+"]").length,45);
-assert.equal((read("sitemap.xml").match(/<loc>/g)||[]).length,18);
+assert.equal((read("audits/sitemap-before-studio.xml").match(/<loc>/g)||[]).length,18);
 assert.ok(fs.existsSync("assets/persistent-router.js"));
 let reclaimed=0;
 for(const x of data.pairs){

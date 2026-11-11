@@ -215,3 +215,24 @@ kbd { font: 11px var(--mono); border: 1px solid var(--line); color: var(--muted)
   .transport-time { font-size: 11px; }
   .export-grid { grid-template-columns: minmax(0, 1fr); }
 }
+
+.studio-nav { display:flex; align-items:center; justify-content:flex-end; gap:11px; flex-wrap:wrap; }
+.studio-nav a { font-size:13px; white-space:nowrap; text-decoration:none; }
+.studio-nav a:hover { text-decoration:underline; }
+.vault { margin: 6px 0 8px; }
+.vault summary { list-style:revert; display:list-item; }
+.vault label { display:block; font-size:12px; margin-bottom:5px; }
+.vault input { width:100%; margin-top:3px; }
+.library-more { margin-top:8px; width:100%; }
+.trial-label { margin:0 0 6px; color:var(--accent); font-size:12px; }
+.published-library { max-width:980px; }
+.published-library > p { color:var(--muted); }
+.published-card { padding:17px; }
+.published-card h2 { font-size:18px; margin-bottom:6px; }
+.published-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:12px; }
+.published-library video,.published-library audio { display:block; max-width:100%; margin-top:14px; }
+@media(max-width:700px) {
+  .studio-header { flex-wrap:wrap; }
+  .studio-nav { gap:8px; }
+  .studio-nav a { font-size:12px; }
+}

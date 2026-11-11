@@ -7,7 +7,7 @@ const registry=JSON.parse(read("catalog/sound-production-registry-c5.json"));
 const lib=JSON.parse(read("catalog/library.json"));
 const ledger=JSON.parse(read("catalog/sound-release-approvals.json"));
 const html=read("signature/c6c-online-review/index.html");
-const sitemap=read("sitemap.xml");
+const sitemap=read("audits/sitemap-before-studio.xml");
 const renderer=read("scripts/c6c_render_ten_original_synth.py");
 const uploader=read("scripts/c6c_publish_ten_review_r2.py");
 assert.equal(manifest.items.length,10);

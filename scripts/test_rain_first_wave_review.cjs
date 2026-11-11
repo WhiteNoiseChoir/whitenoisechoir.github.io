@@ -5,7 +5,7 @@ const resolve=require("./resolve_review_media.cjs");
 const fs=require("node:fs"),assert=require("node:assert/strict");
 const f=p=>fs.readFileSync(p,"utf8"),j=p=>JSON.parse(f(p));
 const root="signature/rain-review",page=f(root+"/index.html"),catalog=j("catalog/library.json"),planned=j("catalog/planned-sounds.json").planned;
-const sitemap=f("sitemap.xml"),home=f("index.html"),review=j(root+"/manifest.json");
+const sitemap=f("audits/sitemap-before-studio.xml"),home=f("index.html"),review=j(root+"/manifest.json");
 const ids=["light-rain-review","rain-tin-roof-review","distant-thunder-review"];
 const expected=["NEW-01","NEW-02","NEW-06"];
 assert.match(page,/<meta name="robots" content="noindex,nofollow">/,"review hidden from indexing");

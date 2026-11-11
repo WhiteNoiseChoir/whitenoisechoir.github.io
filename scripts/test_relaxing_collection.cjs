@@ -59,7 +59,7 @@ assert.ok([...html.matchAll(/<details>/g)].length>=4,"Useful accessible FAQ");
 const plain=html.replace(/<script[\s\S]*?<\/script>/g," ").replace(/<[^>]+>/g," ").replace(/\s+/g," ");
 const count=plain.trim().split(" ").filter(Boolean).length;
 assert.ok(count>=650&&count<=1800,"Should be a substantial but focused collection; words="+count);
-const sitemap=read("sitemap.xml");
+const sitemap=read("audits/sitemap-before-studio.xml");
 const locs=[...sitemap.matchAll(/<loc>(.*?)<\/loc>/g)].map(x=>x[1]);
 const canonical="https://whitenoisechoir.com/collections/relaxing-sounds/";
 assert.equal(locs.filter(x=>x===canonical).length,1,"Exactly one indexable collection URL");

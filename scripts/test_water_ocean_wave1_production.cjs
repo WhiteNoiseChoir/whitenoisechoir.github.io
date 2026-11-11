@@ -41,8 +41,8 @@ assert.equal(gitblob("assets/persistent-router.js"),"ba81a3a6d230b7e26a8fb9c770e
 // (blob a3aebac7cc125f357d858730f4480f415ea298ea) became this blob at
 // d37468ebd4ca09bb90ef4056406f3313358312cd via hostname substitution ONLY.
 // Exact 18 URL paths below were verified identical before/after; no C6 candidate pages added.
-const sitemap=read("sitemap.xml");
-assert.equal(gitblob("sitemap.xml"),"1fb26b9e9186b3f9dba89234cc60c7bc3bb2228d","Reviewed .com sitemap must remain byte-identical");
+const sitemap=read("audits/sitemap-before-studio.xml");
+assert.equal(gitblob("audits/sitemap-before-studio.xml"),"1fb26b9e9186b3f9dba89234cc60c7bc3bb2228d","Reviewed .com sitemap must remain byte-identical");
 const indexedRoutes=[...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map(m=>{
  assert.ok(m[1].startsWith("https://whitenoisechoir.com/"),"Unexpected sitemap hostname");
  return m[1].slice("https://whitenoisechoir.com".length);
@@ -56,7 +56,7 @@ assert.deepEqual(indexedRoutes,[
  "/collections/white-noise-for-sleep/","/collections/baby-sleep-sounds/"
 ],"Existing 18 indexable routes only; no thin/unapproved variants");
 const hub=read("sounds/water/index.html");assert.ok(hub.includes('name="robots" content="noindex,follow"'));
-assert.ok(read("sounds/index.html").includes('id="ocean-waves"'),"Original Ocean family virtual anchor retained");
+assert.ok(read("sounds/archive.html").includes('id="ocean-waves"'),"Original Ocean family virtual anchor retained");
 for(let i=0;i<3;i++){
  const id=newIDs[i],slug=slugs[i],row=review.tracks[i],p=prov.tracks[i],snd=catalog.sounds.find(x=>x.id===id),plan=plans.find(x=>x.plan_id===origPlans[i]);
  assert.ok(!oldIDs.has(id));assert.ok(liveIDs.has(id));
@@ -86,7 +86,7 @@ for(let i=0;i<3;i++){
  assert.ok(soundPage.includes("/audio/"+id+".mp3")&&soundPage.includes("/audio/continuous/"+id+"/continuous.m3u8"));
  assert.ok(soundPage.includes('<audio controls loop preload="none"'));assert.ok(soundPage.includes(row.source_page));
  assert.ok(soundPage.includes('"@type":"AudioObject"'));assert.ok(soundPage.includes("lossy Freesound HQ MP3 preview"));
- assert.ok(hub.includes('href="/sounds/'+slug+'/"'));assert.ok(!read("sitemap.xml").includes("/sounds/"+slug+"/"));
+ assert.ok(hub.includes('href="/sounds/'+slug+'/"'));assert.ok(!read("audits/sitemap-before-studio.xml").includes("/sounds/"+slug+"/"));
  const probe=JSON.parse(cp.execFileSync("ffprobe",["-v","error","-show_entries","format=duration:stream=codec_name,channels,sample_rate","-of","json",p.production_mp3],{encoding:"utf8"}));
  assert.ok(Math.abs(Number(probe.format.duration)-600)<=1);
  assert.ok(probe.streams.some(z=>z.codec_name==="mp3"&&z.channels===2&&Number(z.sample_rate)===44100));
@@ -95,8 +95,8 @@ for(let i=0;i<3;i++){
 assert.deepEqual(fams.find(f=>f.id==="water").existing_ids.slice(-3,-1),newIDs.slice(0,2));
 assert.equal(fams.find(f=>f.id==="ocean").existing_ids.slice(-2,-1)[0],newIDs[2]);
 assert.equal(fams.find(f=>f.id==="ocean").route,"/sounds/#ocean-waves");
-assert.equal((read("sounds/index.html").match(/data-wnc-existing-id="/g)||[]).length,35);
+assert.equal((read("sounds/archive.html").match(/data-wnc-existing-id="/g)||[]).length,35);
 assert.ok(read("listen.html").includes("13 families · 45 playable sources (35 original catalog + 10 new DSP)"));
 assert.equal(JSON.parse(read("listen.html").split("var recipes=")[1].split("];")[0]+"]").length,45);
-assert.equal((read("sitemap.xml").match(/<loc>/g)||[]).length,18);
+assert.equal((read("audits/sitemap-before-studio.xml").match(/<loc>/g)||[]).length,18);
 console.log("WATER_OCEAN_WAVE1_PRODUCTION_QA_PASS original30 protected, 3 owner-approved exact MP3, 33 HLS with static 7day, 45 original presets, Ocean canonical migrated with verified provenance; 18 sitemap paths preserved.");

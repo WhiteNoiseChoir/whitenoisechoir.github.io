@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="vi">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Tìm âm thanh, phối nhiều lớp trên timeline và xuất bản phối WAV hoặc video MP4.">
+<title>Cabin trong mưa đêm · V3 · WhiteNoiseChoir Studio</title>
+<link rel="canonical" href="https://whitenoisechoir.com/vi/cabin-rain-night-v3/"><meta name="robots" content="noindex,nofollow">
+<link rel="stylesheet" href="/studio.css">
+<body>
+<header class="studio-header">
+  <a class="brand" href="/vi/" aria-label="WhiteNoiseChoir Studio">
+    <span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+    WhiteNoiseChoir <span>Studio</span>
+  </a>
+  <nav class="studio-nav" aria-label="Điều hướng"><a href="/library/">Bản phối công khai</a><a href="/" lang="en">English</a><button id="export-link" class="primary" type="button">Xuất bản phối <span aria-hidden="true">↘</span></button></nav>
+</header>
+<main>
+  <div id="mix-controls" class="project-bar">
+    <div class="project-name"><p class="trial-label">Bản thử · Cabin trong mưa đêm · V3</p>
+      <h1>Phòng phối âm</h1>
+      <input id="title" type="text" aria-label="Tên bản phối" maxlength="100" placeholder="Đặt tên bản phối">
+    </div>
+    <div class="project-actions">
+      <label class="preset-picker"><span>Bản mẫu</span>
+        <select id="preset" aria-label="Mở bản mẫu">
+          <option value="">Chọn bản mẫu</option>
+          <option value="streamside">Suối rừng</option>
+          <option value="cabin-rain-night">Cabin mưa đêm</option>
+          <option value="cabin-rain-night-v2">Cabin mưa đêm · V2</option>
+          <option value="cabin-rain-night-v3">Cabin mưa đêm · V3</option>
+        </select>
+      </label>
+      <button id="undo" type="button" aria-label="Hoàn tác" title="Hoàn tác (Ctrl+Z)">↶</button>
+      <button id="redo" type="button" aria-label="Làm lại" title="Làm lại (Ctrl+Shift+Z)">↷</button>
+      <button id="share" type="button">Chia sẻ</button>
+      <details class="project-menu">
+        <summary>Dự án</summary>
+        <div class="project-menu-items">
+          <button id="clear" type="button">Tạo bản phối mới</button>
+          <button id="save-project" type="button">Tải dự án JSON</button>
+          <label class="file-picker">Mở dự án JSON<input type="file" id="open-project" accept=".json,application/json" aria-label="Mở dự án JSON"></label>
+        </div>
+      </details>
+    </div>
+  </div>
+
+  <div id="mix-editor" class="studio-grid">
+    <aside class="panel library-panel" aria-labelledby="library-heading">
+      <div class="panel-heading">
+        <h2 id="library-heading">Thư viện âm thanh</h2>
+        <output id="library-count" aria-live="polite"></output>
+      </div>
+      <label class="library-search">
+        <span aria-hidden="true">⌕</span>
+        <input id="library-query" type="search" placeholder="Tìm mưa, sóng, tiếng quạt…" autocomplete="off" aria-label="Tìm âm thanh">
+        <kbd aria-hidden="true">/</kbd>
+      </label>
+      <select id="library-group" aria-label="Lọc nhóm âm thanh"><option value="">Tất cả nhóm</option></select>
+      <p id="library-status" class="message" role="status"></p>
+      <details class="vault"><summary>Kho âm thanh nội bộ</summary><p id="vault-status" class="message" role="status"></p><form id="vault-form"><label>Mã mở kho <input id="vault-key" type="password" autocomplete="off" spellcheck="false"></label><button id="vault-submit" type="submit">Mở kho</button></form></details>
+      <div id="library" class="library-list"></div><button id="library-more" class="library-more" type="button" hidden>Hiện thêm</button>
+      <audio id="library-audio" preload="none" hidden></audio>
+    </aside>
+
+    <section class="panel timeline-panel" aria-labelledby="timeline-heading">
+      <div class="panel-heading timeline-heading">
+        <div><h2 id="timeline-heading">Dòng thời gian</h2><output id="layer-count"></output></div>
+        <label class="zoom-control"><span>Thu phóng</span>
+          <select id="zoom" aria-label="Thu phóng dòng thời gian">
+            <option value="1">Vừa khung</option><option value="2">2×</option><option value="4">4×</option><option value="8">8×</option>
+          </select>
+        </label>
+      </div>
+      <div class="transport">
+        <button id="play" class="primary" type="button" aria-keyshortcuts="Space">Phát</button>
+        <button id="reset" type="button" title="Về đầu">Về đầu</button>
+        <button id="tail" type="button">Nghe điểm lặp</button>
+        <output id="time" class="transport-time"></output>
+      </div>
+      <input id="seek" type="range" min="0" step=".01" aria-label="Vị trí phát">
+      <div id="timeline-scroll" class="timeline-scroll" tabindex="0" aria-label="Các lớp trên dòng thời gian">
+        <div id="timeline-canvas">
+          <div class="timeline-row timeline-ruler"><span class="track-column">Lớp âm thanh</span><div id="time-ruler"></div></div>
+          <div id="tracks"></div>
+        </div>
+      </div>
+      <div class="master-strip">
+        <label for="master">Âm lượng tổng</label>
+        <input id="master" type="range" min="0" max="100" step="1" value="100">
+        <output id="master-value" for="master">100%</output>
+        <meter id="peak" min="-60" max="0" low="-24" high="-3" optimum="-12" value="-60" aria-label="Mức đỉnh âm thanh (dBFS)"></meter>
+      </div>
+      <p id="status" class="message studio-status" role="status"></p>
+    </section>
+
+    <aside class="panel inspector-panel" aria-labelledby="inspector-heading">
+      <div class="panel-heading"><h2 id="inspector-heading">Thông số lớp</h2></div>
+      <div id="inspector"></div>
+    </aside>
+  </div>
+
+<section id="video-studio" class="panel" aria-labelledby="export-heading">
+<h2 id="export-heading">Xuất âm thanh và video</h2>
+<div class="export-grid">
+<div class="export-step">
+<h3>1. Xuất âm thanh WAV</h3>
+<p class="muted">Thời lượng WAV đã xuất sẽ dùng cho video nền và video thành phẩm.</p>
+<div class="row"><label>Thời lượng (phút) <input id="minutes" type="number" min="0.1" max="180" step="0.1"></label><button id="render" class="primary">Xuất WAV</button></div>
+<progress id="audio-progress" max="100" value="0" aria-label="Tiến độ xuất âm thanh"></progress>
+<p id="audio-status" role="status">Chưa xuất âm thanh.</p>
+<div id="audio-result"></div>
+</div>
+<div class="export-step">
+<h3>2. Tải clip lên và kéo dài video nền</h3>
+<label for="video-prompt">Câu lệnh tạo clip bằng AI</label>
+<textarea id="video-prompt" maxlength="3000" placeholder="Nhập câu lệnh cho bản phối này"></textarea>
+<div class="row">
+<button id="copy-prompt">Sao chép câu lệnh</button><span id="prompt-status" role="status" class="muted"></span>
+</div>
+<div class="row video-actions">
+<label class="file-picker">Chọn clip ngắn <input type="file" id="video-input" accept="video/*,.mov,.mkv" aria-label="Chọn clip ngắn"></label>
+<span id="clip-name" class="muted">Chưa chọn clip</span>
+<button id="render-video" class="primary" disabled>Kéo dài video nền</button>
+</div>
+<video id="video-preview" controls muted loop playsinline hidden aria-label="Xem trước clip ngắn"></video>
+<progress id="video-progress" max="100" value="0" aria-label="Tiến độ kéo dài video nền"></progress>
+<p id="video-status" role="status">Xuất WAV và chọn clip để bắt đầu.</p>
+<div id="video-result"></div>
+</div>
+<div class="export-step">
+<h3>3. Ghép âm thanh vào video</h3>
+<p class="muted">Ghép bản WAV ở bước 1 vào video nền ở bước 2. Video thành phẩm dùng âm thanh của bản phối.</p>
+<button id="mux-video" class="primary" disabled>Ghép và xuất MP4</button>
+<progress id="mux-progress" max="100" value="0" aria-label="Tiến độ ghép âm thanh và video"></progress>
+<p id="mux-status" role="status">Đang chờ video nền.</p>
+<div id="mux-result"></div>
+</div>
+</div>
+</section>
+<details class="audio-check"><summary>Kiểm tra âm thanh</summary><p>Phát thử bản ghi tiếng suối gốc.</p><audio id="audio-check" controls preload="none"></audio></details>
+</main>
+<script type="application/json" id="studio-trial">{"slug":"cabin-rain-night-v3","title":"Cabin trong mưa đêm · V3","preset":"cabin-rain-night-v3"}</script>
+<script src="/studio-locale.js"></script>
+<script src="/studio-catalog.js"></script>
+<script src="/studio-legacy-recipes.js"></script>
+<script src="/studio-engine.js"></script>
+<script src="/studio-ui.js"></script>
+<script src="/studio-vault.js"></script>
+</body>
+</html>

@@ -53,7 +53,7 @@ for(const id of keep)assert.ok(player.includes('"'+id+'"'),"Critical fallback mi
 assert.ok(player.includes("hasGitHubHLS?"));
 assert.ok(player.includes('audio_origin=github'));
 assert.ok(player.includes("https://media.whitenoisechoir.com/"));
-assert.equal((fs.readFileSync("sitemap.xml","utf8").match(/<loc>/g)||[]).length,18);
+assert.equal((fs.readFileSync("audits/sitemap-before-studio.xml","utf8").match(/<loc>/g)||[]).length,18);
 const bytes=tracked.reduce((n,p)=>n+fs.statSync(p).size,0);
 assert.ok(bytes<600000000,"HEAD tree unexpectedly large "+bytes);
 assert.ok(bytes>500000000,"Critical GitHub MP3s unexpectedly missing "+bytes);

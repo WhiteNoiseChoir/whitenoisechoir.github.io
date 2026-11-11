@@ -4,13 +4,13 @@ const fs=require("node:fs"),assert=require("node:assert/strict"),cp=require("nod
 const read=x=>fs.readFileSync(x,"utf8"),data=x=>JSON.parse(read(x));
 const blob=p=>{const b=fs.readFileSync(p);return crypto.createHash("sha1").update(Buffer.from("blob "+b.length+"\0")).update(b).digest("hex")};
 assert.equal(blob("sounds/ocean-waves/index.html"),"1ffb0a6e4e8368f3c37418cbfe2bbca4f6312573");
-assert.equal(blob("sitemap.xml"),"1fb26b9e9186b3f9dba89234cc60c7bc3bb2228d");
+assert.equal(blob("audits/sitemap-before-studio.xml"),"1fb26b9e9186b3f9dba89234cc60c7bc3bb2228d");
 assert.equal(blob("assets/persistent-router.js"),"ba81a3a6d230b7e26a8fb9c770ea681570b41027");
 const ocean=read("sounds/ocean-waves/index.html");
 assert.ok(ocean.includes('href="https://whitenoisechoir.com/sounds/ocean-waves/"'));
 assert.ok(ocean.includes('"contentUrl":"https://media.whitenoisechoir.com/audio/ocean-waves-real.mp3"'));
 assert.ok(!ocean.includes("whitenoisechoir.github.io"));
-const urls=[...read("sitemap.xml").matchAll(/<loc>([^<]+)<\/loc>/g)].map(x=>x[1]);
+const urls=[...read("audits/sitemap-before-studio.xml").matchAll(/<loc>([^<]+)<\/loc>/g)].map(x=>x[1]);
 assert.equal(urls.length,18);
 assert.equal(new Set(urls).size,18);
 assert.ok(urls.every(x=>x.startsWith("https://whitenoisechoir.com/")));

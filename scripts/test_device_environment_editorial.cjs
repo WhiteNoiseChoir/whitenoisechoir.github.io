@@ -11,7 +11,7 @@ const review=json("audio/review-queue-20261108.json");
 const byId=Object.fromEntries(library.sounds.map(s=>[s.id,s]));
 const dsp=Object.fromEntries(masters.tracks.map(t=>[t.id,t]));
 const listened=Object.fromEntries(review.dsp.map(t=>[t.id,t]));
-const urls=[...read("sitemap.xml").matchAll(/<loc>([^<]+)<\/loc>/g)].map(m=>m[1]);
+const urls=[...read("audits/sitemap-before-studio.xml").matchAll(/<loc>([^<]+)<\/loc>/g)].map(m=>m[1]);
 const cases=[
  ["desk-fan-synth","desk-fan",false,"112 Hz"],
  ["air-conditioner-synth","air-conditioner",false,"60 Hz"],
