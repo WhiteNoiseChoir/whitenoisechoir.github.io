@@ -16,13 +16,14 @@ import tempfile
 import threading
 import time
 from urllib.error import HTTPError
-from urllib.parse import quote
+from urllib.parse import quote, unquote, urljoin, urlsplit
 from zipfile import ZipFile
 
 import boto3
 from botocore.config import Config
 from botocore.exceptions import ClientError
 import requests
+from bs4 import BeautifulSoup
 
 import harvest_commons_cc0_to_r2 as commons
 from harvest_cc0_github_mirror_to_r2 import ACCOUNT_ID, BUCKET, RAW_ROOT, digest_map, head
@@ -121,7 +122,7 @@ class Intake:
                     self.s3.put_object(
                         Bucket=BUCKET, Key=key, Body=data, ContentLength=size,
                         IfNoneMatch="*", ContentType=commons.EXT[ext],
-                        Metadata={"sha256": digest, "license": "cc0-1.0"},
+                        Metadata={"sha256": digest, "license": "public-domain" if meta.get("license") == "Public Domain" else "cc0-1.0"},
                     )
                 state = "new"
             except ClientError as exc:
@@ -135,7 +136,8 @@ class Intake:
             "file_bytes": size, "duration_seconds": duration, "codec": audio.get("codec_name"),
             "sample_rate_hz": audio.get("sample_rate"), "channels": audio.get("channels"),
             "classification_status": "pending", "classification_labels": [],
-            "license": "CC0-1.0", "license_url": LICENSE, "ingested_at": now(),
+            "license": meta.get("license", "CC0-1.0"),
+            "license_url": meta.get("license_url", LICENSE), "ingested_at": now(),
         }
         put_json(self.s3, f"asset-library/records/sha256/{digest[:2]}/{digest}.json", record, True)
         put_json(self.s3, source_key(identity), record)
@@ -396,13 +398,123 @@ def forest_assets(intake, report):
                 emit("SOURCE_ERROR", report["errors"][-1])
 
 
+NPS_LIBRARIES = {
+    "https://home.nps.gov/subjects/sound/gallery.htm": "national-parks",
+    "https://www.nps.gov/romo/learn/photosmultimedia/soundlibrary.htm": "rocky-mountain",
+    "https://www.nps.gov/yell/learn/photosmultimedia/soundlibrary.htm": "yellowstone",
+}
+NPS_HOSTS = {"nps.gov", "www.nps.gov", "home.nps.gov", "npgallery.nps.gov", "irma.nps.gov"}
+NPS_SECTIONS = {
+    "amphibians", "birds", "geological", "hydrological", "insects",
+    "mammals", "meteorological", "reptiles",
+}
+
+
+def nps_page(url, library):
+    headers = {"User-Agent": commons.USER_AGENT}
+    with requests.get(url, headers=headers, timeout=(15, 50)) as response:
+        response.raise_for_status()
+        if urlsplit(response.url).hostname not in NPS_HOSTS:
+            raise ValueError("Unexpected National Park Service page host")
+        document = BeautifulSoup(response.content, "html.parser")
+    main = document.select_one("main") or document
+    title = main.select_one("h1")
+    title = title.get_text(" ", strip=True) if title else library
+    assets, children = {}, {}
+    for tag in main.select("a[href], audio, source, [data-audio-url], [data-file], [data-src]"):
+        heading = tag.find_previous(["h2", "h3", "h4", "h5"])
+        group = heading.get_text(" ", strip=True) if heading else title
+        if url == next(iter(NPS_LIBRARIES)) and group.lower() not in NPS_SECTIONS:
+            continue
+        for attr in ("href", "src", "data-src", "data-audio-url", "data-file"):
+            value = tag.get(attr)
+            if not isinstance(value, str):
+                continue
+            target = urljoin(url, value)
+            parts = urlsplit(target)
+            if parts.scheme != "https" or parts.hostname not in NPS_HOSTS:
+                continue
+            target = parts._replace(fragment="").geturl()
+            suffix = PurePosixPath(unquote(parts.path)).suffix.lower()
+            if suffix in commons.EXT:
+                assets[target] = group
+            elif url in NPS_LIBRARIES and suffix == ".htm" and target != url:
+                if library == "national-parks" and parts.path.startswith("/subjects/sound/"):
+                    children[target] = group
+                if library == "rocky-mountain" and parts.path.startswith("/romo/learn/photosmultimedia/sounds-"):
+                    children[target] = group
+    return title, assets, children
+
+
+def nps_assets(intake, report):
+    def collect(url, evidence, library, hint):
+        title, files, children = nps_page(url, library)
+        found = [(target, evidence, url, title, group if group != title else hint, library)
+                 for target, group in files.items()]
+        return found, children
+
+    def ingest(row):
+        target, evidence, page, title, group, library = row
+        if intake.cached(target):
+            return {"state": "cached", "bytes": 0, "group": group}
+        filename = PurePosixPath(unquote(urlsplit(target).path)).name
+        with tempfile.TemporaryDirectory(prefix="wnc-nps-") as folder:
+            path = Path(folder) / ("source" + PurePosixPath(filename).suffix.lower())
+            with requests.get(target, headers={"User-Agent": commons.USER_AGENT}, stream=True,
+                              timeout=(15, 80)) as response, path.open("wb") as output:
+                response.raise_for_status()
+                if urlsplit(response.url).hostname not in NPS_HOSTS:
+                    raise ValueError("Unexpected National Park Service audio host")
+                size = 0
+                for block in response.iter_content(512 * 1024):
+                    size += len(block)
+                    if size > 160 * 1024**2:
+                        raise ValueError("Audio exceeds the intake file size limit")
+                    output.write(block)
+            audio, duration = probe(path)
+            return intake.save(path, target, {
+                "source_provider": "National Park Service", "source_page": page,
+                "license_evidence_url": evidence, "license": "Public Domain", "license_url": evidence,
+                "credit": "National Park Service", "download_url": target,
+                "original_filename": filename, "title": title, "group_hint": group, "library": library,
+            }, audio, duration, file_digest(path))
+
+    originals = {}
+    with ThreadPoolExecutor(max_workers=3) as pool:
+        leaves = {}
+        for page, library in NPS_LIBRARIES.items():
+            try:
+                found, links = collect(page, page, library, library)
+                for row in found:
+                    originals.setdefault(row[0], row)
+                for child, group in links.items():
+                    leaves[pool.submit(collect, child, page, library, group)] = child
+            except Exception as exc:
+                report["errors"].append({"page": page, "error": str(exc)[:350]})
+        for future in as_completed(leaves):
+            try:
+                found, _ = future.result()
+                for row in found:
+                    originals.setdefault(row[0], row)
+            except Exception as exc:
+                report["errors"].append({"page": leaves[future], "error": str(exc)[:350]})
+        report["candidates"] = dict(Counter(row[-1] for row in originals.values()))
+        emit("NPS_CANDIDATES", report["candidates"])
+        jobs = {pool.submit(ingest, row): row[0] for row in originals.values()}
+        for future in as_completed(jobs):
+            try:
+                report["assets"].append(future.result())
+            except Exception as exc:
+                report["errors"].append({"url": jobs[future], "error": str(exc)[:350]})
+
+
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--source", choices=("commons", "forest"), required=True)
+    parser.add_argument("--source", choices=("commons", "forest", "nps"), required=True)
     args = parser.parse_args()
     intake = Intake()
     report = {"source": args.source, "started_at": now(), "assets": [], "candidates": {}, "errors": []}
-    (commons_assets if args.source == "commons" else forest_assets)(intake, report)
+    {"commons": commons_assets, "forest": forest_assets, "nps": nps_assets}[args.source](intake, report)
     report.update(finished_at=now(), counts=Counter(row["state"] for row in report["assets"]),
                   groups=Counter(row["group"] for row in report["assets"] if row["state"] == "new"),
                   bytes_added=sum(row["bytes"] for row in report["assets"]))
