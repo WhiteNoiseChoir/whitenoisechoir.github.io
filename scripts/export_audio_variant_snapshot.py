@@ -16,13 +16,13 @@ from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 from harvest_nature_diversity_to_r2 import Intake, BUCKET
 
 PUBLIC_KEY = """-----BEGIN PUBLIC KEY-----
-MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA1B3UEzfWulHYXA8GexlC
-ZFCaf0eV+9JBmv3nw0WjTNMBVeaUuL7pl4NxYrZhF2OdoCjBz3PVFVdc4R2TeRlK
-VOyL8iAaHHeApkLMvHUXQY5kAIH5D9Ft1VVsojplWbw553jsy2VJCwSc8CK4xiB1
-Pd+Z+G5Y0Ejp+3DoBU60/Epzk2n+TLzjhiG8LDbltFmV7y5mE/HX6lGJQyCCI1wW
-/v2uT+y+5/z7vUlBafbSP0wnh74SsPeQL9zbVk6LxLEba7OhHKka5UZ6OiqbJAI5
-Do2rMmo+fZIpfJorKytrbDu3Penr1sRstDGs+9oUH5vsxo44ydK4orD+QalJfPmH
-PQIDAQAB
+MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA1lDCGUhA9EEXWzbHZkwr
+W17dcFbNB4adGF6T/Ujz6nr3TbQ1dNMYClR4TbGFjzgO/9Qi9WPITNluE7XI/vBJ
+L8Yyq+50nIRB0cGDR2Hp00i2GULxeEHKTWBb4knh3MGsW/a5YYpPf+T55tVfTyHz
+yw1o0i9sCW0eBuKF9MGscXCYGu1nJbYeioYdvkdItYMjqMfMK2hl4JzCCEHKsbO2
+fIed670oabZoMSbG7c/1vsCQ4xFXozywJQ1kv0xlT+JZYwotyvg1VQ0P1YClWT0/
+k9+0YOI3Zc2NHyxANXVeg15bXRpQp93WBXcTIMGkXx3EPRX2MQDg9fvPtt5q8nxP
+hQIDAQAB
 -----END PUBLIC KEY-----"""
 AUDIO = re.compile(r"^asset-library/(.*?)/sha256/(?:[a-f0-9]{2}/)?([a-f0-9]{64})\.(wav|mp3|ogg|oga|opus|flac|m4a|aiff?|au|wma)$", re.I)
 METADATA = re.compile(r"/([a-f0-9]{64})\.json$")
