@@ -61,7 +61,7 @@ c=json.loads((ROOT/"catalog/library.json").read_text())
 assert len(c["sounds"])==35
 assert not any(r["id"] in {x["id"] for x in c["sounds"]} for r in manifest["tracks"])
 assert len(json.loads((ROOT/"catalog/planned-sounds.json").read_text())["planned"])==70
-sitemap=(ROOT/"sitemap.xml").read_text()
+sitemap=(ROOT/"audits/sitemap-before-studio.xml").read_text()
 assert sitemap.count("<loc>")==18
 assert "/signature/rain-review/" not in sitemap
 print("RAIN_REVIEW_AUDIO_QA_PASS: 3 first-wave masters byte-identical to approved production MP3s; now 28 catalog sources, first-wave master hashes preserved",flush=True)
