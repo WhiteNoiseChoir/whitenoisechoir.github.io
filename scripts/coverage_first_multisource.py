@@ -29,7 +29,7 @@ LICENSE_RE = re.compile(
     r"^https?://creativecommons\.org/(?:publicdomain/zero/1\.0|licenses/by/(?:2\.0|2\.5|3\.0|4\.0))/?",
     re.I,
 )
-BAD_CONTENT = re.compile(r"\b(?:song|music|remix|album|podcast|cover version|karaoke)\b", re.I)
+BAD_CONTENT = re.compile(r"\b(?:music|remix|album|podcast|cover version|karaoke)\b", re.I)
 STOP = {"a", "an", "the", "of", "in", "on", "to", "with", "for", "and",
         "sound", "sounds", "audio", "recording", "recordings", "effect", "effects", "sfx"}
 EQUIV = {"rainfall": "rain", "raining": "rain", "rains": "rain",
@@ -42,7 +42,7 @@ EQUIV = {"rainfall": "rain", "raining": "rain", "rains": "rain",
          "waterfalls": "waterfall", "thunders": "thunder", "birds": "bird",
          "cuckoos": "cuckoo", "owls": "owl", "wolves": "wolf"}
 SYNONYMS = {"rain": "rainfall", "wave": "surf", "stream": "brook",
-            "hoot": "owl call", "chirp": "bird call",
+            "hoot": "call", "chirp": "call",
             "waterfall": "cascade", "wind": "breeze",
             "crackle": "crackling", "thunder": "thunderstorm",
             "footstep": "walking", "howl": "howling"}
@@ -289,12 +289,14 @@ def run(max_targets, dry_run=False):
         existing = {(r["source"], r["landing_url"]) for r in candidates}
         if code not in verified and len(candidates) < MAX_CANDIDATES_PER_CODE:
             for source in PER_SOURCE:
+                if any(r["source"].split(":")[0] == {"commons": "wikimedia_commons", "internet_archive": "internet_archive_item"}.get(source, source) for r in candidates):
+                    continue
                 if source == "xeno_canto" and not os.getenv("XENO_CANTO_API_KEY"):
                     continue
                 if len(candidates) >= MAX_CANDIDATES_PER_CODE:
                     break
                 for query in queries(english)[:2]:
-                    if len(candidates) >= MAX_CANDIDATES_PER_CODE:
+                    if len(candidates) >= MAX_CANDIDATES_PER_CODE or any(r["source"].split(":")[0] == {"commons": "wikimedia_commons", "internet_archive": "internet_archive_item"}.get(source, source) for r in candidates):
                         break
                     try:
                         for record in SEARCH[source](session, code, english, query):
@@ -302,7 +304,7 @@ def run(max_targets, dry_run=False):
                             if identity not in existing:
                                 candidates.append(record)
                                 existing.add(identity)
-                            if len(candidates) >= MAX_CANDIDATES_PER_CODE:
+                            if len(candidates) >= MAX_CANDIDATES_PER_CODE or any(r["source"].split(":")[0] == {"commons": "wikimedia_commons", "internet_archive": "internet_archive_item"}.get(source, source) for r in candidates):
                                 break
                         state["queries_completed"] += 1
                         state["source_queries"][source] = state["source_queries"].get(source, 0) + 1
@@ -314,6 +316,10 @@ def run(max_targets, dry_run=False):
                         if len(state["errors"]) > 100:
                             state["errors"] = state["errors"][-100:]
                     time.sleep(0.25)
+        if failures and code not in state.setdefault("retry_codes", []) and state.setdefault("retry_counts", {}).get(code, 0) < 2:
+            state["ordered_codes"].append(code)
+            state["retry_codes"].append(code)
+            state["retry_counts"][code] = state["retry_counts"].get(code, 0) + 1
         if code not in verified and candidates:
             new_codes += 1
         state["cursor"] = index + 1
@@ -325,11 +331,11 @@ def run(max_targets, dry_run=False):
     candidate_codes = {key for key, rows in state["candidates"].items() if rows}
     missing_candidate = candidate_codes - verified
     final = {"cursor": state["cursor"], "total_codes": len(targets),
-             "previously_verified_codes": len(verified),
+             "legacy_mapped_codes": len(verified),
              "new_candidate_codes": len(missing_candidate),
              "candidate_codes_all": len(candidate_codes),
-             "verified_or_candidate_codes": len(verified | candidate_codes),
-             "verified_p0_missing": sum(row[4] == "P0" and row[0] not in verified for row in bundle["targets"]),
+             "legacy_or_candidate_codes": len(verified | candidate_codes),
+             "legacy_p0_missing": sum(row[4] == "P0" and row[0] not in verified for row in bundle["targets"]),
              "new_candidate_p0": sum(targets[code][4] == "P0" for code in missing_candidate),
              "source_counts": dict(Counter(r["source"] for rows in state["candidates"].values() for r in rows)),
              "metadata_candidates": sum(len(v) for v in state["candidates"].values()),
@@ -354,7 +360,7 @@ def self_test():
     assert not permitted_license("https://creativecommons.org/licenses/by-nc/4.0/")
     assert not permitted_license("https://creativecommons.org/licenses/by-sa/4.0/")
     assert not permitted_license("https://example.com/unknown")
-    assert queries("Owl hoot") == ["owl hoot", "owl owl call"]
+    assert queries("Owl hoot") == ["owl hoot", "owl call"]
     print("COVERAGE_SELF_TEST PASS")
 
 
@@ -368,4 +374,7 @@ if __name__ == "__main__":
     else:
         if not 1 <= args.max_targets <= 200:
             raise SystemExit("max-targets must be 1..200")
-        run(args.max_targets)
+        result = run(args.max_targets)
+        if os.getenv("GITHUB_OUTPUT"):
+            with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as out:
+                out.write("complete=" + str(result["complete"]).lower() + "\n")
