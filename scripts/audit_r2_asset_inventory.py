@@ -11,6 +11,7 @@ ACCOUNT_ID="7483501ad8365fe26b0448b96b54fb9f"
 BUCKET="whitenoisechoir-media"
 PREFIXES={
  "commons":"asset-library/commons/sha256/",
+ "raw":"asset-library/raw/sha256/",
  "kenney_direct":"asset-library/kenney/sha256/",
  "cc0_github_mirror":"asset-library/cc0-github-mirror/sha256/"}
 SHA=re.compile(r"/([0-9a-f]{64})\.[a-z0-9]+$")
