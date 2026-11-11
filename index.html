@@ -25,11 +25,13 @@
 <aside class="panel"><h2>Sound library</h2><div id="library"></div><a href="/#mix=streamside">Open Streamside draft</a></aside>
 </div>
 <p id="status" role="status" class="muted"></p>
+<details><summary>Check audio output</summary><p>Play the original stream recording.</p><audio id="audio-check" controls preload="none"></audio></details>
 </main>
 <script>
 const assets = [{"name": "Stream close-up", "key": "asset-library/raw/sha256/be/be201d2fd0d110fc3ef5d8af060e5ac48439fd54e9f26ce6b69825182748a95b.wav", "duration": 68.889, "source": "https://commons.wikimedia.org/wiki/File:433589_jackthemurray_stream-river-water-up-close.wav"}, {"name": "Clicking Stream Frog", "key": "asset-library/raw/sha256/0a/0a3c133128b94306396567cfc22ded8363645869d762c2bbc76b5c3519017cff.m4a", "duration": 11.865011, "source": "https://www.inaturalist.org/observations/111319279"}, {"name": "American Robin", "key": "asset-library/raw/sha256/0b/0bf24b2b08299380add4e29b6ed0c9ed37ffaa26a19e3908e5b572d75ef7cabe.m4a", "duration": 24.960998, "source": "https://www.inaturalist.org/observations/402220192"}, {"name": "Barred Owl", "key": "asset-library/raw/sha256/06/06c95f291596cfc813ff54d636ae926493ed6cd9c8a10d30f049a70460048af1.mp3", "duration": 62.261875, "source": "https://www.inaturalist.org/observations/349447210"}, {"name": "Common Eastern Bumble Bee", "key": "asset-library/raw/sha256/2b/2b5e3902314cbb5d54c26164dc4264a1fdebf61f5012e6f378f6f3e313c7e91a.m4a", "duration": 23.04, "source": "https://www.inaturalist.org/observations/243621492"}];
 const media = 'https://media.whitenoisechoir.com/';
 const $ = id => document.getElementById(id);
+$('audio-check').src=media+assets[0].key;
 const clamp = (n, lo, hi) => Math.max(lo, Math.min(hi, n));
 const sample = () => ({
   title: 'Streamside', length: 1800,
@@ -84,15 +86,18 @@ async function play(){
   const token=++generation;
   $('status').textContent='Loading audio…';
   try {
-    context ||= new AudioContext();
+    const AudioEngine=window.AudioContext || window.webkitAudioContext;
+    context ||= new AudioEngine();
     await context.resume();
     const tracks=mix.tracks.filter(t=>!t.mute);
-    const decoded=await Promise.all(tracks.map(t=>load(t.asset)));
+    const decoded=await Promise.allSettled(tracks.map(t=>load(t.asset)));
     if(token!==generation) return;
     const now=context.currentTime+.05;
     anchor=now-position;
     tracks.forEach((t,i)=>{
-      const buffer=decoded[i], elapsed=Math.max(0,position-t.start);
+      const buffer=decoded[i].value;
+      if(!buffer) return;
+      const elapsed=Math.max(0,position-t.start);
       const offset=t.loop ? elapsed%buffer.duration : elapsed;
       const when=Math.max(now,anchor+t.start);
       const span=Math.min(anchor+mix.length-when,t.loop ? Infinity : buffer.duration-offset);
@@ -104,7 +109,11 @@ async function play(){
       node.start(when,offset,span);
       active.push({node,gain,track:t});
     });
-    playing=true;$('play').textContent='Pause';$('status').textContent='';tick();
+    if(decoded.every(r=>r.status==='rejected')) throw Error('Audio decoding failed');
+    playing=true;$('play').textContent='Pause';
+    const skipped=tracks.filter((_,i)=>decoded[i].status==='rejected').map(t=>assets[t.asset].name);
+    $('status').textContent=skipped.length?'Unavailable tracks: '+[...new Set(skipped)].join(', '):'';
+    tick();
   } catch(e){if(token===generation){stop();$('status').textContent='Audio could not load. Try again or replace the source.';}}
 }
 function locate(value){
