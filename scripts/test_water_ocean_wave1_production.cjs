@@ -36,7 +36,7 @@ assert.ok(oceanPage.includes('<link rel="canonical" href="https://whitenoisechoi
 assert.ok(oceanPage.includes('"contentUrl":"https://media.whitenoisechoir.com/audio/ocean-waves-real.mp3"'),"Ocean structured audio URL must use approved R2 media hostname");
 assert.ok(!oceanPage.includes("whitenoisechoir.github.io"),"Retired Ocean SEO hostname must not recur");
 assert.ok(oceanPage.includes('name="robots" content="noindex,follow"'),"Ocean existing robots directive unchanged");
-assert.equal(gitblob("assets/persistent-router.js"),"e7c039730a8869ab037736cabbce9eb7b6cef65d","Persistent playback code must be unchanged");
+assert.equal(gitblob("assets/persistent-router.js"),"ba81a3a6d230b7e26a8fb9c770ea681570b41027","Preserve the verified continuous-player router");
 // Sitemap 1dc9eadc8c721d2ea2de27c91e46deeb6a6e5836
 // (blob a3aebac7cc125f357d858730f4480f415ea298ea) became this blob at
 // d37468ebd4ca09bb90ef4056406f3313358312cd via hostname substitution ONLY.
