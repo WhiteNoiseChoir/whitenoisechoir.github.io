@@ -1,5 +1,5 @@
 name: Coverage-first multi-source metadata discovery
-run-name: Coverage-first 2026-11-11 v2 (MediaWiki adapter fixed)
+run-name: Coverage-first continuation from cursor 200
 on:
   push:
     branches: [feature/coverage-first-multisource-20261111]
