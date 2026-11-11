@@ -287,6 +287,7 @@ def run(max_targets, dry_run=False):
         english = targets[code][2]
         candidates = state["candidates"].setdefault(code, [])
         existing = {(r["source"], r["landing_url"]) for r in candidates}
+        code_failed = False
         if code not in verified and len(candidates) < MAX_CANDIDATES_PER_CODE:
             for source in PER_SOURCE:
                 if any(r["source"].split(":")[0] == {"commons": "wikimedia_commons", "internet_archive": "internet_archive_item"}.get(source, source) for r in candidates):
@@ -311,14 +312,14 @@ def run(max_targets, dry_run=False):
                     except (requests.RequestException, KeyError, ValueError, TypeError, json.JSONDecodeError) as error:
                         # Continue to other providers; surface incomplete coverage, not false success.
                         failures[source] += 1
+                        code_failed = True
                         state["errors"].append({"code": code, "provider": source,
                                                 "kind": type(error).__name__})
                         if len(state["errors"]) > 100:
                             state["errors"] = state["errors"][-100:]
                     time.sleep(0.25)
-        if failures and code not in state.setdefault("retry_codes", []) and state.setdefault("retry_counts", {}).get(code, 0) < 2:
+        if code_failed and state.setdefault("retry_counts", {}).get(code, 0) < 2:
             state["ordered_codes"].append(code)
-            state["retry_codes"].append(code)
             state["retry_counts"][code] = state["retry_counts"].get(code, 0) + 1
         if code not in verified and candidates:
             new_codes += 1
@@ -326,7 +327,7 @@ def run(max_targets, dry_run=False):
         state["scanned"] += 1
         if (index - start + 1) % 5 == 0 and not dry_run:
             state_save(s3, state)
-            emit("COVERAGE_CHECKPOINT", {"cursor": state["cursor"], "total": len(targets),
+            emit("COVERAGE_CHECKPOINT", {"cursor": state["cursor"], "total": len(state["ordered_codes"]),
                   "new_candidate_codes_in_segment": new_codes, "source_errors": dict(failures)})
     candidate_codes = {key for key, rows in state["candidates"].items() if rows}
     missing_candidate = candidate_codes - verified
@@ -339,7 +340,7 @@ def run(max_targets, dry_run=False):
              "new_candidate_p0": sum(targets[code][4] == "P0" for code in missing_candidate),
              "source_counts": dict(Counter(r["source"] for rows in state["candidates"].values() for r in rows)),
              "metadata_candidates": sum(len(v) for v in state["candidates"].values()),
-             "source_errors": dict(failures), "complete": state["cursor"] >= len(targets),
+             "source_errors": dict(failures), "complete": state["cursor"] >= len(state["ordered_codes"]),
              "audio_files_downloaded": 0, "updated_at": utcnow()}
     state["summary"] = final
     if not dry_run:
