@@ -161,7 +161,7 @@ def main():
         groups=Counter(row["group"] for row in fresh), distinct_taxa=len({row["species"] for row in fresh}),
         bytes_added=sum(row["bytes"] for row in fresh),
     )
-    key = "asset-library/sources/inaturalist/runs/" + os.environ.get("GITHUB_RUN_ID", "local") + "-" + os.environ.get("GITHUB_RUN_ATTEMPT", "1") + ".json"
+    key = "asset-library/sources/inaturalist/runs/" + os.environ.get("GITHUB_RUN_ID", "local") + "-" + os.environ.get("GITHUB_RUN_ATTEMPT", "1") + f"-page-{args.page}.json"
     put_json(intake.s3, key, report)
     emit("INAT_FINAL", {name: report[name] for name in ("counts", "groups", "candidates", "distinct_taxa", "bytes_added")}
          | {"report_key": key, "errors": len(report["errors"]), "first_errors": report["errors"][:5]})
