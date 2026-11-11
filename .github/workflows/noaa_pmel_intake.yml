@@ -1,0 +1,43 @@
+name: NOAA PMEL Underwater Audio Intake
+on:
+  push:
+    branches:
+      - feature/inaturalist-wildlife-intake-20261111
+    paths:
+      - 'scripts/harvest_noaa_pmel_to_r2.py'
+      - '.github/workflows/noaa_pmel_intake.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: whitenoisechoir-noaa-intake
+  cancel-in-progress: false
+jobs:
+  underwater:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+      R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+      AWS_EC2_METADATA_DISABLED: 'true'
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          sparse-checkout: scripts
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install intake dependencies
+        run: |
+          if ! command -v ffprobe >/dev/null; then
+            sudo apt-get update -qq
+            sudo apt-get install -y -qq ffmpeg
+          fi
+          python -m pip install -q 'boto3>=1.36,<2' 'requests>=2.32,<3' 'beautifulsoup4>=4.12,<5'
+      - name: Save original audio and source metadata
+        run: python -u scripts/harvest_noaa_pmel_to_r2.py
+      - name: Count unique R2 assets
+        if: always()
+        run: python -u scripts/audit_r2_asset_inventory.py
