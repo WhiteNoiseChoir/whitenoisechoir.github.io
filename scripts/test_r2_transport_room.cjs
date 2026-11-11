@@ -2,7 +2,7 @@
 "use strict";
 const fs=require("node:fs"),vm=require("node:vm"),assert=require("node:assert/strict");
 const page=fs.readFileSync("signature/r2-transport-review/index.html","utf8");
-const main=fs.readFileSync("index.html","utf8");
+const main=fs.readFileSync("listen.html","utf8");
 const lib=JSON.parse(fs.readFileSync("catalog/library.json","utf8"));
 const hls=JSON.parse(fs.readFileSync("audio/continuous/manifest.json","utf8"));
 const ids=["white-noise","rain-on-window-real","gentle-ocean-real"];

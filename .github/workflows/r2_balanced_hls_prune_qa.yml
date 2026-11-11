@@ -6,6 +6,7 @@ on:
       - feature/r2-balanced-hls-prune-20261109
       - main
     paths:
+      - 'listen.html'
       - 'audio/continuous/**'
       - 'audits/r2-hls-immutable-source-inventory.json'
       - 'scripts/rehydrate_r2_hls_ci.py'

@@ -9,7 +9,7 @@ const dir="signature/water-ocean-wave2-review",review=j(dir+"/manifest.json"),ca
 assert.equal(review.status,"REVIEW_ONLY_PENDING_OWNER");assert.equal(review.tracks.length,2);
 assert.equal(catalog.sounds.length,35);assert.equal(hls.records.length,35);assert.equal(hls.applies_to.length,35);
 assert.equal(plans.filter(x=>!x.playable).length,57);
-assert.equal(JSON.parse(read("index.html").split("var recipes=")[1].split("];")[0]+"]").length,45);
+assert.equal(JSON.parse(read("listen.html").split("var recipes=")[1].split("];")[0]+"]").length,45);
 assert.equal((read("sitemap.xml").match(/<loc>/g)||[]).length,18);
 const checks=[
 {id:"bodetal-brook-review",plan:"NEW-10",creator:"Borgory",src:"https://freesound.org/people/Borgory/sounds/651194/",sha256:"e3e1bb330426a363842cb93890a40f33049c37a0c4d7351b802428914e4f5725",duration:637.542},
