@@ -43,6 +43,13 @@ function studio(locale,trial) {
   const route = trial ? studioRoot+trial.slug+'/' : studioRoot;
   let template = shell;
   if (!vi) {
+    const start = template.indexOf('<section id="video-studio"');
+    const end = template.indexOf('</section>',start) + '</section>'.length;
+    if (start<0 || end<start) throw Error('Studio export section not found');
+    const audio = template.slice(start,end).match(/<div class="export-step">[\s\S]*?<div id="audio-result"><\/div>\s*<\/div>/)?.[0];
+    if (!audio) throw Error('Studio audio controls not found');
+    template = template.slice(0,start)+'<section id="audio-studio" class="panel" aria-labelledby="export-heading"><h2 id="export-heading">Audio export</h2>'+audio.replace(/<h3>.*?<\/h3>\s*<p class="muted">.*?<\/p>/,'')+'</section>'+template.slice(end);
+    template = template.replace('Tìm âm thanh, phối nhiều lớp trên timeline và xuất bản phối WAV hoặc video MP4.','Find sounds, arrange layers on a timeline, and export your audio mix.');
     for (const [value,english] of Object.entries(translations).sort(([a],[b])=>b.length-a.length)) {
       template = template.replaceAll(value,escape(english));
     }
@@ -76,10 +83,10 @@ function libraryPage(route,title,description,body) {
     '<title>'+escape(title)+' · WhiteNoiseChoir</title><meta name="description" content="'+escape(description)+'">'+
     '<link rel="canonical" href="'+origin+route+'"><link rel="stylesheet" href="/studio.css"></head><body>'+
     '<header class="studio-header"><a class="brand" href="/">WhiteNoiseChoir <span>Studio</span></a>'+
-    '<nav class="studio-nav" aria-label="Navigation"><a href="/">MP3 Sounds</a><a href="/vi/" lang="vi">Studio nội bộ</a></nav></header>'+
+    '<nav class="studio-nav" aria-label="Navigation"><a href="/">Sound Studio</a><a href="/vi/" lang="vi">Studio nội bộ</a></nav></header>'+
     '<main class="published-library">'+body+'</main></body></html>';
 }
-write('index.html',read('scripts/templates/public-sounds.html'));
+studio('en');
 studio('vi');
 const trials = list('data/studio-trials.json');
 for (const trial of trials) {

@@ -397,7 +397,7 @@ function renderInspector() {
 function render(keepInspector = false) {
   $('title').value = mix.title;
   $('minutes').value = mix.length / 60;
-  $('video-prompt').value = mix.videoPrompt || '';
+  if ($('video-prompt')) $('video-prompt').value = mix.videoPrompt || '';
   $('seek').max = mix.length;
   $('master').value = Math.round((mix.master ?? 1) * 100);
   $('master-value').value = $('master').value + '%';
@@ -424,7 +424,7 @@ $('time-ruler').onclick = event => seekFromPointer(event, $('time-ruler'));
 $('zoom').onchange = () => { zoom = Number($('zoom').value); renderTimeline(); };
 $('title').onchange = () => change(() => { mix.title = $('title').value.trim() || tr('Bản phối chưa đặt tên'); });
 $('minutes').onchange = () => change(() => { mix.length = clamp(Number($('minutes').value) * 60, 6, 10800); });
-$('video-prompt').onchange = () => change(() => { mix.videoPrompt = $('video-prompt').value; });
+if ($('video-prompt')) $('video-prompt').onchange = () => change(() => { mix.videoPrompt = $('video-prompt').value; });
 $('master').oninput = () => {
   $('master-value').value = $('master').value + '%';
   if (monitorGain) monitorGain.gain.value = Number($('master').value) / 100;

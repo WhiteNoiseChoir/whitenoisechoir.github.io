@@ -328,6 +328,7 @@ async function buildWav(project,progress){
   }
   return {blob:new Blob(parts,{type:'audio/wav'}),silence:longest/rate,clipped:peak>1,duration:frames/rate};
 }
+const videoEnabled = Boolean($('video-input'));
 let exporting=false, audioExport=null, videoExport=null, clipUrl=null;
 const durationLabel=seconds=>{
   const ms=Math.round(seconds*1000);
@@ -368,6 +369,7 @@ function showDownload(step,blob,title,extension,label){
 }
 const audioSignature=project=>JSON.stringify([project.length,project.master ?? 1,project.tracks]);
 function resetVideo(){
+  if(!videoEnabled) return;
   videoExport=null;
   clearResult('video');clearResult('mux');
   progressStage('video',0,audioExport
@@ -384,9 +386,10 @@ function syncWorkflow(){
   }
   $('mix-controls').inert=exporting;
   $('mix-editor').inert=exporting;
-  $('video-input').disabled=exporting;
   $('minutes').disabled=exporting;
   $('render').disabled=exporting;
+  if(!videoEnabled) return;
+  $('video-input').disabled=exporting;
   $('render-video').disabled=exporting || !audioExport || !$('video-input').files.length;
   $('mux-video').disabled=exporting || !audioExport || !videoExport;
 }
@@ -412,13 +415,13 @@ $('render').onclick=async()=>{
   } catch(error) {stageError('audio',error);}
   finally {exportBusy(false);}
 };
-$('copy-prompt').onclick=async()=>{
+if(videoEnabled) $('copy-prompt').onclick=async()=>{
   const prompt=$('video-prompt');
   if(!prompt.value){prompt.focus();return;}
   try {await navigator.clipboard.writeText(prompt.value);$('prompt-status').textContent=tr('Đã sao chép câu lệnh.');}
   catch {prompt.select();$('prompt-status').textContent=tr('Hãy sao chép phần văn bản đã chọn.');}
 };
-$('video-input').onchange=()=>{
+if(videoEnabled) $('video-input').onchange=()=>{
   const file=$('video-input').files[0], preview=$('video-preview');
   if(clipUrl) URL.revokeObjectURL(clipUrl);
   clipUrl=file ? URL.createObjectURL(file) : null;
@@ -586,7 +589,7 @@ async function writeVideoMp4(mp4,clip,duration,step,aac){
     if(input) input.dispose();
   }
 }
-$('render-video').onclick=async()=>{
+if(videoEnabled) $('render-video').onclick=async()=>{
   const file=$('video-input').files[0], audio=audioExport;
   if(exporting || !file || !audio) return;
   const clipDuration=$('video-preview').duration;
@@ -611,7 +614,7 @@ $('render-video').onclick=async()=>{
   } catch(error){stageError('video',error);}
   finally {exportBusy(false);}
 };
-$('mux-video').onclick=async()=>{
+if(videoEnabled) $('mux-video').onclick=async()=>{
   const audio=audioExport, video=videoExport;
   if(exporting || !audio || !video) return;
   clearResult('mux');exportBusy(true);
@@ -631,4 +634,4 @@ $('mux-video').onclick=async()=>{
   } catch(error){stageError('mux',error);}
   finally {exportBusy(false);}
 };
-$('export-link').onclick=()=>$('video-studio').scrollIntoView({behavior:'smooth'});
+$('export-link').onclick=()=>($('audio-studio') || $('video-studio')).scrollIntoView({behavior:'smooth'});
