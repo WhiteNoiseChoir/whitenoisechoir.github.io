@@ -60,7 +60,8 @@ EXCLUDED = re.compile(
     r"|\b(?:pronunciation|phonetic|lingua libre|wiktionary|dictionary|consonant|"
     r"piano|guitar|musical instrument|song by|track from|video game|wind instrument|"
     r"isrc|future bass|surf rock|soundtrack|royalty.free music|background music|"
-    r"alma mater|talk nation radio|radio broadcast|news report|thunderstorm watch|weather alert)\b",
+    r"alma mater|talk nation radio|radio broadcast|news report|thunderstorm watch|weather alert|"
+    r"folk song|vocal performance)\b",
     re.I,
 )
 
@@ -87,7 +88,14 @@ def candidates_for_group(intake, group, spec, report):
                 description = commons.plain(commons.val(fields, "ImageDescription"))
                 tags = commons.val(fields, "Categories").split("|")[:40]
                 name_and_description = row["file_name"] + " " + description
-                if EXCLUDED.search(name_and_description):
+                category_is_music = any(
+                    re.search(r"^(?:music$|audio files of .*music\b|.* \(song\)$)", tag, re.I)
+                    for tag in tags
+                )
+                artist_pack_without_context = "Audio files by Antti Luode" in tags and not re.search(
+                    r"\b(?:field recording|recorded at|recorded in)\b", description, re.I,
+                )
+                if EXCLUDED.search(name_and_description) or category_is_music or artist_pack_without_context:
                     continue
                 if hint not in categories and not re.search(topic, name_and_description, re.I):
                     continue
