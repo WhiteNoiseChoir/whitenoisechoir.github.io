@@ -8,6 +8,7 @@
 :root{color-scheme:dark;font:15px "Instrument Sans",system-ui,sans-serif;background:#151b19;color:#f2f1e8;--panel:#202824;--line:#38443d;--accent:#d5e99c}*{box-sizing:border-box}body{margin:0}header,main{max-width:1320px;margin:auto;padding:22px clamp(16px,4vw,56px)}header{border-bottom:1px solid var(--line);font-weight:750;letter-spacing:-.04em}h1{font-size:clamp(34px,7vw,70px);font-weight:550;letter-spacing:-.07em;margin:8px 0 20px}button,input,select{font:inherit;color:inherit}button,select,input[type=number],input[type=text]{background:#27312b;border:1px solid var(--line);border-radius:8px;padding:9px 12px}button{cursor:pointer}button:hover{border-color:var(--accent)}button.primary{background:var(--accent);color:#1b2516;font-weight:750}button[aria-pressed=true]{border-color:var(--accent);color:var(--accent)}label{display:inline-flex;gap:7px;align-items:center}input[type=number]{width:82px}input[type=range]{accent-color:var(--accent)}.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}.shell{display:grid;grid-template-columns:minmax(0,1fr) 240px;gap:16px;margin-top:20px}.panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px}aside h2{font-size:16px;margin:0 0 12px}aside .row{justify-content:space-between;margin:12px 0}#seek{width:100%}.track{padding:12px 0;border-top:1px solid var(--line)}.lane{position:relative;height:35px;background:repeating-linear-gradient(90deg,#19211c 0,#19211c calc(10% - 1px),#38443d calc(10% - 1px),#38443d 10%);border-radius:5px;margin:10px 0}.clip{position:absolute;top:3px;height:29px;padding:2px 5px;background:#779b73;color:#101b10;white-space:nowrap;overflow:hidden;min-width:6px;cursor:grab;touch-action:none}.needle{position:absolute;top:0;bottom:0;width:2px;background:#f1dc8e;pointer-events:none}.muted,small{color:#aab9ad}#status{min-height:22px}a{color:var(--accent)}@media(max-width:760px){.shell{grid-template-columns:1fr}}
 #video-studio{margin-top:18px;scroll-margin-top:16px}#video-studio h2{margin-top:0}#video-studio textarea{display:block;width:100%;min-height:130px;resize:vertical;padding:12px;background:#19211c;color:inherit;border:1px solid var(--line);border-radius:8px;font:inherit;margin:8px 0 12px}#video-preview{display:block;width:min(100%,500px);max-height:280px;margin:14px 0}#video-preview[hidden]{display:none}#video-status{overflow-wrap:anywhere}
 .export-step{padding:18px 0;border-top:1px solid var(--line)}.export-step h3{margin:0 0 10px;font-size:17px}.export-step p{margin:9px 0}.export-step progress{display:block;width:100%;height:12px;margin-top:12px;accent-color:var(--accent)}button:disabled{opacity:.5;cursor:default}.video-actions{margin-top:12px}.file-picker{position:relative;background:#27312b;border:1px solid var(--line);border-radius:8px;padding:9px 12px;cursor:pointer}.file-picker:focus-within{outline:2px solid var(--accent)}.file-picker input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer}#clip-name{overflow-wrap:anywhere}
+#media-verification{position:fixed;right:12px;bottom:12px;z-index:10}
 </style>
 <header>WhiteNoiseChoir</header>
 <main>
@@ -63,13 +64,30 @@
 <div id="mux-result"></div>
 </div>
 </section>
-<details><summary>Kiểm tra âm thanh</summary><p>Phát thử bản ghi tiếng suối gốc.</p><audio id="audio-check" controls preload="none"></audio></details>
+<details><summary>Kiểm tra âm thanh</summary><p>Phát thử bản ghi tiếng suối gốc.</p><button id="audio-check-start" type="button">Phát thử</button><audio id="audio-check" controls preload="none" hidden></audio><p id="audio-check-status" role="status"></p></details>
+<div id="media-verification"></div>
 </main>
+<script src="/protected-media.js"></script>
 <script>
 const assets = [{"name":"Suối chảy gần","key":"asset-library/raw/sha256/be/be201d2fd0d110fc3ef5d8af060e5ac48439fd54e9f26ce6b69825182748a95b.wav","duration":68.889,"source":"https://commons.wikimedia.org/wiki/File:433589_jackthemurray_stream-river-water-up-close.wav"},{"name":"Ếch suối kêu","key":"asset-library/raw/sha256/0a/0a3c133128b94306396567cfc22ded8363645869d762c2bbc76b5c3519017cff.m4a","duration":11.865011,"source":"https://www.inaturalist.org/observations/111319279"},{"name":"Chim cổ đỏ Mỹ","key":"asset-library/raw/sha256/0b/0bf24b2b08299380add4e29b6ed0c9ed37ffaa26a19e3908e5b572d75ef7cabe.m4a","duration":24.960998,"source":"https://www.inaturalist.org/observations/402220192"},{"name":"Cú vằn","key":"asset-library/raw/sha256/06/06c95f291596cfc813ff54d636ae926493ed6cd9c8a10d30f049a70460048af1.mp3","duration":62.261875,"source":"https://www.inaturalist.org/observations/349447210"},{"name":"Ong nghệ","key":"asset-library/raw/sha256/2b/2b5e3902314cbb5d54c26164dc4264a1fdebf61f5012e6f378f6f3e313c7e91a.m4a","duration":23.04,"source":"https://www.inaturalist.org/observations/243621492"},{"name":"Lò sưởi tí tách","key":"audio/fireplace-real.mp3","duration":600,"source":"https://freesound.org/people/visionear/sounds/501417/","license":"CC0"},{"name":"Mưa trên cửa kính","key":"audio/rain-on-window-real.mp3","duration":600,"source":"https://freesound.org/people/ikayuka/sounds/273333/","license":"CC0"},{"name":"Sói tru ở Denali","key":"asset-library/raw/sha256/bf/bfc073e6226f2a21a87567b898c5e5674a53284353128da0d1e0f69b97e8b62f.mp3","duration":8.36,"source":"https://www.nps.gov/subjects/sound/sounds-wolf.htm","license":"NPS recording"},{"name":"Tàu hỏa đi qua ở xa","url":"https://upload.wikimedia.org/wikipedia/commons/transcoded/6/67/Train_passing_by_in_the_Wirikuta_Desert_(Mexico%2C_SLP).wav/Train_passing_by_in_the_Wirikuta_Desert_(Mexico%2C_SLP).wav.mp3","duration":154.25,"source":"https://commons.wikimedia.org/wiki/File:Train_passing_by_in_the_Wirikuta_Desert_(Mexico,_SLP).wav","license":"CC0"},{"name":"Mưa trên tán cây","key":"audio/rain-leaves-real.mp3","duration":600,"source":"https://freesound.org/people/Garuda1982/sounds/757276/"},{"name":"Mưa trên mái","key":"audio/rain-tin-roof-real.mp3","duration":600,"source":"https://freesound.org/people/archerjosiah/sounds/843483/"},{"name":"Sấm lăn từ xa","key":"audio/distant-thunder-real.mp3","duration":600,"source":"https://freesound.org/people/moxobna/sounds/107518/"},{"name":"Gỗ kẽo kẹt gần","url":"https://cdn.freesound.org/previews/506/506660_4921277-hq.mp3","duration":1.75,"source":"https://freesound.org/people/Rudmer_Rotteveel/sounds/506660/","license":"CC0"},{"name":"Nước nhỏ từ mái hiên","url":"https://cdn.freesound.org/previews/180/180948_2596329-hq.mp3","duration":33.25,"source":"https://freesound.org/people/jc144940/sounds/180948/","license":"CC0"},{"name":"Sói tru đáp từ xa","url":"https://upload.wikimedia.org/wikipedia/commons/transcoded/8/87/Wolf_howls.ogg/Wolf_howls.ogg.mp3","duration":28.35,"source":"https://commons.wikimedia.org/wiki/File:Wolf_howls.ogg","license":"Public domain"}];
 const media = 'https://media.whitenoisechoir.com/';
 const $ = id => document.getElementById(id);
-$('audio-check').src=media+assets[0].key;
+$('audio-check-start').onclick=async()=> {
+  const start=$('audio-check-start'), audio=$('audio-check'), status=$('audio-check-status');
+  start.disabled=true;
+  status.textContent='Đang mở bản nghe thử…';
+  try {
+    await protectedMedia.ready();
+    audio.src=protectedMedia.urlFor(assets[0].key);
+    audio.hidden=false;
+    status.textContent='';
+    await audio.play().catch(()=>{});
+  } catch(error) {
+    status.textContent=error.message;
+  } finally {
+    start.disabled=false;
+  }
+};
 const clamp = (n, lo, hi) => Math.max(lo, Math.min(hi, n));
 const streamPrompt = 'Create an 8-second photorealistic 16:9 seamless loop of a shallow forest stream at dusk. Use a locked camera at bank level, with moss-covered stones and softly lit ferns framing the water. Keep exposure and focus fixed. Let only the flowing water and a few leaves move gently, with no sudden motion, cuts, people, text, or camera movement. Match the opening and closing composition and motion phase. Export a clean 1080p MP4 without audio.';
 const sample = () => ({
@@ -135,6 +153,11 @@ function tick(loopPreview=false){
 }
 async function decodeRecording(i,decoder){
   const asset=assets[i];
+  if(protectedMedia.manages(asset.key)){
+    const response=await protectedMedia.fetchRecording(asset.key);
+    if(!response.ok) throw Error(asset.name+' · HTTP '+response.status);
+    return decoder.decodeAudioData(await response.arrayBuffer());
+  }
   const primary=asset.url || media+asset.key;
   const url=new URL(primary);
   url.searchParams.set('studio-audio','20261111');
@@ -232,12 +255,12 @@ async function play(loopPreview=false){
     }
     schedule(position,mix.length,anchor);
     if(loopPreview) schedule(0,5,anchor+mix.length);
-    if(decoded.every(r=>r.status==='rejected')) throw Error('Không giải mã được âm thanh');
+    if(decoded.every(r=>r.status==='rejected')) throw decoded[0].reason;
     playing=true;$('play').textContent='Tạm dừng';
     const skipped=tracks.filter((_,i)=>decoded[i].status==='rejected').map(t=>assets[t.asset].name);
     $('status').textContent=skipped.length?'Không tải được các lớp: '+[...new Set(skipped)].join(', '):'';
     tick(loopPreview);
-  } catch(e){if(token===generation){stop();$('status').textContent='Không tải được âm thanh. Hãy thử lại hoặc đổi nguồn.';}}
+  } catch(e){if(token===generation){stop();$('status').textContent=e.message || 'Không tải được âm thanh. Hãy thử lại hoặc đổi nguồn.';}}
 }
 function locate(value){
   const resume=playing;
@@ -259,6 +282,22 @@ function button(text,action){
   const el=node('button',text);el.onclick=action;return el;
 }
 function field(text,input){const el=node('label',text);el.append(input);return el;}
+async function downloadSource(asset, control){
+  control.disabled=true;
+  try {
+    await protectedMedia.ready();
+    const link=node('a');
+    link.href=protectedMedia.urlFor(asset.key,asset.name);
+    link.download='';
+    document.body.append(link);
+    link.click();
+    link.remove();
+  } catch(error) {
+    $('status').textContent=error.message;
+  } finally {
+    control.disabled=false;
+  }
+}
 function render(){
   $('video-prompt').value=mix.videoPrompt || '';
   $('title').value=mix.title;$('minutes').value=mix.length/60;
@@ -278,6 +317,10 @@ function render(){
     const mute=button('Tắt tiếng',()=>change(()=>{t.mute=!t.mute;}));mute.setAttribute('aria-pressed',t.mute);
     const source=node('a',(asset.license || 'CC0')+' · Nguồn');source.href=asset.source;source.target='_blank';source.rel='noopener noreferrer';
     top.append(select,field('Bắt đầu (giây)',start),field('Âm lượng',volume),loop,mute,button('Xóa lớp',()=>change(()=>mix.tracks.splice(i,1))),source);
+    if(protectedMedia.manages(asset.key)){
+      const download=button('Tải tệp nguồn',()=>downloadSource(asset,download));
+      top.append(download);
+    }
     const lane=node('div','','lane'), clip=node('div',t.label || asset.name,'clip');
     if(t.label) card.append(node('div',t.label,'muted'));
     const place = value => {
