@@ -15,6 +15,7 @@ import subprocess
 import tempfile
 import threading
 import time
+from urllib.error import HTTPError
 from urllib.parse import quote
 from zipfile import ZipFile
 
@@ -203,11 +204,38 @@ def find_group(group, spec):
 
 
 def commons_assets(intake, report):
+    # Coordinate spacing and cooldown across all Wikimedia media downloads.
+    pacing_lock = threading.Lock()
+    next_request = 0.0
+
+    def paced_download(row):
+        nonlocal next_request
+        for attempt in range(3):
+            while True:
+                with pacing_lock:
+                    current = time.monotonic()
+                    delay = next_request - current
+                    if delay <= 0:
+                        next_request = current + 2.0
+                        break
+                time.sleep(min(delay, 5))
+            try:
+                return commons.download(row, 160 * 1024**2)
+            except HTTPError as exc:
+                if exc.code not in {429, 503}:
+                    raise
+                retry = exc.headers.get("Retry-After", "")
+                cooldown = max(15, int(retry)) if retry.isdigit() else 30 * (attempt + 1)
+                with pacing_lock:
+                    next_request = max(next_request, time.monotonic() + min(cooldown, 180))
+                if attempt == 2:
+                    raise
+
     def ingest(row):
         identity = row["direct_file_url"] + "\n" + row["revision"]
         if intake.cached(identity):
             return {"state": "cached", "bytes": 0, "group": row["category"]}
-        path, _, digest, duration, audio = commons.download(row, 160 * 1024**2)
+        path, _, digest, duration, audio = paced_download(row)
         try:
             return intake.save(path, identity, {
                 "source_provider": "Wikimedia Commons", "source_page": row["source_url"],
@@ -219,7 +247,7 @@ def commons_assets(intake, report):
         finally:
             path.unlink(missing_ok=True)
 
-    with ThreadPoolExecutor(max_workers=3) as discovery, ThreadPoolExecutor(max_workers=5) as download:
+    with ThreadPoolExecutor(max_workers=3) as discovery, ThreadPoolExecutor(max_workers=2) as download:
         group_jobs = {discovery.submit(find_group, group, spec): group for group, spec in GROUPS.items()}
         submitted = set()
         jobs = {}
