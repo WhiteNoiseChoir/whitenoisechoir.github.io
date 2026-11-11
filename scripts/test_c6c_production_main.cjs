@@ -6,7 +6,7 @@
 const fs=require("node:fs"),vm=require("node:vm"),assert=require("node:assert/strict");
 const load=p=>fs.readFileSync(p,"utf8"),json=p=>JSON.parse(load(p));
 const existing=json("catalog/library.json"),approve=json("catalog/c6c-production-audio-approval.json"),manifest=json("catalog/c6c-ten-synthetic-review.json");
-const home=load("index.html"),browse=load("sounds/index.html"),hub=load("sounds/c6c-synthetic/index.html"),sitemap=load("sitemap.xml");
+const home=load("listen.html"),browse=load("sounds/index.html"),hub=load("sounds/c6c-synthetic/index.html"),sitemap=load("sitemap.xml");
 assert.equal(existing.sounds.length,35);
 assert.equal(approve.items.length,10);
 assert.equal(approve.previous_production_sources+approve.additional_sources,45);

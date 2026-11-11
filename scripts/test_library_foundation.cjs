@@ -4,7 +4,7 @@
 const fs=require("node:fs"),assert=require("node:assert/strict");
 const file=p=>fs.readFileSync(p,"utf8"),json=p=>JSON.parse(file(p));
 const fam=json("catalog/family-registry.json"),plan=json("catalog/planned-sounds.json"),mix=json("catalog/mix-proposals.json"),catalog=json("catalog/library.json");
-const html=file("sounds/index.html"),home=file("index.html"),sitemap=file("sitemap.xml");
+const html=file("sounds/index.html"),home=file("listen.html"),sitemap=file("sitemap.xml");
 const families=fam.families,allPlans=plan.planned,planned=allPlans.filter(p=>!p.playable),released=allPlans.filter(p=>p.playable),proposals=mix.proposals,sounds=catalog.sounds;
 const count=(arr,prop,value)=>arr.filter(x=>x[prop]===value).length;
 assert.equal(families.length,13,"13 families, not 13 extra indexable URLs");

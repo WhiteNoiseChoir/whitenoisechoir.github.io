@@ -4,6 +4,10 @@ on:
     branches: [main, "feature/**", "qa/**"]
     paths:
       - 'index.html'
+      - 'listen.html'
+      - 'studio*.js'
+      - 'studio.css'
+      - 'scripts/test_studio_browser.mjs'
       - 'assets/persistent-router.js'
       - 'assets/persistent.css'
       - 'assets/library.css'
@@ -81,6 +85,7 @@ jobs:
           python3 -m http.server 8787 --bind 127.0.0.1 >/tmp/wnc-http.log 2>&1 &
           SERVER_PID=$!
           trap 'kill $SERVER_PID || true' EXIT
+          node scripts/test_studio_browser.mjs
           node scripts/test_browser_navigation.cjs
           node scripts/test_relaxing_browser.cjs
           node scripts/test_sleep_browser.cjs

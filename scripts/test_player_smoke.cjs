@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 // Dependency-free smoke tests for WhiteNoiseChoir's browser player, native audio loop and sleep deadline.
 const fs=require("node:fs"),vm=require("node:vm"),assert=require("node:assert/strict");
-const html=fs.readFileSync("index.html","utf8");
+const html=fs.readFileSync("listen.html","utf8");
 const matches=[...html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/g)].filter(x=>x[1].includes("function playTracks("));
 assert.equal(matches.length,1,"Expected one inline player script");
-new vm.Script(matches[0][1],{filename:"index.html:inline-script"});
+new vm.Script(matches[0][1],{filename:"listen.html:inline-script"});
 
 let now=Date.UTC(2026,10,7,0,0,0), id=1, emulateNativeHLS=false, blockNativeHLS=false, blockRemoteAudio=false;
 const timerFns=new Map(),intervalFns=new Map(),documentEvents={},windowEvents={},audioInstances=[];
