@@ -1,0 +1,64 @@
+name: Kenney CC0 Original Audio Packs — Real R2 Ingest
+on:
+  push:
+    branches: ['feature/kenney-cc0-original-pack-harvest-20261111']
+    paths:
+      - 'scripts/harvest_kenney_cc0_to_r2.py'
+      - 'scripts/test_harvest_kenney_cc0.py'
+      - '.github/workflows/kenney_cc0_pack_harvest.yml'
+  workflow_dispatch:
+    inputs:
+      max_files:
+        description: Maximum new CC0 original sound files uploaded to R2
+        required: true
+        default: '750'
+        type: choice
+        options: ['100', '250', '500', '750']
+permissions:
+  contents: read
+concurrency:
+  group: whitenoisechoir-kenney-cc0-pack-harvest
+  cancel-in-progress: false
+jobs:
+  original-zip-pack-to-r2:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    env:
+      R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+      R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+      AWS_EC2_METADATA_DISABLED: 'true'
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Ensure R2 credentials
+        run: |
+          test -n "$R2_ACCESS_KEY_ID"
+          test -n "$R2_SECRET_ACCESS_KEY"
+      - name: Install FFprobe and S3 client
+        run: |
+          if ! command -v ffprobe >/dev/null; then sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg; fi
+          python -m pip install -q 'boto3>=1.36,<2'
+      - name: CC0 source and original-file filter smoke tests
+        run: |
+          python -m py_compile scripts/harvest_kenney_cc0_to_r2.py scripts/test_harvest_kenney_cc0.py
+          python scripts/test_harvest_kenney_cc0.py
+      - name: Import original audio members directly to R2
+        env:
+          MAX_FILES: ${{ github.event_name == 'workflow_dispatch' && inputs.max_files || '750' }}
+        run: |
+          python -u scripts/harvest_kenney_cc0_to_r2.py \
+            --max-files "$MAX_FILES" --max-total-mb 900 --max-archive-mb 300 \
+            --report audits/kenney-cc0-original-harvest-report.json
+      - name: Preserve source provenance and real R2 counts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: kenney-cc0-real-r2-harvest-report
+          path: audits/kenney-cc0-original-harvest-report.json
+          if-no-files-found: warn
+          retention-days: 30
