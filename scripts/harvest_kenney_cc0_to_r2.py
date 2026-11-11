@@ -46,6 +46,17 @@ PACKS = [
     ("casino-audio", "cards-dice-foley", 50),
 ]
 UA = "WhiteNoiseChoirCC0Archive/1.0 (https://whitenoisechoir.com; original pack archival)"
+# Publisher-verified direct free-download links (11 Nov 2026). Pack pages are rechecked for CC0.
+OFFICIAL_ZIPS = {
+    "interface-sounds": "https://kenney.nl/media/pages/assets/interface-sounds/fa43c1dd4d-1677589452/kenney_interface-sounds.zip",
+    "ui-audio": "https://kenney.nl/media/pages/assets/ui-audio/490d233f68-1677590494/kenney_ui-audio.zip",
+    "impact-sounds": "https://kenney.nl/media/pages/assets/impact-sounds/87b4ddecda-1677589768/kenney_impact-sounds.zip",
+    "rpg-audio": "https://kenney.nl/media/pages/assets/rpg-audio/8e99002d76-1677590336/kenney_rpg-audio.zip",
+    "digital-audio": "https://kenney.nl/media/pages/assets/digital-audio/216eac4753-1677590265/kenney_digital-audio.zip",
+    "sci-fi-sounds": "https://kenney.nl/media/pages/assets/sci-fi-sounds/6b296f9ecf-1677589334/kenney_sci-fi-sounds.zip",
+    "casino-audio": "https://kenney.nl/media/pages/assets/casino-audio/2472606a04-1721639069/kenney_casino-audio.zip"
+}
+
 
 def utcnow():
     return dt.datetime.now(dt.timezone.utc).isoformat()
@@ -81,7 +92,16 @@ def download_pack(slug, max_bytes):
         if response.geturl().rstrip("/") != source_page(slug):
             raise ValueError("unexpected pack page redirect")
         body = response.read(2_000_000).decode("utf-8")
-    url = pack_zip_url(slug, body)
+    # Some Kenney pages render the ZIP link dynamically; use an individually
+    # verified official free-download URL only after runtime CC0 page check.
+    try:
+        url = pack_zip_url(slug, body)
+    except ValueError as exc:
+        if str(exc) != "No verified original publisher ZIP download link":
+            raise
+        url = OFFICIAL_ZIPS[slug]
+        if not check_zip_url(url, slug):
+            raise ValueError("publisher-verified archive URL rejected")
     with tempfile.NamedTemporaryFile(prefix="wnc-kenney-", suffix=".zip", delete=False) as out:
         path = pathlib.Path(out.name)
     try:
