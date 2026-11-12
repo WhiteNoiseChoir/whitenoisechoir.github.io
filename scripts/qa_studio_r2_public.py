@@ -17,6 +17,12 @@ SOURCES={
 57:"asset-library/raw/sha256/3d/3d8cf3647f724dc7e1524268c1767dd3bce61bd89ab88db8fa2371f044aa398c.mp3",
 59:"asset-library/raw/sha256/cf/cff22b830848d519235922ad438f026d3fa8b0607dfab6c7e912324057c22e98.mp3",
 60:"asset-library/raw/sha256/68/682ff4846f4ada10371bd7e9481d55aeea4b66c5191146a3182524a3d94624e7.mp3",
+105:"asset-library/studio-loop/sha256/be/be28cfade62766d75b4e7efb7e439540b4ee79633fe024ad3a727d9dd5575227.mp3",
+106:"asset-library/studio-loop/sha256/53/5352c5e4d9f5c06dc0809625aecb528c07df10360327bec7cb2e8e1d37d0defe.mp3",
+109:"asset-library/studio-loop/sha256/fa/fa83a81dfe7ff995e107cd7f4f716343725347e66d970dd91964460faceb208a.mp3",
+131:"asset-library/studio-loop/sha256/63/636a28c6a8d3350c906a635aa5bec8bdf72b015a885bd4da360924bad1db8334.mp3",
+135:"asset-library/studio-loop/sha256/5b/5be9a18fc851d8d0a51a4bacecb3bd9d60135f84bf7efbcab7373d7c9e00588b.mp3",
+141:"asset-library/studio-loop/sha256/ee/eed2cf72da87123b94bfc6388ac2ebe5395f2137aaebed9e2f4ac27bb4ab30b7.mp3",
 1:"asset-library/raw/sha256/0a/0a3c133128b94306396567cfc22ded8363645869d762c2bbc76b5c3519017cff.m4a"
 }
 
