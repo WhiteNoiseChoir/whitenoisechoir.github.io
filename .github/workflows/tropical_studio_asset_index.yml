@@ -1,0 +1,37 @@
+name: Tropical Wildlife R2 Asset Metadata and Studio Access QA
+on:
+  push:
+    branches: [main]
+    paths:
+      - scripts/inspect_tropical_studio_sources.py
+      - .github/workflows/tropical_studio_asset_index.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    env:
+      R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+      R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          sparse-checkout: scripts
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install -q 'boto3>=1.36,<2'
+      - run: python -m py_compile scripts/inspect_tropical_studio_sources.py
+      - name: Verify R2 metadata and public audio URLs
+        run: python -u scripts/inspect_tropical_studio_sources.py
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: tropical-studio-assets-and-qa
+          path: tropical-studio-assets.json
+          if-no-files-found: warn
+          retention-days: 30
