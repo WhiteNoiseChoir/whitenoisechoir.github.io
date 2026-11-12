@@ -19,6 +19,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 MANIFEST = ROOT / "data/published-mixes.json"
+REQUESTS = ROOT / "data/publication-requests.json"
 GENERATED_INDEX = ROOT / "data/published-generated-slugs.json"
 LIBRARY = ROOT / "library/index.html"
 SITEMAP = ROOT / "sitemap.xml"
@@ -273,8 +274,9 @@ def render_release(row):
 """
 
 
-def read_manifest(verify):
-    raw = json.loads(MANIFEST.read_text(encoding="utf-8"))
+def read_manifest(verify, path=None):
+    source = path or MANIFEST
+    raw = json.loads(source.read_text(encoding="utf-8"))
     if not isinstance(raw, list):
         raise ValueError("published-mixes.json must be an array")
     slug_seen = set()
@@ -348,12 +350,18 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--write",action="store_true",help="Generate live public page files (checks real R2 media)")
     parser.add_argument("--check",action="store_true",help="Read-only manifest validation")
+    parser.add_argument("--from-requests",action="store_true",help="Use owner-approved staging, never a public-facing feed before verification")
     args = parser.parse_args()
-    rows = read_manifest(verify=args.write and bool(rows_enabled()))
+    source = REQUESTS if args.from_requests else MANIFEST
+    rows = read_manifest(verify=args.write and bool(rows_enabled()), path=source)
     if args.write:
+        if args.from_requests:
+            # Nothing is exposed to the public feed until ALL R2 URLs and
+            # release metadata have been verified in this workflow run.
+            MANIFEST.write_text(json.dumps(rows,ensure_ascii=False,indent=2)+"\n",encoding="utf8")
         update_files(rows)
     else:
-        print("PUBLICATION_MANIFEST_VALID",json.dumps({"approved":len(rows),"slugs":[r["slug"] for r in rows]}))
+        print("PUBLICATION_MANIFEST_VALID",json.dumps({"approved":len(rows),"source":str(source.name),"slugs":[r["slug"] for r in rows]}))
 
 
 def rows_enabled():
