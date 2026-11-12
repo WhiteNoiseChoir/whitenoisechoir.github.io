@@ -146,6 +146,85 @@ kbd { font: 11px var(--mono); border: 1px solid var(--line); color: var(--muted)
 .timeline-row .clip:hover:not(:disabled) { filter: brightness(1.22); }
 .clip.looped { border-style: dashed; }
 .clip.dragging { cursor: grabbing; opacity: .8; }
+
+/* Visually identifiable sound blocks: labels remain in the left track rail. */
+.timeline-row .clip{
+  display:flex;align-items:center;justify-content:center;
+  min-width:12px;padding:0;
+  border-radius:7px;
+  position:absolute;
+  overflow:hidden;
+  font-size:0;line-height:0;
+  user-select:none;-webkit-user-select:none;
+  touch-action:none;cursor:grab;
+  contain:layout style;
+  container-type:inline-size;
+  transition:border-color .14s ease,box-shadow .14s ease,filter .14s ease;
+}
+.timeline-row .clip::before{
+  content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+  background:linear-gradient(115deg,transparent 9%,rgba(255,255,255,.12) 45%,transparent 80%),
+    repeating-linear-gradient(90deg,transparent 0,transparent 9px,rgba(255,255,255,.055) 9px,rgba(255,255,255,.055) 10px);
+  opacity:.9;
+}
+.clip-signal{
+  z-index:1;position:relative;display:flex;flex:1;align-items:center;justify-content:center;
+  gap:clamp(1px,3cqi,6px);height:75%;max-width:115px;min-width:0;overflow:hidden;
+  pointer-events:none;
+}
+.clip-signal-bar{
+  display:block;flex:1 0 2px;max-width:5px;min-width:2px;
+  background:rgba(224,255,245,.79);border-radius:4px;
+  height:35%;transform-origin:center;
+  box-shadow:0 0 4px rgba(222,255,242,.18);
+}
+.clip-signal-bar:nth-child(1){height:28%}
+.clip-signal-bar:nth-child(2){height:62%}
+.clip-signal-bar:nth-child(3){height:90%}
+.clip-signal-bar:nth-child(4){height:45%}
+.clip-signal-bar:nth-child(5){height:73%}
+@container (max-width:22px){
+  .clip-signal-bar:not(:nth-child(3)){display:none}
+  .clip-signal-bar:nth-child(3){width:3px;min-width:3px;height:45%}
+}
+.clip.is-sounding:not(.dragging){
+  border-color:#d5ffe7;
+  box-shadow:0 0 0 1px rgba(153,246,195,.72),0 0 17px rgba(100,232,166,.38),inset 0 0 11px rgba(181,255,218,.15);
+  z-index:2;filter:brightness(1.1);
+}
+.clip.is-sounding .clip-signal-bar{
+  animation:clip-audio-wave 610ms ease-in-out infinite alternate;
+  background:#eaffef;box-shadow:0 0 8px rgba(211,255,230,.55);
+}
+.clip.is-sounding .clip-signal-bar:nth-child(2){animation-delay:-400ms;animation-duration:740ms}
+.clip.is-sounding .clip-signal-bar:nth-child(3){animation-delay:-150ms;animation-duration:570ms}
+.clip.is-sounding .clip-signal-bar:nth-child(4){animation-delay:-500ms;animation-duration:810ms}
+.clip.is-sounding .clip-signal-bar:nth-child(5){animation-delay:-240ms;animation-duration:685ms}
+.clip.clip-hit:not(.dragging){animation:clip-arrival 560ms cubic-bezier(.19,.85,.3,1) both}
+.clip.dragging{
+  z-index:4;opacity:.96;cursor:grabbing;transform:translateY(-2px);
+  border-color:#efffea;filter:brightness(1.2);
+  box-shadow:0 5px 19px rgba(0,0,0,.42),0 0 0 2px rgba(144,236,184,.65);
+}
+.clip.source-failed{border-color:#e58b83!important;box-shadow:0 0 0 1px rgba(229,139,131,.5)}
+.timeline-row.selected .clip:not(.is-sounding){outline:1px solid rgba(164,242,200,.24);outline-offset:1px}
+.clip:focus-visible{outline:2px solid #ecffe1;outline-offset:2px}
+@keyframes clip-audio-wave{
+  from{transform:scaleY(.48);opacity:.66}
+  to{transform:scaleY(1.1);opacity:1}
+}
+@keyframes clip-arrival{
+  0%{transform:scaleY(1);filter:brightness(1)}
+  19%{transform:scaleY(1.16);filter:brightness(1.52)}
+  42%{transform:scaleY(.92) translateY(1px);filter:brightness(1.18)}
+  70%{transform:scaleY(1.07);filter:brightness(1.28)}
+  100%{transform:scaleY(1);filter:brightness(1.1)}
+}
+@media (prefers-reduced-motion:reduce){
+  .clip,.clip-signal-bar{animation:none!important;transition:none!important}
+  .clip.clip-hit{animation:none!important}
+}
+
 .needle { position: absolute; top: 0; bottom: 0; width: 2px; background: var(--warm); pointer-events: none; z-index: 1; }
 .timeline-empty { padding: 25px 14px; color: var(--muted); }
 .master-strip { display: flex; gap: 7px; align-items: center; flex-wrap: wrap; padding: 9px 13px; color: var(--muted); font-size: 12px; }
