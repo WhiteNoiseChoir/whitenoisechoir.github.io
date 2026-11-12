@@ -359,5 +359,25 @@ const studioPublishedAssets = [
     "source": "https://freesound.org/people/Defelozedd94/sounds/522298/",
     "license": "CC0 · MP3 preview",
     "credit": "Defelozedd94 · Crickets At Night — Clean sound · Freesound (2020). Bản gốc WAV 48 kHz stereo. MP3 preview có thể nén thấp hơn."
+  },
+  {
+    "name": "Ếch & dế ven suối đêm · field recording CC0",
+    "url": "https://cdn.freesound.org/previews/802/802736_3530854-lq.mp3",
+    "group": "wildlife",
+    "aliases": "Frog Creek Ambience night creek frogs crickets nature stereo field recording clif_creates",
+    "duration": 224.592,
+    "source": "https://freesound.org/people/clif_creates/sounds/802736/",
+    "license": "CC0 · MP3 preview (original WAV 96kHz 24bit)",
+    "credit": "clif_creates · Frog Creek Ambience · Freesound 2025. Original WAV 96 kHz 24-bit stereo, preview MP3 is for preproduction. Frogs in foreground and crickets behind. Download original for final mastering."
+  },
+  {
+    "name": "Dế & ếch ven suối đêm · field recording CC0",
+    "url": "https://cdn.freesound.org/previews/802/802735_3530854-lq.mp3",
+    "group": "wildlife",
+    "aliases": "Cricket Creek Ambience night creek crickets frogs stereo field recording clif_creates",
+    "duration": 56,
+    "source": "https://freesound.org/people/clif_creates/sounds/802735/",
+    "license": "CC0 · MP3 preview (original WAV 96kHz 24bit)",
+    "credit": "clif_creates · Cricket Creek Ambience · Freesound 2025. Original WAV 96 kHz 24-bit stereo, preview MP3 is for preproduction. Crickets in foreground and frogs behind. Download original for final mastering."
   }
 ];
