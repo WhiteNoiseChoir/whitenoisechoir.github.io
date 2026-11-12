@@ -45,6 +45,44 @@ try {
   await page.locator('#layer-count').waitFor();
   assert.equal(await page.locator('#layer-count').textContent(),'24 lớp');
   assert.match(await page.locator('#library-count').textContent(), /^([1-9]\d*)\/\1$/);
+  // Timeline clips are unlabeled waveforms; keep sound names only on the left.
+  const visualClip=page.locator('#tracks .timeline-row').nth(1).locator('.clip');
+  await visualClip.scrollIntoViewIfNeeded();
+  assert.equal(await visualClip.textContent(),'');
+  assert.equal(await visualClip.locator('.clip-signal-bar').count(),5);
+  assert.ok((await visualClip.getAttribute('aria-label')).includes('Kéo đoạn âm thanh'));
+  await visualClip.click();
+  const startField=()=>page.getByLabel('Bắt đầu (giây)',{exact:true});
+  const initialStart=Number(await startField().inputValue());
+  const rectangle=await visualClip.boundingBox();
+  assert.ok(rectangle?.width>=12,'Short source clip must remain draggable');
+  const px=rectangle.x+rectangle.width/2;
+  const py=rectangle.y+rectangle.height/2;
+  await page.mouse.move(px,py);
+  await page.mouse.down();
+  await page.mouse.move(px+105,py,{steps:7});
+  await page.mouse.up();
+  const movedStart=Number(await startField().inputValue());
+  assert.ok(movedStart>initialStart+5,'Timeline drag must change actual start time: '+initialStart+' -> '+movedStart);
+  await page.locator('#undo').click();
+  assert.equal(Number(await startField().inputValue()),initialStart,'Undo must revert drag timing');
+  await page.locator('#tracks .timeline-row').nth(1).locator('.clip').focus();
+  await page.keyboard.press('ArrowRight');
+  assert.equal(Number(await startField().inputValue()),initialStart+1,'Keyboard right arrow shifts clip 1 second');
+  await page.locator('#undo').click();
+  assert.equal(Number(await startField().inputValue()),initialStart,'Undo must revert keyboard move');
+  // Artificially move the audio playhead for UI testing; audio playback itself
+  // is checked below with actual Web Audio and fixture sources.
+  await page.evaluate(()=>{
+    selected=1;playing=true;loading=false;
+    position=mix.tracks[1].start+Math.min(0.6,assets[mix.tracks[1].asset].duration/3);
+    display();
+  });
+  assert.ok(await page.locator('#tracks .timeline-row').nth(1).locator('.clip').evaluate(el=>el.classList.contains('is-sounding')));
+  assert.ok(await page.locator('#tracks .timeline-row').nth(1).locator('.clip').evaluate(el=>el.classList.contains('clip-hit')));
+  await page.evaluate(()=>{playing=false;display();});
+  assert.equal(await page.locator('#tracks .timeline-row').nth(1).locator('.clip').evaluate(el=>el.classList.contains('is-sounding')),false);
+  console.log('PASS label-free animated waveforms, drag to change clip timing, keyboard nudging, undo and playhead entry pulse');
 
   await page.locator('#library-query').fill('mua tren mai');
   assert.equal(await page.locator('.library-item strong').first().textContent(),'Mưa trên mái');
