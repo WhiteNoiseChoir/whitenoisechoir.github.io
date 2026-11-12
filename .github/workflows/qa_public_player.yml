@@ -1,0 +1,37 @@
+name: Public 10-hour player synthetic browser QA
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'published-player.js'
+      - 'scripts/test_public_player_browser.mjs'
+      - '.github/workflows/qa_public_player.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  chromium:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install headless Chromium driver
+        run: |
+          npm install --no-save --ignore-scripts --no-audit --no-fund 'playwright-core@1.57.0'
+          if command -v google-chrome >/dev/null; then
+            echo "CHROME_BIN=$(command -v google-chrome)" >> "$GITHUB_ENV"
+          elif command -v chromium >/dev/null; then
+            echo "CHROME_BIN=$(command -v chromium)" >> "$GITHUB_ENV"
+          else
+            echo "Chrome not found"
+            exit 1
+          fi
+      - name: Test video/audio 10h timer and mode switching without publishing a fake release
+        run: node scripts/test_public_player_browser.mjs
