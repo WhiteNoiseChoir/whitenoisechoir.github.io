@@ -332,23 +332,33 @@ const studioPublishedAssets = [
   },
   {
     "name": "Chó ngủ · tiếng thở/ngáy thật (CC0)",
-    "url": "https://cdn.freesound.org/previews/482/482998_6150892-lq.mp3",
     "group": "wildlife",
     "aliases": "Sleeping Dog 1 SpaceJoe snoring dog breathing 3min external audio preview",
-    "duration": 191.618,
+    "duration": 191.619,
     "source": "https://freesound.org/people/SpaceJoe/sounds/482998/",
     "license": "CC0 · preview MP3",
-    "credit": "Tác giả: SpaceJoe (Freesound). Giấy phép CC0. Đây là preview bitrate thấp; để làm master nên tải WAV gốc sau khi đăng nhập Freesound."
+    "credit": "Tác giả: SpaceJoe (Freesound). Giấy phép CC0. Đây là preview bitrate thấp; để làm master nên tải WAV gốc sau khi đăng nhập Freesound. · ĐÃ NHẬP R2 (MP3 preview, chưa phải WAV gốc).",
+    "previewUrl": "https://cdn.freesound.org/previews/482/482998_6150892-lq.mp3",
+    "key": "asset-library/raw/sha256/17/176d4ecdd1df7bc2aa50a36ee214b2e5e909782e262c52ce0c737a760a2b996b.mp3",
+    "sha256": "176d4ecdd1df7bc2aa50a36ee214b2e5e909782e262c52ce0c737a760a2b996b",
+    "importedAt": "2026-11-12",
+    "assetStatus": "STORED_R2_TECHNICAL_PASS_LISTENING_PENDING",
+    "quality": "MP3 preview imported into R2; original WAV not yet obtained"
   },
   {
     "name": "Dế đêm dịu · rừng gần suối · thử nguồn ngoài",
-    "url": "https://cdn.freesound.org/previews/857/857163_12970089-lq.mp3",
     "group": "wildlife",
     "aliases": "quiet night soft crickets forest insects natural background Goldenboy76 external preview",
     "duration": 535.769,
     "source": "https://freesound.org/people/Goldenboy76/sounds/857163/",
     "license": "CC0 · MP3 preview",
-    "credit": "Goldenboy76 · Quiet Night Atmosphere — Soft Crickets · Freesound (2026). Original WAV 48kHz mono. Bản Studio hiện dùng MP3 preview để nghe thử; khi xuất bản chính thức nên sử dụng WAV gốc."
+    "credit": "Goldenboy76 · Quiet Night Atmosphere — Soft Crickets · Freesound (2026). Original WAV 48kHz mono. Bản Studio hiện dùng MP3 preview để nghe thử; khi xuất bản chính thức nên sử dụng WAV gốc. · ĐÃ NHẬP R2 (MP3 preview, chưa phải WAV gốc).",
+    "previewUrl": "https://cdn.freesound.org/previews/857/857163_12970089-lq.mp3",
+    "key": "asset-library/raw/sha256/3d/3d8cf3647f724dc7e1524268c1767dd3bce61bd89ab88db8fa2371f044aa398c.mp3",
+    "sha256": "3d8cf3647f724dc7e1524268c1767dd3bce61bd89ab88db8fa2371f044aa398c",
+    "importedAt": "2026-11-12",
+    "assetStatus": "STORED_R2_TECHNICAL_PASS_LISTENING_PENDING",
+    "quality": "MP3 preview imported into R2; original WAV not yet obtained"
   },
   {
     "name": "Dế kêu đêm · bản ghi sạch dự phòng",
@@ -362,22 +372,32 @@ const studioPublishedAssets = [
   },
   {
     "name": "Ếch & dế ven suối đêm · field recording CC0",
-    "url": "https://cdn.freesound.org/previews/802/802736_3530854-lq.mp3",
     "group": "wildlife",
     "aliases": "Frog Creek Ambience night creek frogs crickets nature stereo field recording clif_creates",
-    "duration": 224.592,
+    "duration": 224.593,
     "source": "https://freesound.org/people/clif_creates/sounds/802736/",
     "license": "CC0 · MP3 preview (original WAV 96kHz 24bit)",
-    "credit": "clif_creates · Frog Creek Ambience · Freesound 2025. Original WAV 96 kHz 24-bit stereo, preview MP3 is for preproduction. Frogs in foreground and crickets behind. Download original for final mastering."
+    "credit": "clif_creates · Frog Creek Ambience · Freesound 2025. Original WAV 96 kHz 24-bit stereo, preview MP3 is for preproduction. Frogs in foreground and crickets behind. Download original for final mastering. · ĐÃ NHẬP R2 (MP3 preview, chưa phải WAV gốc).",
+    "previewUrl": "https://cdn.freesound.org/previews/802/802736_3530854-lq.mp3",
+    "key": "asset-library/raw/sha256/cf/cff22b830848d519235922ad438f026d3fa8b0607dfab6c7e912324057c22e98.mp3",
+    "sha256": "cff22b830848d519235922ad438f026d3fa8b0607dfab6c7e912324057c22e98",
+    "importedAt": "2026-11-12",
+    "assetStatus": "STORED_R2_TECHNICAL_PASS_LISTENING_PENDING",
+    "quality": "MP3 preview imported into R2; original WAV not yet obtained"
   },
   {
     "name": "Dế & ếch ven suối đêm · field recording CC0",
-    "url": "https://cdn.freesound.org/previews/802/802735_3530854-lq.mp3",
     "group": "wildlife",
     "aliases": "Cricket Creek Ambience night creek crickets frogs stereo field recording clif_creates",
     "duration": 56,
     "source": "https://freesound.org/people/clif_creates/sounds/802735/",
     "license": "CC0 · MP3 preview (original WAV 96kHz 24bit)",
-    "credit": "clif_creates · Cricket Creek Ambience · Freesound 2025. Original WAV 96 kHz 24-bit stereo, preview MP3 is for preproduction. Crickets in foreground and frogs behind. Download original for final mastering."
+    "credit": "clif_creates · Cricket Creek Ambience · Freesound 2025. Original WAV 96 kHz 24-bit stereo, preview MP3 is for preproduction. Crickets in foreground and frogs behind. Download original for final mastering. · ĐÃ NHẬP R2 (MP3 preview, chưa phải WAV gốc).",
+    "previewUrl": "https://cdn.freesound.org/previews/802/802735_3530854-lq.mp3",
+    "key": "asset-library/raw/sha256/68/682ff4846f4ada10371bd7e9481d55aeea4b66c5191146a3182524a3d94624e7.mp3",
+    "sha256": "682ff4846f4ada10371bd7e9481d55aeea4b66c5191146a3182524a3d94624e7",
+    "importedAt": "2026-11-12",
+    "assetStatus": "STORED_R2_TECHNICAL_PASS_LISTENING_PENDING",
+    "quality": "MP3 preview imported into R2; original WAV not yet obtained"
   }
 ];
