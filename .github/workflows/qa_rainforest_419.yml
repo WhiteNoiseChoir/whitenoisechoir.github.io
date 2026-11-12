@@ -1,0 +1,37 @@
+name: Rainforest 04:15 High Frequency Source Audit
+on:
+  push:
+    branches: [main]
+    paths:
+      - scripts/qa_rainforest_419.py
+      - .github/workflows/qa_rainforest_419.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    env:
+      R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+      R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          sparse-checkout: |
+            scripts
+            studio-catalog.js
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install -q 'boto3>=1.36,<2' 'numpy>=1.26,<3'
+      - name: Measure frequency bands from original R2 audio
+        run: python -u scripts/qa_rainforest_419.py
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: rainforest-419-frequency-audit
+          path: tropical-419-diagnostic.json
+          if-no-files-found: warn
+          retention-days: 14
