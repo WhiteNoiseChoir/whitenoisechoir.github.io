@@ -42,3 +42,13 @@ Quy trình bắt buộc:
 V4 Living Forest Creek / V5 The Forest Is Alive Tonight hiện dùng **6 nguồn ngoài phân biệt, 20 clip trên hai timeline**, vẫn chủ yếu là MP3 preview hoặc URL bên thứ ba (dế đêm, ếch/dế ven suối ×2, giọt nước mái hiên, chó ngủ, tiếng gỗ). **Các preview này chưa đồng nghĩa đã import vào R2**. Khi tiếp tục dự án, ưu tiên nhập bản gốc vào R2 và đổi sang ID nội bộ sau khi xác minh.
 
 Source of truth: GitHub repo `WhiteNoiseChoir/whitenoisechoir.github.io`, production `https://whitenoisechoir.com/`, Cloudflare R2 cho tài sản âm thanh, Vietnamese Studio `/vi/`.
+
+## QUY TRÌNH PUBLIC (2026-11-12) — QUY TẮC BẮT BUỘC
+
+- Trang chủ `/`: bản phối **cố định 10 phút**, chỉ xuất/tải WAV, **không** ghép hoặc render MP4; ẩn toàn bộ preset chưa phát hành. Trang `/vi/` và các URL `/vi/<draft>/` tiếp tục là xưởng phối + ghép video để chủ dự án QA.
+- **Không tự ý Public** khi mới có WAV, video ngắn, metadata hoặc chỉ có GitHub Pages deploy. Phải đợi **yêu cầu rõ ràng của chủ dự án**, xác minh MP4 cuối 10 phút đã ghép âm thanh, WAV master, bản audio-only nén, thumbnail, nguồn gốc/copyright, timeline và nội dung SEO tiếng Anh.
+- Trình tự chuẩn: owner yêu cầu Public → cập nhật **`data/publication-requests.json`** chứa các bản được yêu cầu Public → workflow `.github/workflows/publish_approved_mixes.yml` kiểm tra bốn URL R2, MIME, HTTP Range/CORS, thời lượng và phê duyệt → tạo **`data/published-mixes.json`** + `/<English-Slug>/index.html` + lưới video `/library/` + sitemap. Không chỉnh public manifest thủ công để vượt qua gate.
+- Bản Public có trang canonical tiếng Anh riêng, VideoObject/AudioObject/BreadcrumbList, OG/Twitter, nội dung editorial độc lập, **timeline âm thanh chỉ đọc** và trình phát lặp tối đa 10 giờ. Video/audio 10 phút được lặp trong trình duyệt; không tạo tệp 10 giờ khổng lồ. Không hứa playback 10 giờ liên tục trên mọi trình duyệt/màn hình khóa nếu chưa có kiểm thử thực tế.
+- Các trang nháp (V3/V4/V5) không được chuyển thành trang SEO công khai nếu thiếu lệnh Public. Hiện public manifest là `[]`.
+- Tệp yêu cầu Public trong repository công khai **không phải kho bí mật**; không lưu secrets, credential hoặc nội dung riêng tư cần bảo mật ở đó. Với release cần bảo mật trước ngày ra mắt, dùng private workflow/store.
+- Chuẩn chi tiết: `docs/PUBLICATION_WORKFLOW.md`.
