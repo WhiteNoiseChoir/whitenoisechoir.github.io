@@ -399,7 +399,7 @@ function renderInspector() {
 
 function render(keepInspector = false) {
   $('title').value = mix.title;
-  $('minutes').value = mix.length / 60;
+  $('minutes').value = homepageWavOnly?10:mix.length / 60;
   if ($('video-prompt')) $('video-prompt').value = mix.videoPrompt || '';
   $('seek').max = mix.length;
   $('master').value = Math.round((mix.master ?? 1) * 100);
@@ -427,7 +427,10 @@ $('seek').oninput = () => locate(Number($('seek').value));
 $('time-ruler').onclick = event => seekFromPointer(event, $('time-ruler'));
 $('zoom').onchange = () => { zoom = Number($('zoom').value); renderTimeline(); };
 $('title').onchange = () => change(() => { mix.title = $('title').value.trim() || tr('Bản phối chưa đặt tên'); });
-$('minutes').onchange = () => change(() => { mix.length = clamp(Number($('minutes').value) * 60, 6, 10800); });
+$('minutes').onchange = () => {
+  if(homepageWavOnly){$('minutes').value='10';return;}
+  change(() => { mix.length = clamp(Number($('minutes').value) * 60, 6, 10800); });
+};
 if ($('video-prompt')) $('video-prompt').onchange = () => change(() => { mix.videoPrompt = $('video-prompt').value; });
 $('master').oninput = () => {
   $('master-value').value = $('master').value + '%';
@@ -436,22 +439,39 @@ $('master').oninput = () => {
 $('master').onchange = () => change(() => { mix.master = Number($('master').value) / 100; });
 $('undo').onclick = () => restore(undoStack, redoStack);
 $('redo').onclick = () => restore(redoStack, undoStack);
-const recipeGroup=node('optgroup');
-recipeGroup.label=studioEnglish?'Original listening presets':'Preset nghe liên tục cũ';
-legacyStudioRecipes.forEach((recipe,index)=>{
-  const option=node('option',recipe.title);
-  option.value='legacy-'+index;
-  recipeGroup.append(option);
-});
-$('preset').append(recipeGroup);
-$('preset').onchange = () => {
-  const get = presets[$('preset').value];
-  if (get) replaceProject(get());
-  $('preset').value = '';
-};
+// Only owner-approved, finished MP4+WAV mixes appear in the public picker.
+// Existing internal presets remain parsable for historical project links but
+// are intentionally never presented to website visitors.
+function mountPublishedPicker(){
+  document.querySelectorAll('.preset-picker').forEach(el=>el.remove());
+  const host=document.querySelector('.project-actions');
+  if(!host)return;
+  fetch('/data/published-mixes.json',{cache:'no-store'}).then(async r=>{
+    if(!r.ok)throw Error('Published list unavailable');
+    const rows=await r.json();
+    if(!Array.isArray(rows))return;
+    const ready=rows.filter(r=>r.status==='published' && /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(r.slug)
+      && r.video?.url && r.audio?.url);
+    if(!ready.length)return;
+    const label=node('label','','preset-picker');
+    const caption=node('span',studioEnglish?'Published mixes':'Bản đã công khai');
+    const select=node('select');
+    select.id='published-picker';
+    select.setAttribute('aria-label',studioEnglish?'Open a published mix':'Mở bản phối đã công khai');
+    select.append(new Option(studioEnglish?'Choose a published mix':'Chọn bản đã Public',''));
+    ready.forEach(r=>select.append(new Option(r.title,r.slug)));
+    select.onchange=()=>{
+      const slug=select.value;
+      if(ready.some(r=>r.slug===slug))location.assign('/'+slug+'/');
+    };
+    label.append(caption,select);
+    host.prepend(label);
+  }).catch(()=>{}); // Empty or unavailable feed means no published picker.
+}
+mountPublishedPicker();
 $('clear').onclick = () => {
   $('clear').closest('details').open = false;
-  replaceProject({title: tr('Bản phối chưa đặt tên'), length: 1800, tracks: []});
+  replaceProject({title: tr('Bản phối chưa đặt tên'), length: homepageWavOnly?600:1800, tracks: []});
 };
 $('share').onclick = async () => {
   const url = new URL(location.href);
