@@ -1,0 +1,46 @@
+name: Gate and build owner-approved public soundscapes
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'data/published-mixes.json'
+      - 'scripts/build_published_mixes.py'
+      - 'scripts/test_published_pages.py'
+      - '.github/workflows/publish_approved_mixes.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: whitenoisechoir-owner-approved-publication
+  cancel-in-progress: false
+
+jobs:
+  check-and-generate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Validate publisher code and the public-release manifest
+        run: |
+          python3 -m py_compile scripts/build_published_mixes.py
+          python3 scripts/test_published_pages.py
+          python3 scripts/build_published_mixes.py --check
+      - name: Verify final media exists on R2 and generate public SEO pages
+        run: python3 -u scripts/build_published_mixes.py --write
+      - name: Commit only generated public pages, sitemap and library grid
+        run: |
+          git add -A -- data/published-generated-slugs.json library/index.html sitemap.xml
+          git add -A -- ':(glob)*/index.html' || true
+          if git diff --cached --quiet; then
+            echo "No new owner-approved release pages"
+          else
+            git config user.name "whitenoisechoir-release-bot"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git commit -m "Publish verified owner-approved ambient video releases"
+            git push origin HEAD:main
+          fi
