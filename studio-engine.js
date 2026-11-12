@@ -56,6 +56,15 @@ const presets = {
 legacyStudioRecipes.forEach((recipe,index)=>{
   presets['legacy-'+index]=()=>({title:recipe.title,length:1800,master:.28,tracks:structuredClone(recipe.tracks)});
 });
+// Public home is a fixed ten-minute WAV-only sound-mix workspace.
+// /vi/ remains the internal video assembly tool for owner review.
+const homepageWavOnly = /^\/(?:index\.html)?$/.test(location.pathname);
+function restrictHomeMix(project){
+  if(!homepageWavOnly)return project;
+  if(project.length===600 && project.tracks.every(t=>t.start<600 && (!t.duration || t.start+t.duration<=600)))return project;
+  return {...project,length:600,tracks:project.tracks.filter(t=>t.start<600)
+    .map(t=>({...t,...(Number.isFinite(t.duration)?{duration:Math.min(t.duration,600-t.start)}:{})}))};
+}
 const trialData = JSON.parse(document.getElementById('studio-trial')?.textContent || 'null');
 const projectStorageKey = studioEnglish ? 'wnc.studio.project.en.v1'
   : (trialData ? 'wnc.studio.trial.' + trialData.slug : 'wnc.studio.project.v1');
@@ -94,7 +103,7 @@ function readMix() {
   }
   return sample();
 }
-let mix=readMix(),position=0,playing=false,loading=false,anchor=0,frame=0,generation=0;
+let mix=restrictHomeMix(readMix()),position=0,playing=false,loading=false,anchor=0,frame=0,generation=0;
 let context, monitorGain, monitorAnalyser, monitorSamples, soloTrack;
 const buffers=new Map(), active=[];
 
@@ -532,7 +541,7 @@ function syncWorkflow(){
   }
   $('mix-controls').inert=exporting;
   $('mix-editor').inert=exporting;
-  $('minutes').disabled=exporting;
+  $('minutes').disabled=exporting || homepageWavOnly;
   $('render').disabled=exporting;
   if(!videoEnabled) return;
   $('video-input').disabled=exporting;
@@ -546,7 +555,7 @@ function exportBusy(value){
 }
 $('render').onclick=async()=>{
   if(exporting) return;
-  const project=structuredClone(mix);
+  const project=restrictHomeMix(structuredClone(mix));
   audioExport=null;clearResult('audio');resetVideo();exportBusy(true);
   progressStage('audio',0,tr('Đang chuẩn bị xuất ')+durationLabel(project.length)+tr(' âm thanh'));
   try {
