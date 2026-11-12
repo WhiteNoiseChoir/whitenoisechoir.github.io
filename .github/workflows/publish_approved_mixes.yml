@@ -4,7 +4,7 @@ on:
   push:
     branches: [main]
     paths:
-      - 'data/published-mixes.json'
+      - 'data/publication-requests.json'
       - 'scripts/build_published_mixes.py'
       - 'scripts/test_published_pages.py'
       - '.github/workflows/publish_approved_mixes.yml'
@@ -29,12 +29,12 @@ jobs:
         run: |
           python3 -m py_compile scripts/build_published_mixes.py
           python3 scripts/test_published_pages.py
-          python3 scripts/build_published_mixes.py --check
+          python3 scripts/build_published_mixes.py --check --from-requests
       - name: Verify final media exists on R2 and generate public SEO pages
-        run: python3 -u scripts/build_published_mixes.py --write
+        run: python3 -u scripts/build_published_mixes.py --write --from-requests
       - name: Commit only generated public pages, sitemap and library grid
         run: |
-          git add -A -- data/published-generated-slugs.json library/index.html sitemap.xml
+          git add -A -- data/published-mixes.json data/published-generated-slugs.json library/index.html sitemap.xml
           git add -A -- ':(glob)*/index.html' || true
           if git diff --cached --quiet; then
             echo "No new owner-approved release pages"
