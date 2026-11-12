@@ -20,10 +20,10 @@
     "note": "Previously approved 5.04-second V4 video. Local conversation artifact is NOT uploaded to R2, and no ten-minute muxed video has been confirmed."
   },
   "pendingRequired": [
-    "Upload four finished files from the ChatGPT session into Cloudflare R2 after the S3 endpoint TLS handshake is restored.",
-    "Verify four R2 URLs with content type, HTTP Range/CORS and media duration.",
-    "Populate data/publication-requests.json using the exact verified URLs and owner approval already recorded.",
-    "Pass publication gate and verify deployed /Living-Forest-Creek/, /library/ and sitemap."
+    "Upload four selected mastered files to the exact planned keys in R2 (S3 account TLS handshake currently failing); Cloudflare dashboard upload can bypass broken S3 TLS route.",
+    "After upload, check public CDN HTTP Range/CORS, MIME, SHA256, final 600-second video and audio decode.",
+    "Write approved V4 row to data/publication-requests.json, preserving ownerApproval=true, after final media checks.",
+    "Run publication workflow and verify public URL, card in /library/, metadata and sitemap."
   ],
   "seo": {
     "title": "Living Forest Creek: Rain, Frogs & Flowing Water | WhiteNoiseChoir",
@@ -49,7 +49,7 @@
       "text": "The finished release pairs its woodland audio arrangement with a carefully reviewed forest scene. The camera remains fixed as water flows and fine rain falls, making the scene appropriate for long sessions. Once the ten-minute video and soundtrack have been mastered and published, the web player can repeat the finished media for a listening session of up to ten hours without requiring a separate enormous ten-hour video file."
     }
   ],
-  "notes": "Owner approved Public; complete 600s MP4, WAV, MP3 and poster now exist in session and have SHA checksums, but none can be declared published until R2 upload succeeds. Never invent R2 URLs or publish placeholder media.",
+  "notes": "Owner's Public authorization recorded. Final MP4/WAV/MP3/poster produced and SHA-verified in ChatGPT container. Cloudflare R2 S3 endpoint currently returns TLS handshake failure for boto3 and rclone. Do NOT claim Public until assets physically uploaded and verifiable. The raw unmastered source WAV is not the preferred release audio.",
   "audioProduction": {
     "status": "MASTER_RENDERED_QA_PASS_STORED_GITHUB_ARTIFACT",
     "workflowRun": "https://github.com/WhiteNoiseChoir/whitenoisechoir.github.io/actions/runs/43151332337",
@@ -119,6 +119,46 @@
       ],
       "approvedOriginalKlingWithRain": true,
       "prePublicationQA": "TECHNICAL_PASS_LISTENING_RECHECK_RECOMMENDED"
+    },
+    "selectedMastering": "PUBLIC_MASTER_LINEAR_GAIN_PRESERVES_V4_RELATIVE_TRACK_MIX",
+    "masteringQA": {
+      "integratedLUFS": -25.5,
+      "truePeakDbTP": -2.84,
+      "loudnessRangeLU": 3.4,
+      "masterGainAppliedDb": 16.87,
+      "headroom": true,
+      "notes": "Original 600-second rendered Studio WAV is retained unmodified. Selected public-master version applies transparent constant gain; preserves relative layer balance."
+    },
+    "releaseArtifacts": {
+      "video": {
+        "name": "V4_Living_Forest_Creek_Public_10min_1080p_Mastered.mp4",
+        "sha256": "fe501bb3c891641b6a82c180cc7de0bbe250a79aa9e95873f98d620e3173fa58",
+        "sizeBytes": 197722091,
+        "durationSeconds": 600,
+        "width": 1916,
+        "height": 1080,
+        "r2KeyPlanned": "releases/Living-Forest-Creek/video-600s.mp4",
+        "r2Status": "NOT_UPLOADED"
+      },
+      "audio": {
+        "name": "Living-Forest-Creek-V4-600s-Public-Mastered.mp3",
+        "sha256": "82acdef6b390b42c82a97fc34afaa9bb628efd1484d721ad1730880acefe9099",
+        "r2KeyPlanned": "releases/Living-Forest-Creek/audio-600s.mp3",
+        "r2Status": "NOT_UPLOADED"
+      },
+      "wav": {
+        "name": "Living-Forest-Creek-V4-600s-Public-Mastered.wav",
+        "sha256": "746036038992a5203fc5eaa83c92aeaa2b36ada93f04e6498c3761c88c292284",
+        "r2KeyPlanned": "releases/Living-Forest-Creek/master-600s.wav",
+        "r2Status": "NOT_UPLOADED"
+      },
+      "poster": {
+        "name": "V4_Living_Forest_Creek_Public_Poster.jpg",
+        "sha256": "9e683bb53fb11d82ac2a8595313213c266f0bc05385542a6c31db44d11bf0642",
+        "sizeBytes": 359388,
+        "r2KeyPlanned": "releases/Living-Forest-Creek/poster.jpg",
+        "r2Status": "NOT_UPLOADED"
+      }
     }
   }
 }
