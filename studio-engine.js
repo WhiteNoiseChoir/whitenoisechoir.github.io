@@ -97,6 +97,76 @@ function readMix() {
 let mix=readMix(),position=0,playing=false,loading=false,anchor=0,frame=0,generation=0;
 let context, monitorGain, monitorAnalyser, monitorSamples, soloTrack;
 const buffers=new Map(), active=[];
+
+const sourceHealth = new Map();
+const sourceDiagnostics = document.createElement('details');
+sourceDiagnostics.id = 'source-diagnostics';
+sourceDiagnostics.setAttribute('aria-label',studioEnglish?'Audio source diagnostics':'Kiểm tra tình trạng nguồn âm thanh');
+const sourceSummary = document.createElement('summary');
+const sourceIssues = document.createElement('div');
+sourceIssues.id='source-diagnostics-issues';
+sourceDiagnostics.append(sourceSummary,sourceIssues);
+$('seek').insertAdjacentElement('afterend',sourceDiagnostics);
+let previousAudioErrors=0;
+function renderSourceDiagnostics(){
+  const used=[...new Set(mix.tracks.map(t=>t.asset))];
+  const activeIds=used.filter(id=>mix.tracks.some(t=>t.asset===id&&!t.mute&&t.gain>0));
+  const errors=activeIds.filter(id=>sourceHealth.get(id)?.status==='failed');
+  const quietFiles=activeIds.filter(id=>sourceHealth.get(id)?.status==='quiet');
+  const ready=activeIds.filter(id=>['ready','quiet'].includes(sourceHealth.get(id)?.status));
+  const loadingFiles=activeIds.filter(id=>sourceHealth.get(id)?.status==='loading');
+  const muted=mix.tracks.filter(t=>t.mute||t.gain<=0);
+  const quietTracks=mix.tracks.filter(t=>!t.mute&&t.gain>0&&t.gain<.10);
+  const waiting=activeIds.length-ready.length-loadingFiles.length-errors.length;
+  const summary=studioEnglish?'Audio diagnostics':'Kiểm tra âm thanh';
+  sourceSummary.textContent=summary+' · '+ready.length+'/'+activeIds.length+' '+(studioEnglish?'sources loaded':'nguồn đã tải')+
+    (errors.length?' · '+errors.length+' LỖI':'')+
+    (muted.length?' · '+muted.length+' lớp tắt':'')+
+    (quietTracks.length?' · '+quietTracks.length+' lớp rất nhỏ':'')+
+    (loadingFiles.length?' · '+loadingFiles.length+' đang tải':'');
+  sourceDiagnostics.classList.toggle('has-audio-errors',errors.length>0);
+  if(errors.length>previousAudioErrors)sourceDiagnostics.open=true;
+  previousAudioErrors=errors.length;
+  sourceIssues.replaceChildren();
+  function line(label,description,kind){
+    const p=document.createElement('p');p.className='source-diagnostic-row '+kind;
+    const strong=document.createElement('strong');strong.textContent=label;
+    p.append(strong,document.createTextNode(' · '+description));sourceIssues.append(p);
+  }
+  for(const id of errors){
+    const reason=sourceHealth.get(id)?.detail||'Không thể tải hoặc giải mã';
+    line('❌ '+assets[id].name,reason,'failed');
+  }
+  for(const id of quietFiles){
+    line('🔉 '+assets[id].name,sourceHealth.get(id)?.detail||'Bản gốc có mức tín hiệu thấp','quiet');
+  }
+  for(const id of loadingFiles)line('⏳ '+assets[id].name,'Đang tải và giải mã nguồn','loading');
+  if(waiting>0)line('○ '+waiting+' nguồn','Chưa thử tải. Nhấn Phát để kiểm tra các lớp đang bật.','waiting');
+  for(const t of muted){
+    const reason=t.mute
+      ? (assets[t.asset]?.url&&!assets[t.asset].url.startsWith(media)
+          ? 'Đang tắt tiếng, nguồn ngoài chưa bật hoặc chưa nhập kho':'Đang tắt tiếng')
+      : 'Âm lượng bằng 0%';
+    line('🔇 '+(t.label||assets[t.asset].name),reason,'muted');
+  }
+  for(const t of quietTracks)line('🔉 '+(t.label||assets[t.asset].name),
+    'Âm lượng '+(100*t.gain).toFixed(1)+'%. Có thể bị mưa, suối hoặc lửa che lấp.','quiet');
+  if(!sourceIssues.childElementCount)line('✓ Các nguồn đang bật','Đã tải được và đủ lớn theo cấu hình. Vẫn cần nghe kiểm tra chất lượng.','ready');
+  const rows=$('tracks')?.children||[];
+  for(const row of rows){
+    const t=mix.tracks[Number(row.dataset.track)];if(!t)continue;
+    const health=sourceHealth.get(t.asset);
+    row.dataset.audioHealth=t.mute?'muted':t.gain<=0?'silent':health?.status||'unchecked';
+    const name=t.label||assets[t.asset].name;
+    row.title=t.mute?'Tắt tiếng: '+name:health?.status==='failed'?'LỖI: '+(health.detail||name)
+      :health?.status==='quiet'?'NGUỒN YẾU: '+(health.detail||name):'';
+  }
+}
+function setSourceHealth(id,status,detail=''){
+  sourceHealth.set(id,{status,detail});
+  renderSourceDiagnostics();
+}
+
 function stop(){
   generation++;
   playing=false;
@@ -150,6 +220,7 @@ function sourceAddresses(i){
 // Decode audio with the original decoder first. Some Chromium derivatives reject
 // long MP3 files in OfflineAudioContext even when a regular AudioContext works.
 async function decodeRecording(i,decoder,onSource){
+  setSourceHealth(i,'loading','Đang tải và giải mã âm thanh');
   const asset=assets[i];
   if(asset.pending) throw Error(studioEnglish?'Unlock the source catalog in Vietnamese Studio.':'Mở kho âm thanh trong Studio tiếng Việt để tải nguồn.');
   const attempts=[];
@@ -180,6 +251,15 @@ async function decodeRecording(i,decoder,onSource){
         }
       }
       if(decoded && decoded.duration>0 && decoded.numberOfChannels){
+        const samples=decoded.getChannelData(0),step=Math.max(1,Math.floor(samples.length/16000));
+        let square=0,points=0;
+        for(let j=0;j<samples.length;j+=step){square+=samples[j]*samples[j];points++;}
+        const rmsDb=20*Math.log10(Math.sqrt(square/Math.max(1,points))+1e-12);
+        const site=new URL(address,location.href).hostname;
+        const origin=site===new URL(media).hostname?'R2':site===location.hostname?'Website':'Nguồn ngoài';
+        const detail=origin+' · '+Math.round(decoded.duration)+' giây · RMS '+rmsDb.toFixed(1)+' dBFS'+
+          (address===approvedAudioFallbacks[asset.key]?' · Bản dự phòng Signature':'');
+        setSourceHealth(i,rmsDb< -38?'quiet':'ready',detail);
         if(onSource)onSource({address,fallback:address===approvedAudioFallbacks[asset.key],duration:decoded.duration});
         return decoded;
       }
@@ -190,7 +270,9 @@ async function decodeRecording(i,decoder,onSource){
         error.message||'Lỗi mạng hoặc quyền truy cập tệp')+' · '+new URL(address,location.href).pathname);
     }
   }
-  throw Error(asset.name+' · '+attempts.join(' | '));
+  const failure=asset.name+' · '+attempts.join(' | ');
+  setSourceHealth(i,'failed',failure);
+  throw Error(failure);
 }
 function load(i){
   if(!buffers.has(i)) buffers.set(i,decodeRecording(i,context).catch(error=>{
