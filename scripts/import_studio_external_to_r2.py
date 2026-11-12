@@ -18,6 +18,7 @@ import urllib.error
 
 import boto3
 from botocore.config import Config
+from botocore.exceptions import ClientError
 
 BUCKET="whitenoisechoir-media"
 ACCOUNT_ID="7483501ad8365fe26b0448b96b54fb9f"
@@ -97,7 +98,7 @@ def main():
                 key=f"asset-library/raw/sha256/{sha[:2]}/{sha}.mp3"
                 content_type="audio/mpeg"
                 try:head=s3.head_object(Bucket=BUCKET,Key=key)
-                except s3.exceptions.ClientError as exc:
+                except ClientError as exc:
                     if str(exc.response.get("Error",{}).get("Code")) not in ("404","NoSuchKey","NotFound"):raise
                     head=None
                 if head is None:
