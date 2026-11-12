@@ -24,18 +24,18 @@ Ngày áp dụng: 2026-11-12 · Khóa chặn Public v1
 - Viết title, meta description, nội dung biên tập tiếng Anh độc lập, alt cho thumbnail, từ khóa tập trung không cannibalize.
 - Thêm schema VideoObject, AudioObject, BreadcrumbList, og:image, og:video và canonical.
 - Chủ dự án xác nhận hoàn tất sản xuất + duyệt nghe/nhìn và ra lệnh **Public**; không suy diễn từ việc đã render hoặc tải lên R2.
-- Ghi nhận **`ownerApproved:true`**, **`productionComplete:true`**, **`qaApproved:true`**, **`status:"published"`**, ngày công khai, và bốn URL R2 vào `data/published-mixes.json`. Đây là nguồn sự thật; không có nút Public trực tiếp trong trình duyệt của khách.
+- Ghi nhận **`ownerApproved:true`**, **`productionComplete:true`**, **`qaApproved:true`**, **`status:"published"`**, ngày công khai, và bốn URL R2 vào **`data/publication-requests.json`** (danh sách yêu cầu duyệt). Chỉ workflow đã kiểm tra đủ điều kiện mới ghi vào **`data/published-mixes.json`** (danh sách công khai mà Studio và thư viện đọc). Không có nút Public trực tiếp trong trình duyệt của khách.
 
 ### C. Cổng xuất bản tự động
 
-Workflow `.github/workflows/publish_approved_mixes.yml` chạy khi manifest đổi:
+Workflow `.github/workflows/publish_approved_mixes.yml` chạy khi tệp yêu cầu Public đổi:
 1. Xác nhận slug, quyền phê duyệt, SEO, nội dung bài, snapshot timeline và thời lượng 10 phút.
 2. Kiểm tra **bốn URL R2 thực tế** (MP4 10 phút, thumbnail, audio-only 10 phút, WAV master), MIME, HTTP Range/CORS.
 3. Tạo trang HTML SEO riêng với player và **timeline hiển thị cố định**. Trang không tải Studio editor và không cho chỉnh âm thanh.
-4. Tạo card video ở `/library/` và cập nhật `sitemap.xml`.
-5. Commit các HTML đã sinh. GitHub Pages deploy thành công thì mới xác nhận URL live.
+4. Chỉ sau khi cả bốn URL R2 được xác minh, ghi danh sách đã duyệt vào `data/published-mixes.json`, tạo card video ở `/library/` và cập nhật `sitemap.xml`.
+5. Commit đồng thời manifest Public đã xác minh và các HTML đã sinh. GitHub Pages deploy thành công thì mới xác nhận URL live.
 
-Nếu thiếu một trong các điều kiện trên: **chặn xuất bản**. Không để dự án nháp vào sitemap hoặc hiển thị như bản phát hành.
+Nếu thiếu một trong các điều kiện trên: **chặn xuất bản**. Tệp yêu cầu duyệt có thể nằm trong repository công khai nhưng **không** được Studio/library dùng để hiển thị; không ghi mật khẩu, token hoặc đường dẫn cần bảo mật vào đó. Nếu cần giữ bí mật tuyệt đối trước Public, sử dụng bộ nhớ riêng/private repository thay vì tệp này. Không để dự án nháp vào sitemap hoặc hiển thị như bản phát hành.
 
 ## Phát đến 10 giờ
 
@@ -52,11 +52,11 @@ Nếu thiếu một trong các điều kiện trên: **chặn xuất bản**. Kh
 - Bản nháp V4: `https://whitenoisechoir.com/vi/Living-Forest-Creek/`.
 - Bản nháp V5: `https://whitenoisechoir.com/vi/The-Forest-Is-Alive-Tonight/`.
 - Thư viện Public: `https://whitenoisechoir.com/library/`.
-- **Chưa có bản nào được xác nhận Public.** `data/published-mixes.json` hiện là `[]`, vì vậy URL công khai `/Living-Forest-Creek/` chưa được tạo.
+- **Chưa có bản nào được xác nhận Public.** `data/publication-requests.json` và `data/published-mixes.json` hiện là `[]`, vì vậy URL công khai `/Living-Forest-Creek/` chưa được tạo.
 
 ## Quản lý dữ liệu và trách nhiệm
 
 - Không tự động Public từ một URL MP4, một file WAV hay một ảnh thumbnail nếu thiếu phê duyệt.
 - Không đưa WAV chưa nghiệm thu, MP3 preview bitrate thấp hoặc asset chưa import R2 vào phát hành.
 - Source list của mỗi bản phải được bảo tồn theo quy tắc kho dài hạn trong `AGENTS.md`.
-- Nếu yêu cầu bỏ Public, xoá entry manifest rồi để pipeline xoá trang HTML do chính nó tạo, card trong thư viện và URL khỏi sitemap; kiểm tra cache CDN/search sau đó.
+- Nếu yêu cầu bỏ Public, xoá entry trong `data/publication-requests.json` rồi để pipeline xoá trang HTML do chính nó tạo, card trong thư viện và URL khỏi sitemap; kiểm tra cache CDN/search sau đó.
