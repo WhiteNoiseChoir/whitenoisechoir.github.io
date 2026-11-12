@@ -1,0 +1,42 @@
+name: Tropical Track 09 Waveform Diagnostic
+on:
+  push:
+    branches: [main]
+    paths:
+      - scripts/qa_tropical_track09.py
+      - .github/workflows/qa_tropical_track09.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    env:
+      R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+      R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          sparse-checkout: scripts
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install audio diagnostics
+        run: |
+          if ! command -v ffmpeg >/dev/null; then
+            sudo apt-get update -qq
+            sudo apt-get install -y -qq ffmpeg
+          fi
+          python -m pip install -q 'boto3>=1.36,<2' 'numpy>=1.26,<3'
+      - name: Compare original waveform of track 09 with adjacent bird tracks
+        run: python -u scripts/qa_tropical_track09.py
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: track09-waveform-diagnostics
+          path: tropical-track09-diagnostics.json
+          if-no-files-found: warn
+          retention-days: 14
