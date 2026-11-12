@@ -290,7 +290,7 @@ function attachTrackReorder(handle, row, index, label) {
     const ghost = node('div', '', 'track-reorder-ghost');
     ghost.setAttribute('aria-hidden','true');
     document.body.append(ghost);
-    drag = {id:event.pointerId,x:event.clientX,y:event.clientY,to:index,started:false,ghost,frame:0};
+    drag = {id:event.pointerId,x:event.clientX,y:event.clientY,y0:event.clientY,to:index,started:false,ghost,frame:0};
     handle.classList.add('reordering');
     handle.setAttribute('aria-grabbed','true');
     selectTrack(index);
@@ -301,7 +301,7 @@ function attachTrackReorder(handle, row, index, label) {
   handle.onpointermove = event => {
     if (!drag || drag.id !== event.pointerId) return;
     drag.x = event.clientX;drag.y = event.clientY;
-    if (!drag.started && Math.abs(event.clientY - handle.getBoundingClientRect().top - 14) > 5) drag.started = true;
+    if (!drag.started && Math.abs(event.clientY - drag.y0) > 5) drag.started = true;
     if (drag.started) moveVisual();
     event.preventDefault();
   };
