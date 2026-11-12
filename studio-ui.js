@@ -451,8 +451,8 @@ function mountPublishedPicker(){
     if(!r.ok)throw Error('Published list unavailable');
     const rows=await r.json();
     if(!Array.isArray(rows))return;
-    const ready=rows.filter(r=>r.status==='published' && /^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$/.test(r.slug)
-      && r.video?.url && r.audio?.url);
+    const ready=rows.filter(r=>r.status==='published' && r.ownerApproved===true && r.productionComplete===true && r.qaApproved===true && /^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$/.test(r.slug)
+      && r.video?.url && r.video?.poster && r.audio?.url && r.audio?.wavUrl);
     if(!ready.length)return;
     const label=node('label','','preset-picker');
     const caption=node('span',studioEnglish?'Published mixes':'Bản đã công khai');
