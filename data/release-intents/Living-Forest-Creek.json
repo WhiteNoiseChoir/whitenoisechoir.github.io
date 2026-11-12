@@ -20,12 +20,12 @@
     "note": "Previously approved 5.04-second V4 video. Local conversation artifact is NOT uploaded to R2, and no ten-minute muxed video has been confirmed."
   },
   "pendingRequired": [
-    "600-second WAV master in R2 with QA pass",
-    "600-second compressed audio in R2 with QA pass",
-    "final 600-second muxed MP4 on R2",
-    "approved thumbnail on R2",
-    "release media URL/CORS/codec verification",
-    "release SEO metadata and immutable timeline snapshot published by gate"
+    "Upload validated WAV and MP3 master artifacts to R2 and verify HTTP Range/CORS",
+    "Upload approved 5.04s V4 rain-enhanced scene to R2, then generate 600s muxed MP4 with soundtrack",
+    "Upload approved thumbnail from source video to R2",
+    "QA and verify finished 600s MP4, visual loop, audio loop and no clipping",
+    "Populate publication-requests.json with verified final asset URLs and approval flags",
+    "Confirm production deployment, canonical, sitemap and library card"
   ],
   "seo": {
     "title": "Living Forest Creek: Rain, Frogs & Flowing Water | WhiteNoiseChoir",
@@ -51,5 +51,24 @@
       "text": "The finished release pairs its woodland audio arrangement with a carefully reviewed forest scene. The camera remains fixed as water flows and fine rain falls, making the scene appropriate for long sessions. Once the ten-minute video and soundtrack have been mastered and published, the web player can repeat the finished media for a listening session of up to ten hours without requiring a separate enormous ten-hour video file."
     }
   ],
-  "notes": "Do not copy this file into data/publication-requests.json until actual media and QA fields have been populated. Current public release manifest remains [] and no SEO public page exists."
+  "notes": "Do not copy this file into data/publication-requests.json until actual media and QA fields have been populated. Current public release manifest remains [] and no SEO public page exists.",
+  "audioProduction": {
+    "status": "MASTER_RENDERED_QA_PASS_STORED_GITHUB_ARTIFACT",
+    "workflowRun": "https://github.com/WhiteNoiseChoir/whitenoisechoir.github.io/actions/runs/43151332337",
+    "artifactName": "v4-600s-approved-audio-and-qa",
+    "artifactId": 13913393838,
+    "artifactExpires": "2026-12-12T03:56:28Z",
+    "durationSeconds": 600,
+    "channels": 2,
+    "sampleRate": 44100,
+    "bitsPerSample": 16,
+    "tracks": 30,
+    "sources": 13,
+    "maxPeakDbfs": -19.7,
+    "last15SecondsMeanDbfs": -46.7,
+    "wavSha256": "072166d17057123e7e800066a0d0b77f2ad0a097a78daac413e9511398f32aee",
+    "mp3Sha256": "afafd7fb317ccb3005b55ba8d4f41b5308e4dbe44516362aa6d109dc0f1c0a4f",
+    "r2Status": "UPLOAD_FAILED_ACCOUNT_R2_S3_TLS_HANDSHAKE",
+    "uploaderNote": "R2 PUT retries failed SSLV3_ALERT_HANDSHAKE_FAILURE, do not set asset URL until verified R2 object exists."
+  }
 }
