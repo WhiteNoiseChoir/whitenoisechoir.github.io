@@ -218,6 +218,112 @@ function seekFromPointer(event, element) {
   if (bounds.width > 0) locate((event.clientX - bounds.left) / bounds.width * mix.length);
 }
 
+// Reordering layers changes only their display/array order; it never changes
+// playback times, source IDs, gains, fades or other audio-mix parameters.
+function reorderTrack(from, to, focusHandle = false) {
+  if (exporting || from === to || from < 0 || to < 0 ||
+      from >= mix.tracks.length || to >= mix.tracks.length) return false;
+  change(() => {
+    const [moving] = mix.tracks.splice(from, 1);
+    mix.tracks.splice(to, 0, moving);
+    selected = to;
+  });
+  if (focusHandle) $('tracks').children[to]?.querySelector('.track-reorder')?.focus({preventScroll: true});
+  return true;
+}
+function attachTrackReorder(handle, row, index, label) {
+  let drag = null;
+  const container = $('timeline-scroll');
+  const rows = () => Array.from($('tracks').querySelectorAll('.timeline-row'));
+  const dropTarget = y => {
+    const all = rows();
+    for (let i = 0; i < all.length; i++) {
+      const rect = all[i].getBoundingClientRect();
+      if (y < rect.top + rect.height / 2) return i;
+    }
+    return Math.max(0, all.length - 1);
+  };
+  const highlight = target => {
+    rows().forEach((item, i) => {
+      item.classList.toggle('reorder-origin', i === index);
+      item.classList.toggle('reorder-target', i === target && i !== index);
+    });
+  };
+  function moveVisual() {
+    if (!drag) return;
+    drag.to = dropTarget(drag.y);
+    if (drag.ghost) {
+      drag.ghost.textContent = (index + 1) + ' → ' + (drag.to + 1) + ' · ' + label;
+      drag.ghost.style.top = drag.y + 12 + 'px';
+      drag.ghost.style.left = drag.x + 12 + 'px';
+    }
+    highlight(drag.to);
+  }
+  function autoScroll() {
+    if (!drag) return;
+    if (drag.started) {
+      const bounds = container.getBoundingClientRect();
+      const top = bounds.top + 42; // Keep the sticky time ruler clear.
+      const bottom = bounds.bottom - 26;
+      const speed = drag.y < top ? -Math.min(18, 5 + (top - drag.y) / 4)
+        : drag.y > bottom ? Math.min(18, 5 + (drag.y - bottom) / 4) : 0;
+      if (speed) container.scrollTop += speed;
+      moveVisual();
+    }
+    drag.frame = requestAnimationFrame(autoScroll);
+  }
+  function cleanup() {
+    const state = drag;
+    if (!state) return null;
+    cancelAnimationFrame(state.frame);
+    drag = null;
+    handle.classList.remove('reordering');
+    handle.removeAttribute('aria-grabbed');
+    row.classList.remove('reorder-origin');
+    rows().forEach(item => item.classList.remove('reorder-origin','reorder-target'));
+    state.ghost?.remove();
+    return state;
+  }
+  handle.onpointerdown = event => {
+    if (event.button !== 0 || exporting || mix.tracks.length < 2) return;
+    event.preventDefault();
+    const ghost = node('div', '', 'track-reorder-ghost');
+    ghost.setAttribute('aria-hidden','true');
+    document.body.append(ghost);
+    drag = {id:event.pointerId,x:event.clientX,y:event.clientY,to:index,started:false,ghost,frame:0};
+    handle.classList.add('reordering');
+    handle.setAttribute('aria-grabbed','true');
+    selectTrack(index);
+    moveVisual();
+    try {handle.setPointerCapture(event.pointerId);} catch {}
+    drag.frame=requestAnimationFrame(autoScroll);
+  };
+  handle.onpointermove = event => {
+    if (!drag || drag.id !== event.pointerId) return;
+    drag.x = event.clientX;drag.y = event.clientY;
+    if (!drag.started && Math.abs(event.clientY - handle.getBoundingClientRect().top - 14) > 5) drag.started = true;
+    if (drag.started) moveVisual();
+    event.preventDefault();
+  };
+  handle.onpointerup = event => {
+    if (!drag || drag.id !== event.pointerId) return;
+    const wasMoved=drag.started;
+    const target=wasMoved ? dropTarget(event.clientY) : index;
+    cleanup();
+    try {if(handle.hasPointerCapture(event.pointerId)) handle.releasePointerCapture(event.pointerId);} catch {}
+    if (wasMoved) reorderTrack(index,target);
+    else selectTrack(index);
+  };
+  handle.onpointercancel = cleanup;
+  handle.onlostpointercapture = cleanup;
+  handle.onkeydown = event => {
+    if (exporting || !event.altKey || !['ArrowUp','ArrowDown'].includes(event.key)) return;
+    event.preventDefault();
+    const target=clamp(index+(event.key==='ArrowUp'?-1:1),0,mix.tracks.length-1);
+    reorderTrack(index,target,true);
+  };
+  handle.onclick = event => {event.preventDefault();}; // Prevent a synthetic post-drag click.
+}
 function trackRow(track, index) {
   const asset = assets[track.asset];
   const row = node('div', '', 'timeline-row');
@@ -230,10 +336,19 @@ function trackRow(track, index) {
   const select = button(label, () => selectTrack(index), tr('Chọn lớp ') + (index + 1) + ': ' + label);
   select.className = 'track-select';
   select.title = label;
+  const reorder = button('⠿', () => {}, studioEnglish
+    ? 'Reorder track ' + (index + 1) + ': ' + label
+    : 'Sắp xếp lớp ' + (index + 1) + ': ' + label);
+  reorder.className = 'track-reorder';
+  reorder.title = studioEnglish
+    ? 'Drag up or down to reorder this sound. Alt+↑/↓ also works.'
+    : 'Kéo lên hoặc xuống để đổi vị trí lớp. Có thể dùng Alt+↑/↓.';
+  reorder.setAttribute('aria-keyshortcuts','Alt+ArrowUp Alt+ArrowDown');
+  attachTrackReorder(reorder, row, index, label);
   const mute = button('M', () => change(() => { track.mute = !track.mute; }), tr('Tắt tiếng lớp ') + (index + 1));
   mute.className = 'track-mute';
   mute.setAttribute('aria-pressed', track.mute);
-  rail.append(select, mute);
+  rail.append(reorder, select, mute);
 
   const lane = node('div', '', 'lane');
   lane.onclick = event => { if (event.target === lane) seekFromPointer(event, lane); };
