@@ -451,7 +451,7 @@ function mountPublishedPicker(){
     if(!r.ok)throw Error('Published list unavailable');
     const rows=await r.json();
     if(!Array.isArray(rows))return;
-    const ready=rows.filter(r=>r.status==='published' && /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(r.slug)
+    const ready=rows.filter(r=>r.status==='published' && /^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$/.test(r.slug)
       && r.video?.url && r.audio?.url);
     if(!ready.length)return;
     const label=node('label','','preset-picker');
