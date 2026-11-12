@@ -1,0 +1,49 @@
+name: Tropical Rainforest Wildlife Original Audio Intake
+on:
+  push:
+    branches: [main]
+    paths:
+      - scripts/harvest_tropical_wildlife_to_r2.py
+      - .github/workflows/tropical_wildlife_intake.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: tropical-wildlife-intake-r2
+  cancel-in-progress: false
+jobs:
+  import-originals:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+      R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+      AWS_EC2_METADATA_DISABLED: 'true'
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          sparse-checkout: scripts
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install ffmpeg and S3 dependencies
+        run: |
+          if ! command -v ffprobe >/dev/null; then
+            sudo apt-get update -qq
+            sudo apt-get install -y -qq ffmpeg
+          fi
+          python -m pip install -q 'boto3>=1.36,<2' 'requests>=2.32,<3' 'beautifulsoup4>=4.12,<5'
+      - name: Verify script syntax
+        run: python -m py_compile scripts/harvest_tropical_wildlife_to_r2.py
+      - name: Import CC0 / Public Domain wildlife originals to R2
+        run: python -u scripts/harvest_tropical_wildlife_to_r2.py
+      - name: Upload metadata report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: tropical-wildlife-intake-report
+          path: tropical-wildlife-intake-report.json
+          if-no-files-found: warn
+          retention-days: 30
