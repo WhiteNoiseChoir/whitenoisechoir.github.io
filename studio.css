@@ -239,3 +239,44 @@ kbd { font: 11px var(--mono); border: 1px solid var(--line); color: var(--muted)
 
 #audio-studio{margin:16px 0;padding:18px}
 #audio-studio h2{margin:0 0 14px;font-size:1.2rem}
+
+
+/* Live diagnostic summary in the mixer: distinguishes errors from silent/muted tracks. */
+#source-diagnostics {
+  margin: 8px 0 10px;
+  padding: 8px 10px;
+  border: 1px solid #435b54;
+  border-radius: 9px;
+  background: rgba(21, 42, 36, .62);
+  font-size: 12px;
+  line-height: 1.55;
+}
+#source-diagnostics > summary {
+  cursor: pointer;
+  font-weight: 650;
+  color: #bde8d5;
+  list-style: revert;
+}
+#source-diagnostics.has-audio-errors {
+  border-color: #cb7468;
+  background: rgba(77, 37, 32, .34);
+}
+#source-diagnostics.has-audio-errors > summary {color:#ffbcb1;}
+#source-diagnostics-issues {margin-top:8px;max-height:230px;overflow-y:auto;overflow-wrap:anywhere;}
+.source-diagnostic-row {
+  margin: 0 0 5px;
+  padding: 5px 8px;
+  border-radius: 6px;
+  background: rgba(255,255,255,.04);
+  color: #cad6d0;
+}
+.source-diagnostic-row strong {color:inherit;font-weight:650;}
+.source-diagnostic-row.failed {color:#ffc1bb;background:rgba(147,48,43,.14);}
+.source-diagnostic-row.quiet {color:#f2d4a4;}
+.source-diagnostic-row.muted {color:#b2bcb6;}
+.source-diagnostic-row.ready {color:#bde8d5;}
+.timeline-row[data-audio-health="failed"] .track-select {
+  color: #ffbcb1;
+  font-weight: 700;
+}
+.timeline-row[data-audio-health="quiet"] .track-select {color:#f2d4a4;}
