@@ -237,42 +237,83 @@ function trackRow(track, index) {
 
   const lane = node('div', '', 'lane');
   lane.onclick = event => { if (event.target === lane) seekFromPointer(event, lane); };
-  const clip = button(label, () => selectTrack(index), tr('Chọn đoạn ') + label);
+
+  // Sound identity is already visible in the left column. Clips are visual
+  // signal blocks, with full labels available through accessible metadata.
+  let suppressClick = false;
+  const clip = button('', event => {
+    if (suppressClick) { suppressClick = false; event.preventDefault(); return; }
+    selectTrack(index);
+  }, (studioEnglish ? 'Move sound clip: ' : 'Kéo đoạn âm thanh: ') + label);
   clip.className = 'clip' + (track.loop ? ' looped' : '');
+  clip.dataset.track = index;
+  clip.setAttribute('aria-keyshortcuts', 'ArrowLeft ArrowRight');
+  clip.setAttribute('aria-description', studioEnglish
+    ? 'Drag left or right to change its start time. Arrow keys move one second; Shift plus arrow moves 0.1 second.'
+    : 'Kéo trái/phải để đổi thời điểm bắt đầu. Phím mũi tên dịch 1 giây; Shift và mũi tên dịch 0,1 giây.');
+  const visual = node('span', '', 'clip-signal');
+  visual.setAttribute('aria-hidden', 'true');
+  for (let i = 0; i < 5; i++) visual.append(node('span', '', 'clip-signal-bar'));
+  clip.append(visual);
+
   const place = time => {
     const length = clipDuration({...track, start: time}, asset.duration, mix.length);
     clip.hidden = length <= 0;
     clip.style.left = 100 * Math.min(time, mix.length) / mix.length + '%';
     clip.style.width = 100 * length / mix.length + '%';
-    clip.title = label + ' · ' + format(time) + ' · ' + durationText(length);
+    const positionText = format(time) + ' · ' + durationText(length);
+    clip.title = label + ' · ' + positionText;
   };
   place(track.start);
   let drag;
   clip.onpointerdown = event => {
-    if (event.button !== 0) return;
-    drag = {id: event.pointerId, x: event.clientX, start: track.start, target: track.start};
-    clip.setPointerCapture(event.pointerId);
+    if (event.button !== 0 || exporting) return;
+    suppressClick = false;
+    drag = {id: event.pointerId, x: event.clientX, start: track.start, target: track.start, moved: false};
+    selectTrack(index);
+    try { clip.setPointerCapture(event.pointerId); } catch {}
   };
   clip.onpointermove = event => {
-    if (!drag || drag.id !== event.pointerId || Math.abs(event.clientX - drag.x) < 3) return;
+    if (!drag || drag.id !== event.pointerId) return;
+    if (!drag.moved && Math.abs(event.clientX - drag.x) < 4) return;
+    drag.moved = true;
     const scale = event.shiftKey ? 1 : 10;
-    const time = drag.start + (event.clientX - drag.x) * mix.length / lane.clientWidth;
+    const time = drag.start + (event.clientX - drag.x) * mix.length / Math.max(1, lane.getBoundingClientRect().width);
     drag.target = clamp(Math.round(time * scale) / scale, 0, mix.length - .01);
     clip.classList.add('dragging');
+    clip.setAttribute('aria-grabbed', 'true');
     place(drag.target);
+    event.preventDefault();
   };
   clip.onpointerup = event => {
     if (!drag || drag.id !== event.pointerId) return;
-    const target = drag.target;
+    const {target, moved} = drag;
     drag = undefined;
     clip.classList.remove('dragging');
-    if (target !== track.start) change(() => { selected = index; track.start = target; });
-    else place(track.start);
+    clip.removeAttribute('aria-grabbed');
+    if (moved) {
+      suppressClick = true;
+      if (target !== track.start) change(() => { selected = index; track.start = target; });
+      else place(track.start);
+    } else place(track.start);
+    try { if (clip.hasPointerCapture(event.pointerId)) clip.releasePointerCapture(event.pointerId); } catch {}
   };
   clip.onpointercancel = () => {
     drag = undefined;
     clip.classList.remove('dragging');
+    clip.removeAttribute('aria-grabbed');
     place(track.start);
+  };
+  clip.onkeydown = event => {
+    if (!['ArrowLeft','ArrowRight'].includes(event.key) || exporting) return;
+    event.preventDefault();
+    const step = event.shiftKey ? .1 : 1;
+    const direction = event.key === 'ArrowRight' ? 1 : -1;
+    const target = clamp(Math.round((track.start + direction * step) * 10) / 10, 0, mix.length - .01);
+    if (target !== track.start) {
+      change(() => { selected = index; track.start = target; });
+      $('tracks').children[index]?.querySelector('.clip')?.focus({preventScroll: true});
+    }
   };
   lane.append(clip, node('div', '', 'needle'));
   row.append(rail, lane);
