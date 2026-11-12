@@ -65,7 +65,7 @@ try {
   const reordered24=JSON.parse(await page.evaluate(()=>JSON.stringify(mix.tracks)));
   assert.deepEqual(reordered24[1],old12,'Track 12 must land in track 2 with every audio setting intact');
   assert.deepEqual(reordered24[2],JSON.parse(original24)[1],'Previous track 2 should shift to track 3');
-  assert.equal(await page.locator('#tracks .timeline-row').nth(1).locator('.track-select').textContent(),old12.label||'',
+  assert.equal(await page.locator('#tracks .timeline-row').nth(1).locator('.track-select').textContent(),old12.label||await page.evaluate(id=>assets[id].name,old12.asset),
     'Track name shown on new second row should belong to moved layer');
   await page.locator('#undo').click();
   assert.equal(await page.evaluate(()=>JSON.stringify(mix.tracks)),original24,'Undo should restore entire track array');
