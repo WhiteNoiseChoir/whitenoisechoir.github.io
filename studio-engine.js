@@ -358,8 +358,20 @@ async function play(loopPreview=false){
     }
     monitorGain.gain.value=mix.master ?? 1;
     await context.resume();
-    const decoded=await Promise.allSettled(tracks.map(t=>load(t.asset)));
+    // Decode each unique source sequentially. Simultaneously decoding several
+    // 600s MP3 masters allocates >1 GB of PCM and can throw EncodingError after F5.
+    const ids=[...new Set(tracks.map(t=>t.asset))];
+    const sourceResults=new Map();
+    for(let n=0;n<ids.length;n++){
+      if(token!==generation) return;
+      const id=ids[n];
+      $('status').textContent='Đang nạp nguồn '+(n+1)+'/'+ids.length+' · '+assets[id].name;
+      try{sourceResults.set(id,{status:'fulfilled',value:await load(id)});}
+      catch(error){sourceResults.set(id,{status:'rejected',reason:error});}
+      await new Promise(resolve=>setTimeout(resolve,0));
+    }
     if(token!==generation) return;
+    const decoded=tracks.map(t=>sourceResults.get(t.asset));
     const now=context.currentTime+.05;
     anchor=now-position;
     function schedule(from,to,base){
