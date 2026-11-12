@@ -1,0 +1,29 @@
+name: V4 Public release asset inventory
+on:
+  push:
+    branches: [main]
+    paths: ['scripts/audit_v4_release_inventory.py','.github/workflows/audit_v4_release_inventory.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+      R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - run: pip -q install 'boto3>=1.36,<2'
+      - name: Check R2 existing media
+        run: python -u scripts/audit_v4_release_inventory.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v4-r2-release-audit
+          path: v4-r2-inventory.json
+          retention-days: 14
+          if-no-files-found: warn
