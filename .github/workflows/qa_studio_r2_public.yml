@@ -1,0 +1,29 @@
+name: Verify public R2 audio CORS and frog volume
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/qa_studio_r2_public.yml'
+      - 'scripts/qa_studio_r2_public.py'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Install ffmpeg for frog signal audit
+        run: |
+          if ! command -v ffmpeg >/dev/null; then
+            sudo apt-get update -qq
+            sudo apt-get install -y -qq ffmpeg
+          fi
+      - name: Verify real HTTP Range, CORS and frog source loudness
+        run: python3 -u scripts/qa_studio_r2_public.py
