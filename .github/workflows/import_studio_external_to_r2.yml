@@ -33,6 +33,10 @@ jobs:
           python-version: '3.11'
       - name: Set up audio probe and S3 client
         run: |
+          if ! command -v ffprobe >/dev/null || ! command -v ffmpeg >/dev/null; then
+            sudo apt-get update -qq
+            sudo apt-get install -y -qq ffmpeg
+          fi
           command -v ffprobe
           command -v ffmpeg
           python -m pip install -q 'boto3>=1.36,<2'
