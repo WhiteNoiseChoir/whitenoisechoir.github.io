@@ -1,0 +1,37 @@
+name: Coverage composition audit
+on:
+  push:
+    branches: [feature/coverage-first-multisource-20261111]
+    paths: ['.github/workflows/coverage_composition_audit.yml']
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          sparse-checkout: scripts
+      - run: pip install boto3 requests beautifulsoup4 cryptography
+      - name: Read checkpoints and export coverage counts by code
+        env:
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          AWS_EC2_METADATA_DISABLED: 'true'
+        run: |
+          PYTHONPATH=scripts python - <<'PY'
+          import json
+          from collections import Counter
+          from coverage_first_multisource import Intake, state_read, read_state, load_input
+          s3 = Intake().s3
+          state, legacy, bundle = state_read(s3), read_state(s3), load_input(s3)
+          assert state and legacy and state['cursor'] >= len(state['ordered_codes'])
+          counts = legacy['counts']
+          candidates = state['candidates']
+          print('AUDIT_META', json.dumps([len(bundle['targets']), len(counts), sum(bool(v) for v in candidates.values())]))
+          for row in bundle['targets']:
+              code = row[0]
+              print('AUDIT_CODE', json.dumps([code, counts.get(code, [0,0]), dict(Counter(x['source'] for x in candidates.get(code, [])))]))
+          PY
