@@ -20,6 +20,10 @@
   const duration=Number(release.audio?.durationSeconds)||600;
   let accrued=0,startedAt=null,ended=false,switching=false;
   let active=video;
+  function syncModeVisibility(){
+    video.hidden=active!==video;
+    audio.hidden=active!==audio;
+  }
   const format=seconds=>{
     const total=Math.max(0,Math.floor(seconds));
     return [Math.floor(total/3600),Math.floor(total/60)%60,total%60].map(x=>String(x).padStart(2,'0')).join(':');
@@ -89,6 +93,7 @@
     switching=true;
     const relative=Math.max(0,previous.currentTime||0);
     previous.pause();active=next;
+    syncModeVisibility();
     if(next.readyState===0){
       await new Promise(resolve=>{
         const finish=()=>{next.removeEventListener('loadedmetadata',finish);next.removeEventListener('error',finish);resolve();};
@@ -132,5 +137,6 @@
     }catch{}
   }
   setInterval(render,1000);
+  syncModeVisibility();
   render();
 })();
