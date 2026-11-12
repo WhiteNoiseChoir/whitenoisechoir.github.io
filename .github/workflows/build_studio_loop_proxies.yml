@@ -1,0 +1,50 @@
+name: Studio small-memory seamless preview proxies
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/build_studio_loop_proxies.py'
+      - '.github/workflows/build_studio_loop_proxies.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: whitenoisechoir-studio-audio-loop-proxies
+  cancel-in-progress: false
+
+jobs:
+  render-verify-upload:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      AWS_EC2_METADATA_DISABLED: 'true'
+      PYTHONUNBUFFERED: '1'
+      R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+      R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install ffmpeg and S3 client
+        run: |
+          if ! command -v ffmpeg >/dev/null || ! command -v ffprobe >/dev/null; then
+            sudo apt-get update -qq
+            sudo apt-get install -y -qq ffmpeg
+          fi
+          python -m pip install -q 'numpy>=1.24,<3' 'boto3>=1.36,<2'
+      - name: Download originals, render gapless proxy, verify and upload to R2
+        run: python -u scripts/build_studio_loop_proxies.py
+      - name: Archive audit results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: studio-loop-proxy-audit
+          path: studio-loop-proxies-report.json
+          retention-days: 30
+          if-no-files-found: warn
