@@ -42,6 +42,8 @@ jobs:
           python -m pip install -q 'boto3>=1.36,<2'
       - name: Download, decode, hash, and verify R2 audio
         run: python -u scripts/import_studio_external_to_r2.py
+      - name: Verify public Range/CORS on all R2 assets and audit the quiet frog
+        run: python -u scripts/qa_studio_r2_public.py
       - name: Publish technical import results for manual catalog pinning
         if: always()
         uses: actions/upload-artifact@v4
