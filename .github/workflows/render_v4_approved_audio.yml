@@ -1,0 +1,49 @@
+name: V4 approved 600-second WAV and audio release master
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/render_v4_approved_audio.py'
+      - '.github/workflows/render_v4_approved_audio.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: v4-approved-audio-master
+  cancel-in-progress: false
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 28
+    env:
+      PYTHONUNBUFFERED: '1'
+      AWS_EC2_METADATA_DISABLED: 'true'
+      R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+      R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Audio build dependencies
+        run: |
+          if ! command -v ffmpeg >/dev/null || ! command -v ffprobe >/dev/null; then
+            sudo apt-get update -qq
+            sudo apt-get install -y -qq ffmpeg
+          fi
+          python -m pip install -q 'boto3>=1.36,<2'
+      - name: Render original 30-track V4 to master WAV and long-listening MP3
+        run: python -u scripts/render_v4_approved_audio.py
+      - name: Retain audio masters and QA report even if R2 is temporarily unavailable
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v4-600s-approved-audio-and-qa
+          path: |
+            v4-render-output/*.wav
+            v4-render-output/*.mp3
+            v4-render-output/qa-report.json
+            v4-render-output/filtergraph.txt
+          retention-days: 30
+          if-no-files-found: warn
