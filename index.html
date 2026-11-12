@@ -2,7 +2,7 @@
 <html lang="en">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="Find sounds, arrange layers on a timeline, and export your audio mix.">
+<meta name="description" content="Create a custom 10-minute ambient soundscape from layered nature recordings, then download a high-quality WAV file. Published 10-hour listening experiences are available in the library.">
 <title>WhiteNoiseChoir Studio · Sound Studio</title>
 <link rel="canonical" href="https://whitenoisechoir.com/"><link rel="alternate" hreflang="en" href="https://whitenoisechoir.com/"><link rel="alternate" hreflang="vi" href="https://whitenoisechoir.com/vi/"><link rel="alternate" hreflang="x-default" href="https://whitenoisechoir.com/">
 <link rel="stylesheet" href="/studio.css">
@@ -17,19 +17,11 @@
 <main>
   <div id="mix-controls" class="project-bar">
     <div class="project-name">
-      <h1>Sound Studio</h1>
+      <h1>10-minute Sound Studio</h1>
       <input id="title" type="text" aria-label="Project name" maxlength="100" placeholder="Name your mix">
     </div>
     <div class="project-actions">
-      <label class="preset-picker"><span>Presets</span>
-        <select id="preset" aria-label="Open a preset">
-          <option value="">Choose a preset</option>
-          <option value="streamside">Forest Stream</option>
-          <option value="cabin-rain-night">Rainy Cabin</option>
-          <option value="cabin-rain-night-v2">Rainy Cabin · V2</option>
-          <option value="cabin-rain-night-v3">Rainy Cabin · V3</option>
-        </select>
-      </label>
+      
       <button id="undo" type="button" aria-label="Undo" title="Undo (Ctrl+Z)">↶</button>
       <button id="redo" type="button" aria-label="Redo" title="Redo (Ctrl+Shift+Z)">↷</button>
       <button id="share" type="button">Share</button>
@@ -101,7 +93,7 @@
 
 <section id="audio-studio" class="panel" aria-labelledby="export-heading"><h2 id="export-heading">Audio export</h2><div class="export-step">
 
-<div class="row"><label>Duration (minutes) <input id="minutes" type="number" min="0.1" max="180" step="0.1"></label><button id="render" class="primary">Render WAV</button></div>
+<div class="row"><span class="fixed-duration"><strong>10-minute mix</strong> · WAV only · no video rendering on this page</span><input id="minutes" type="hidden" value="10"><button id="render" class="primary" type="button">Create &amp; download WAV</button></div>
 <progress id="audio-progress" max="100" value="0" aria-label="Audio render progress"></progress>
 <p id="audio-status" role="status">Audio has not been rendered yet.</p>
 <div id="audio-result"></div>
@@ -112,8 +104,8 @@
 <script src="/studio-locale.js"></script>
 <script src="/studio-catalog.js"></script>
 <script src="/studio-legacy-recipes.js"></script>
-<script src="/studio-engine.js"></script>
-<script src="/studio-ui.js"></script>
+<script src="/studio-engine.js?v=21d46fab4e2f"></script>
+<script src="/studio-ui.js?v=10283b91880f"></script>
 
 </body>
 </html>
