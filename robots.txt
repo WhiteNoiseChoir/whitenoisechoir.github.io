@@ -1,3 +1,4 @@
 User-agent: *
 Allow: /
+Disallow: /data/publication-requests.json
 Sitemap: https://whitenoisechoir.com/sitemap.xml
