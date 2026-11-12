@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="vi">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Bản phối nháp 10 phút: mưa nhẹ trong rừng mưa nhiệt đới, ếch, dế, chim và cú dày đặc trong không gian âm thanh rộng."><meta name="robots" content="noindex,nofollow">
+<title>Rừng mưa nhiệt đới · WhiteNoiseChoir Studio</title>
+<link rel="canonical" href="https://whitenoisechoir.com/vi/Tropical-Rainforest-Light-Rain/">
+<link rel="stylesheet" href="/studio.css?v=vertical-reorder-20261112b">
+<body>
+<header class="studio-header">
+  <a class="brand" href="/vi/" aria-label="WhiteNoiseChoir Studio">
+    <span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+    WhiteNoiseChoir <span>Studio</span>
+  </a>
+  <nav class="studio-nav" aria-label="Điều hướng"><a href="/library/">Bản phối công khai</a><a href="/" lang="en">English</a><button id="export-link" class="primary" type="button">Xuất bản phối <span aria-hidden="true">↘</span></button></nav>
+</header>
+<main><section role="region" aria-label="Thông tin bản phối thử" style="padding:1rem 1.1rem;margin:1rem auto;border:1px solid #596e62;border-radius:14px;max-width:1488px">
+<h2 style="margin:.2rem 0 .5rem;font-size:1.35rem">Rừng mưa nhiệt đới — Mưa nhỏ, tiếng thú dày</h2>
+<p style="margin:.3rem 0">Bối cảnh: khu rừng ẩm lúc chạng vạng. Mưa chỉ là lớp nền mỏng; ếch, dế và tiếng chim gọi đáp nổi bật cả phía trước lẫn xa trong rừng. Tiếng cú chỉ có mặt ở tầng sâu. Mở đầu có tiếng chim ngay từ 00:00.</p>
+<p style="margin:.3rem 0"><strong>32 lớp · 10 phút · Bản nháp nghe thử, chưa Public.</strong> <a href="/vi/Living-Forest-Creek/">So sánh V4 — Living Forest Creek</a>.</p>
+<p style="margin:.3rem 0;font-size:.92rem"><strong>Giới hạn nguồn:</strong> Đây là bản phối thử không gian rừng mưa từ các nguồn Studio hiện có, <em>không phải field recording của một rừng nhiệt đới xác định</em>. Âm chim cổ đỏ Mỹ và cú vằn là âm thay thế, chưa thể coi là chim nhiệt đới. Để sản xuất bản chính thức cần bổ sung bản ghi chim nhiệt đới, vượn/khỉ và động vật bản địa đã xác minh rồi nhập kho R2.</p>
+<p style="margin:.3rem 0;font-size:.92rem">Không sử dụng preview ngoài mới. Các nguồn đã có trong kho được đưa vào timeline; chất lượng phát và xuất WAV vẫn cần nghe QA. Bản phối sẽ chỉ lưu riêng trong trình duyệt tại URL này.</p>
+<div style="display:flex;gap:.5rem;flex-wrap:wrap;margin:.75rem 0">
+<button id="draft-reset" type="button" style="padding:.6rem .9rem;border-radius:7px">Nạp lại bản Rừng mưa (32 lớp)</button>
+<button id="draft-check-external" type="button" style="padding:.6rem .9rem;border-radius:7px">Kiểm tra các nguồn đang dùng</button>
+</div>
+<p id="draft-external-status" role="status" aria-live="polite" style="font-size:.9rem;margin:.3rem 0">Bấm Phát để nghe; có thể chỉnh kéo thả và âm lượng từng lớp. Chưa kiểm thử giải mã trực tiếp trong trình duyệt.</p>
+<p style="font-size:.88rem;margin:.3rem 0">Dự án → Tải dự án JSON để sao lưu. URL bản nháp không quảng bá nhưng có thể truy cập nếu biết đường dẫn.</p>
+</section>
+  <div id="mix-controls" class="project-bar">
+    <div class="project-name">
+      <h1>Phòng phối âm</h1>
+      <input id="title" type="text" aria-label="Tên bản phối" maxlength="100" placeholder="Đặt tên bản phối">
+    </div>
+    <div class="project-actions">
+      <label class="preset-picker"><span>Bản mẫu</span>
+        <select id="preset" aria-label="Mở bản mẫu">
+          <option value="">Chọn bản mẫu</option>
+          <option value="streamside">Suối rừng</option>
+          <option value="cabin-rain-night">Cabin mưa đêm</option>
+          <option value="cabin-rain-night-v2">Cabin mưa đêm · V2</option>
+          <option value="cabin-rain-night-v3">Cabin mưa đêm · V3</option>
+        </select>
+      </label>
+      <button id="undo" type="button" aria-label="Hoàn tác" title="Hoàn tác (Ctrl+Z)">↶</button>
+      <button id="redo" type="button" aria-label="Làm lại" title="Làm lại (Ctrl+Shift+Z)">↷</button>
+      <button id="share" type="button">Chia sẻ</button>
+      <details class="project-menu">
+        <summary>Dự án</summary>
+        <div class="project-menu-items">
+          <button id="clear" type="button">Tạo bản phối mới</button>
+          <button id="save-project" type="button">Tải dự án JSON</button>
+          <label class="file-picker">Mở dự án JSON<input type="file" id="open-project" accept=".json,application/json" aria-label="Mở dự án JSON"></label>
+        </div>
+      </details>
+    </div>
+  </div>
+
+  <div id="mix-editor" class="studio-grid">
+    <aside class="panel library-panel" aria-labelledby="library-heading">
+      <div class="panel-heading">
+        <h2 id="library-heading">Thư viện âm thanh</h2>
+        <output id="library-count" aria-live="polite"></output>
+      </div>
+      <label class="library-search">
+        <span aria-hidden="true">⌕</span>
+        <input id="library-query" type="search" placeholder="Tìm mưa, sóng, tiếng quạt…" autocomplete="off" aria-label="Tìm âm thanh">
+        <kbd aria-hidden="true">/</kbd>
+      </label>
+      <select id="library-group" aria-label="Lọc nhóm âm thanh"><option value="">Tất cả nhóm</option></select>
+      <p id="library-status" class="message" role="status"></p>
+      <details class="vault"><summary>Kho âm thanh nội bộ</summary><p id="vault-status" class="message" role="status"></p><form id="vault-form"><label>Mã mở kho <input id="vault-key" type="password" autocomplete="off" spellcheck="false"></label><button id="vault-submit" type="submit">Mở kho</button></form></details>
+      <div id="library" class="library-list"></div><button id="library-more" class="library-more" type="button" hidden>Hiện thêm</button>
+      <audio id="library-audio" preload="none" hidden></audio>
+    </aside>
+
+    <section class="panel timeline-panel" aria-labelledby="timeline-heading">
+      <div class="panel-heading timeline-heading">
+        <div><h2 id="timeline-heading">Dòng thời gian</h2><output id="layer-count"></output></div>
+        <label class="zoom-control"><span>Thu phóng</span>
+          <select id="zoom" aria-label="Thu phóng dòng thời gian">
+            <option value="1">Vừa khung</option><option value="2">2×</option><option value="4">4×</option><option value="8">8×</option>
+          </select>
+        </label>
+      </div>
+      <div class="transport">
+        <button id="play" class="primary" type="button" aria-keyshortcuts="Space">Phát</button>
+        <button id="reset" type="button" title="Về đầu">Về đầu</button>
+        <button id="tail" type="button">Nghe điểm lặp</button>
+        <output id="time" class="transport-time"></output>
+      </div>
+      <input id="seek" type="range" min="0" step=".01" aria-label="Vị trí phát">
+      <div id="timeline-scroll" class="timeline-scroll" tabindex="0" aria-label="Các lớp trên dòng thời gian">
+        <div id="timeline-canvas">
+          <div class="timeline-row timeline-ruler"><span class="track-column">Lớp âm thanh</span><div id="time-ruler"></div></div>
+          <div id="tracks"></div>
+        </div>
+      </div>
+      <div class="master-strip">
+        <label for="master">Âm lượng tổng</label>
+        <input id="master" type="range" min="0" max="100" step="1" value="100">
+        <output id="master-value" for="master">100%</output>
+        <meter id="peak" min="-60" max="0" low="-24" high="-3" optimum="-12" value="-60" aria-label="Mức đỉnh âm thanh (dBFS)"></meter>
+      </div>
+      <p id="status" class="message studio-status" role="status"></p>
+    </section>
+
+    <aside class="panel inspector-panel" aria-labelledby="inspector-heading">
+      <div class="panel-heading"><h2 id="inspector-heading">Thông số lớp</h2></div>
+      <div id="inspector"></div>
+    </aside>
+  </div>
+
+<section id="video-studio" class="panel" aria-labelledby="export-heading">
+<h2 id="export-heading">Xuất âm thanh và video</h2>
+<div class="export-grid">
+<div class="export-step">
+<h3>1. Xuất âm thanh WAV</h3>
+<p class="muted">Thời lượng WAV đã xuất sẽ dùng cho video nền và video thành phẩm.</p>
+<div class="row"><label>Thời lượng (phút) <input id="minutes" type="number" min="0.1" max="180" step="0.1"></label><button id="render" class="primary">Xuất WAV</button></div>
+<progress id="audio-progress" max="100" value="0" aria-label="Tiến độ xuất âm thanh"></progress>
+<p id="audio-status" role="status">Chưa xuất âm thanh.</p>
+<div id="audio-result"></div>
+</div>
+<div class="export-step">
+<h3>2. Tải clip lên và kéo dài video nền</h3>
+<label for="video-prompt">Câu lệnh tạo clip bằng AI</label>
+<textarea id="video-prompt" maxlength="3000" placeholder="Nhập câu lệnh cho bản phối này"></textarea>
+<div class="row">
+<button id="copy-prompt">Sao chép câu lệnh</button><span id="prompt-status" role="status" class="muted"></span>
+</div>
+<div class="row video-actions">
+<label class="file-picker">Chọn clip ngắn <input type="file" id="video-input" accept="video/*,.mov,.mkv" aria-label="Chọn clip ngắn"></label>
+<span id="clip-name" class="muted">Chưa chọn clip</span>
+<button id="render-video" class="primary" disabled>Kéo dài video nền</button>
+</div>
+<video id="video-preview" controls muted loop playsinline hidden aria-label="Xem trước clip ngắn"></video>
+<progress id="video-progress" max="100" value="0" aria-label="Tiến độ kéo dài video nền"></progress>
+<p id="video-status" role="status">Xuất WAV và chọn clip để bắt đầu.</p>
+<div id="video-result"></div>
+</div>
+<div class="export-step">
+<h3>3. Ghép âm thanh vào video</h3>
+<p class="muted">Ghép bản WAV ở bước 1 vào video nền ở bước 2. Video thành phẩm dùng âm thanh của bản phối.</p>
+<button id="mux-video" class="primary" disabled>Ghép và xuất MP4</button>
+<progress id="mux-progress" max="100" value="0" aria-label="Tiến độ ghép âm thanh và video"></progress>
+<p id="mux-status" role="status">Đang chờ video nền.</p>
+<div id="mux-result"></div>
+</div>
+</div>
+</section>
+<details class="audio-check"><summary>Kiểm tra âm thanh</summary><p>Phát thử bản ghi tiếng suối gốc.</p><audio id="audio-check" controls preload="none"></audio></details>
+</main>
+
+<script id="studio-trial" type="application/json">{"slug":"Tropical-Rainforest-Light-Rain","project":{"title":"Rừng mưa nhiệt đới — mưa nhẹ & tiếng thú dày · Bản nghe thử","length":600,"master":0.69,"tracks":[{"asset":35,"start":0,"gain":0.185,"loop":true,"mute":false,"label":"01 · Mưa nhỏ xuyên suốt — xa, mềm","pan":-0.08,"lowpass":5300},{"asset":9,"start":0,"gain":0.095,"loop":true,"mute":false,"label":"02 · Giọt mưa lộp độp trên lá rộng","pan":0.32,"lowpass":5100},{"asset":41,"start":0,"gain":0.085,"loop":true,"mute":false,"label":"03 · Suối rừng rất xa, dưới tầng lá","pan":-0.34,"lowpass":2800},{"asset":31,"start":0,"gain":0.023,"loop":true,"mute":false,"label":"04 · Lá và gió ẩm — chỉ tạo chuyển động","pan":0.14,"lowpass":1800},{"asset":57,"start":0,"gain":0.152,"loop":false,"mute":false,"label":"05 · Dế rừng tầng xa — 00:00–05:40","duration":340,"offset":30,"fadeIn":4,"fadeOut":18,"pan":-0.51,"lowpass":5800},{"asset":59,"start":0,"gain":0.165,"loop":false,"mute":false,"label":"06 · Ếch và dế bờ suối — góc trái","duration":220,"offset":0,"fadeIn":2,"fadeOut":14,"pan":-0.65,"lowpass":6100},{"asset":60,"start":12,"gain":0.112,"loop":false,"mute":false,"label":"07 · Ếch và dế đối đáp xa phải — mở đầu","duration":51,"offset":1,"fadeIn":3,"fadeOut":8,"pan":0.63,"lowpass":5300},{"asset":1,"start":0,"gain":0.145,"loop":false,"mute":false,"label":"08 · Chim gọi buổi chạng vạng — mở ngay giây 0","duration":18,"offset":1,"fadeIn":1,"fadeOut":6,"pan":0.55,"lowpass":8200},{"asset":0,"start":17,"gain":0.19,"loop":false,"mute":false,"label":"09 · Ếch gần trái — cụm đầu tiên","duration":10,"offset":0,"fadeIn":0.5,"fadeOut":2,"pan":-0.7,"lowpass":7000},{"asset":0,"start":52,"gain":0.16,"loop":false,"mute":false,"label":"10 · Ếch đáp bên phải","duration":11,"offset":0,"fadeIn":0.5,"fadeOut":2,"pan":0.76,"lowpass":5600},{"asset":1,"start":79,"gain":0.148,"loop":false,"mute":false,"label":"11 · Chim trên cao bên trái","duration":19,"offset":3,"fadeIn":1,"fadeOut":6,"pan":-0.48,"lowpass":8500},{"asset":0,"start":113,"gain":0.21,"loop":false,"mute":false,"label":"12 · Ếch gần máy quay","duration":10,"offset":0,"fadeIn":0.5,"fadeOut":2,"pan":0.28,"lowpass":6800},{"asset":2,"start":147,"gain":0.083,"loop":false,"mute":false,"label":"13 · Cú gọi xa giữa khu rừng","duration":33,"offset":12,"fadeIn":5,"fadeOut":13,"pan":-0.62,"lowpass":2100},{"asset":60,"start":160,"gain":0.123,"loop":false,"mute":false,"label":"14 · Đám ếch và dế phía phải — 02:40","duration":54,"offset":1,"fadeIn":7,"fadeOut":8,"pan":0.57,"lowpass":4900},{"asset":1,"start":193,"gain":0.123,"loop":false,"mute":false,"label":"15 · Chim ngắn vọng qua tán rừng","duration":20,"offset":0,"fadeIn":1,"fadeOut":7,"pan":0.68,"lowpass":8200},{"asset":59,"start":202,"gain":0.155,"loop":false,"mute":false,"label":"16 · Đàn ếch bên trái — chuyển tiếp 03:22","duration":215,"offset":3,"fadeIn":13,"fadeOut":14,"pan":-0.46,"lowpass":5200},{"asset":0,"start":223,"gain":0.215,"loop":false,"mute":false,"label":"17 · Ếch lớn gọi gần trái","duration":11,"offset":0,"fadeIn":0.3,"fadeOut":2,"pan":-0.72,"lowpass":6400},{"asset":1,"start":266,"gain":0.14,"loop":false,"mute":false,"label":"18 · Chim gọi đáp xa phía phải","duration":19,"offset":2,"fadeIn":2,"fadeOut":5,"pan":0.68,"lowpass":7000},{"asset":39,"start":274,"gain":0.05,"loop":false,"mute":false,"label":"19 · Mưa rơi trên mặt nước 04:34–05:18","duration":44,"offset":30,"fadeIn":13,"fadeOut":12,"pan":0.28,"lowpass":4100},{"asset":2,"start":304,"gain":0.1,"loop":false,"mute":false,"label":"20 · Cú rừng vọng phía xa — 05:04","duration":32,"offset":20,"fadeIn":5,"fadeOut":13,"pan":0.57,"lowpass":2100},{"asset":0,"start":332,"gain":0.2,"loop":false,"mute":false,"label":"21 · Ếch vọng từ bụi cây gần","duration":11,"offset":0,"fadeIn":0.4,"fadeOut":2,"pan":0.17,"lowpass":6600},{"asset":57,"start":324,"gain":0.14,"loop":false,"mute":false,"label":"22 · Dế rừng tiếp nền — thay đổi vị trí","duration":276,"offset":85,"fadeIn":18,"fadeOut":15,"pan":0.39,"lowpass":6000},{"asset":60,"start":369,"gain":0.12,"loop":false,"mute":false,"label":"23 · Cụm dế–ếch giữa rừng — 06:09","duration":54,"offset":2,"fadeIn":5,"fadeOut":8,"pan":-0.53,"lowpass":5400},{"asset":1,"start":383,"gain":0.144,"loop":false,"mute":false,"label":"24 · Chim gọi đơn rồi im","duration":22,"offset":1,"fadeIn":2,"fadeOut":7,"pan":-0.56,"lowpass":8300},{"asset":59,"start":403,"gain":0.158,"loop":false,"mute":false,"label":"25 · Ếch bờ suối tầng phải — 06:43","duration":197,"offset":0,"fadeIn":12,"fadeOut":10,"pan":0.58,"lowpass":5700},{"asset":0,"start":429,"gain":0.21,"loop":false,"mute":false,"label":"26 · Ếch trả lời ngay sau chim","duration":11,"offset":0,"fadeIn":0.6,"fadeOut":2,"pan":0.69,"lowpass":6800},{"asset":2,"start":460,"gain":0.095,"loop":false,"mute":false,"label":"27 · Cú rất xa — 07:40","duration":35,"offset":13,"fadeIn":8,"fadeOut":13,"pan":-0.76,"lowpass":1700},{"asset":1,"start":490,"gain":0.155,"loop":false,"mute":false,"label":"28 · Chim cuối buổi — cụm gọi gần","duration":23,"offset":0,"fadeIn":2,"fadeOut":5,"pan":0.38,"lowpass":7800},{"asset":0,"start":511,"gain":0.175,"loop":false,"mute":false,"label":"29 · Ếch trái — 08:31","duration":11,"offset":0,"fadeIn":0.5,"fadeOut":2,"pan":-0.62,"lowpass":6500},{"asset":1,"start":541,"gain":0.13,"loop":false,"mute":false,"label":"30 · Chim xa bên trái 09:01","duration":19,"offset":3,"fadeIn":2,"fadeOut":6,"pan":-0.67,"lowpass":6400},{"asset":0,"start":566,"gain":0.195,"loop":false,"mute":false,"label":"31 · Ếch đối đáp kết đoạn 09:26","duration":11,"offset":0,"fadeIn":0.5,"fadeOut":2,"pan":0.58,"lowpass":6300},{"asset":2,"start":576,"gain":0.07,"loop":false,"mute":false,"label":"32 · Cú trầm xa — rút vào nền 09:36","duration":22,"offset":15,"fadeIn":5,"fadeOut":10,"pan":-0.55,"lowpass":1700}],"videoPrompt":"Photorealistic silent 8-second seamless loop of a tropical rainforest at dusk during a gentle drizzle. Locked camera at mossy forest floor level, large wet broad-leaf plants, ferns and tree roots in foreground, layered dense jungle canopy in the background, a very small distant trickle, light raindrops visibly striking leaves, delicate mist and subtle leaf movement. No heavy rain, thunder, humans, buildings or artificial lights. The frame is alive immediately at 0:00 with gentle rain on leaves. No visible animals required; animal calls are added separately to the soundtrack. Fixed exposure and composition, gentle natural motions, same motion phase at start and end, no camera movement or cuts, no text, no fades, 16:9 1080p 24fps, silent MP4."},"audioRevision":"existing-studio-assets-only-20261112"}</script>
+<script src="/studio-locale.js"></script>
+<script src="/studio-catalog.js?v=96deb5a6227d"></script>
+<script src="/studio-legacy-recipes.js"></script>
+<script src="/studio-engine.js?v=timeline-visual-20261112a"></script>
+<script src="/studio-ui.js?v=vertical-reorder-20261112b"></script>
+<script src="/studio-vault.js"></script>
+<script>
+(function() {
+const status=document.getElementById('draft-external-status');
+const reload=document.getElementById('draft-reset');
+const check=document.getElementById('draft-check-external');
+reload.addEventListener('click',()=>{
+  if(!confirm('Nạp lại bản Rừng mưa? Các chỉnh sửa chưa tải JSON sẽ bị mất.')) return;
+  replaceProject(normalizeProject(trialData.project));
+  status.textContent='Đã nạp lại bản phối 32 lớp.';
+});
+check.addEventListener('click',async()=>{
+  const ids=[...new Set(mix.tracks.filter(t=>!t.mute && t.gain>0).map(t=>t.asset))];
+  check.disabled=true;
+  const Engine=window.AudioContext||window.webkitAudioContext;
+  if(!Engine){status.textContent='Trình duyệt không hỗ trợ Web Audio';check.disabled=false;return;}
+  const context=new Engine(),failed=[];
+  try{
+    for(let n=0;n<ids.length;n++){
+      const id=ids[n];status.textContent='Kiểm tra '+(n+1)+'/'+ids.length+': '+assets[id].name;
+      try{await decodeRecording(id,context);}
+      catch(error){failed.push(assets[id].name+': '+(error.message||'Lỗi không rõ'));}
+    }
+    status.textContent='Đã giải mã '+(ids.length-failed.length)+'/'+ids.length+' nguồn.'+
+      (failed.length?' Lỗi: '+failed.join(' | '):' Tất cả nguồn đang dùng đều đọc được. Hãy nghe kiểm tra chất lượng.');
+  } finally {await context.close().catch(()=>{});check.disabled=false;}
+});
+})();
+</script>
+</body>
+</html>
