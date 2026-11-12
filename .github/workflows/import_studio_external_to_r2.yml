@@ -1,0 +1,48 @@
+name: Studio V4 V5 Import External CC0 Previews to R2
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/import_studio_external_to_r2.py'
+      - '.github/workflows/import_studio_external_to_r2.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: studio-six-cc0-previews-r2-import
+  cancel-in-progress: false
+
+jobs:
+  validate-and-import:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      AWS_EC2_METADATA_DISABLED: 'true'
+      PYTHONUNBUFFERED: '1'
+      R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+      R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Set up audio probe and S3 client
+        run: |
+          command -v ffprobe
+          command -v ffmpeg
+          python -m pip install -q 'boto3>=1.36,<2'
+      - name: Download, decode, hash, and verify R2 audio
+        run: python -u scripts/import_studio_external_to_r2.py
+      - name: Publish technical import results for manual catalog pinning
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: studio-cc0-preview-r2-import-results
+          path: studio-r2-import-report.json
+          if-no-files-found: warn
+          retention-days: 30
