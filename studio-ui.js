@@ -147,6 +147,7 @@ async function audition(index) {
   $('library-status').textContent = '';
   previewId = index;
   refreshPreviewButtons();
+  setSourceHealth(index,'loading','Đang kiểm tra bản nghe thử');
   const ticket = previewRequest;
   const audio = $('library-audio');
   for (const address of sourceAddresses(index)) {
@@ -154,6 +155,7 @@ async function audition(index) {
     try {
       await audio.play();
       if (ticket !== previewRequest) return;
+      setSourceHealth(index,'ready','Bản nghe thử đã phát được từ '+new URL(address,location.href).hostname);
       previewTimer = setTimeout(stopPreview, 10000);
       return;
     } catch {
@@ -162,6 +164,7 @@ async function audition(index) {
   }
   stopPreview();
   $('library-status').textContent = tr('Không phát được bản nghe thử này.');
+  setSourceHealth(index,'failed','Không phát được các đường dẫn nguồn. Thử bấm Phát để kiểm tra thêm lỗi tải hoặc giải mã.');
 }
 
 function durationText(seconds) {
@@ -402,6 +405,7 @@ function render(keepInspector = false) {
   $('master').value = Math.round((mix.master ?? 1) * 100);
   $('master-value').value = $('master').value + '%';
   renderTimeline();
+  renderSourceDiagnostics();
   if (!keepInspector) renderInspector();
   refreshHistory();
   syncWorkflow();
