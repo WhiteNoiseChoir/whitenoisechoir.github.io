@@ -160,7 +160,37 @@ def upload_r2(path,mime):
       except Exception as exc:
         print("V4_R2_UPLOAD_RETRY",str(exc)[:220],flush=True)
         time.sleep(3)
-    return {"status":"UPLOAD_FAILED","reason":"R2 API unreachable; master files retained in GH artifact"}
+    # Try a second TLS stack (Go's crypto/tls through rclone) when boto3 /
+    # OpenSSL fails at the Cloudflare account-specific R2 S3 endpoint.
+    if subprocess.run(["which","rclone"],capture_output=True).returncode==0:
+        env=os.environ.copy()
+        env.update({
+          "RCLONE_CONFIG_RELEASE_R2_TYPE":"s3",
+          "RCLONE_CONFIG_RELEASE_R2_PROVIDER":"Cloudflare",
+          "RCLONE_CONFIG_RELEASE_R2_ENV_AUTH":"false",
+          "RCLONE_CONFIG_RELEASE_R2_ACCESS_KEY_ID":os.environ["R2_ACCESS_KEY_ID"],
+          "RCLONE_CONFIG_RELEASE_R2_SECRET_ACCESS_KEY":os.environ["R2_SECRET_ACCESS_KEY"],
+          "RCLONE_CONFIG_RELEASE_R2_ENDPOINT":f"https://{R2_ACCOUNT}.r2.cloudflarestorage.com",
+        })
+        remote=f"release_r2:{R2_BUCKET}/{key}"
+        upload=subprocess.run(["rclone","copyto",str(path),remote,
+          "--s3-no-check-bucket","--transfers","1","--retries","2"],
+          capture_output=True,text=True,timeout=300,env=env)
+        if upload.returncode==0:
+          check=subprocess.run(["rclone","lsjson","--stat",remote],
+            capture_output=True,text=True,timeout=90,env=env)
+          try:
+            record=json.loads(check.stdout)
+            valid=check.returncode==0 and int(record.get("Size",-1))==len(data)
+          except Exception:valid=False
+          if valid:
+            print("V4_RELEASE_R2_STORED_RCLONE",json.dumps({"key":key,"size":len(data),"sha256":sha}),flush=True)
+            return {"status":"STORED_R2","key":key,"url":MEDIA+key,
+              "sha256":sha,"bytes":len(data),"transport":"rclone_Go_TLS"}
+          print("V4_RCLONE_VERIFY_FAILED",check.stderr[-400:],flush=True)
+        else:
+          print("V4_RCLONE_UPLOAD_FAILED",upload.stderr[-800:],flush=True)
+    return {"status":"UPLOAD_FAILED","reason":"Both boto3 and rclone could not reach R2 S3 endpoint; GitHub audio artifact retained."}
 
 def main():
     OUTPUT.mkdir(exist_ok=True)
