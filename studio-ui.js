@@ -73,6 +73,7 @@ function change(update, keepInspector = false) {
   const previous = structuredClone(mix);
   const resume = playing || loading;
   update();
+  mix=restrictHomeMix(mix);
   if (JSON.stringify(previous) === JSON.stringify(mix)) return;
   stop();
   undoStack.push(previous);
@@ -88,7 +89,7 @@ function restore(from, to) {
   if (exporting || !from.length) return;
   stop();
   to.push(structuredClone(mix));
-  mix = from.pop();
+  mix = restrictHomeMix(from.pop());
   soloTrack = null;
   normalizeSelection();
   saveLocal();
@@ -523,7 +524,7 @@ $('library-group').value=current;
 refreshLibraryGroups();
 window.addEventListener('hashchange', () => {
   stop();
-  mix = readMix();
+  mix = restrictHomeMix(readMix());
   position = 0;
   selected = 0;
   soloTrack = null;
