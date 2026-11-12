@@ -184,6 +184,7 @@ function stop(){
   cancelAnimationFrame(frame);
   for(const {node} of active.splice(0)) { try {node.stop();node.disconnect();} catch {} }
   $('play').textContent=tr('Phát');
+  syncTimelineActivity();
 }
 function format(seconds){
   const whole=Math.floor(Math.max(0,seconds));
@@ -191,10 +192,39 @@ function format(seconds){
   if(whole>=3600) fields.unshift(Math.floor(whole/3600));
   return fields.join(':');
 }
+function syncTimelineActivity(){
+  // Visual-only indication: no changes to audio layers, timings or mix gain.
+  // The source label stays in the sticky left column; clip bars react only
+  // while the playhead is inside an audible clip during active playback.
+  const rows=$('tracks')?.children || [];
+  for(const row of rows){
+    const index=Number(row.dataset.track);
+    const track=mix.tracks[index];
+    const clip=row.querySelector?.('.clip');
+    if(!track || !clip)continue;
+    const duration=clipDuration(track,assets[track.asset].duration,mix.length);
+    const health=sourceHealth.get(track.asset)?.status;
+    const active=playing && !loading && !track.mute && track.gain>0 &&
+      (!soloTrack || soloTrack===track) && health!=='failed' &&
+      position>=track.start && position<track.start+duration;
+    const wasActive=clip.classList.contains('is-sounding');
+    clip.classList.toggle('is-sounding',active);
+    clip.classList.toggle('source-failed',health==='failed');
+    if(active && !wasActive){
+      clip.classList.remove('clip-hit');
+      // Reset the entry animation on a new event or a deliberate seek.
+      void clip.offsetWidth;
+      clip.classList.add('clip-hit');
+    }else if(!active){
+      clip.classList.remove('clip-hit');
+    }
+  }
+}
 function display(){
   $('seek').value=position;
   $('time').textContent=format(position)+' / '+format(mix.length);
   document.querySelectorAll('.needle').forEach(el=>el.style.left=(100*position/mix.length)+'%');
+  syncTimelineActivity();
 }
 function tick(loopPreview=false){
   const elapsed=context.currentTime-anchor;
