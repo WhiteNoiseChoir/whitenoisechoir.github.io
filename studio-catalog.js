@@ -134,7 +134,10 @@ const studioPublishedAssets = [
     "group": "wind",
     "aliases": "Gentle Wind — Synthetic",
     "source": "/sounds/gentle-wind/",
-    "duration": 600.033
+    "duration": 600.033,
+    "studioLoopKey": "asset-library/studio-loop/sha256/63/636a28c6a8d3350c906a635aa5bec8bdf72b015a885bd4da360924bad1db8334.mp3",
+    "studioLoopSeconds": 92,
+    "studioLoopQuality": "browser preview from SHA-verified approved 10-minute master, circular crossfade 4s, WAV mix uses loop"
   },
   {
     "name": "Khoang máy bay",
@@ -166,7 +169,10 @@ const studioPublishedAssets = [
     "group": "rain",
     "aliases": "Light Rain",
     "source": "/sounds/light-rain/",
-    "duration": 600.033
+    "duration": 600.033,
+    "studioLoopKey": "asset-library/studio-loop/sha256/5b/5be9a18fc851d8d0a51a4bacecb3bd9d60135f84bf7efbcab7373d7c9e00588b.mp3",
+    "studioLoopSeconds": 92,
+    "studioLoopQuality": "browser preview from SHA-verified approved 10-minute master, circular crossfade 4s, WAV mix uses loop"
   },
   {
     "name": "Mưa trên lều",
@@ -214,7 +220,10 @@ const studioPublishedAssets = [
     "group": "water",
     "aliases": "Gentle Forest Stream",
     "source": "/sounds/forest-stream/",
-    "duration": 600.033
+    "duration": 600.033,
+    "studioLoopKey": "asset-library/studio-loop/sha256/ee/eed2cf72da87123b94bfc6388ac2ebe5395f2137aaebed9e2f4ac27bb4ab30b7.mp3",
+    "studioLoopSeconds": 92,
+    "studioLoopQuality": "browser preview from SHA-verified approved 10-minute master, circular crossfade 4s, WAV mix uses loop"
   },
   {
     "name": "Sóng biển nhẹ",
