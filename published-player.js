@@ -64,7 +64,20 @@
       render();
     });
     element.addEventListener('waiting',()=>{
-      if(element===active)status('Buffering media. The listening clock may continue until playback pauses.');
+      if(element!==active||switching)return;
+      checkpoint();status('Buffering media. The listening timer is paused until playback resumes.');
+      render();
+    });
+    element.addEventListener('stalled',()=>{
+      if(element!==active||switching)return;
+      checkpoint();status('Connection interrupted. Timer paused until playback resumes.');
+      render();
+    });
+    element.addEventListener('playing',()=>{
+      if(element!==active||switching||ended)return;
+      if(startedAt===null)startedAt=Date.now();
+      status(element===video?'Video and soundscape playing.':'Audio-only listening playing.');
+      render();
     });
     element.addEventListener('timeupdate',render);
   }
