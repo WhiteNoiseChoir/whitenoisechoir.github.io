@@ -20,12 +20,10 @@
     "note": "Previously approved 5.04-second V4 video. Local conversation artifact is NOT uploaded to R2, and no ten-minute muxed video has been confirmed."
   },
   "pendingRequired": [
-    "Upload validated WAV and MP3 master artifacts to R2 and verify HTTP Range/CORS",
-    "Upload approved 5.04s V4 rain-enhanced scene to R2, then generate 600s muxed MP4 with soundtrack",
-    "Upload approved thumbnail from source video to R2",
-    "QA and verify finished 600s MP4, visual loop, audio loop and no clipping",
-    "Populate publication-requests.json with verified final asset URLs and approval flags",
-    "Confirm production deployment, canonical, sitemap and library card"
+    "Upload four finished files from the ChatGPT session into Cloudflare R2 after the S3 endpoint TLS handshake is restored.",
+    "Verify four R2 URLs with content type, HTTP Range/CORS and media duration.",
+    "Populate data/publication-requests.json using the exact verified URLs and owner approval already recorded.",
+    "Pass publication gate and verify deployed /Living-Forest-Creek/, /library/ and sitemap."
   ],
   "seo": {
     "title": "Living Forest Creek: Rain, Frogs & Flowing Water | WhiteNoiseChoir",
@@ -51,7 +49,7 @@
       "text": "The finished release pairs its woodland audio arrangement with a carefully reviewed forest scene. The camera remains fixed as water flows and fine rain falls, making the scene appropriate for long sessions. Once the ten-minute video and soundtrack have been mastered and published, the web player can repeat the finished media for a listening session of up to ten hours without requiring a separate enormous ten-hour video file."
     }
   ],
-  "notes": "Do not copy this file into data/publication-requests.json until actual media and QA fields have been populated. Current public release manifest remains [] and no SEO public page exists.",
+  "notes": "Owner approved Public; complete 600s MP4, WAV, MP3 and poster now exist in session and have SHA checksums, but none can be declared published until R2 upload succeeds. Never invent R2 URLs or publish placeholder media.",
   "audioProduction": {
     "status": "MASTER_RENDERED_QA_PASS_STORED_GITHUB_ARTIFACT",
     "workflowRun": "https://github.com/WhiteNoiseChoir/whitenoisechoir.github.io/actions/runs/43151332337",
@@ -70,5 +68,57 @@
     "mp3Sha256": "afafd7fb317ccb3005b55ba8d4f41b5308e4dbe44516362aa6d109dc0f1c0a4f",
     "r2Status": "UPLOAD_FAILED_ACCOUNT_R2_S3_TLS_HANDSHAKE",
     "uploaderNote": "R2 PUT retries failed SSLV3_ALERT_HANDSHAKE_FAILURE, do not set asset URL until verified R2 object exists."
+  },
+  "finalMedia": {
+    "status": "COMPLETED_LOCALLY_PENDING_R2",
+    "video": {
+      "name": "V4_Living_Forest_Creek_Public_10min_1080p.mp4",
+      "durationSeconds": 600,
+      "width": 1916,
+      "height": 1080,
+      "fps": 24,
+      "codec": "H.264",
+      "audioCodec": "AAC",
+      "bytes": 197750653,
+      "sha256": "935ac3f765e210dcfa7e4f3a1d1e7db0ba443b55906a16f910e3ed63a954624d",
+      "r2Status": "NOT_UPLOADED"
+    },
+    "wav": {
+      "name": "Living-Forest-Creek-V4-600s.wav",
+      "bytes": 105840130,
+      "sha256": "072166d17057123e7e800066a0d0b77f2ad0a097a78daac413e9511398f32aee",
+      "r2Status": "UPLOAD_FAILED_TLS"
+    },
+    "mp3": {
+      "name": "Living-Forest-Creek-V4-600s.mp3",
+      "bytes": 14401510,
+      "sha256": "afafd7fb317ccb3005b55ba8d4f41b5308e4dbe44516362aa6d109dc0f1c0a4f",
+      "r2Status": "UPLOAD_FAILED_TLS"
+    },
+    "poster": {
+      "name": "V4_Living_Forest_Creek_Public_Poster.jpg",
+      "bytes": 359388,
+      "sha256": "9e683bb53fb11d82ac2a8595313213c266f0bc05385542a6c31db44d11bf0642",
+      "r2Status": "NOT_UPLOADED"
+    },
+    "qa": {
+      "exactDurationSeconds": 600,
+      "decodedVideoFrames": 14400,
+      "videoFrameRate": 24,
+      "videoTrackCodec": "H.264",
+      "audioTrackCodec": "AAC",
+      "checkedSegmentBoundariesSeconds": [
+        150,
+        300,
+        450
+      ],
+      "meanFrameDeltaRgb": [
+        2.693,
+        2.801,
+        2.793
+      ],
+      "approvedOriginalKlingWithRain": true,
+      "prePublicationQA": "TECHNICAL_PASS_LISTENING_RECHECK_RECOMMENDED"
+    }
   }
 }
