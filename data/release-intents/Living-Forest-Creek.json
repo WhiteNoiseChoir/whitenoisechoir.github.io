@@ -1,0 +1,55 @@
+{
+  "slug": "Living-Forest-Creek",
+  "title": "Living Forest Creek — Rain, Flowing Water & Wildlife",
+  "status": "APPROVED_PENDING_FINAL_MEDIA",
+  "ownerApproved": true,
+  "approvalRecorded": "2026-11-12",
+  "productionComplete": false,
+  "qaApproved": false,
+  "publicRequested": true,
+  "intendedCanonical": "https://whitenoisechoir.com/Living-Forest-Creek/",
+  "internalDraft": "https://whitenoisechoir.com/vi/Living-Forest-Creek/",
+  "approvedSoundProject": "V4 — Living Forest Creek",
+  "approvedAudioTrackCount": 30,
+  "expectedAudioDurationSeconds": 600,
+  "approvedVisualSource": {
+    "title": "V4 Living Forest Creek — Light Rain",
+    "sourceConversationArtifact": "V4_Living_Forest_Creek_Light_Rain_1080p.mp4",
+    "inspectedDurationSeconds": 5.039,
+    "frame": "1916×1080",
+    "note": "Previously approved 5.04-second V4 video. Local conversation artifact is NOT uploaded to R2, and no ten-minute muxed video has been confirmed."
+  },
+  "pendingRequired": [
+    "600-second WAV master in R2 with QA pass",
+    "600-second compressed audio in R2 with QA pass",
+    "final 600-second muxed MP4 on R2",
+    "approved thumbnail on R2",
+    "release media URL/CORS/codec verification",
+    "release SEO metadata and immutable timeline snapshot published by gate"
+  ],
+  "seo": {
+    "title": "Living Forest Creek: Rain, Frogs & Flowing Water | WhiteNoiseChoir",
+    "description": "Experience a living forest creek with flowing water, gentle rain, distant frogs and rich woodland ambience. Relax, focus or unwind with up to ten hours of playback."
+  },
+  "description": "Escape into the peaceful sounds of a living forest creek at dusk. Fresh water flows over moss-covered rocks while light rain falls through the trees, and natural wildlife calls rise gently from the riverbank. This immersive soundscape combines a carefully balanced multi-layer recording with a steady forest video for restful listening, relaxation and focused work.",
+  "category": "Forest creek & rain ambience",
+  "keywords": [
+    "forest creek ambience",
+    "flowing stream sounds",
+    "frog sounds by a creek",
+    "light forest rain",
+    "nature sounds for sleep",
+    "woodland wildlife ambience"
+  ],
+  "article": [
+    {
+      "heading": "Flowing water, light rain and subtle forest wildlife",
+      "text": "Living Forest Creek places the movement of the stream at the center of the listening experience. Water runs over rocks and through the forest, while rain on the leaves, a light breeze, occasional frogs and distant night wildlife contribute detail. Instead of allowing a single sound to dominate, the arrangement uses quiet layers and changing events to create the impression of a natural forest environment."
+    },
+    {
+      "heading": "A peaceful ambient video for sleeping and relaxing",
+      "text": "The finished release pairs its woodland audio arrangement with a carefully reviewed forest scene. The camera remains fixed as water flows and fine rain falls, making the scene appropriate for long sessions. Once the ten-minute video and soundtrack have been mastered and published, the web player can repeat the finished media for a listening session of up to ten hours without requiring a separate enormous ten-hour video file."
+    }
+  ],
+  "notes": "Do not copy this file into data/publication-requests.json until actual media and QA fields have been populated. Current public release manifest remains [] and no SEO public page exists."
+}
