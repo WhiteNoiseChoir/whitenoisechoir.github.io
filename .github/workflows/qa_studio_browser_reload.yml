@@ -1,0 +1,41 @@
+name: Studio browser playback regression after reload
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/qa_studio_browser_reload.yml'
+      - 'scripts/qa_studio_reload.mjs'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: studio-browser-reload-qa
+  cancel-in-progress: false
+
+jobs:
+  chromium:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install Playwright Core and detect Chrome
+        run: |
+          npm install --no-save --ignore-scripts --no-audit --no-fund 'playwright-core@1.57.0'
+          if command -v google-chrome >/dev/null; then
+            echo "CHROME_BIN=$(command -v google-chrome)" >> "$GITHUB_ENV"
+          elif command -v chromium >/dev/null; then
+            echo "CHROME_BIN=$(command -v chromium)" >> "$GITHUB_ENV"
+          else
+            echo "Chrome executable is missing"
+            exit 1
+          fi
+      - name: Play and reload both Studio mixes through the actual browser
+        run: node scripts/qa_studio_reload.mjs
