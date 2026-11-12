@@ -45,6 +45,38 @@ try {
   await page.locator('#layer-count').waitFor();
   assert.equal(await page.locator('#layer-count').textContent(),'24 lớp');
   assert.match(await page.locator('#library-count').textContent(), /^([1-9]\d*)\/\1$/);
+  // Vertically drag track 12 into position 2 without modifying its sound,
+  // offset, gain, pan, clip start, or any other track's parameters.
+  const original24=await page.evaluate(()=>JSON.stringify(mix.tracks));
+  const old12=JSON.parse(original24)[11];
+  const grip12=page.locator('#tracks .timeline-row').nth(11).locator('.track-reorder');
+  await grip12.scrollIntoViewIfNeeded();
+  const handleRect=await grip12.boundingBox();
+  const scrollRect=await page.locator('#timeline-scroll').boundingBox();
+  assert.ok(handleRect && scrollRect,'Reorder grip and scroll viewport must be visible');
+  await page.mouse.move(handleRect.x+handleRect.width/2,handleRect.y+handleRect.height/2);
+  await page.mouse.down();
+  await page.mouse.move(handleRect.x+handleRect.width/2,scrollRect.y+13,{steps:8});
+  await page.waitForFunction(()=>document.querySelector('#timeline-scroll').scrollTop<12,null,{timeout:9500});
+  const row2rect=await page.locator('#tracks .timeline-row').nth(1).boundingBox();
+  assert.ok(row2rect,'Track 2 must be visible after auto scroll');
+  await page.mouse.move(handleRect.x+handleRect.width/2,row2rect.y+row2rect.height*.25,{steps:5});
+  await page.mouse.up();
+  const reordered24=JSON.parse(await page.evaluate(()=>JSON.stringify(mix.tracks)));
+  assert.deepEqual(reordered24[1],old12,'Track 12 must land in track 2 with every audio setting intact');
+  assert.deepEqual(reordered24[2],JSON.parse(original24)[1],'Previous track 2 should shift to track 3');
+  assert.equal(await page.locator('#tracks .timeline-row').nth(1).locator('.track-select').textContent(),old12.label||'',
+    'Track name shown on new second row should belong to moved layer');
+  await page.locator('#undo').click();
+  assert.equal(await page.evaluate(()=>JSON.stringify(mix.tracks)),original24,'Undo should restore entire track array');
+  const keyboardGrip=page.locator('#tracks .timeline-row').nth(1).locator('.track-reorder');
+  await keyboardGrip.focus();
+  await page.keyboard.press('Alt+ArrowDown');
+  assert.deepEqual(JSON.parse(await page.evaluate(()=>JSON.stringify(mix.tracks)))[2],JSON.parse(original24)[1],
+    'Alt+ArrowDown must move selected track down one row');
+  await page.locator('#undo').click();
+  assert.equal(await page.evaluate(()=>JSON.stringify(mix.tracks)),original24,'Undo should restore keyboard reorder');
+  console.log('PASS vertical track 12 to 2 drag with auto-scroll, preserved audio settings, keyboard reorder and undo');
   // Timeline clips are unlabeled waveforms; keep sound names only on the left.
   const visualClip=page.locator('#tracks .timeline-row').nth(1).locator('.clip');
   await visualClip.scrollIntoViewIfNeeded();
