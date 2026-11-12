@@ -7,7 +7,7 @@
   const search=document.getElementById('published-query');
   if(!root||!output||!search)return;
   const format=new Intl.NumberFormat('en');
-  const safeSlug=s=>typeof s==='string'&&/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(s);
+  const safeSlug=s=>typeof s==='string'&&/^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$/.test(s);
   const validMedia=url=>typeof url==='string'&&/^https:\/\/media\.whitenoisechoir\.com\/[a-zA-Z0-9_./-]+$/.test(url);
   let entries=[];
   function createCard(item){
