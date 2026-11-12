@@ -55,8 +55,8 @@
     if(!response.ok)throw Error('Published feed unavailable');
     const rows=await response.json();
     if(!Array.isArray(rows))throw Error('Invalid published feed');
-    entries=rows.filter(row=>row.status==='published'&&safeSlug(row.slug)&&typeof row.title==='string'
-      &&validMedia(row.video?.url)&&validMedia(row.audio?.url))
+    entries=rows.filter(row=>row.status==='published'&&row.ownerApproved===true&&row.productionComplete===true&&row.qaApproved===true&&safeSlug(row.slug)&&typeof row.title==='string'
+      &&validMedia(row.video?.url)&&validMedia(row.video?.poster)&&validMedia(row.audio?.url)&&validMedia(row.audio?.wavUrl))
       .sort((a,b)=>String(b.datePublished||'').localeCompare(String(a.datePublished||'')));
     render();
   }catch(err){
