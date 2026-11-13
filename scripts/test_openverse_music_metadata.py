@@ -5,6 +5,7 @@ import sys
 import tempfile
 import unittest
 from pathlib import Path
+from collections import Counter
 from types import SimpleNamespace
 from unittest.mock import Mock, patch
 
@@ -121,7 +122,7 @@ class OpenverseTests(unittest.TestCase):
         result.json.return_value = {"results": [sample()], "page_count": 1}
         client.get.return_value = result
         with patch.object(ov.time, "sleep"):
-            out, pages = ov.query_api(client, "piano", 1, {})
+            out, pages = ov.query_api(client, "piano", 1, Counter())
         self.assertEqual(len(out), 1)
         self.assertEqual(pages, 1)
         self.assertEqual(client.get.call_args.args[0], ov.API)
