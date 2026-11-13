@@ -1,0 +1,45 @@
+name: Sleeping Lake V2 immutable balanced R2 sources
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/prepare_sleeping_lake_v2_assets.py'
+      - '.github/workflows/prepare_sleeping_lake_v2_assets.yml'
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+jobs:
+  normalize:
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    env:
+      R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+      R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+      GH_TOKEN: ${{ github.token }}
+      AWS_EC2_METADATA_DISABLED: 'true'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install audio and Python dependencies
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -qq -y ffmpeg
+          python -m pip install -q 'requests>=2.32,<3' 'boto3>=1.36,<2'
+      - name: Create balanced MP3s, verify checksum and persist R2 objects
+        run: python -u scripts/prepare_sleeping_lake_v2_assets.py
+      - name: Comment exact SHA and LUFS results on PR
+        if: always()
+        run: |
+          if test -s sleeping-lake-v2-derivatives.md; then
+            gh pr comment '${{ github.event.pull_request.number }}' --body-file sleeping-lake-v2-derivatives.md || true
+          fi
+      - name: Upload detailed QA JSON
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sleeping-lake-v2-derivatives
+          path: sleeping-lake-v2-derivatives.json
+          if-no-files-found: ignore
