@@ -1,0 +1,79 @@
+name: Music Candidate Metadata — Internet Archive (second provider)
+on:
+  push:
+    branches: [feature/music-archive-metadata-20261113]
+    paths:
+      - 'scripts/scan_archive_music_metadata.py'
+      - 'scripts/test_archive_music_metadata.py'
+      - '.github/workflows/music_archive_candidate_metadata.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: whitenoisechoir-archive-music-metadata
+  cancel-in-progress: false
+env:
+  R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+  R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+  AWS_EC2_METADATA_DISABLED: 'true'
+  PYTHONUNBUFFERED: '1'
+jobs:
+  metadata-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          sparse-checkout: scripts
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install metadata-only dependencies
+        run: python -m pip install -q 'boto3>=1.36,<2' 'requests>=2.32,<3' 'beautifulsoup4>=4.12,<5'
+      - name: Test Archive adapter and existing Commons metadata pipeline
+        run: |
+          python -m py_compile scripts/scan_archive_music_metadata.py scripts/test_archive_music_metadata.py
+          python scripts/test_archive_music_metadata.py -v
+          python scripts/test_music_candidate_metadata.py -v
+          python scripts/test_music_instrument_intake.py -v
+
+  archive-candidate-index:
+    needs: metadata-tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix:
+        shard: [0, 1]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          sparse-checkout: scripts
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install dependencies
+        run: python -m pip install -q 'boto3>=1.36,<2' 'requests>=2.32,<3' 'beautifulsoup4>=4.12,<5'
+      - name: Confirm R2 secrets configured
+        run: |
+          test -n "$R2_ACCESS_KEY_ID"
+          test -n "$R2_SECRET_ACCESS_KEY"
+      - name: Discover Archive audio metadata and store candidate-only records
+        env:
+          SHARD: ${{ matrix.shard }}
+        run: |
+          python -u scripts/scan_archive_music_metadata.py --persist \
+            --shard-index "$SHARD" --shard-count 2 --max-candidates 500 \
+            --per-group 30 --max-item-details 10 --pages 2 \
+            --output "audits/music-archive-candidates-$SHARD.json"
+      - name: Keep private source discovery report as workflow artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: music-archive-candidates-shard-${{ matrix.shard }}
+          path: audits/music-archive-candidates-*.json
+          retention-days: 30
+          if-no-files-found: warn
