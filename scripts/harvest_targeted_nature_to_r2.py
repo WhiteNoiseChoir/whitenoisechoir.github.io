@@ -176,5 +176,7 @@ def main():
          | {"report_key": key, "errors": len(report["errors"]), "first_errors": report["errors"][:6]})
 
 
+# Immediate owner-requested intake trigger 2026-11-13; no logic changes.
+
 if __name__ == "__main__":
     main()
