@@ -1,0 +1,87 @@
+name: WS3 Music Metadata to R2 Audio Staging Chain
+on:
+  push:
+    branches: [feature/music-audio-continuous-stage-20261113]
+    paths:
+      - 'scripts/bulk_stage_music_candidates.py'
+      - 'scripts/test_bulk_stage_music_candidates.py'
+      - 'config/music_audio_staging_batch.json'
+      - '.github/workflows/music_metadata_audio_chain.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+# Prevent collision with original WS3 rights pilot on PR #89.
+concurrency:
+  group: whitenoisechoir-music-approved-candidate-pilot-v1
+  cancel-in-progress: false
+env:
+  R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+  R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+  AWS_EC2_METADATA_DISABLED: 'true'
+  PYTHONUNBUFFERED: '1'
+jobs:
+  offline-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          sparse-checkout: scripts
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install pinned major runtime dependencies
+        run: python -m pip install -q 'boto3>=1.36,<2' 'requests>=2.32,<3' 'beautifulsoup4>=4.12,<5'
+      - name: Compile and run chain + prior rights safety tests
+        run: |
+          python -m py_compile scripts/bulk_stage_music_candidates.py scripts/test_bulk_stage_music_candidates.py
+          python -u scripts/test_bulk_stage_music_candidates.py -v
+          python -u scripts/test_prepare_music_rights_review.py -v
+          python -u scripts/test_pilot_import_music_candidates.py -v
+
+  chained-intake:
+    needs: offline-tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          sparse-checkout: |
+            scripts
+            config/music_audio_staging_batch.json
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Ensure ffprobe and ffmpeg available
+        run: |
+          if ! command -v ffprobe >/dev/null || ! command -v ffmpeg >/dev/null; then
+            sudo apt-get update -qq
+            sudo apt-get install -y -qq ffmpeg
+          fi
+      - name: Install bounded R2 and source API dependencies
+        run: python -m pip install -q 'boto3>=1.36,<2' 'requests>=2.32,<3' 'beautifulsoup4>=4.12,<5'
+      - name: Require approved private R2 access
+        run: |
+          test -n "$R2_ACCESS_KEY_ID"
+          test -n "$R2_SECRET_ACCESS_KEY"
+      - name: Chain up to six batches of eight original Commons audio files (PRIVATE STAGING ONLY)
+        run: |
+          python -u scripts/bulk_stage_music_candidates.py \
+            --batch-size 8 \
+            --max-files 48 \
+            --max-records 10000 \
+            --max-source-queries 72 \
+            --max-total-mib 250 \
+            --max-seconds 7800 \
+            --max-errors 5 \
+            --output audits/music-audio-staging-chain-summary.json
+      - name: Upload metrics only (private source URLs remain in R2)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: music-audio-staging-chain-summary
+          path: audits/music-audio-staging-chain-summary.json
+          if-no-files-found: warn
+          retention-days: 14
