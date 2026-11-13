@@ -30,6 +30,7 @@ def approval():
     return {
         "schema": "music_audio_rights_approval_v1",
         "candidate_id": candidate()["candidate_id"],
+        "license": candidate()["license"],
         "source_media_url": candidate()["source_media_url"],
         "recording_rights_verified": True,
         "composition_rights_verified": True,
@@ -58,8 +59,38 @@ class PilotTests(TestCase):
         c["provider"] = "Openverse"
         self.assertEqual(pilot.gate(c, approval()), "PROVIDER_NOT_APPROVED")
         c = candidate()
+        c["license"] = "CC-BY-SA-4.0"
+        self.assertEqual(pilot.gate(c, approval()), "LICENSE_NOT_IN_REVIEW_SCOPE")
+
+    def test_cc_by_requires_approved_attribution_and_matching_license(self):
+        c = candidate()
         c["license"] = "CC-BY-4.0"
-        self.assertEqual(pilot.gate(c, approval()), "NO_VERIFIED_CC0")
+        c["attribution"] = "Example original author"
+        self.assertEqual(pilot.gate(c, None), "NO_INDEPENDENT_RIGHTS_APPROVAL")
+        a = approval()
+        self.assertEqual(pilot.gate(c, a), "APPROVAL_WRONG_LICENSE")
+        a["license"] = "CC-BY-4.0"
+        self.assertEqual(pilot.gate(c, a), "CC_BY_ATTRIBUTION_MISSING")
+        a["attribution_text"] = "Example original author; CC BY 4.0"
+        self.assertEqual(pilot.gate(c, a), "ELIGIBLE")
+
+    def test_composition_attestation_does_not_follow_source_license(self):
+        c = candidate()
+        c["license"] = "CC-BY-3.0"
+        c["attribution"] = "Example author"
+        a = approval()
+        a["license"] = "CC-BY-3.0"
+        a["attribution_text"] = "Example author / CC BY 3.0"
+        a["composition_rights_verified"] = False
+        self.assertEqual(pilot.gate(c, a), "RIGHTS_NOT_CLEARED")
+
+    def test_source_revision_invalidation(self):
+        c = candidate()
+        c["source_revision_sha1"] = "b"*40
+        self.assertEqual(pilot.gate(c, approval()), "APPROVAL_WRONG_SOURCE_REVISION")
+        a = approval()
+        a["source_revision_sha1"] = c["source_revision_sha1"]
+        self.assertEqual(pilot.gate(c, a), "ELIGIBLE")
 
     def test_url_allowlist_blocks_ssrf_and_redirect_hosts(self):
         self.assertTrue(pilot.safe_media_url(candidate()["source_media_url"]))
