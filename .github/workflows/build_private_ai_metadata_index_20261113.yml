@@ -1,0 +1,47 @@
+name: Build Private AI Metadata Search Index (Nature + Music)
+on:
+  push:
+    branches: [feature/ai-metadata-search-index-20261113]
+    paths: [.github/workflows/build_private_ai_metadata_index_20261113.yml]
+permissions:
+  contents: read
+concurrency:
+  group: wnc-private-ai-metadata-index-v1
+  cancel-in-progress: false
+jobs:
+  build-index:
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    env:
+      R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+      R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+      AWS_EC2_METADATA_DISABLED: 'true'
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install R2 client
+        run: python -m pip install -q 'boto3>=1.36,<2'
+      - name: Confirm SQLite FTS5 and R2 configuration
+        run: |
+          test -n "$R2_ACCESS_KEY_ID"
+          test -n "$R2_SECRET_ACCESS_KEY"
+          python - <<'PY'
+          import sqlite3
+          d=sqlite3.connect(":memory:")
+          d.execute("CREATE VIRTUAL TABLE test USING fts5(text)")
+          print("AI_METADATA_PRECHECK FTS5_AVAILABLE")
+          PY
+      - name: Build searchable database from existing metadata only and store in PRIVATE R2
+        run: python -u scripts/build_private_ai_metadata_index.py --mode build
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ai-metadata-search-index-build-stats
+          path: audits/ai-metadata-index-build-report.json
+          if-no-files-found: warn
+          retention-days: 30
