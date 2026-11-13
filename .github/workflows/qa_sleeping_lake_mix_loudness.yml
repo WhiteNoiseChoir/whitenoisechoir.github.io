@@ -1,0 +1,42 @@
+name: Sleeping Lake V1 full 600s mix-loudness measurement
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/qa_sleeping_lake_mix_loudness.py'
+      - '.github/workflows/qa_sleeping_lake_mix_loudness.yml'
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+jobs:
+  measure:
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install FFmpeg and requests
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg
+          python -m pip install -q 'requests>=2.32,<3'
+      - name: Full 600s offline mixed LUFS and true peak
+        run: python -u scripts/qa_sleeping_lake_mix_loudness.py
+      - name: Post results
+        if: always()
+        run: |
+          if test -s sleeping-lake-mix-loudness.md; then
+            gh pr comment '${{ github.event.pull_request.number }}' --body-file sleeping-lake-mix-loudness.md || true
+          fi
+      - name: Upload report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sleeping-lake-mix-loudness
+          path: sleeping-lake-mix-loudness.json
+          if-no-files-found: ignore
