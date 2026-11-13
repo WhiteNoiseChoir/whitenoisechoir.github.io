@@ -56,6 +56,14 @@ def main():
   db=sqlite3.connect("file:"+str(path)+"?mode=ro",uri=True);db.row_factory=sqlite3.Row
   total=db.execute("SELECT count(*) FROM assets").fetchone()[0]
   if total!=manifest["indexed_total"]:raise RuntimeError("Index count mismatch")
+  # Three read-only SQLite audits; aggregate counts only, no private rows in logs.
+  audits={
+   "source_class_counts":dict(db.execute("SELECT source_class,COUNT(*) FROM assets GROUP BY source_class").fetchall()),
+   "missing_sound_family":db.execute("SELECT COUNT(*) FROM assets WHERE sound_family IS NULL OR TRIM(sound_family)=''").fetchone()[0],
+   "audio_key_present":db.execute("SELECT COUNT(*) FROM assets WHERE r2_key IS NOT NULL AND TRIM(r2_key)<>''").fetchone()[0]
+  }
+  if sum(audits["source_class_counts"].values())!=total:
+   raise RuntimeError("Source class audit count mismatch")
   offset=int(checkpoint["offset"])
   # Reject corrupt/stale checkpoints rather than silently skipping records.
   if checkpoint.get("source_index_sha256",digest)!=digest:
@@ -104,5 +112,5 @@ def main():
   print("WS2_ENRICHMENT_FINAL "+json.dumps({"processed_this_run":len(results),
    "processed_total":checkpoint["processed"],"remaining":total-checkpoint["processed"],
    "roles_this_run":dict(roles),"errors":0,"sleep_audio_verified":0,
-   "audio_downloaded":False,"source_mutated":False,"complete":checkpoint["complete"]}),flush=True)
+   "audio_downloaded":False,"source_mutated":False,"sqlite_audit":audits,"complete":checkpoint["complete"]}),flush=True)
 if __name__=="__main__":main()
