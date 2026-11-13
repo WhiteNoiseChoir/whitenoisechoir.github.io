@@ -14,7 +14,7 @@ assert.equal(entries.filter(x => x.group === 'music').length,8);
 const sha = new Set();
 for (const a of entries.filter(x => x.group === 'music')) {
   assert(/^asset-library\/raw\/sha256\/[a-f0-9]{2}\/[a-f0-9]{64}\.(?:mp3|ogg|oga)$/i.test(a.key));
-  assert.equal(a.sha256, /\/([a-f0-9]{64})\.[a-z]+$/i.exec(a.key)[1]);
+  assert.equal(a.sha256, /\/([a-f0-9]{64})\.[a-z0-9]+$/i.exec(a.key)[1]);
   assert(a.assetStatus === 'STORED_R2_TECHNICAL_PASS_LISTENING_PENDING');
   assert.equal(a.publicationApproved,false);
   assert(/^CC-BY-(?:3\.0|4\.0)$/.test(a.license));
