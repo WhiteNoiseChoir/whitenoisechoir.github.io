@@ -1,0 +1,66 @@
+name: WS1 Music Metadata Diversity Audit (read only)
+on:
+  push:
+    branches: [feature/music-metadata-diversity-audit-20261113]
+    paths:
+      - '.github/workflows/music_metadata_diversity_audit.yml'
+      - 'scripts/audit_music_metadata_diversity.py'
+      - 'scripts/test_audit_music_metadata_diversity.py'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: whitenoisechoir-ws1-music-metadata-diversity
+  cancel-in-progress: false
+env:
+  R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+  R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+  AWS_EC2_METADATA_DISABLED: 'true'
+  PYTHONUNBUFFERED: '1'
+jobs:
+  offline-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          sparse-checkout: scripts
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install dependencies
+        run: python -m pip install -q 'boto3>=1.36,<2' 'requests>=2.32,<3' 'beautifulsoup4>=4.12,<5'
+      - name: Run audit unit tests
+        run: |
+          python -m py_compile scripts/audit_music_metadata_diversity.py scripts/test_audit_music_metadata_diversity.py
+          cd scripts
+          python -u test_audit_music_metadata_diversity.py -v
+  private-r2-audit:
+    needs: offline-tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          sparse-checkout: scripts
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install dependencies
+        run: python -m pip install -q 'boto3>=1.36,<2' 'requests>=2.32,<3' 'beautifulsoup4>=4.12,<5'
+      - name: Require private read credentials
+        run: |
+          test -n "$R2_ACCESS_KEY_ID"
+          test -n "$R2_SECRET_ACCESS_KEY"
+      - name: Audit private candidate metadata with GET/LIST only
+        run: python -u scripts/audit_music_metadata_diversity.py --workers 8 --output audits/music-diversity-audit.json
+      - name: Preserve aggregate-only JSON report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ws1-music-metadata-diversity
+          path: audits/music-diversity-audit.json
+          if-no-files-found: warn
+          retention-days: 30
