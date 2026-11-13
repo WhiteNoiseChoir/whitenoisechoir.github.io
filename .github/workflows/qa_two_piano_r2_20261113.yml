@@ -1,0 +1,32 @@
+name: QA two imported piano files over R2 HTTP
+on:
+  push:
+    branches: [intake/three-piano-20261113]
+    paths: [.github/workflows/qa_two_piano_r2_20261113.yml]
+permissions:
+  contents: read
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - name: Verify both imported objects serve exact HTTP ranges with Studio CORS
+        shell: bash
+        run: |
+          python - <<'PY'
+          import urllib.request, json
+          files={
+            94:"asset-library/raw/sha256/b2/b22bdffbe4086857db717e9b5e50fc54ba40c9ddb833d40b74b58b584e04c7b6.mp3",
+            95:"asset-library/raw/sha256/52/5240d85766749d34eb0d3a453bc489edf023d8cf6c45bed448b9078575b4783a.mp3"
+          }
+          for asset,key in files.items():
+              req=urllib.request.Request("https://media.whitenoisechoir.com/"+key,headers={"Range":"bytes=0-2047","Origin":"https://whitenoisechoir.com","User-Agent":"WhiteNoiseChoir-Studio-PianoQA/1.0"})
+              with urllib.request.urlopen(req,timeout=35) as r:
+                  code=r.status
+                  body=r.read(2048)
+                  mime=r.headers.get("Content-Type","")
+                  cors=r.headers.get("Access-Control-Allow-Origin","")
+              ok=(code==206 and len(body)==2048 and mime.startswith("audio/") and cors in ("*","https://whitenoisechoir.com"))
+              print("PIANO_R2_HTTP_QA",json.dumps({"asset_id":asset,"passed":ok,"status":code,"bytes":len(body),"mime":mime,"cors":cors}),flush=True)
+              if not ok:raise SystemExit(1)
+          PY
