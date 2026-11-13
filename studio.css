@@ -417,3 +417,100 @@ kbd { font: 11px var(--mono); border: 1px solid var(--line); color: var(--muted)
   font-weight: 700;
 }
 .timeline-row[data-audio-health="quiet"] .track-select {color:#f2d4a4;}
+
+/* Audio/video preview is an optional panel; all existing mixer controls remain unchanged. */
+.av-live-preview {
+  margin: 8px 13px 13px;
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  background: #17231f;
+  overflow: hidden;
+}
+.av-live-preview.av-drop-active {
+  border-color: var(--accent);
+  outline: 2px dashed var(--accent);
+  outline-offset: -4px;
+}
+.av-live-preview summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  cursor: pointer;
+  font-weight: 650;
+  list-style-position: inside;
+}
+.av-live-preview summary:focus-visible { outline: 2px solid var(--accent); outline-offset: -3px; }
+.av-preview-name {
+  margin-left: auto;
+  font: 11px var(--mono);
+  color: var(--muted);
+  max-width: min(62%, 285px);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 400;
+}
+.av-preview-content { padding: 0 11px 11px; }
+.av-preview-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin: 3px 0 9px; }
+.av-preview-picker {
+  padding: 7px 10px;
+  border: 1px solid var(--accent);
+  border-radius: 7px;
+  cursor: pointer;
+  background: #254438;
+  color: #e9fff2;
+  font-size: 12px;
+  font-weight: 600;
+}
+.av-preview-picker:focus-within { outline: 2px solid var(--accent); }
+.av-preview-help { color: var(--muted); font-size: 11px; }
+.av-video-slot {
+  width: 100%;
+  max-width: 740px;
+  margin: 0 auto;
+  aspect-ratio: 16 / 9;
+  border-radius: 8px;
+  border: 1px solid #34453d;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  background: #0e1716;
+  color: var(--muted);
+}
+.av-video-slot #video-preview {
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-height: none;
+  margin: 0;
+  object-fit: contain;
+  border-radius: 0;
+  background: #0e1716;
+}
+.av-video-slot #av-preview-placeholder {
+  max-width: 390px;
+  margin: 0;
+  padding: 20px;
+  text-align: center;
+  line-height: 1.55;
+  font-size: 12px;
+}
+.av-preview-footer {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 5px 10px;
+  margin-top: 8px;
+  color: var(--muted);
+  font-size: 11px;
+}
+.av-preview-footer output { font: 11px var(--mono); color: var(--accent); }
+.av-preview-footer [role="status"] { overflow-wrap: anywhere; }
+@media (max-width: 620px) {
+  .av-preview-name { max-width: 100%; margin-left: 0; }
+  .av-preview-actions { gap: 7px; }
+  .av-preview-help { flex-basis: 100%; }
+}
