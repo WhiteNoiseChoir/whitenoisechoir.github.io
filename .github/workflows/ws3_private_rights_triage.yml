@@ -1,0 +1,30 @@
+name: WS3 Private Wikimedia Rights Triage
+on:
+  push:
+    branches: [feature/ws3-sleep-relax-coverage-20261114]
+    paths: [.github/workflows/ws3_private_rights_triage.yml, scripts/ws3_rights_triage.py]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: ws3-private-rights-triage
+  cancel-in-progress: false
+jobs:
+  triage:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    env:
+      R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+      R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+      AWS_EC2_METADATA_DISABLED: 'true'
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install -q 'boto3>=1.36,<2'
+      - name: Validate candidate provenance and license evidence in private R2
+        run: python -u scripts/ws3_rights_triage.py
