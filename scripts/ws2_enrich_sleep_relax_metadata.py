@@ -69,6 +69,19 @@ def main():
    if not prior or not prior.startswith(root+"batches/"):
     raise RuntimeError("Missing or foreign previous batch reference")
    s3.head_object(Bucket=BUCKET,Key=prior)
+   previous=read(prior)
+   if previous.get("source_index_sha256")!=digest or previous.get("schema")!="wnc_ws2_batch_v1":
+    raise RuntimeError("Previous batch provenance/schema mismatch")
+   prev_records=previous.get("records")
+   if not isinstance(prev_records,list) or int(previous.get("offset",-1))<0 or int(previous["offset"])+len(prev_records)!=offset:
+    raise RuntimeError("Previous batch range does not match checkpoint")
+   ids=[x.get("id") for x in prev_records]
+   if not all(ids) or len(ids)!=len(set(ids)):
+    raise RuntimeError("Previous batch IDs invalid or duplicate")
+  if sum(int(n) for n in checkpoint.get("role_counts",{}).values())!=offset:
+   raise RuntimeError("Checkpoint role-count sum does not match processed offset")
+  if int(checkpoint.get("enriched",offset))!=offset or int(checkpoint.get("errors",0))!=0:
+   raise RuntimeError("Checkpoint enriched/error totals inconsistent")
   if offset>=total:
    print("WS2_ENRICHMENT_FINAL "+json.dumps({"state":"COMPLETE","processed":offset,"total":total,"checkpoint":True}));return
   rows=db.execute("SELECT * FROM assets ORDER BY id LIMIT ? OFFSET ?",(BATCH,offset)).fetchall()
