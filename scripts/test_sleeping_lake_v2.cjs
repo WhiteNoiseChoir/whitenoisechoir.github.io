@@ -1,0 +1,46 @@
+#!/usr/bin/env node
+const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict');
+const read=p=>fs.readFileSync(p,'utf8');
+const trials=JSON.parse(read('data/studio-trials.json'));
+const v1=trials.find(x=>x.slug==='the-sleeping-lake-v1');
+const v2=trials.find(x=>x.slug==='the-sleeping-lake-v2');
+assert(v1&&v2&&v1.project&&v2.project,'Missing V1 or V2');
+assert.equal(v2.project.length,600);
+assert.equal(v2.project.tracks.length,10);
+assert.equal(v1.project.tracks.length,v2.project.tracks.length);
+assert.equal(v2.project.master,.96);
+assert.equal(new Set(v2.project.tracks.map(x=>x.assetRef)).size,3);
+const src=vm.runInNewContext(read('studio-catalog.js')+'; studioPublishedAssets');
+const byDigest=new Map(src.filter(x=>x.sha256).map(x=>[x.sha256,x]));
+for(let i=0;i<10;i++){
+ const a=v1.project.tracks[i],t=v2.project.tracks[i];
+ assert.equal(t.start,a.start);
+ assert.equal(t.duration,a.duration);
+ assert.equal(t.offset,a.offset);
+ assert.equal(t.loop,a.loop);
+ assert.equal(t.mute,a.mute);
+ assert.equal(t.fadeIn,a.fadeIn);
+ assert.equal(t.fadeOut,a.fadeOut);
+ assert.equal(t.pan,a.pan);
+ assert.equal(t.lowpass,a.lowpass);
+ assert(t.gain>.1&&t.gain<=1,'Invalid gain');
+ assert(/^r2-[a-f0-9]{64}$/.test(t.assetRef));
+ assert.notEqual(t.assetRef,a.assetRef,'V1 asset should remain unchanged');
+ const row=byDigest.get(t.assetRef.slice(3));
+ assert(row&&row.key?.endsWith(t.assetRef.slice(3)+'.mp3')&&row.parentSha256,'Source not a real derivative');
+ assert(t.duration+t.offset<=row.duration+.05,'Source too short');
+ assert(t.start+t.duration<=600,'Outside timeline');
+ assert.equal(row.publicationApproved,false);
+}
+const project=JSON.parse(read('data/studio-projects/the-sleeping-lake-v2.json'));
+assert.deepEqual(project,v2.project);
+const html=read('vi/the-sleeping-lake-v2/index.html');
+const embedded=JSON.parse(html.match(/<script type="application\/json" id="studio-trial">([^]*?)<\/script>/)?.[1]||'null');
+assert.deepEqual(embedded.project,project);
+assert.equal(embedded.slug,v2.slug);
+assert(html.includes('noindex,nofollow'));
+assert(trials.some(x=>x.slug==='the-ocean-beneath-the-ice-v1'));
+assert(trials.some(x=>x.slug==='the-ocean-beneath-the-ice-v2'));
+assert(trials.some(x=>x.slug==='music-eight-source-preview-20261113'));
+assert(!JSON.stringify(JSON.parse(read('data/published-mixes.json'))).includes(v2.slug));
+console.log('SLEEPING_LAKE_V2_STATIC_QA_PASS',JSON.stringify({sources:3,clips:10,length:600,v1Unmodified:true,published:false}));
