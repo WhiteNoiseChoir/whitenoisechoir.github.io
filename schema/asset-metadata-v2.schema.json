@@ -1,0 +1,93 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://whitenoisechoir.com/schemas/asset-metadata-v2.schema.json",
+  "title": "WhiteNoiseChoir Audio Asset Metadata V2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "asset_id", "identity_basis", "content_sha256", "storage_key", "lifecycle", "source", "technical", "semantic", "musical", "evidence"],
+  "properties": {
+    "schema_version": {"const": 2},
+    "asset_id": {"type": "string", "pattern": "^(r2|legacy-key|legacy-url)-[0-9a-f]{64}$"},
+    "identity_basis": {"enum": ["content_sha256_from_sidecar", "storage_key_digest_unverified", "legacy_storage_key", "legacy_source_url"]},
+    "content_sha256": {"type": ["string", "null"], "pattern": "^[0-9a-f]{64}$"},
+    "storage_key": {"type": ["string", "null"]},
+    "legacy_slots": {"type": "array", "items": {"type": "integer", "minimum": 0}, "uniqueItems": true},
+    "aliases": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+    "lifecycle": {"enum": ["discovered", "stored", "indexed", "enriched", "mix_ready", "quarantined"]},
+    "source": {
+      "type": "object", "additionalProperties": false,
+      "required": ["provider", "source_url", "creator", "license", "license_url", "evidence_url", "verified_at", "rights_status"],
+      "properties": {
+        "provider": {"type": ["string", "null"]},
+        "source_url": {"type": ["string", "null"], "pattern": "^https://"},
+        "creator": {"type": ["string", "null"]},
+        "license": {"type": ["string", "null"]},
+        "license_url": {"type": ["string", "null"], "pattern": "^https://"},
+        "evidence_url": {"type": ["string", "null"], "pattern": "^https://"},
+        "verified_at": {"type": ["string", "null"], "format": "date-time"},
+        "rights_status": {"enum": ["verified", "attested", "unverified", "restricted"]}
+      }
+    },
+    "technical": {
+      "type": "object", "additionalProperties": false,
+      "required": ["duration_seconds", "codec", "sample_rate_hz", "channels", "file_bytes", "integrated_lufs", "true_peak_dbtp"],
+      "properties": {
+        "duration_seconds": {"type": ["number", "null"], "exclusiveMinimum": 0},
+        "codec": {"type": ["string", "null"]},
+        "sample_rate_hz": {"type": ["integer", "null"], "minimum": 1},
+        "channels": {"type": ["integer", "null"], "minimum": 1},
+        "file_bytes": {"type": ["integer", "null"], "minimum": 1},
+        "integrated_lufs": {"type": ["number", "null"]},
+        "true_peak_dbtp": {"type": ["number", "null"]}
+      }
+    },
+    "semantic": {
+      "type": "object", "additionalProperties": false,
+      "required": ["name", "group", "entity", "tags", "sound_role", "environment", "near_far", "texture", "mood", "intensity", "loop_capability"],
+      "properties": {
+        "name": {"type": ["string", "null"]},
+        "group": {"type": ["string", "null"]},
+        "entity": {"type": ["string", "null"]},
+        "tags": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+        "sound_role": {"type": ["string", "null"], "enum": [null, "CONTINUOUS_BED", "SEAMLESS_LOOP", "ONE_SHOT", "RECURRING_EVENT", "PASS_BY", "TRANSITION", "TEXTURE", "SPEECH_OR_VOCAL", "MUSICAL_FOREGROUND", "MUSICAL_ACCOMPANIMENT"]},
+        "environment": {"type": ["string", "null"]},
+        "near_far": {"enum": [null, "near", "mid", "far"]},
+        "texture": {"type": ["string", "null"]},
+        "mood": {"type": ["string", "null"]},
+        "intensity": {"type": ["number", "null"], "minimum": 0, "maximum": 1},
+        "loop_capability": {"enum": [null, "seamless_verified", "crossfade_required", "not_loopable", "untested"]}
+      }
+    },
+    "musical": {
+      "type": "object", "additionalProperties": false,
+      "required": ["instrument", "bpm", "time_signature", "key", "chords", "musical_role"],
+      "properties": {
+        "instrument": {"type": ["string", "null"]},
+        "bpm": {"type": ["number", "null"], "exclusiveMinimum": 0},
+        "time_signature": {"type": ["string", "null"]},
+        "key": {"type": ["string", "null"]},
+        "chords": {"type": ["array", "null"], "items": {"type": "string"}},
+        "musical_role": {"type": ["string", "null"]}
+      }
+    },
+    "evidence": {
+      "type": "object", "additionalProperties": {"$ref": "#/$defs/fieldEvidence"}
+    }
+  },
+  "$defs": {
+    "fieldEvidence": {
+      "type": "object", "additionalProperties": false,
+      "required": ["method", "tool", "confidence", "evidence_url"],
+      "properties": {
+        "method": {"enum": ["verified", "measured", "inferred", "unknown"]},
+        "tool": {"type": ["string", "null"]},
+        "confidence": {"type": ["number", "null"], "minimum": 0, "maximum": 1},
+        "evidence_url": {"type": ["string", "null"], "pattern": "^https://"}
+      }
+    }
+  },
+  "allOf": [
+    {"if": {"properties": {"asset_id": {"pattern": "^r2-"}}, "required": ["asset_id"]}, "then": {"properties": {"content_sha256": {"type": "string"}}}},
+    {"if": {"properties": {"lifecycle": {"const": "mix_ready"}}}, "then": {"properties": {"source": {"properties": {"rights_status": {"const": "verified"}}}, "technical": {"properties": {"duration_seconds": {"type": "number"}}}}}}
+  ]
+}
