@@ -79,7 +79,9 @@ export default {
   }
   if(u.pathname!=="/search")return json({error:"not_found"},404);
   const q=(u.searchParams.get("q")||"").slice(0,240);
-  // Explicit strict retrieval for soundscape layers; OR remains the backward-compatible default.\n  const mode=u.searchParams.get("mode")==="all" ? "all" : "any";\n  const match=fts(q,mode);
+  // Explicit strict retrieval for soundscape layers; OR remains the backward-compatible default.
+  const mode=u.searchParams.get("mode")==="all" ? "all" : "any";
+  const match=fts(q,mode);
   if(!match)return json({error:"query_required"},400);
   const limit=Math.max(1,Math.min(30,Number.parseInt(u.searchParams.get("limit")||"10",10)||10));
   const cls=u.searchParams.get("class")||"";
