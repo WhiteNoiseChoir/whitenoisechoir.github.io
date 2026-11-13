@@ -19,7 +19,7 @@ let queries=[];
 const fixtureRow = {
  id:"nature:example",source_class:"nature",name:"Bird",scientific_name:"Aves",sound_family:"birds",
  habitat:"rainforest",region:"southeast-asia",provider:"Test",source_page:"https://example.org/audio",
- license:"CC0-1.0",duration:18,has_r2_audio:1,qa_status:"pending"
+ license:"CC0-1.0",duration:18,r2_key:"private/test-audio.mp3",has_r2_audio:1,qa_status:"pending"
 };
 const db = {
  prepare(sql) {
@@ -52,7 +52,11 @@ try {
  assert.equal((await expectStatus("/search?q=birds",await token({exp:1}),401)).error,"unauthorized");
  const valid=await token();
  assert.equal((await expectStatus("/health",valid,200)).indexed_total,22239);
- assert.equal((await expectStatus("/search?q=chim%20r%E1%BB%ABng&class=nature&has_audio=1&region=southeast-asia&limit=3",valid,200)).count,1);
+ const searchResult=await expectStatus("/search?q=chim%20r%E1%BB%ABng&class=nature&has_audio=1&region=southeast-asia&limit=3",valid,200);
+ assert.equal(searchResult.count,1);
+ assert.equal(searchResult.results[0].r2_key,"private/test-audio.mp3");
+ assert.equal(searchResult.results[0].source_page,"https://example.org/audio");
+ assert.equal(searchResult.results[0].qa_status,"pending");
  const q=queries.at(-1);
  assert.match(q.sql,/search MATCH \?/);
  assert.ok(q.args[0].includes("birds"),"Vietnamese term must expand");
@@ -70,6 +74,6 @@ try {
  assert.equal(inj.args.length,2);
  console.log("AI_METADATA_WORKER_CONTRACT_QA_PASS",JSON.stringify({
   tests:["missing token","malformed token","wrong audience","expired token","health count",
-   "Vietnamese expansion and filters","empty query","404","method guard","SQL parameterization"],
+   "Vietnamese expansion and filters","R2 key/source/QA response","empty query","404","method guard","SQL parameterization"],
   indexed_baseline_fixture:22239,production_deployment_tested:false}));
 }finally {globalThis.fetch=originalFetch;}
