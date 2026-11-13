@@ -72,3 +72,16 @@ Source of truth: GitHub repo `WhiteNoiseChoir/whitenoisechoir.github.io`, produc
 - Các trang nháp (V3/V4/V5) không được chuyển thành trang SEO công khai nếu thiếu lệnh Public. Hiện public manifest là `[]`.
 - Tệp yêu cầu Public trong repository công khai **không phải kho bí mật**; không lưu secrets, credential hoặc nội dung riêng tư cần bảo mật ở đó. Với release cần bảo mật trước ngày ra mắt, dùng private workflow/store.
 - Chuẩn chi tiết: `docs/PUBLICATION_WORKFLOW.md`.
+
+## BÀI HỌC BẮT BUỘC — SỰ CỐ THE OCEAN BENEATH THE ICE V1 (2026-11-13)
+
+Nguồn chứng cứ: ảnh QA Studio do chủ dự án gửi ngày 13/11/2026. Studio báo `8/9 nguồn đã tải · 1 lỗi · 5 lớp rất nhỏ`; lỗi là `EncodingError` ở `Iceberg harmonic tremor` (NOAA, WAV khoảng 271 KB, SHA-256 `b621edf7701897ae4d1c4242ee78ea028e82f8cd79d42063bfc1e4bffe3dedfb`). Không được giả định R2 HEAD/metadata/ffprobe hợp lệ đồng nghĩa với WebAudio `decodeAudioData` thành công.
+
+**Quy trình mới, áp dụng cho MỌI lần phối âm, kể cả khi kho đã có đủ nguyên liệu:**
+1. Tìm ứng viên **song song** trong R2/metadata VÀ ngoài Internet; so sánh bản ghi theo mức độ phù hợp với câu chuyện, tính nguyên bản, thời lượng, codec, tiếng nền, độ tĩnh, license, bitrate, chất lượng nghe. Không tự động kết luận hàng trong kho là tốt nhất. Tìm bên ngoài không đồng nghĩa với phải tải: chỉ nhập khi thực sự tốt hơn hoặc chưa có trong R2.
+2. Trước khi gắn `assetRef` lên bản phối, xác minh bản thu có file ở R2, checksum + provenance, khả năng đọc theo byte Range, CORS, WebAudio `decodeAudioData` trong trình duyệt mục tiêu (đặc biệt Cốc Cốc/Chromium, Safari/iOS). Với WAV bất thường phải transcode tạo asset MP3/Opus mới, không sửa hay đổi tên SHA của file gốc; hoặc bỏ khỏi bản phối nếu chưa QA.
+3. Kiểm tra tỷ lệ nguồn thực sự tải thành công. **Chỉ đạt khi tất cả nguồn trong bản thử tải và giải mã thành công.** Hình ảnh lỗi ở browser là bằng chứng thật và ưu tiên hơn thông báo CI.
+4. Cần kiểm tra LUFS/RMS/true peak, độ vang và nguy cơ clipping khi phối chồng; cảnh báo "lớp rất nhỏ" trong Studio là tín hiệu cần xử lý, không phải chỉ tăng tùy tiện. Giữ tiếng cá voi êm và không làm tiếng băng gây giật mình.
+5. Xuất dự án mới theo slug riêng (V2, V3...), không xóa hoặc ghi đè bản cũ; bản mới là `internal-only` cho tới khi đủ QA. Nêu rõ nguồn chỉ được phát hiện trên Internet, nguồn đã có ở kho và nguồn tải mới về R2 — ba số lượng khác nhau.
+6. Nếu công cụ không thể xác minh mạng, R2 HEAD hoặc browser playback, báo trạng thái **chưa xác minh** rõ ràng, không tuyên bố đạt hoặc hoàn thành kiểm định.
+
