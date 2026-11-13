@@ -33,3 +33,17 @@ The initial Python index builder writes a private R2 SQLite FTS5 index, **not** 
 - AI query auth is enforced, access possible from a ChatGPT-supported connector or authenticated integration.
 - 5 sample soundscape prompts return accurate, grounded records with provenance and statuses; private data is not public.
 - Document query latency and status/error handling; don't label index as instant until measured.
+
+## Verified results — 2026-11-13 18:09 Vietnam time (11:09 UTC)
+- [Build run #43413227081](https://github.com/WhiteNoiseChoir/whitenoisechoir.github.io/actions/runs/43413227081) **SUCCESS**.
+- R2 private SQLite FTS5 index: `internal/ai-metadata-index/v1/versions/20261113T110930Z-7f5379d40ea8f9b6.sqlite` (13,828,096 bytes), manifest `internal/ai-metadata-index/v1/current.json`.
+- **22,239 unique indexed IDs** = 19,680 unique nature SHA-256 IDs + 2,559 music candidate IDs. 19,935 source JSON records include 255 duplicate nature audio IDs; this is **not** a distinct species count.
+- Source metadata and canonical audio metadata overlap; 20,607 canonical audio records were not independently merged into this version.
+- Five smoke queries returned 8 hits each, but ranking is imperfect: e.g. `winter snow wind` prioritizes music candidates without audio, and `frog crickets night` returns generic music night. Do not treat these as validated multi-layer matches; next ranking step must enforce individual sound roles, `has_r2_audio`, and class filters.
+- Private index ready: **YES**. Authenticated GPT-accessible search gateway deployed and tested: **NO**.
+
+## Secure D1 gateway implementation (staging, not deployed)
+- `internal/metadata-ai-search/worker.mjs`: Cloudflare Worker endpoint `GET /search` with JWT verification against Cloudflare Access issuer/JWKS and configured application AUD, bounded top-N results, D1 prepared statements, optional `class`, `has_audio`, `region`, `license`, `min_duration`, `max_duration` filters. No public fallback.
+- `scripts/export_private_metadata_d1.py`: checksum-verifies private R2 SQLite, creates ordered D1 SQL import batches in private R2 under `internal/ai-metadata-index/v1/d1-staging/`. Do not publish SQL files.
+- Required deployment (not yet completed): provision private D1 database, import staged SQL batches in order, bind `METADATA_DB`, configure `ACCESS_TEAM_DOMAIN` and `ACCESS_AUD`, enforce Cloudflare Access route policy, deploy Worker with authenticated domain, and integrate a supported GPT connector/OAuth path. The user must not be told GPT can query until real authenticated queries succeed.
+- Never copy private metadata to GitHub Actions artifacts or logs; all metadata files remain R2-private.
