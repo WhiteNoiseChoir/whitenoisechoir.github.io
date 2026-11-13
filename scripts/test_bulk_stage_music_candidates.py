@@ -7,6 +7,7 @@ from pathlib import Path
 import sys
 import tempfile
 import unittest
+import requests
 from unittest.mock import Mock, patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -142,6 +143,30 @@ class StageTests(unittest.TestCase):
         self.assertEqual(stats["STORED_R2"], 4)
         self.assertEqual(batches, 2)
         self.assertEqual(checkpoint.call_count, 2)
+
+    def test_429_stops_after_first_file_without_receipt(self):
+        candidate = row()
+        args = params()
+        response = requests.Response()
+        response.status_code = 429
+        response.url = "https://upload.wikimedia.org/wikipedia/commons/a/a1/example.wav"
+        response.headers["Retry-After"] = "3600"
+        error = requests.HTTPError("429 Too Many Requests", response=response)
+        with (
+            patch.object(stage.review, "revalidate_source",
+                         return_value=("SOURCE_CLAIM_RECHECKED", {})),
+            patch.object(stage.pilot, "stream_safe_media", side_effect=error) as fetch,
+            patch.object(stage, "save_receipt") as receipt,
+            patch.object(stage, "save_checkpoint"),
+        ):
+            states, transferred, checked, processed, batches = stage.ingest(
+                Mock(), [candidate, candidate], args, set(), stage.time.monotonic())
+        self.assertEqual(fetch.call_count, 1)
+        receipt.assert_not_called()
+        self.assertEqual(states["SOURCE_RATE_LIMITED"], 1)
+        self.assertEqual(states["STOP_PROVIDER_COOLDOWN_REQUIRED"], 1)
+        self.assertEqual(transferred, 0)
+        self.assertEqual(processed, 0)
 
     def test_existing_receipts_skip_candidates(self):
         obj=Mock()
