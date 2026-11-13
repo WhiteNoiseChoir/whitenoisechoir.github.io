@@ -54,17 +54,22 @@ async function verifyAccessJwt(request,env) {
    new TextEncoder().encode(parts[0]+"."+parts[1]));
  }catch{return false;}
 }
-function tokens(query) {
- const q=query.normalize("NFKC").toLowerCase();
- const words=(q.match(/[\p{L}\p{N}_-]+/gu)||[]).filter(x=>x.length>1);
- const extra=[];
- for(const [k,v] of Object.entries(VI))if(q.includes(k))extra.push(...v);
- return [...new Set([...words,...extra])].slice(0,24);
-}
 function fts(query, mode="any") {
- // User data only becomes quoted FTS5 terms; never SQL string interpolation.
- const t=tokens(query).filter(x=>/^[\p{L}\p{N}_-]{2,50}$/u.test(x));
- return t.map(x=>'"'+x.replaceAll('"','')+'"*').join(mode==="all" ? " AND " : " OR ");
+ // Treat each user term as one concept. Translations/synonyms are OR alternatives
+ // within that concept; strict mode ANDs concepts, not all synonym variants.
+ // Every term is quoted and the complete MATCH expression is SQL-bound.
+ const q=query.normalize("NFKC").toLowerCase();
+ const words=(q.match(/[\p{L}\p{N}_-]+/gu)||[]).filter(x=>x.length>1).slice(0,12);
+ const safe=x=>/^[\p{L}\p{N}_-]{2,50}$/u.test(x);
+ const groups=words.map(word=>{
+  const variants=[word];
+  for(const [key,translations] of Object.entries(VI)){
+   if(word===key)variants.push(...translations);
+  }
+  const terms=[...new Set(variants)].filter(safe).slice(0,8);
+  return terms.length ? "(" + terms.map(x=>'"'+x+'"*').join(" OR ") + ")" : "";
+ }).filter(Boolean);
+ return groups.join(mode==="all" ? " AND " : " OR ");
 }
 export default {
  async fetch(request,env) {
