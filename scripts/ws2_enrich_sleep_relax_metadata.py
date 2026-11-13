@@ -1,0 +1,83 @@
+#!/usr/bin/env python3
+"""WS2 private, resumable metadata enrichment. Never downloads audio or modifies source/index."""
+import collections,datetime,hashlib,json,os,sqlite3,tempfile
+from pathlib import Path
+import boto3
+from botocore.config import Config
+
+BUCKET="whitenoisechoir-media"; ACCOUNT="7483501ad8365fe26b0448b96b54fb9f"
+INDEX="internal/ai-metadata-index/v1/"; OUT="internal/ws2-sleep-relax-enrichment/v1/"
+BATCH=500
+# Only lexical cues; never claim verified acoustic quality, loopability or suitability.
+BED={"rain","rainfall","drizzle","stream","creek","river","brook","ocean","sea","wave","waves","wind","breeze","waterfall","fan","noise","water"}
+TEXTURE={"forest","woodland","jungle","fireplace","fire","leaves","rustling","crackle","crackling","snow"}
+EVENT={"bird","birds","owl","frog","frogs","cricket","crickets","cicada","cicadas","wolf","wolves","thunder","train","horn","call","song"}
+def infer(row):
+ name,family,habitat,tags,description=(str(row[k] or "") for k in ("name","sound_family","habitat","tags","description"))
+ s=" ".join((name,family,habitat,tags,description)).lower()
+ words=set(s.replace("-"," ").replace("_"," ").split())
+ # Ambiguous mixtures must not be forced into a single verified role.
+ hits=[role for role,v in (("CONTINUOUS_BED",BED),("TEXTURE",TEXTURE),("EVENT",EVENT)) if words&v]
+ role=hits[0] if len(hits)==1 else "UNKNOWN"
+ return {
+  "id":row["id"],"source_class":row["source_class"],"sound_identity":{"name":name,"family":family or None,
+   "species":row["scientific_name"] or None,"taxon":row["taxon"] or None},
+  "context":{"habitat":habitat or None,"region":row["region"] or None},
+  "source":{"provider":row["provider"] or None,"page":row["source_page"] or None,
+   "license_raw":row["license"] or None,"credit":row["credit"] or None},
+  "duration_seconds":row["duration"] if row["duration"] and row["duration"]>0 else None,
+  "audio":{"has_r2_key":bool(row["r2_key"]),"r2_object_verified":False,
+   "acoustic_measurements":"UNVERIFIED","loopability":"UNKNOWN","loudness":"UNKNOWN",
+   "transients":"UNKNOWN","speech":"UNKNOWN"},
+  "composition":{"role_hint":role,"role_evidence":"LEXICAL_UNVERIFIED" if role!="UNKNOWN" else "INSUFFICIENT_OR_AMBIGUOUS",
+   "sleep_suitability":"UNVERIFIED","relaxation_suitability":"UNVERIFIED"},
+  "provenance":{"schema":"wnc_ws2_enrichment_v1","source":"private_index_sqlite",
+   "source_classification_status":row["qa_status"] or "UNKNOWN"}
+ }
+def main():
+ s3=boto3.client("s3",region_name="auto",endpoint_url="https://"+ACCOUNT+".r2.cloudflarestorage.com",
+  aws_access_key_id=os.environ["R2_ACCESS_KEY_ID"],aws_secret_access_key=os.environ["R2_SECRET_ACCESS_KEY"],
+  config=Config(signature_version="s3v4",retries={"max_attempts":4,"mode":"standard"}))
+ def read(key):
+  x=s3.get_object(Bucket=BUCKET,Key=key)
+  try:return json.loads(x["Body"].read())
+  finally:x["Body"].close()
+ def put(key,data):
+  s3.put_object(Bucket=BUCKET,Key=key,Body=json.dumps(data,ensure_ascii=False,separators=(",",":")).encode(),
+   ContentType="application/json",CacheControl="private,no-store")
+ manifest=read(INDEX+"current.json")
+ digest=manifest["index_sha256"];root=OUT+"source-"+digest[:16]+"/"
+ try:checkpoint=read(root+"checkpoint.json")
+ except s3.exceptions.NoSuchKey:checkpoint={"offset":0,"processed":0,"enriched":0,"errors":0,"role_counts":{}}
+ with tempfile.TemporaryDirectory() as td:
+  path=Path(td)/"index.sqlite"
+  s3.download_file(BUCKET,manifest["index_r2_key"],str(path))
+  if hashlib.sha256(path.read_bytes()).hexdigest()!=digest:raise RuntimeError("Index checksum mismatch")
+  db=sqlite3.connect("file:"+str(path)+"?mode=ro",uri=True);db.row_factory=sqlite3.Row
+  total=db.execute("SELECT count(*) FROM assets").fetchone()[0]
+  if total!=manifest["indexed_total"]:raise RuntimeError("Index count mismatch")
+  offset=int(checkpoint["offset"])
+  if offset>=total:
+   print("WS2_ENRICHMENT_FINAL "+json.dumps({"state":"COMPLETE","processed":offset,"total":total,"checkpoint":True}));return
+  rows=db.execute("SELECT * FROM assets ORDER BY id LIMIT ? OFFSET ?",(BATCH,offset)).fetchall()
+  results=[infer(r) for r in rows]
+  if len(results)!=len({r["id"] for r in results}):raise RuntimeError("Duplicate IDs in batch")
+  for r in results:
+   if r["composition"]["sleep_suitability"]!="UNVERIFIED":raise RuntimeError("Unsupported sleep claim")
+  roles=collections.Counter(r["composition"]["role_hint"] for r in results)
+  batch_key=root+"batches/"+f"{offset:06d}-{offset+len(results):06d}.json"
+  put(batch_key,{"schema":"wnc_ws2_batch_v1","source_index_sha256":digest,"offset":offset,"records":results})
+  # Commit checkpoint only after batch object upload/HEAD verified.
+  s3.head_object(Bucket=BUCKET,Key=batch_key)
+  cumulative=collections.Counter(checkpoint.get("role_counts",{}));cumulative.update(roles)
+  checkpoint={"schema":"wnc_ws2_checkpoint_v1","source_index_sha256":digest,
+   "offset":offset+len(results),"processed":offset+len(results),"enriched":offset+len(results),
+   "errors":0,"role_counts":dict(cumulative),"total":total,
+   "last_batch":batch_key,"updated_at":datetime.datetime.now(datetime.timezone.utc).isoformat(),
+   "complete":offset+len(results)==total}
+  put(root+"checkpoint.json",checkpoint)
+  print("WS2_ENRICHMENT_FINAL "+json.dumps({"processed_this_run":len(results),
+   "processed_total":checkpoint["processed"],"remaining":total-checkpoint["processed"],
+   "roles_this_run":dict(roles),"errors":0,"sleep_audio_verified":0,
+   "audio_downloaded":False,"source_mutated":False,"complete":checkpoint["complete"]}),flush=True)
+if __name__=="__main__":main()
