@@ -21,7 +21,7 @@ for(const track of v2.project.tracks){
 }
 const route='vi/the-ocean-beneath-the-ice-v2/index.html';
 const html=fs.readFileSync(route,'utf8');
-const row=JSON.parse(html.match(/<script type="application\\/json" id="studio-trial">([\\s\\S]*?)<\\/script>/)?.[1]||'null');
+const row=JSON.parse(html.match(/<script type="application\/json" id="studio-trial">([\s\S]*?)<\/script>/)?.[1]||'null');
 assert.equal(row.slug,v2.slug);
 assert.equal(JSON.stringify(row.project),JSON.stringify(v2.project));
 assert(html.includes('noindex,nofollow')&&!html.includes(bad));
