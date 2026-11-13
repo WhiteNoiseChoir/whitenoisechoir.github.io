@@ -16,11 +16,22 @@ async function token(override={}) {
  return body+"."+Buffer.from(signature).toString("base64url");
 }
 let queries=[];
-const db={prepare(sql){return {bind(...args){queries.push({sql,args});return {all:async()=>({results:[{
+const fixtureRow = {
  id:"nature:example",source_class:"nature",name:"Bird",scientific_name:"Aves",sound_family:"birds",
  habitat:"rainforest",region:"southeast-asia",provider:"Test",source_page:"https://example.org/audio",
  license:"CC0-1.0",duration:18,has_r2_audio:1,qa_status:"pending"
-}]})}}},first:async()=>({n:22239})}}};
+};
+const db = {
+ prepare(sql) {
+  return {
+   first: async () => ({n:22239}),
+   bind(...args) {
+    queries.push({sql,args});
+    return {all: async () => ({results:[fixtureRow]})};
+   }
+  };
+ }
+};
 const env={ACCESS_TEAM_DOMAIN:"team.cloudflareaccess.com",ACCESS_AUD:"wnc-test-aud",METADATA_DB:db};
 const originalFetch=globalThis.fetch;
 globalThis.fetch=async url=>{
