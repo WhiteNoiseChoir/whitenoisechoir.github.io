@@ -4,7 +4,7 @@
  * No public fallback. Not deployed by merely committing this file.
  */
 const FIELDS = ["id","source_class","name","scientific_name","sound_family","habitat","region",
- "provider","source_page","license","duration","has_r2_audio","qa_status"];
+ "provider","source_page","license","duration","r2_key","has_r2_audio","qa_status"];
 const VI = {
  "rừng":["forest","rainforest","jungle"],"mưa":["rain","rainfall"],"suối":["stream","creek","brook"],
  "sông":["river"],"biển":["ocean","sea","waves"],"gió":["wind","breeze"],"tuyết":["snow","winter"],
@@ -89,7 +89,7 @@ export default {
   const minDuration=Number(u.searchParams.get("min_duration")||"0");
   const maxDuration=Number(u.searchParams.get("max_duration")||"0");
   let sql="SELECT a.id,a.source_class,a.name,a.scientific_name,a.sound_family,a.habitat,a.region,"+
-    "a.provider,a.source_page,a.license,a.duration,a.has_r2_audio,a.qa_status,"+
+    "a.provider,a.source_page,a.license,a.duration,a.r2_key,a.has_r2_audio,a.qa_status,"+
     "bm25(search,4,3,2,2,2,1,2,1,2) as rank "+
     "FROM search JOIN assets a ON a.rowid=search.rowid WHERE search MATCH ?";
   const params=[match];
