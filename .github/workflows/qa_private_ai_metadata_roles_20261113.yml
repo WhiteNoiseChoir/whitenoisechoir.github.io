@@ -1,0 +1,32 @@
+name: Private Metadata Composition Role QA
+on:
+  push:
+    branches: [feature/ai-metadata-search-index-20261113]
+    paths: [.github/workflows/qa_private_ai_metadata_roles_20261113.yml]
+permissions:
+  contents: read
+concurrency:
+  group: wnc-private-ai-metadata-role-qa
+  cancel-in-progress: false
+jobs:
+  evaluate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+      R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+      AWS_EC2_METADATA_DISABLED: 'true'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install -q 'boto3>=1.36,<2'
+      - name: Verify R2 secrets
+        run: |
+          test -n "$R2_ACCESS_KEY_ID"
+          test -n "$R2_SECRET_ACCESS_KEY"
+      - name: Run private role-aware retrieval QA
+        run: python -u scripts/qa_private_ai_metadata_roles.py
