@@ -1,0 +1,33 @@
+name: Prepare Private AI Metadata D1 Import
+on:
+  push:
+    branches: [feature/ai-metadata-search-index-20261113]
+    paths: [.github/workflows/prepare_private_ai_metadata_d1_20261113.yml]
+permissions:
+  contents: read
+concurrency:
+  group: wnc-private-ai-metadata-d1-export
+  cancel-in-progress: false
+jobs:
+  export-private-sql:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    env:
+      R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+      R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+      AWS_EC2_METADATA_DISABLED: 'true'
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install -q 'boto3>=1.36,<2'
+      - name: Verify secrets present
+        run: |
+          test -n "$R2_ACCESS_KEY_ID"
+          test -n "$R2_SECRET_ACCESS_KEY"
+      - name: Export verified index into private R2 D1 staging batches
+        run: python -u scripts/export_private_metadata_d1.py
