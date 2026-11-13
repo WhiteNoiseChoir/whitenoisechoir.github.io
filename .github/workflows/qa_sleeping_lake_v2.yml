@@ -1,0 +1,83 @@
+name: Sleeping Lake V2 A/B Studio QA and full mix loudness
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'data/studio-trials.json'
+      - 'data/studio-projects/the-sleeping-lake-v2.json'
+      - 'studio-catalog.js'
+      - 'vi/the-sleeping-lake-v2/index.html'
+      - 'scripts/qa_sleeping_lake_v2_mix_loudness.py'
+      - 'scripts/qa_sleeping_lake_v2_studio.mjs'
+      - 'scripts/test_sleeping_lake_v2.cjs'
+      - '.github/workflows/qa_sleeping_lake_v2.yml'
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+jobs:
+  static:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Studio content and A/B reference QA
+        run: |
+          node --check studio-catalog.js
+          node --check studio-engine.js
+          node scripts/test_sleeping_lake_v2.cjs
+          node scripts/build_studio_routes.cjs
+          node scripts/test_sleeping_lake_v2.cjs
+  chromium:
+    runs-on: ubuntu-latest
+    timeout-minutes: 16
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install Playwright Core and locate Chrome
+        run: |
+          npm install --no-save --ignore-scripts --no-audit --no-fund 'playwright-core@1.57.0'
+          if command -v google-chrome >/dev/null; then echo CHROME_BIN=$(command -v google-chrome) >> "$GITHUB_ENV"; else exit 1; fi
+      - name: Play V2 complete 3-source Studio route from PR checkout
+        run: node scripts/qa_sleeping_lake_v2_studio.mjs
+      - name: Save browser report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sleeping-lake-v2-browser-qa
+          path: sleeping-lake-v2-studio-browser-qa.json
+          if-no-files-found: ignore
+  measure:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install FFmpeg and requests
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg
+          python -m pip install -q 'requests>=2.32,<3'
+      - name: Meter 600s fully layered audio for integrated loudness and true peak
+        run: python -u scripts/qa_sleeping_lake_v2_mix_loudness.py
+      - name: Publish detailed V2 LUFS report in PR
+        if: always()
+        run: |
+          if test -s sleeping-lake-v2-mix-loudness.md; then
+            gh pr comment '${{ github.event.pull_request.number }}' --body-file sleeping-lake-v2-mix-loudness.md || true
+          fi
+      - name: Archive 600s LUFS report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sleeping-lake-v2-mix-loudness
+          path: sleeping-lake-v2-mix-loudness.json
+          if-no-files-found: ignore
