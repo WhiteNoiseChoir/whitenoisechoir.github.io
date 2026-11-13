@@ -55,13 +55,17 @@ function studio(locale,trial) {
     }
   }
   if (trial) template=template.replace('<title>WhiteNoiseChoir Studio · Phòng phối âm</title>','<title>'+escape(trial.title)+' · WhiteNoiseChoir Studio</title>');
+  if (trial?.assetCacheVersion && /^[a-z0-9-]{1,40}$/.test(trial.assetCacheVersion)) {
+    template=template.replace('<script src="/studio-catalog.js"></script>','<script src="/studio-catalog.js?v='+trial.assetCacheVersion+'"></script>');
+    template=template.replace('<script src="/studio-ui.js"></script>','<script src="/studio-ui.js?v='+trial.assetCacheVersion+'"></script>');
+  }
   const keys = {
     LANG:locale, ROUTE_HEAD:'<link rel="canonical" href="'+origin+route+'">'+
       (trial?'<!-- Generated Studio trial --><meta name="robots" content="noindex,nofollow">':alternate),
     STUDIO_ROOT:studioRoot, NAV_LABEL:vi?'Điều hướng':'Navigation',
     LIBRARY:vi?'Bản phối công khai':'Published mixes', MORE:vi?'Hiện thêm':'Show more',
     LANG_LINK:vi?'<a href="/" lang="en">English</a>':'<a href="/vi/" lang="vi">Tiếng Việt</a>',
-    TRIAL_BADGE:trial?'<p class="trial-label">Bản thử · '+escape(trial.title)+'</p>':'',
+    TRIAL_BADGE:trial?'<p class="trial-label">Bản thử · '+escape(trial.title)+'</p>'+(trial.internalNotice?'<p class="trial-label">'+escape(trial.internalNotice)+'</p>':''):'',
     TRIAL_DATA:trial?'<script type="application/json" id="studio-trial">'+JSON.stringify(trial).replaceAll('<','\\u003c')+'</script>':'',
     VAULT:vi?viVault:'', VAULT_SCRIPT:vi?'<script src="/studio-vault.js"></script>':'',
   };

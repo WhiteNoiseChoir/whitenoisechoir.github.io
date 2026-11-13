@@ -1,0 +1,36 @@
+name: QA private 8-source music studio trial
+on:
+  push:
+    branches: [feature/music-demo-eight-assets-20261113]
+    paths:
+      - 'studio-catalog.js'
+      - 'studio-ui.js'
+      - 'data/studio-trials.json'
+      - 'vi/music-eight-source-preview-20261113/index.html'
+      - 'scripts/test_music_trial_8_assets.cjs'
+      - '.github/workflows/qa_music_trial_8_sources.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  qa-music-demo:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate content assets and editable trial link
+        run: |
+          node --check studio-catalog.js
+          node --check studio-ui.js
+          node --check studio-engine.js
+          node scripts/test_music_trial_8_assets.cjs
+      - name: Regenerate routes and verify expected draft preserved
+        run: |
+          node scripts/build_studio_routes.cjs
+          node scripts/test_music_trial_8_assets.cjs
+          test -f vi/music-eight-source-preview-20261113/index.html
