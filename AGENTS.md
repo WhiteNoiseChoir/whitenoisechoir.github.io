@@ -2,6 +2,26 @@
 
 > Chính sách do chủ dự án yêu cầu, áp dụng cho **mọi lần tạo bản phối, dựng video và mở rộng kho âm thanh**. Phải đọc và thực thi trước khi xử lý nguồn âm thanh ngoài. Đây là yêu cầu lâu dài, không phải yêu cầu chỉ cho V4/V5.
 
+## CHIẾN LƯỢC CHÍNH — NHẬP KHO THEO NHU CẦU TỪNG BẢN PHỐI (CHỐT 2026-11-13)
+
+**Không tự động tải toàn bộ metadata.** Metadata âm nhạc (2.559 bản ghi ở thời điểm chốt) là kho tra cứu ứng viên, không phải số file audio hay số asset Studio. Chủ dự án chọn **Just-in-Time Audio Acquisition** làm quy trình mặc định. Không quét, tải và nhập hàng loạt chỉ vì tồn tại metadata.
+
+Khi chủ dự án yêu cầu tạo hoặc sửa một bản phối, thực hiện theo đúng thứ tự:
+1. Phân tích nhu cầu bối cảnh, sound identity, timeline, thời lượng và các lớp âm còn thiếu.
+2. Tra cứu asset sẵn có ở Studio/R2 trước để tái sử dụng và tránh tải trùng.
+3. Nếu thiếu, tìm trong metadata R2; nếu không có bản phù hợp thì chủ động tìm trên Internet, không chuyển việc tự tìm nguồn cho người dùng.
+4. Kiểm tra nguồn và giấy phép, kể cả quyền đối với tác phẩm, biểu diễn, bản ghi khi cần; không giả định Creative Commons của trang là đủ cho mọi trường hợp thương mại.
+5. Tải file gốc có thể tiếp cận hợp pháp; kiểm tra magic bytes, codec, ffprobe, giải mã toàn bộ, thời lượng, kích thước và SHA-256; tránh tải trùng. Lưu file thực vào R2 qua workflow/credentials phù hợp và xác minh đối tượng bằng HEAD/checksum.
+6. Đăng ký asset ID, R2 key, metadata, attribution và trạng thái QA vào catalog Studio theo cơ chế append-only; xác minh tải, CORS và phát trên Studio. Không tự tuyên bố đã nghe QA hay có quyền thương mại khi chưa xác minh.
+7. Tạo và gửi JSON bản phối tương thích Studio với ID thật để chủ dự án tự nhập lên website và nghe thử. Không tạo ID giả, không tuyên bố hoàn thành nếu lớp audio chưa tồn tại.
+8. Nếu bị 429/403 hoặc không có quyền tải, dừng tải không an toàn, ghi rõ trở ngại; có thể tìm phương án thay thế được cấp phép và báo riêng phần chưa hoàn tất.
+
+**Giới hạn hoạt động nền:** Giữ các lịch quét/nhập hàng loạt ở trạng thái tạm dừng. Không tự tái khởi chạy WS3 hay đợt nhập toàn bộ 2.559 bản ghi trừ khi chủ dự án ra lệnh mới, rõ ràng. Chỉ thực hiện nhập riêng các âm thanh cần cho bản phối cụ thể khi được yêu cầu.
+
+**Báo cáo:** Tách biệt số metadata ứng viên, số file âm thanh thật đã lưu R2 (khử trùng SHA), số asset có trong catalog Studio, số phát được, số được duyệt nghe và số được duyệt quyền phát hành. Chỉ số 96/96 trên Studio là số mục đang khớp bộ lọc / tổng asset không pending, không phải 96/2.559 đã nhập.
+
+
+
 ## NGUYÊN TẮC BẮT BUỘC: CẦN NGUỒN NGOÀI → THU GOM VÀ NHẬP KHO LUÔN
 
 **Không chỉ tìm một đường dẫn rồi gắn trực tiếp vào timeline.** Mỗi khi bản phối cần một âm thanh chưa có nguồn đủ tốt trong kho WhiteNoiseChoir, nhân tiện tìm kiếm bên ngoài phải **thu gom file gốc thực tế và nhập vào kho âm thanh dùng chung** để mọi bản phối sau tái sử dụng được.
