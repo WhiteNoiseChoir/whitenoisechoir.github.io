@@ -93,6 +93,8 @@ export default {
   const audio=u.searchParams.get("has_audio")||"";
   const region=(u.searchParams.get("region")||"").slice(0,60);
   const licence=(u.searchParams.get("license")||"").slice(0,60);
+  const qa=(u.searchParams.get("qa_status")||"").slice(0,60);
+  const family=(u.searchParams.get("sound_family")||"").slice(0,80);
   const minDuration=Number(u.searchParams.get("min_duration")||"0");
   const maxDuration=Number(u.searchParams.get("max_duration")||"0");
   let sql="SELECT a.id,a.source_class,a.name,a.scientific_name,a.sound_family,a.habitat,a.region,"+
@@ -104,12 +106,14 @@ export default {
   if(audio==="1"||audio==="0"){sql+=" AND a.has_r2_audio=?";params.push(Number(audio));}
   if(region){sql+=" AND a.region=?";params.push(region);}
   if(licence){sql+=" AND a.license=?";params.push(licence);}
+  if(qa){sql+=" AND a.qa_status=?";params.push(qa);}
+  if(family){sql+=" AND a.sound_family=?";params.push(family);}
   if(Number.isFinite(minDuration)&&minDuration>0){sql+=" AND a.duration>=?";params.push(minDuration);}
   if(Number.isFinite(maxDuration)&&maxDuration>0){sql+=" AND a.duration<=?";params.push(maxDuration);}
   sql+=" ORDER BY rank ASC LIMIT ?";params.push(limit);
   try {
    const r=await env.METADATA_DB.prepare(sql).bind(...params).all();
-   return json({query:q,mode,filters:{class:cls,has_audio:audio,region,license:licence},
+   return json({query:q,mode,filters:{class:cls,has_audio:audio,region,license:licence,qa_status:qa,sound_family:family},
      count:r.results.length,results:r.results.map(row=>Object.fromEntries(FIELDS.map(f=>[f,row[f]])))});
   }catch{return json({error:"query_failed"},503);}
  }
