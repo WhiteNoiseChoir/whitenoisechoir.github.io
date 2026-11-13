@@ -57,6 +57,18 @@ def main():
   total=db.execute("SELECT count(*) FROM assets").fetchone()[0]
   if total!=manifest["indexed_total"]:raise RuntimeError("Index count mismatch")
   offset=int(checkpoint["offset"])
+  # Reject corrupt/stale checkpoints rather than silently skipping records.
+  if checkpoint.get("source_index_sha256",digest)!=digest:
+   raise RuntimeError("Checkpoint source hash mismatch")
+  if offset<0 or offset>total or int(checkpoint.get("processed",offset))!=offset:
+   raise RuntimeError("Checkpoint offset/processed inconsistent")
+  if checkpoint.get("complete",False)!=(offset==total) and offset>0:
+   raise RuntimeError("Checkpoint completion flag inconsistent")
+  if offset>0:
+   prior=checkpoint.get("last_batch")
+   if not prior or not prior.startswith(root+"batches/"):
+    raise RuntimeError("Missing or foreign previous batch reference")
+   s3.head_object(Bucket=BUCKET,Key=prior)
   if offset>=total:
    print("WS2_ENRICHMENT_FINAL "+json.dumps({"state":"COMPLETE","processed":offset,"total":total,"checkpoint":True}));return
   rows=db.execute("SELECT * FROM assets ORDER BY id LIMIT ? OFFSET ?",(BATCH,offset)).fetchall()
