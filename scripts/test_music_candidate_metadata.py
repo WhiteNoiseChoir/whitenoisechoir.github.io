@@ -17,6 +17,7 @@ import scan_music_candidate_metadata as scan
 
 def stub_rights(filename, name="piano", license="CC0-1.0"):
     return {
+        "state": "ELIGIBLE",
         "title": "File:" + filename, "file_name": filename, "mime": "audio/ogg",
         "direct_file_url": "https://upload.wikimedia.org/" + filename,
         "source_url": "https://commons.wikimedia.org/wiki/File:" + filename,
