@@ -259,6 +259,29 @@ def ingest(s3, rows, args, previous_digests, start_time):
                         save_checkpoint(s3, run, batch_no, total_files, total_bytes,
                                         pages_checked, stats)
                         batch_stats.clear()
+                except requests.HTTPError as exc:
+                    response = exc.response
+                    status = getattr(response, "status_code", None)
+                    if status in (429, 503):
+                        # Wikimedia rate limiting is a global host signal, not
+                        # five independent file failures. Stop immediately.
+                        # Leave this candidate without a receipt for a later
+                        # scheduled retry AFTER provider cooldown.
+                        stats["SOURCE_RATE_LIMITED"] += 1
+                        stats["STOP_PROVIDER_COOLDOWN_REQUIRED"] += 1
+                        retry_after = (response.headers.get("Retry-After")
+                                       if response is not None else None)
+                        print("WS3_STAGE_PROVIDER_COOLDOWN " + json.dumps({
+                            "status": status, "retry_after": retry_after,
+                            "candidate_id": row["candidate_id"]}), flush=True)
+                        break
+                    stats["IMPORT_ERROR"] += 1
+                    print("WS3_STAGE_IMPORT_ERROR " + json.dumps({
+                        "type": type(exc).__name__,
+                        "status": status}), flush=True)
+                    if stats["IMPORT_ERROR"] >= args.max_errors:
+                        stats["STOP_IMPORT_ERRORS"] += 1
+                        break
                 except Exception as exc:
                     stats["IMPORT_ERROR"] += 1
                     print("WS3_STAGE_IMPORT_ERROR " + json.dumps({
@@ -328,6 +351,12 @@ def run(args):
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(result, ensure_ascii=False, indent=2) + "\n")
     print("WS3_CHAIN_FINAL " + json.dumps(result, ensure_ascii=False), flush=True)
+    if states["STOP_PROVIDER_COOLDOWN_REQUIRED"]:
+        print("WS3_CHAIN_BLOCKED_PROVIDER_COOLDOWN " + json.dumps({
+            "retry_allowed_immediately": False,
+            "reason": "Wikimedia 429/503; avoid automatic immediate re-dispatch",
+        }), flush=True)
+        return result
     if states["STOP_REPEATED_SOURCE_ERRORS"] or states["STOP_IMPORT_ERRORS"]:
         raise RuntimeError("WS3 chained intake halted after bounded errors")
     return result
