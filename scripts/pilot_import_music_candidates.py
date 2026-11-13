@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Small CC0-only, rights-approved music candidate audio intake into PRIVATE R2.
+"""Rights-approved CC0 / CC-BY music candidate audio intake into PRIVATE R2.
 
 Default is a read-only preflight; --ingest requires a distinct pre-existing
 approval object in the private R2 ledger. Never infers recording / underlying
@@ -31,6 +31,7 @@ APPROVALS = core.PRIVATE_ROOT + "approved-audio/v1/"
 IMPORTS = core.PRIVATE_ROOT + "audio-imports/v1/"
 KEY_RE = re.compile(r"^internal/music-candidates/v1/([a-f0-9]{2})/([a-f0-9]{64})\.json$")
 ALLOWED_MEDIA_HOSTS = {"upload.wikimedia.org"}
+APPROVABLE_LICENSES = {"CC0-1.0", "CC-BY-3.0", "CC-BY-4.0"}
 EXTENSIONS = {".wav", ".flac", ".ogg", ".opus", ".mp3", ".m4a", ".aif", ".aiff"}
 MAX_SOURCE_BYTES = 32 * 1024 * 1024
 BUDGET_BYTES = 250 * 1024 * 1024
@@ -82,15 +83,15 @@ def approval_key(candidate):
 
 
 def gate(candidate, approval):
-    """No source metadata can self-authorize audio import."""
+    """No source metadata can self-authorize audio import; CC-BY needs attribution."""
     if not isinstance(candidate, dict):
         return "BAD_CANDIDATE"
     if candidate.get("schema") != "music_source_candidate_v1":
         return "BAD_SCHEMA"
     if candidate.get("provider") != "Wikimedia Commons":
         return "PROVIDER_NOT_APPROVED"
-    if candidate.get("license") != "CC0-1.0":
-        return "NO_VERIFIED_CC0"
+    if candidate.get("license") not in APPROVABLE_LICENSES:
+        return "LICENSE_NOT_IN_REVIEW_SCOPE"
     if not candidate.get("source_license_verified_at"):
         return "SOURCE_LICENSE_UNVERIFIED"
     if not safe_media_url(candidate.get("source_media_url")):
@@ -106,10 +107,22 @@ def gate(candidate, approval):
         return "APPROVAL_WRONG_CANDIDATE"
     if approval.get("source_media_url") != candidate.get("source_media_url"):
         return "APPROVAL_WRONG_SOURCE_VERSION"
+    if approval.get("license") != candidate.get("license"):
+        return "APPROVAL_WRONG_LICENSE"
+    if candidate.get("source_revision_sha1") and (
+        approval.get("source_revision_sha1") != candidate["source_revision_sha1"]
+    ):
+        return "APPROVAL_WRONG_SOURCE_REVISION"
     required = ("recording_rights_verified", "composition_rights_verified",
                 "download_authorized", "commercial_derivative_reuse_allowed")
     if not all(approval.get(k) is True for k in required):
         return "RIGHTS_NOT_CLEARED"
+    if candidate.get("license", "").startswith("CC-BY-"):
+        source_attribution = candidate.get("attribution")
+        if not isinstance(source_attribution, str) or not source_attribution.strip():
+            return "SOURCE_ATTRIBUTION_MISSING"
+        if not isinstance(approval.get("attribution_text"), str) or not approval["attribution_text"].strip():
+            return "CC_BY_ATTRIBUTION_MISSING"
     if not isinstance(approval.get("reviewed_by"), str) or not approval["reviewed_by"].strip():
         return "MISSING_REVIEWER"
     if not isinstance(approval.get("reviewed_at"), str) or not approval["reviewed_at"].strip():
@@ -148,8 +161,8 @@ def available_candidates(s3, max_records):
             if candidate.get("provider") != "Wikimedia Commons":
                 counts["PROVIDER_NOT_APPROVED"] += 1
                 continue
-            if candidate.get("license") != "CC0-1.0":
-                counts["NO_VERIFIED_CC0"] += 1
+            if candidate.get("license") not in APPROVABLE_LICENSES:
+                counts["LICENSE_NOT_IN_REVIEW_SCOPE"] += 1
                 continue
             if not candidate.get("source_license_verified_at"):
                 counts["SOURCE_LICENSE_UNVERIFIED"] += 1
@@ -278,7 +291,10 @@ def persist_one(s3, candidate, approval, digest, byte_count, path, technical):
         "source_candidate_id": candidate["candidate_id"],
         "source_page": candidate["source_page"],
         "source_media_url": candidate["source_media_url"],
-        "license": "CC0-1.0",
+        "license": candidate["license"],
+        "license_url": candidate.get("license_url"),
+        "creator": candidate.get("creator"),
+        "attribution_text": approval.get("attribution_text") or candidate.get("attribution"),
         "rights_approval_key": approval_key(candidate),
         "rights_evidence_urls": approval["evidence_urls"],
         "content_sha256": digest, "storage_key": key,
@@ -335,6 +351,8 @@ def run(args):
         raise ValueError("Unsafe storage budget")
     s3 = core.s3_client()
     eligible, diagnostics = available_candidates(s3, args.max_records)
+    if diagnostics.get("READ_ERROR", 0):
+        raise RuntimeError("Unable to read some approval records: fail closed")
     selected, bytes_used = process(s3, eligible, args.batch_size,
                                    args.byte_budget_mib * 1024**2, not args.ingest)
     result = {
@@ -346,7 +364,9 @@ def run(args):
         "selected": dict(selected), "bytes_imported": bytes_used if args.ingest else 0,
         "audio_files_stored_r2": selected["STORED_R2"],
         "cataloged": 0, "studio_ready": 0,
-        "media_allowed_license": "CC0-1.0", "approval_mode": "private_manual_review_required",
+        "media_allowed_license": sorted(APPROVABLE_LICENSES),
+        "approval_mode": "private_manual_review_required",
+        "CC_BY_without_independent_approval_permitted": False,
     }
     path = Path(args.output)
     path.parent.mkdir(parents=True, exist_ok=True)
