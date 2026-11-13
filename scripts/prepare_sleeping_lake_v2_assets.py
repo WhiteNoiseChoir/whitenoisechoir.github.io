@@ -38,7 +38,7 @@ def main():
  with tempfile.TemporaryDirectory() as work:
   for role,parent,ext,target,tp,lra in SRC:
    oldkey="asset-library/raw/sha256/"+parent[:2]+"/"+parent+"."+ext
-   inp=Path(work)/(role+"."+ext)
+   inp=Path(work)/(role+"_source."+ext)
    with requests.get(ROOT+oldkey,timeout=180,stream=True) as response:
     response.raise_for_status()
     with inp.open("wb") as f:
