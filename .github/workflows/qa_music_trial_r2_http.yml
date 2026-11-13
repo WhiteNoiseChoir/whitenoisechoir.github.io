@@ -1,0 +1,32 @@
+name: QA eight original R2 music sources for private Studio
+on:
+  push:
+    branches: [qa/music-demo-r2-playback-20261113]
+    paths:
+      - 'scripts/qa_music_trial_r2_http.py'
+      - '.github/workflows/qa_music_trial_r2_http.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  source-availability:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+      R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+      AWS_EC2_METADATA_DISABLED: 'true'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install -q 'boto3>=1.36,<2'
+      - name: Fail if private R2 creds absent
+        run: |
+          test -n "$R2_ACCESS_KEY_ID"
+          test -n "$R2_SECRET_ACCESS_KEY"
+      - name: Verify R2 HEAD SHA plus media HTTP Range and CORS on all eight sources
+        run: python -u scripts/qa_music_trial_r2_http.py
