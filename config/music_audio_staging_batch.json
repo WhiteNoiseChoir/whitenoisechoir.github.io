@@ -1,0 +1,13 @@
+{
+  "schema": "music_audio_staging_dispatch_v1",
+  "sequence": 1,
+  "predecessor_workflow_run": null,
+  "predecessor_conclusion": null,
+  "scope": "commons_cc0_and_cc_by_source_claims_only",
+  "max_files_per_run": 48,
+  "batch_size": 8,
+  "max_download_mib_per_run": 250,
+  "max_source_queries_per_run": 72,
+  "response": "first bounded chain run; future requests must reference actual completed predecessor + R2 checkpoint",
+  "publication_allowed": false
+}
