@@ -55,7 +55,7 @@ jobs:
       - name: Discover new source metadata, checkpoint and count private R2 objects
         run: |
           python -u scripts/expand_music_metadata_5k.py \
-            --target 5000 --max-waves 4 \
+            --target 5000 --max-waves 18 \
             --requests-per-wave 125 --seconds-per-wave 1200 \
             --total-seconds 4500 --new-per-wave 250 \
             --output audits/ws2-5k.json
