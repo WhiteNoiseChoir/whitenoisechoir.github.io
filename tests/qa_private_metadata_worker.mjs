@@ -64,6 +64,16 @@ try {
  assert.ok(q.args.includes(1));
  assert.ok(q.args.includes("southeast-asia"));
  assert.equal(q.args.at(-1),3);
+ const strict=await expectStatus("/search?q=forest%20stream&mode=all&class=nature&has_audio=1&limit=5",valid,200);
+ assert.equal(strict.mode,"all");
+ const strictSql=queries.at(-1);
+ assert.match(strictSql.args[0],/ AND /);
+ assert.ok(strictSql.args.includes("nature"));
+ assert.ok(strictSql.args.includes(1));
+ assert.equal(strictSql.args.at(-1),5);
+ const loose=await expectStatus("/search?q=forest%20stream&mode=any",valid,200);
+ assert.equal(loose.mode,"any");
+ assert.match(queries.at(-1).args[0],/ OR /);
  assert.equal((await expectStatus("/search?q=",valid,400)).error,"query_required");
  assert.equal((await expectStatus("/nope",valid,404)).error,"not_found");
  assert.equal((await expectStatus("/search?q=birds",valid,405,"POST")).error,"method_not_allowed");
@@ -74,6 +84,6 @@ try {
  assert.equal(inj.args.length,2);
  console.log("AI_METADATA_WORKER_CONTRACT_QA_PASS",JSON.stringify({
   tests:["missing token","malformed token","wrong audience","expired token","health count",
-   "Vietnamese expansion and filters","R2 key/source/QA response","empty query","404","method guard","SQL parameterization"],
+   "Vietnamese expansion and filters","strict AND mode / audio SQL filter","default OR backward compatibility","R2 key/source/QA response","empty query","404","method guard","SQL parameterization"],
   indexed_baseline_fixture:22239,production_deployment_tested:false}));
 }finally {globalThis.fetch=originalFetch;}
