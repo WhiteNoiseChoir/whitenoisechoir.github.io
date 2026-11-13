@@ -15,8 +15,7 @@ from botocore.config import Config
 
 ORIGIN = "https://whitenoisechoir.com"
 MEDIA = "https://media.whitenoisechoir.com/"
-ACCOUNT_ID = "86bcd68281bc9476cbeeefffd7fe071d"
-BUCKET = "whitenoisechoir-media"
+from audit_r2_asset_inventory import ACCOUNT_ID, BUCKET
 
 
 def sources():
