@@ -1,0 +1,88 @@
+name: Parallel Music Instrument Audio Intake
+on:
+  push:
+    branches: [feature/music-source-intake-20261113]
+    paths:
+      - 'scripts/harvest_music_instruments_to_r2.py'
+      - 'scripts/test_music_instrument_intake.py'
+      - '.github/workflows/music_instrument_intake.yml'
+  workflow_dispatch:
+    inputs:
+      batch_size:
+        description: Maximum musical sound recordings to select
+        required: true
+        type: choice
+        default: '8'
+        options: ['8', '12', '24', '40']
+permissions:
+  contents: read
+# Separate concurrency group: music can run at the same time as nature audio.
+concurrency:
+  group: whitenoisechoir-music-intake
+  cancel-in-progress: false
+env:
+  R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+  R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+  AWS_EC2_METADATA_DISABLED: 'true'
+  PYTHONUNBUFFERED: '1'
+jobs:
+  music-unit-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          sparse-checkout: scripts
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install -q 'boto3>=1.36,<2' 'requests>=2.32,<3' 'beautifulsoup4>=4.12,<5'
+      - name: Syntax and 11 music discovery / provenance regression tests
+        run: |
+          python -m py_compile scripts/harvest_music_instruments_to_r2.py scripts/test_music_instrument_intake.py
+          python -u scripts/test_music_instrument_intake.py -v
+
+  music-source-readonly:
+    needs: music-unit-tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          sparse-checkout: scripts
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install -q 'boto3>=1.36,<2' 'requests>=2.32,<3' 'beautifulsoup4>=4.12,<5'
+      - name: Verify R2 read credentials
+        run: |
+          test -n "$R2_ACCESS_KEY_ID"
+          test -n "$R2_SECRET_ACCESS_KEY"
+      - name: Search music sources and inspect provenance WITHOUT audio download or R2 write
+        run: python -u scripts/harvest_music_instruments_to_r2.py --discovery-only --batch-size 24
+
+  music-pilot-ingest:
+    needs: music-source-readonly
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          sparse-checkout: scripts
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install controlled media and R2 dependencies
+        run: |
+          if ! command -v ffprobe >/dev/null; then
+            sudo apt-get update -qq
+            sudo apt-get install -y -qq ffmpeg
+          fi
+          python -m pip install -q 'boto3>=1.36,<2' 'requests>=2.32,<3' 'beautifulsoup4>=4.12,<5'
+      - name: Collect original music audio (max 8 on push) and preserve source licenses
+        env:
+          BATCH_SIZE: ${{ github.event_name == 'workflow_dispatch' && inputs.batch_size || '8' }}
+        run: python -u scripts/harvest_music_instruments_to_r2.py --ingest --batch-size "$BATCH_SIZE" --workers 2
