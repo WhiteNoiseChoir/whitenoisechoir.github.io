@@ -60,7 +60,13 @@ def main():
   audits={
    "source_class_counts":dict(db.execute("SELECT source_class,COUNT(*) FROM assets GROUP BY source_class").fetchall()),
    "missing_sound_family":db.execute("SELECT COUNT(*) FROM assets WHERE sound_family IS NULL OR TRIM(sound_family)=''").fetchone()[0],
-   "audio_key_present":db.execute("SELECT COUNT(*) FROM assets WHERE r2_key IS NOT NULL AND TRIM(r2_key)<>''").fetchone()[0]
+   "audio_key_present":db.execute("SELECT COUNT(*) FROM assets WHERE r2_key IS NOT NULL AND TRIM(r2_key)<>''").fetchone()[0],
+   "missing_name":db.execute("SELECT COUNT(*) FROM assets WHERE name IS NULL OR TRIM(name)=''").fetchone()[0],
+   "missing_habitat":db.execute("SELECT COUNT(*) FROM assets WHERE habitat IS NULL OR TRIM(habitat)=''").fetchone()[0],
+   "missing_provider":db.execute("SELECT COUNT(*) FROM assets WHERE provider IS NULL OR TRIM(provider)=''").fetchone()[0],
+   "missing_license":db.execute("SELECT COUNT(*) FROM assets WHERE license IS NULL OR TRIM(license)=''").fetchone()[0],
+   "missing_duration":db.execute("SELECT COUNT(*) FROM assets WHERE duration IS NULL OR duration<=0").fetchone()[0],
+   "missing_species":db.execute("SELECT COUNT(*) FROM assets WHERE scientific_name IS NULL OR TRIM(scientific_name)=''").fetchone()[0]
   }
   if sum(audits["source_class_counts"].values())!=total:
    raise RuntimeError("Source class audit count mismatch")
