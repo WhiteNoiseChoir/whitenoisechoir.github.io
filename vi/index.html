@@ -63,6 +63,25 @@
           </select>
         </label>
       </div>
+      <div id="av-live-preview" class="av-live-preview" aria-label="Xem trước video đồng bộ">
+        <details id="av-preview-details">
+          <summary><span>Xem trước video cùng bản phối</span><span id="av-preview-name" class="av-preview-name">Chưa có video</span></summary>
+          <div class="av-preview-content">
+            <div class="av-preview-actions">
+              <label for="video-input" class="av-preview-picker">Chọn clip từ máy</label>
+              <button id="av-remove-video" type="button" disabled>Gỡ clip</button>
+              <span class="av-preview-help">MP4 8–16 giây · Chỉ lưu trên máy · Âm gốc tắt</span>
+            </div>
+            <div id="av-video-slot" class="av-video-slot">
+              <p id="av-preview-placeholder">Chọn hoặc kéo thả clip MP4 vào đây. Nhấn Phát trên timeline để vừa nghe bản phối vừa xem video lặp.</p>
+            </div>
+            <div class="av-preview-footer">
+              <output id="av-preview-clock" aria-label="Thời gian clip">--:-- / --:--</output>
+              <span id="av-preview-status" role="status" aria-live="polite">Chọn clip để bắt đầu.</span>
+            </div>
+          </div>
+        </details>
+      </div>
       <div class="transport">
         <button id="play" class="primary" type="button" aria-keyshortcuts="Space">Phát</button>
         <button id="reset" type="button" title="Về đầu">Về đầu</button>
@@ -138,5 +157,6 @@
 <script src="/studio-engine.js?v=timeline-visual-20261112a"></script>
 <script src="/studio-ui.js?v=vertical-reorder-20261112b"></script>
 <script src="/studio-vault.js"></script>
+<script src="/studio-av-preview.js?v=20261113a"></script>
 </body>
 </html>
