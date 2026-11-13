@@ -3,5 +3,178 @@
     "slug": "cabin-rain-night-v3",
     "title": "Cabin trong mưa đêm · V3",
     "preset": "cabin-rain-night-v3"
+  },
+  {
+    "slug": "music-eight-source-preview-20261113",
+    "title": "Phối thử 8 nhạc cụ từ R2 · V1",
+    "project": {
+      "title": "Nhạc cụ thư giãn · Demo 8 nguồn R2 · V1",
+      "length": 600,
+      "master": 0.68,
+      "tracks": [
+        {
+          "label": "Synth · nền ấm mở đầu",
+          "assetRef": "r2-33e8942f39405c2d34d02d8cc520bdc2f8992b5da8f539b16522cc0e7cca5c9d",
+          "start": 0,
+          "duration": 106,
+          "gain": 0.13,
+          "loop": false,
+          "mute": false,
+          "fadeIn": 8,
+          "fadeOut": 18,
+          "pan": -0.12,
+          "lowpass": 4000
+        },
+        {
+          "label": "Piano 01 · chủ đạo mở đầu",
+          "assetRef": "r2-2203f3c8d69ba87cc2d9db7cf4c6cb66b8f5805331eb74595379f9cac0bb21a2",
+          "start": 0,
+          "duration": 300,
+          "gain": 0.32,
+          "loop": false,
+          "mute": false,
+          "fadeIn": 5,
+          "fadeOut": 18,
+          "pan": -0.08
+        },
+        {
+          "label": "Guitar 01 · nhấn ngắn bên trái",
+          "assetRef": "r2-1d6a93af58509e31f8174d21097a073ea3248f692e234a749397681d31b5a542",
+          "start": 43,
+          "duration": 11,
+          "gain": 0.12,
+          "loop": false,
+          "mute": false,
+          "fadeIn": 1,
+          "fadeOut": 2.5,
+          "pan": -0.35
+        },
+        {
+          "label": "Dây · lớp mềm ở giữa",
+          "assetRef": "r2-b528052ad0345627f752673d678b2b1e2fe29c84dde8eb4dc59df6c5679c8f3f",
+          "start": 90,
+          "duration": 138,
+          "gain": 0.17,
+          "loop": false,
+          "mute": false,
+          "fadeIn": 12,
+          "fadeOut": 22,
+          "pan": 0.28
+        },
+        {
+          "label": "Guitar 02 · nhấn ngắn bên phải",
+          "assetRef": "r2-daa309133f1ed2909de77b21452f6d8dd589ca198399bd334a21f198f1fc62cc",
+          "start": 181,
+          "duration": 9.5,
+          "gain": 0.11,
+          "loop": false,
+          "mute": false,
+          "fadeIn": 0.8,
+          "fadeOut": 2,
+          "pan": 0.32
+        },
+        {
+          "label": "Sáo · giai đoạn 2",
+          "assetRef": "r2-f09ba8bff00baca85fcdcde3b7f5d6b34a09c2c0b44b007a9123ee42f7d1bcf2",
+          "start": 210,
+          "duration": 190,
+          "gain": 0.18,
+          "loop": false,
+          "mute": false,
+          "fadeIn": 15,
+          "fadeOut": 24,
+          "pan": 0.2,
+          "lowpass": 6600
+        },
+        {
+          "label": "Synth · lớp nền trở lại",
+          "assetRef": "r2-33e8942f39405c2d34d02d8cc520bdc2f8992b5da8f539b16522cc0e7cca5c9d",
+          "start": 253,
+          "duration": 104,
+          "gain": 0.095,
+          "loop": false,
+          "mute": false,
+          "fadeIn": 12,
+          "fadeOut": 17,
+          "pan": -0.18,
+          "lowpass": 3600
+        },
+        {
+          "label": "Piano 02 · chuyển cảnh",
+          "assetRef": "r2-e9389ef71ab6d7ccb4e6787c0d37006cba479379899c0be21f4acbb73a65e83f",
+          "start": 306,
+          "duration": 140,
+          "gain": 0.23,
+          "loop": false,
+          "mute": false,
+          "fadeIn": 12,
+          "fadeOut": 19,
+          "pan": -0.06
+        },
+        {
+          "label": "Guitar 01 · nhấn lặp lại",
+          "assetRef": "r2-1d6a93af58509e31f8174d21097a073ea3248f692e234a749397681d31b5a542",
+          "start": 389,
+          "duration": 11,
+          "gain": 0.1,
+          "loop": false,
+          "mute": false,
+          "fadeIn": 1,
+          "fadeOut": 2.6,
+          "pan": -0.32
+        },
+        {
+          "label": "Bộ gõ · điểm chuyển nhịp",
+          "assetRef": "r2-6c75a6a6d85f4815a375c923d7a13e371dedca45c6a181edcabe48030f6386d6",
+          "start": 448,
+          "duration": 15.5,
+          "gain": 0.1,
+          "loop": false,
+          "mute": false,
+          "fadeIn": 2,
+          "fadeOut": 6,
+          "pan": -0.16,
+          "lowpass": 5200
+        },
+        {
+          "label": "Piano 01 · đoạn kết",
+          "assetRef": "r2-2203f3c8d69ba87cc2d9db7cf4c6cb66b8f5805331eb74595379f9cac0bb21a2",
+          "start": 459,
+          "duration": 141,
+          "gain": 0.25,
+          "loop": false,
+          "mute": false,
+          "offset": 86,
+          "fadeIn": 15,
+          "fadeOut": 24,
+          "pan": -0.09
+        },
+        {
+          "label": "Dây · hòa âm kết",
+          "assetRef": "r2-b528052ad0345627f752673d678b2b1e2fe29c84dde8eb4dc59df6c5679c8f3f",
+          "start": 474,
+          "duration": 125,
+          "gain": 0.13,
+          "loop": false,
+          "mute": false,
+          "offset": 9,
+          "fadeIn": 16,
+          "fadeOut": 25,
+          "pan": 0.14
+        },
+        {
+          "label": "Guitar 02 · điểm nhấn cuối",
+          "assetRef": "r2-daa309133f1ed2909de77b21452f6d8dd589ca198399bd334a21f198f1fc62cc",
+          "start": 566,
+          "duration": 9.4,
+          "gain": 0.08,
+          "loop": false,
+          "mute": false,
+          "fadeIn": 0.9,
+          "fadeOut": 2.3,
+          "pan": 0.3
+        }
+      ]
+    }
   }
 ]
