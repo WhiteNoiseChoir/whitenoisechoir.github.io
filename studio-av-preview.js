@@ -35,7 +35,13 @@
   let lastPlayAttempt = -Infinity;
   let playPending = false;
   let lastStatus = '';
-  let userPausedPanel = false;
+  let ticking = false;
+  function queueTick() {
+    if (!ticking) {
+      ticking = true;
+      requestAnimationFrame(update);
+    }
+  }
 
   function message(value) {
     if (lastStatus !== value) {
@@ -52,7 +58,7 @@
     remove.disabled = !attached;
     if (attached) {
       details.open = true;
-      userPausedPanel = false;
+      queueTick();
       message('Đã gắn clip từ máy. Nhấn Phát trên timeline để xem và nghe đồng bộ.');
     } else {
       video.pause();
@@ -96,8 +102,9 @@
   }
 
   function update(now) {
-    requestAnimationFrame(update);
+    ticking = false;
     if (!input.files || !input.files.length || video.error) return;
+    queueTick();
     const duration = video.duration;
     if (!Number.isFinite(duration) || duration <= 0) return;
     const state = audioState();
@@ -107,7 +114,7 @@
       Math.abs(state.time - lastAudioPosition) > Math.max(0.45, elapsed + 0.35);
     lastAudioPosition = state.time;
     lastFrameTime = now;
-    const active = state.active && !document.hidden && !userPausedPanel;
+    const active = state.active && details.open && !document.hidden;
     let difference = signedDrift(expected, video.currentTime, duration);
 
     if (jumped) {
@@ -169,7 +176,7 @@
   });
   input.addEventListener('change', showSelectedFile);
   remove.addEventListener('click', () => {
-    if (!input.files.length) return;
+    if (!input.files.length || input.disabled) return;
     input.value = '';
     input.dispatchEvent(new Event('change', {bubbles: true}));
   });
@@ -189,6 +196,10 @@
     const file = event.dataTransfer && event.dataTransfer.files[0];
     if (!file) return;
     event.preventDefault();
+    if (input.disabled) {
+      message('Đang xuất file. Không thể đổi clip trong lúc xuất.');
+      return;
+    }
     if (!file.type.startsWith('video/') && !/\.(mp4|mov|mkv|webm)$/i.test(file.name)) {
       message('Chỉ nhận file video (khuyến nghị MP4 H.264).');
       return;
@@ -205,5 +216,4 @@
 
   // Unlike the audio engine, this preview never schedules, alters or renders sound.
   showSelectedFile();
-  requestAnimationFrame(update);
 })();
