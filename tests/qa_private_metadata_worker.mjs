@@ -68,6 +68,15 @@ try {
  assert.equal(strict.mode,"all");
  const strictSql=queries.at(-1);
  assert.match(strictSql.args[0],/ AND /);
+ assert.match(strictSql.args[0],/\("forest"\*\)/);
+ assert.match(strictSql.args[0],/\("stream"\*\)/);
+ // Strict Vietnamese terms must not require every English synonym simultaneously.
+ await expectStatus("/search?q=chim%20r%E1%BB%ABng&mode=all",valid,200);
+ const viStrict=queries.at(-1).args[0];
+ assert.match(viStrict,/ AND /);
+ assert.match(viStrict,/ OR /);
+ assert.ok(!viStrict.includes('"birds"* AND "bird"*'));
+
  assert.ok(strictSql.args.includes("nature"));
  assert.ok(strictSql.args.includes(1));
  assert.equal(strictSql.args.at(-1),5);
