@@ -64,6 +64,20 @@ try {
  assert.ok(q.args.includes(1));
  assert.ok(q.args.includes("southeast-asia"));
  assert.equal(q.args.at(-1),3);
+ // Explicit quality and sound-family constraints must remain SQL-bound (not interpolated).
+ const filtered=await expectStatus("/search?q=rain&class=nature&has_audio=1&qa_status=verified&sound_family=rain&limit=4",valid,200);
+ assert.equal(filtered.filters.qa_status,"verified");
+ assert.equal(filtered.filters.sound_family,"rain");
+ const qualitySql=queries.at(-1);
+ assert.match(qualitySql.sql,/a.qa_status=\?/);
+ assert.match(qualitySql.sql,/a.sound_family=\?/);
+ assert.ok(qualitySql.args.includes("verified"));
+ assert.ok(qualitySql.args.includes("rain"));
+ assert.equal(qualitySql.args.at(-1),4);
+ await expectStatus("/search?q=rain&qa_status="+encodeURIComponent("x' OR 1=1 --"),valid,200);
+ const qualityInjection=queries.at(-1);
+ assert.ok(!qualityInjection.sql.includes("1=1"));
+ assert.ok(qualityInjection.args.includes("x' OR 1=1 --"));
  const strict=await expectStatus("/search?q=forest%20stream&mode=all&class=nature&has_audio=1&limit=5",valid,200);
  assert.equal(strict.mode,"all");
  const strictSql=queries.at(-1);
@@ -115,6 +129,6 @@ try {
  assert.equal(inj.args.length,2);
  console.log("AI_METADATA_WORKER_CONTRACT_QA_PASS",JSON.stringify({
   tests:["missing token","malformed token","wrong audience","expired token","health count",
-   "Vietnamese expansion and filters","strict AND mode / audio SQL filter","default OR backward compatibility","R2 key/source/QA response","empty query","404","method guard","SQL parameterization","five composition query contracts (mocked D1)"],
+   "Vietnamese expansion and filters","strict AND mode / audio SQL filter","default OR backward compatibility","R2 key/source/QA response","empty query","404","method guard","SQL parameterization","five composition query contracts (mocked D1)","bound QA and sound-family filters"],
   indexed_baseline_fixture:22239,production_deployment_tested:false}));
 }finally {globalThis.fetch=originalFetch;}
