@@ -2,7 +2,7 @@ name: WS3 Private Wikimedia Metadata Discovery
 on:
   push:
     branches: [feature/ws3-sleep-relax-coverage-20261114]
-    paths: [.github/workflows/ws3_wikimedia_metadata_discovery.yml]
+    paths: [.github/workflows/ws3_wikimedia_metadata_discovery.yml, scripts/ws3_wikimedia_discovery.py]
   workflow_dispatch:
 permissions:
   contents: read
