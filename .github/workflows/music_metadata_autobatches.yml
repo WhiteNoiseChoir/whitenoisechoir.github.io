@@ -1,0 +1,78 @@
+name: Automatic Music Metadata Batches — target 1000
+on:
+  push:
+    branches: [feature/music-metadata-autobatches-20261113]
+    paths:
+      - '.github/workflows/music_metadata_autobatches.yml'
+      - 'scripts/run_music_metadata_batches.py'
+      - 'scripts/test_run_music_metadata_batches.py'
+      - 'scripts/scan_openverse_music_metadata.py'
+      - 'scripts/test_openverse_music_metadata.py'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: whitenoisechoir-metadata-autobatches-v1
+  cancel-in-progress: false
+env:
+  R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+  R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+  GITHUB_TOKEN: ${{ github.token }}
+  AWS_EC2_METADATA_DISABLED: 'true'
+  PYTHONUNBUFFERED: '1'
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          sparse-checkout: scripts
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install pinned-range metadata-only dependencies
+        run: python -m pip install -q 'boto3>=1.36,<2' 'requests>=2.32,<3' 'beautifulsoup4>=4.12,<5'
+      - name: Confirm controller and provider regression tests
+        run: |
+          python -m py_compile scripts/run_music_metadata_batches.py scripts/scan_openverse_music_metadata.py
+          python scripts/test_run_music_metadata_batches.py -v
+          python scripts/test_openverse_music_metadata.py -v
+          python scripts/test_archive_music_metadata.py -v
+          python scripts/test_music_candidate_metadata.py -v
+          python scripts/test_music_instrument_intake.py -v
+  chained-metadata-intake:
+    needs: test
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          sparse-checkout: scripts
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install API and R2 dependencies
+        run: python -m pip install -q 'boto3>=1.36,<2' 'requests>=2.32,<3' 'beautifulsoup4>=4.12,<5'
+      - name: Confirm private R2 credentials
+        run: |
+          test -n "$R2_ACCESS_KEY_ID"
+          test -n "$R2_SECRET_ACCESS_KEY"
+      - name: Wait for prior Openverse batch then chain distinct metadata waves
+        run: |
+          python -u scripts/run_music_metadata_batches.py \
+            --target 1000 --max-batches 9 \
+            --wait-for-run 43378869855 \
+            --wait-seconds 2700 --budget-seconds 6000 \
+            --output audits/music-auto-progress.json
+      - name: Preserve private progress and per-wave audit reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: music-metadata-auto-batches
+          path: audits/music-auto-*.json
+          if-no-files-found: warn
+          retention-days: 30
