@@ -1,0 +1,35 @@
+name: WS2 Private Sleep Relax Metadata Enrichment
+on:
+  push:
+    branches: [feature/ws2-sleep-relax-enrichment-20261113]
+    paths:
+      - .github/workflows/ws2_private_sleep_relax_enrichment.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: ws2-private-sleep-relax-enrichment
+  cancel-in-progress: false
+jobs:
+  enrich-private-batch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    env:
+      R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+      R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+      AWS_EC2_METADATA_DISABLED: 'true'
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install private R2 client
+        run: |
+          python -m pip install -q 'boto3>=1.36,<2'
+          test -n "$R2_ACCESS_KEY_ID"
+          test -n "$R2_SECRET_ACCESS_KEY"
+      - name: Enrich 500 private records, commit R2 checkpoint, report only aggregate counts
+        run: python -u scripts/ws2_enrich_sleep_relax_metadata.py
