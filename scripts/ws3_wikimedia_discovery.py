@@ -27,7 +27,7 @@ def main():
  checkpoint=json.loads(client.get_object(Bucket=BUCKET,Key=ROOT+"current.json")["Body"].read())
  if checkpoint.get("next_stage")!="provider_metadata_gap_discovery":raise RuntimeError("Coverage checkpoint not ready")
  stamp=datetime.datetime.now(datetime.timezone.utc).strftime("%Y%m%dT%H%M%SZ")
- results={};calls=0;blocked=None
+ results={};calls=0;blocked=None;audio_hits=0;duplicate_hits=0
  for category,queries in QUERIES.items():
   for term in queries:
    params={"action":"query","generator":"search","gsrsearch":'filetype:audio '+term,"gsrnamespace":"6","gsrlimit":"12","prop":"imageinfo","iiprop":"extmetadata|mime|size|url","iiextmetadatalanguage":"en","format":"json","formatversion":"2"}
@@ -40,6 +40,7 @@ def main():
    for page in data.get("query",{}).get("pages",[]):
     info=(page.get("imageinfo") or [{}])[0]
     if not str(info.get("mime","")).startswith("audio/"):continue
+    audio_hits+=1
     ext=info.get("extmetadata") or {}
     def field(k):
      value=ext.get(k,{})
@@ -47,6 +48,9 @@ def main():
     pageid=page.get("pageid")
     if not isinstance(pageid,int):continue
     identity="wikimedia-commons:"+str(pageid)
+    if identity in results:
+     duplicate_hits+=1
+     continue
     url="https://commons.wikimedia.org/wiki/"+urllib.parse.quote(page.get("title","").replace(" ","_"),safe="():_")
     results[identity]={"source_id":identity,"provider":"wikimedia_commons","source_page":url,"title":page.get("title"),
      "mime":info.get("mime"),"size_bytes":info.get("size"),"category":category,
@@ -60,10 +64,19 @@ def main():
  fingerprint=hashlib.sha256(json.dumps([{k:v for k,v in results[x].items() if k!="retrieved_at"} for x in keys],sort_keys=True).encode()).hexdigest()
  target=ROOT+"provider-candidates/wikimedia-commons/"+fingerprint[:24]+".json"
  report={"schema":"wnc_ws3_provider_candidates_v1","provider":"wikimedia_commons","source":"Wikimedia Commons MediaWiki API",
-  "retrieved_at":stamp,"queries_attempted":calls,"unique_candidates":len(results),"dedup_within_batch":sum(1 for _ in []) ,
+  "retrieved_at":stamp,"queries_attempted":calls,"unique_candidates":len(results),"audio_hits":audio_hits,"dedup_within_batch":duplicate_hits,
   "provider_blocker":blocked,"metadata_only":True,"audio_downloads":0,"license_verified_for_youtube":False,
   "baseline_coverage_version":checkpoint["version"],"candidates":[results[k] for k in keys]}
+ # Avoid re-uploading identical candidate content on repeat scheduled runs.
+ already_present=False
  if results:
+  try:
+   client.head_object(Bucket=BUCKET,Key=target)
+   already_present=True
+  except client.exceptions.ClientError as exc:
+   if exc.response.get("ResponseMetadata",{}).get("HTTPStatusCode")!=404 and exc.response.get("Error",{}).get("Code") not in ("404","NoSuchKey","NotFound"):
+    raise
+ if results and not already_present:
   client.put_object(Bucket=BUCKET,Key=target,Body=json.dumps(report,ensure_ascii=False).encode(),ContentType="application/json",CacheControl="private,no-store")
   client.head_object(Bucket=BUCKET,Key=target)
  summary={k:v for k,v in report.items() if k!="candidates"}
@@ -71,5 +84,5 @@ def main():
  summary["checkpoint_key"]=target if results else None
  client.put_object(Bucket=BUCKET,Key=ROOT+"provider-candidates/latest-summary.json",Body=json.dumps(summary).encode(),ContentType="application/json",CacheControl="private,no-store")
  print("WS3_PROVIDER_DISCOVERY "+json.dumps({"queries_attempted":calls,"unique_candidates":len(results),
-  "provider_blocker":blocked,"checkpoint_written":bool(results),"audio_downloads":0,"license_verified_for_youtube":False}))
+  "provider_blocker":blocked,"checkpoint_written":bool(results),"reused_existing_checkpoint":already_present,"audio_hits":audio_hits,"duplicate_hits":duplicate_hits,"audio_downloads":0,"license_verified_for_youtube":False}))
 if __name__=="__main__":main()
