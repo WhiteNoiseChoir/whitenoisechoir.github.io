@@ -1,0 +1,101 @@
+name: WS3 Private CC0 Music Audio Candidate Pilot
+on:
+  push:
+    branches: [feature/music-verified-audio-intake-20261113]
+    paths:
+      - 'scripts/pilot_import_music_candidates.py'
+      - 'scripts/test_pilot_import_music_candidates.py'
+      - '.github/workflows/music_verified_candidate_audio_pilot.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: whitenoisechoir-music-approved-candidate-pilot-v1
+  cancel-in-progress: false
+env:
+  R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+  R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+  AWS_EC2_METADATA_DISABLED: 'true'
+  PYTHONUNBUFFERED: '1'
+jobs:
+  safety-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          sparse-checkout: scripts
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install read/write R2 dependencies
+        run: python -m pip install -q 'boto3>=1.36,<2' 'requests>=2.32,<3' 'beautifulsoup4>=4.12,<5'
+      - name: Test provenance, SSRF denylist, independent rights gate, budgets
+        run: |
+          python -m py_compile scripts/pilot_import_music_candidates.py scripts/test_pilot_import_music_candidates.py
+          python scripts/test_pilot_import_music_candidates.py -v
+          python scripts/test_music_candidate_metadata.py -v
+  rights-preflight:
+    needs: safety-tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          sparse-checkout: scripts
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install -q 'boto3>=1.36,<2' 'requests>=2.32,<3' 'beautifulsoup4>=4.12,<5'
+      - name: Validate private R2 credentials
+        run: |
+          test -n "$R2_ACCESS_KEY_ID"
+          test -n "$R2_SECRET_ACCESS_KEY"
+      - name: Read private candidate records and private approvals without downloading
+        run: |
+          python -u scripts/pilot_import_music_candidates.py --batch-size 8 \
+            --max-records 5000 --byte-budget-mib 250 \
+            --output audits/music-audio-preflight.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: music-cc0-approval-preflight
+          path: audits/music-audio-preflight.json
+          if-no-files-found: warn
+          retention-days: 14
+  rights-approved-pilot:
+    needs: rights-preflight
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          sparse-checkout: scripts
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Ensure local ffprobe and install dependencies
+        run: |
+          if ! command -v ffprobe >/dev/null; then
+            sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg
+          fi
+          python -m pip install -q 'boto3>=1.36,<2' 'requests>=2.32,<3' 'beautifulsoup4>=4.12,<5'
+      - name: Validate private R2 credentials
+        run: |
+          test -n "$R2_ACCESS_KEY_ID"
+          test -n "$R2_SECRET_ACCESS_KEY"
+      - name: Import up to 8 exclusively pre-approved CC0 original recordings
+        run: |
+          python -u scripts/pilot_import_music_candidates.py --ingest \
+            --batch-size 8 --max-records 5000 --byte-budget-mib 250 \
+            --output audits/music-audio-import.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: music-cc0-audio-pilot-summary
+          path: audits/music-audio-import.json
+          if-no-files-found: warn
+          retention-days: 14
