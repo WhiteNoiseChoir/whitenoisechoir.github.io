@@ -48,10 +48,10 @@ def main():
  result={"mix":"THE SLEEPING LAKE V2","duration":600,"tracks":len(tracks),"unique_real_r2_sources":len(media),"master":p["master"],
   "measured_mix_input_lufs":stats.get("input_i"),"measured_mix_true_peak_dbtp":stats.get("input_tp"),
   "measured_mix_lra":stats.get("input_lra"),"method":"FFmpeg offline mix with individual fades, source offsets, lowpasses, gain and master; stereo pan interpolation is not simulated; measured input before loudnorm"}
- Path("sleeping-lake-v2-mix-loudness.json").write_text(json.dumps(result,indent=2))
  mix_lufs=float(result["measured_mix_input_lufs"]);peak=float(result["measured_mix_true_peak_dbtp"])
  result["vs_v1_lufs_delta"]=round(mix_lufs-(-33.67),2)
  result["target_band"]="-26 to -28 LUFS; guard -24 to -30 LUFS, TP <= -2.5 dBTP"
+ Path("sleeping-lake-v2-mix-loudness.json").write_text(json.dumps(result,indent=2))
  if not (-30<=mix_lufs<=-24) or peak>-2.5:raise ValueError("V2 full-mix mastering outside safe acceptance band: "+json.dumps(result))
  s="## THE SLEEPING LAKE V2 — 600s offline mix loudness\n\n"+ "\n".join("- "+k+": "+str(v) for k,v in result.items())
  Path("sleeping-lake-v2-mix-loudness.md").write_text(s)
