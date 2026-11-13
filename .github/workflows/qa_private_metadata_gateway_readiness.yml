@@ -1,0 +1,44 @@
+name: Private AI Metadata Gateway Deployment Readiness
+on:
+  push:
+    branches: [feature/ai-metadata-search-index-20261113]
+    paths:
+      - .github/workflows/qa_private_metadata_gateway_readiness.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  private-gateway-preflight:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    env:
+      R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+      R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID || vars.CLOUDFLARE_ACCOUNT_ID }}
+      ACCESS_TEAM_DOMAIN: ${{ secrets.ACCESS_TEAM_DOMAIN || vars.ACCESS_TEAM_DOMAIN }}
+      ACCESS_AUD: ${{ secrets.ACCESS_AUD || vars.ACCESS_AUD }}
+      METADATA_D1_DATABASE_ID: ${{ secrets.METADATA_D1_DATABASE_ID || vars.METADATA_D1_DATABASE_ID }}
+      AWS_EC2_METADATA_DISABLED: 'true'
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install R2 client and verify configured private credentials
+        run: |
+          python -m pip install -q 'boto3>=1.36,<2'
+          test -n "$R2_ACCESS_KEY_ID"
+          test -n "$R2_SECRET_ACCESS_KEY"
+      - name: Validate private R2 index, D1 staged SQL and Cloudflare deployment prerequisites
+        run: python -u scripts/qa_private_metadata_gateway_readiness.py
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ai-metadata-gateway-deployment-readiness
+          path: audits/metadata-gateway-readiness.json
+          if-no-files-found: warn
+          retention-days: 14
