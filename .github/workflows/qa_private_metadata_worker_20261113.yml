@@ -1,0 +1,28 @@
+name: Private Metadata Worker Contract QA
+on:
+  push:
+    branches: [feature/ai-metadata-search-index-20261113]
+    paths:
+      - .github/workflows/qa_private_metadata_worker_20261113.yml
+      - tests/qa_private_metadata_worker.mjs
+      - internal/metadata-ai-search/worker.mjs
+permissions:
+  contents: read
+concurrency:
+  group: wnc-private-metadata-worker-contract
+  cancel-in-progress: false
+jobs:
+  contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate Worker syntax
+        run: node --check internal/metadata-ai-search/worker.mjs
+      - name: Verify authentication, query filtering and injection defense
+        run: node tests/qa_private_metadata_worker.mjs
