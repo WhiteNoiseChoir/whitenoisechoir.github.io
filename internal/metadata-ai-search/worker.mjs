@@ -61,10 +61,10 @@ function tokens(query) {
  for(const [k,v] of Object.entries(VI))if(q.includes(k))extra.push(...v);
  return [...new Set([...words,...extra])].slice(0,24);
 }
-function fts(query) {
+function fts(query, mode="any") {
  // User data only becomes quoted FTS5 terms; never SQL string interpolation.
  const t=tokens(query).filter(x=>/^[\p{L}\p{N}_-]{2,50}$/u.test(x));
- return t.map(x=>'"'+x.replaceAll('"','')+'"*').join(" OR ");
+ return t.map(x=>'"'+x.replaceAll('"','')+'"*').join(mode==="all" ? " AND " : " OR ");
 }
 export default {
  async fetch(request,env) {
@@ -79,7 +79,7 @@ export default {
   }
   if(u.pathname!=="/search")return json({error:"not_found"},404);
   const q=(u.searchParams.get("q")||"").slice(0,240);
-  const match=fts(q);
+  // Explicit strict retrieval for soundscape layers; OR remains the backward-compatible default.\n  const mode=u.searchParams.get("mode")==="all" ? "all" : "any";\n  const match=fts(q,mode);
   if(!match)return json({error:"query_required"},400);
   const limit=Math.max(1,Math.min(30,Number.parseInt(u.searchParams.get("limit")||"10",10)||10));
   const cls=u.searchParams.get("class")||"";
@@ -102,7 +102,7 @@ export default {
   sql+=" ORDER BY rank ASC LIMIT ?";params.push(limit);
   try {
    const r=await env.METADATA_DB.prepare(sql).bind(...params).all();
-   return json({query:q,filters:{class:cls,has_audio:audio,region,license:licence},
+   return json({query:q,mode,filters:{class:cls,has_audio:audio,region,license:licence},
      count:r.results.length,results:r.results.map(row=>Object.fromEntries(FIELDS.map(f=>[f,row[f]])))});
   }catch{return json({error:"query_failed"},503);}
  }
