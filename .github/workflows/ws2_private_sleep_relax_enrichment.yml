@@ -32,5 +32,7 @@ jobs:
           python -m pip install -q 'boto3>=1.36,<2'
           test -n "$R2_ACCESS_KEY_ID"
           test -n "$R2_SECRET_ACCESS_KEY"
+      - name: Verify WS2 script syntax before accessing private R2
+        run: python -m py_compile scripts/ws2_enrich_sleep_relax_metadata.py
       - name: Enrich 500 private records, commit R2 checkpoint, report only aggregate counts
         run: python -u scripts/ws2_enrich_sleep_relax_metadata.py
