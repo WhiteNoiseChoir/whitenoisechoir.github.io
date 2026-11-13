@@ -77,6 +77,28 @@ try {
  assert.match(viStrict,/ OR /);
  assert.ok(!viStrict.includes('"birds"* AND "bird"*'));
 
+ // Five production-oriented composition retrieval contracts (mocked D1, no private data).
+ // These prove request routing and bound parameters, NOT actual matching inventory.
+ const scenarios=[
+  {name:"forest birds",url:"/search?q=chim%20r%E1%BB%ABng&mode=all&class=nature&has_audio=1&limit=5",terms:["bird","forest"],cls:"nature",audio:1},
+  {name:"woodland creek",url:"/search?q=su%E1%BB%91i%20r%E1%BB%ABng&mode=all&class=nature&has_audio=1&limit=5",terms:["stream","forest"],cls:"nature",audio:1},
+  {name:"night rain",url:"/search?q=m%C6%B0a%20%C4%91%C3%AAm&mode=all&class=nature&has_audio=1&limit=5",terms:["rain","night"],cls:"nature",audio:1},
+  {name:"forest stream",url:"/search?q=forest%20stream&mode=all&class=nature&has_audio=1&limit=5",terms:["forest","stream"],cls:"nature",audio:1},
+  {name:"ambient piano candidates",url:"/search?q=piano%20ambient&mode=any&class=music&has_audio=0&limit=5",terms:["piano","ambient"],cls:"music",audio:0}
+ ];
+ for(const scenario of scenarios){
+  const response=await expectStatus(scenario.url,valid,200);
+  assert.equal(response.count,1,scenario.name);
+  assert.equal(response.results[0].source_page,fixtureRow.source_page,scenario.name);
+  assert.equal(response.results[0].r2_key,fixtureRow.r2_key,scenario.name);
+  assert.equal(response.results[0].qa_status,fixtureRow.qa_status,scenario.name);
+  const bound=queries.at(-1);
+  for(const term of scenario.terms)assert.ok(bound.args[0].includes(term),scenario.name+" missing "+term);
+  assert.ok(bound.args.includes(scenario.cls),scenario.name+" class");
+  assert.ok(bound.args.includes(scenario.audio),scenario.name+" audio filter");
+  assert.equal(bound.args.at(-1),5,scenario.name+" top N");
+  assert.ok(!bound.sql.includes(scenario.terms[0]),scenario.name+" SQL must bind MATCH");
+ }
  assert.ok(strictSql.args.includes("nature"));
  assert.ok(strictSql.args.includes(1));
  assert.equal(strictSql.args.at(-1),5);
@@ -93,6 +115,6 @@ try {
  assert.equal(inj.args.length,2);
  console.log("AI_METADATA_WORKER_CONTRACT_QA_PASS",JSON.stringify({
   tests:["missing token","malformed token","wrong audience","expired token","health count",
-   "Vietnamese expansion and filters","strict AND mode / audio SQL filter","default OR backward compatibility","R2 key/source/QA response","empty query","404","method guard","SQL parameterization"],
+   "Vietnamese expansion and filters","strict AND mode / audio SQL filter","default OR backward compatibility","R2 key/source/QA response","empty query","404","method guard","SQL parameterization","five composition query contracts (mocked D1)"],
   indexed_baseline_fixture:22239,production_deployment_tested:false}));
 }finally {globalThis.fetch=originalFetch;}
