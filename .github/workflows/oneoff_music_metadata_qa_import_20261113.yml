@@ -1,0 +1,87 @@
+name: One-off Music Metadata Full Audit and Gated R2 Pilot
+on:
+  push:
+    branches: [oneoff/metadata-qa-gated-import-20261113]
+    paths: [.github/workflows/oneoff_music_metadata_qa_import_20261113.yml]
+permissions:
+  contents: read
+concurrency:
+  group: whitenoisechoir-music-approved-candidate-pilot-v1
+  cancel-in-progress: false
+env:
+  R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+  R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+  AWS_EC2_METADATA_DISABLED: 'true'
+  PYTHONUNBUFFERED: '1'
+jobs:
+  inspect-and-stage:
+    runs-on: ubuntu-latest
+    timeout-minutes: 65
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install requirements including ffmpeg and ffprobe
+        run: |
+          python -m pip install -q 'boto3>=1.36,<2' 'requests>=2.32,<3' 'beautifulsoup4>=4.12,<5'
+          if ! command -v ffprobe >/dev/null || ! command -v ffmpeg >/dev/null; then
+            sudo apt-get update -qq
+            sudo apt-get install -y -qq ffmpeg
+          fi
+          test -n "$R2_ACCESS_KEY_ID"
+          test -n "$R2_SECRET_ACCESS_KEY"
+      - name: Run WS3 unit tests
+        run: |
+          python -m py_compile scripts/bulk_stage_music_candidates.py scripts/test_bulk_stage_music_candidates.py
+          python scripts/test_bulk_stage_music_candidates.py -q
+      - name: Audit all private R2 music candidate metadata (read only)
+        run: |
+          python - <<'PY'
+          import json,sys
+          from pathlib import Path
+          sys.path.insert(0,'scripts')
+          import scan_music_candidate_metadata as core
+          import bulk_stage_music_candidates as stage
+          s3=core.s3_client()
+          processed=stage.existing_receipts(s3)
+          eligible, diagnostics, count=stage.read_candidates(s3,10000,processed)
+          report={
+            'schema':'oneoff_music_metadata_full_audit_v1',
+            'r2_candidate_metadata_records':count,
+            'previously_processed_receipts':len(processed),
+            'currently_reviewable_commons_candidates':len(eligible),
+            'classification_counts':dict(diagnostics),
+            'providers_not_yet_supported_for_ingest':['Openverse','Internet Archive','other non-Commons providers'],
+            'import_policy':'Commons CC0/CC BY source-claim-rechecked originals only; private staging, no Studio or publication',
+            'commercial_rights_approved_by_this_audit':0,
+            'audio_downloaded_by_this_audit':0
+          }
+          Path('audits').mkdir(exist_ok=True)
+          Path('audits/oneoff-music-metadata-full-audit.json').write_text(json.dumps(report,indent=2,ensure_ascii=False)+'\n')
+          print('ONEOFF_MUSIC_METADATA_AUDIT '+json.dumps(report,ensure_ascii=False),flush=True)
+          PY
+      - name: Controlled pilot ingest with stop on first network/provider error
+        run: |
+          python -u scripts/bulk_stage_music_candidates.py \
+            --batch-size 8 \
+            --max-files 8 \
+            --max-records 10000 \
+            --max-source-queries 16 \
+            --max-total-mib 80 \
+            --max-seconds 2700 \
+            --max-errors 1 \
+            --request-delay 3 \
+            --output audits/oneoff-music-audio-staging-report.json
+      - name: Preserve audit and import report even if provider rejects downloads
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: music-metadata-full-audit-and-gated-ingest-20261113
+          path: |
+            audits/oneoff-music-metadata-full-audit.json
+            audits/oneoff-music-audio-staging-report.json
+          retention-days: 30
+          if-no-files-found: warn
