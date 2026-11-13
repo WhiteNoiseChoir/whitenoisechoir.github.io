@@ -32,6 +32,31 @@ LICENSES = {
        for v in ("2.0", "2.5", "3.0", "4.0")},
 }
 SKIP = re.compile(r"\b(?:bootleg|karaoke|copyright infringement|soundtrack rip|pirated)\b", re.I)
+
+# Distinct search waves to avoid rescanning identical first-page results.
+# These are candidate discovery hints, NOT verified classifications.
+SEARCH_WAVES = (
+    (),
+    ("sound sample", "single note"),
+    ("loop", "texture"),
+    ("chord", "arpeggio"),
+    ("isolated", "instrument"),
+    ("ambient", "meditation"),
+    ("acoustic", "sustained"),
+    ("phrase", "improvisation"),
+    ("field recording", "traditional"),
+    ("soft", "relaxing"),
+)
+
+
+def family_queries(slug, original, wave):
+    if not 0 <= wave < len(SEARCH_WAVES):
+        raise ValueError("Invalid search wave")
+    if wave == 0:
+        return list(dict.fromkeys([slug.replace("-", " "), original[0]]))
+    stem = slug.replace("-", " ")
+    return [f"{stem} {suffix}" for suffix in SEARCH_WAVES[wave]]
+
 EXCLUDE_SOURCES = ("wikimedia", "internet_archive", "internetarchive", "internet archive")
 
 
@@ -188,6 +213,9 @@ def scan(args):
         raise ValueError("Invalid caps")
     if not 1 <= args.pages <= 4:
         raise ValueError("Invalid pages")
+    wave = getattr(args, "batch_index", 0)
+    if not 0 <= wave < len(SEARCH_WAVES):
+        raise ValueError("Invalid search wave")
     client = session()
     rows = {}
     group_report = {}
@@ -197,7 +225,7 @@ def scan(args):
     for slug, cats, queries, pattern in core.FAMILIES[args.shard_index::args.shard_count]:
         stats = Counter()
         found_group = 0
-        terms = list(dict.fromkeys([slug.replace("-", " "), queries[0]]))
+        terms = family_queries(slug, queries, wave)
         for term in terms:
             if found_group >= args.per_group or len(rows) >= args.max_candidates:
                 break
@@ -294,6 +322,9 @@ def main():
     p.add_argument("--max-candidates", type=int, default=500)
     p.add_argument("--per-group", type=int, default=32)
     p.add_argument("--pages", type=int, default=2)
+    p.add_argument("--batch-index", type=int, default=0,
+                   choices=range(len(SEARCH_WAVES)),
+                   help="0 is original search, 1-9 are distinct non-overlapping query waves")
     p.add_argument("--output", default="audits/music-openverse-candidates.json")
     scan(p.parse_args())
 
