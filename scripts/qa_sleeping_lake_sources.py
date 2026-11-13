@@ -60,7 +60,7 @@ def main():
    i=r.json()["query"]["pages"][0]["imageinfo"][0]; meta=i.get("extmetadata") or {}
    lic=meta.get("LicenseShortName",{}).get("value","")
    if "CC0" not in lic.upper():raise ValueError("Original Commons licensing not CC0: "+lic)
-   if not i.get("mime","").startswith("audio/") or int(i.get("size",0))>16000000:raise ValueError("Invalid or oversized original audio")
+   if i.get("mime") not in ("audio/ogg","application/ogg","audio/x-ogg") or int(i.get("size",0))>16000000:raise ValueError("Invalid or oversized original audio: "+str(i.get("mime"))+" / "+str(i.get("size")))
    url=i["url"]
    if urlsplit(url).hostname!="upload.wikimedia.org":raise ValueError("Unexpected source host")
    p=Path(folder)/"issyk-kul.ogg"
