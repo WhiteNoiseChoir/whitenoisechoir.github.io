@@ -1,0 +1,37 @@
+name: One-off Pixabay Piano Browser Intake
+on:
+  push:
+    branches: [intake/three-piano-20261113]
+    paths: [.github/workflows/intake_pixabay_piano_browser_20261113.yml]
+permissions:
+  contents: read
+jobs:
+  fetch-official:
+    runs-on: ubuntu-latest
+    timeout-minutes: 9
+    env:
+      AWS_EC2_METADATA_DISABLED: 'true'
+      R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+      R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Standard browser plus audio tools
+        run: |
+          python -m pip install -q 'selenium>=4.29,<5' 'boto3>=1.36,<2'
+          command -v google-chrome || command -v chromium || true
+          command -v ffprobe
+      - name: Use legitimate public Free download button, then validate and store audio
+        run: python -u scripts/intake_pixabay_piano_browser_20261113.py
+      - name: Upload result
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pixabay-winter-piano-browser-r2-report
+          path: pixabay-piano-r2-report.json
+          retention-days: 30
+          if-no-files-found: warn
