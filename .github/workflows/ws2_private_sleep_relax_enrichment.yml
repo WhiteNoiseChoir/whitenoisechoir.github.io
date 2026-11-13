@@ -4,6 +4,7 @@ on:
     branches: [feature/ws2-sleep-relax-enrichment-20261113]
     paths:
       - .github/workflows/ws2_private_sleep_relax_enrichment.yml
+      - scripts/ws2_enrich_sleep_relax_metadata.py
   workflow_dispatch:
 permissions:
   contents: read
