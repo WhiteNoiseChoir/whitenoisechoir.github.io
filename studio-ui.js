@@ -9,6 +9,7 @@ const studioGroups = {
   transit: tr('Phương tiện'),
   human: tr('Nhịp cơ thể'),
   hum: tr('Âm nền & rung'),
+  music: studioEnglish ? 'Music instruments' : 'Nhạc cụ & âm nhạc',
   other: studioEnglish ? 'Other recordings' : 'Âm thanh khác',
 };
 const originalFacets = [
