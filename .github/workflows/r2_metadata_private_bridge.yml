@@ -1,5 +1,11 @@
 name: WNC R2 metadata to PRIVATE GitHub index (manual until configured)
 on:
+  push:
+    branches: [feature/wnc-r2-private-index-bridge-20261114]
+    paths:
+      - 'scripts/sync_r2_metadata_private_github.py'
+      - 'scripts/test_r2_metadata_private_bridge.py'
+      - '.github/workflows/r2_metadata_private_bridge.yml'
   pull_request:
     paths:
       - 'scripts/sync_r2_metadata_private_github.py'
@@ -21,6 +27,8 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
+      - name: Install offline-test HTTP client
+        run: python -m pip install -q 'requests>=2.32,<3'
       - name: Verify private-only guard, metadata sanitization and JSONL sharding
         run: python -m unittest discover -s scripts -p 'test_r2_metadata_private_bridge.py' -v
   sync:
