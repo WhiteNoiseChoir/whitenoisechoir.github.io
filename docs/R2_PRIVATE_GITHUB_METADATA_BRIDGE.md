@@ -11,7 +11,7 @@
 1. Tạo repo `WhiteNoiseChoir/wnc-metadata-index` ở chế độ **Private**, bật README và nhánh `main`: https://github.com/organizations/WhiteNoiseChoir/repositories/new
 2. Tạo **fine-grained personal access token** với **Repository access: Only select repositories → wnc-metadata-index** và **Contents: Read and write** (Metadata mặc định). Không cấp Administration, Actions, Secrets hay quyền vào tất cả repo.
 3. Ở repo nguồn `WhiteNoiseChoir/whitenoisechoir.github.io` → Settings → Secrets and variables → Actions → New repository secret: tên `WNC_METADATA_REPO_TOKEN`; dán token tại giao diện GitHub, KHÔNG dán trong ChatGPT hoặc issue/PR.
-4. Mở Actions → workflow `WNC R2 metadata to PRIVATE GitHub index (manual until configured)` → Run workflow trên `main`.
+4. Sau khi cả repo Private và token đã được thiết lập, GPT có thể tự cập nhật file `ops/metadata_sync_request.json` trên main bằng commit có tiền tố `chore(metadata): sync-request` để kích hoạt workflow. Ngoài ra chủ repo vẫn có thể mở Actions → workflow `WNC R2 metadata to PRIVATE GitHub index (manual until configured)` → Run workflow trên `main`.
 5. Kiểm tra repo Private có `index/manifest.json`, `index/groups/<group>/part-001.jsonl`. ChatGPT dùng GitHub connector đọc/tìm kiếm file từ repository Private.
 6. Chỉ khi đã xác nhận không lộ dữ liệu, mới bật schedule đồng bộ 4 giờ/lần.
 
@@ -36,3 +36,9 @@
 - Không thể tự thao tác trên R2 trực tiếp chỉ với GitHub connector; mọi thay đổi R2 phải đi qua workflow có secret và kiểm định.
 - Metadata nghiên cứu chưa có sidecar SHA trong các prefix liệt kê sẽ chưa xuất hiện. Muốn phủ hết các kho metadata discovery khác phải bổ sung trình xuất cho từng schema sau khi kiểm kê thực tế.
 - Script đã qua kiểm thử mock/QA nguồn R2 theo run kiểm định; chưa có snapshot private GitHub cho đến khi tạo repo Private và thêm token. Đừng nhầm kiểm tra read-only với kết nối GPT đã sẵn sàng.
+
+## Kích hoạt từ kết nối GitHub của ChatGPT
+- Marker `ops/metadata_sync_request.json` không chứa dữ liệu riêng tư, ban đầu ở trạng thái `not_requested`.
+- Commit lên main với tiền tố chính xác `chore(metadata): sync-request` và chỉ sửa marker sẽ chạy workflow theo nhánh push.
+- Workflow kiểm tra private-target và PAT bắt buộc trước khi đọc/upload R2; nếu không, từ chối an toàn.
+- Không kích hoạt tự động WS2/WS3/WS4, không tạo lịch song song; schedule đồng bộ riêng chỉ bật sau nghiệm thu thành công.
