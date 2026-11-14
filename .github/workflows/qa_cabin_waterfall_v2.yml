@@ -1,0 +1,51 @@
+name: Cabin Waterfall V2 real-browser playback
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/qa_cabin_waterfall_v2.mjs'
+      - 'vi/cabin-beside-waterfall-v2/index.html'
+      - 'data/studio-projects/cabin-beside-waterfall-v2.json'
+      - 'studio-catalog.js'
+      - '.github/workflows/qa_cabin_waterfall_v2.yml'
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+jobs:
+  browser-play:
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate Studio code and draft data
+        run: |
+          node --check studio-catalog.js
+          node --check studio-engine.js
+          node --check scripts/qa_cabin_waterfall_v2.mjs
+          node scripts/build_studio_routes.cjs
+      - name: Install Playwright Core and Chrome
+        run: |
+          npm install --no-save --ignore-scripts --no-audit --no-fund 'playwright-core@1.57.0'
+          if command -v google-chrome >/dev/null; then echo CHROME_BIN=$(command -v google-chrome) >> "$GITHUB_ENV"; else exit 1; fi
+      - name: Chromium Studio playback QA
+        run: node scripts/qa_cabin_waterfall_v2.mjs
+      - name: Post outcome
+        if: always()
+        run: |
+          if test -s cabin-waterfall-v2-browser-qa.md; then
+            gh pr comment '${{ github.event.pull_request.number }}' --body-file cabin-waterfall-v2-browser-qa.md || true
+          fi
+      - name: Save run report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cabin-waterfall-v2-browser-qa
+          path: cabin-waterfall-v2-browser-qa.json
+          if-no-files-found: ignore
