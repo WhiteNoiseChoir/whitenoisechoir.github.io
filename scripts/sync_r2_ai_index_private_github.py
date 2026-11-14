@@ -20,6 +20,8 @@ import sync_r2_metadata_private_github as common
 SOURCE="internal/ai-metadata-index/v1/current.json"
 WS2="internal/ws2-sleep-relax-enrichment/v1/"
 MIN_ROWS=15000
+MIN_NATURE=15000
+MIN_MUSIC=2000
 
 def get_json(s3,key,cap=9000000):
     with s3.get_object(Bucket=common.BUCKET,Key=key)["Body"] as f:
@@ -129,7 +131,7 @@ def export(s3,where):
         classes[cls]+=1
         status[item["availability"]]+=1
     db.close()
-    if classes["nature"]<15000 or classes["music"]<2000:
+    if classes["nature"]<MIN_NATURE or classes["music"]<MIN_MUSIC:
         raise RuntimeError("Canonical source classes incomplete (nature/music)")
     index=Path(where)/"index"
     index.mkdir(parents=True,exist_ok=True)
