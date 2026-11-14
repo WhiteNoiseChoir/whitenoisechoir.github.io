@@ -1,0 +1,33 @@
+name: Diagnose GitHub Pages routes (read-only)
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/qa_pages_route_v2.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: read
+
+jobs:
+  inspect-pages:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - name: Check GitHub Pages configuration and latest build
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          echo '--- GitHub Pages site metadata ---'
+          gh api "repos/${GITHUB_REPOSITORY}/pages" --jq '{status, build_type, source, cname, html_url, https_enforced}' || true
+          echo '--- Latest GitHub Pages build ---'
+          gh api "repos/${GITHUB_REPOSITORY}/pages/builds/latest" --jq '{status, commit, created_at, updated_at, error}' || true
+      - name: Probe live routes
+        run: |
+          for path in /vi/ /vi/cabin-beside-waterfall-v1/ /vi/cabin-beside-waterfall-v2/; do
+            echo "--- https://whitenoisechoir.com${path} ---"
+            curl -sS -L --max-time 22 -D /tmp/wnc-headers -o /tmp/wnc-body -w 'HTTP=%{http_code} FINAL=%{url_effective} BYTES=%{size_download}\n' "https://whitenoisechoir.com${path}" || true
+            grep -iE '^(server|cache-control|age|x-github-request-id|x-cache|cf-cache-status):' /tmp/wnc-headers || true
+            grep -io -m1 '<title>[^<]*</title>' /tmp/wnc-body | head -1 || true
+          done
