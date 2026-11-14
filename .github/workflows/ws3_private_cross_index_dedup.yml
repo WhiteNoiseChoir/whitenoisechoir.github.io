@@ -1,0 +1,32 @@
+name: WS3 Private Cross Index Dedup
+on:
+  push:
+    branches: [feature/ws3-sleep-relax-coverage-20261114]
+    paths: [.github/workflows/ws3_private_cross_index_dedup.yml, scripts/ws3_cross_index_dedup.py]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: ws3-private-cross-index-dedup
+  cancel-in-progress: false
+jobs:
+  cross-index-dedup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+      R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+      AWS_EC2_METADATA_DISABLED: 'true'
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install -q 'boto3>=1.36,<2'
+      - name: Verify syntax
+        run: python -m py_compile scripts/ws3_cross_index_dedup.py
+      - name: Deduplicate Wikimedia metadata against private index
+        run: python -u scripts/ws3_cross_index_dedup.py
