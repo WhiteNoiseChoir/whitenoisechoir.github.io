@@ -1,0 +1,486 @@
+{
+  "schema": "wnc_ws4_benchmark_v1",
+  "description": "Thirty editorial test cases, not measured search results. Audio quality and licenses must be verified separately.",
+  "cases": [
+    {
+      "id": "rainforest-night",
+      "intent": "sleep",
+      "query": "night rainforest steady rain distant insects",
+      "expected_family": "rain",
+      "expected_role": "CONTINUOUS_BED",
+      "expected_habitat": "rainforest",
+      "require_r2_audio": true,
+      "exclude": [
+        "speech",
+        "scream",
+        "explosion",
+        "alarm"
+      ],
+      "max_results": 5
+    },
+    {
+      "id": "creek-dawn",
+      "intent": "relaxation",
+      "query": "gentle forest creek dawn distant birds",
+      "expected_family": "stream",
+      "expected_role": "CONTINUOUS_BED",
+      "expected_habitat": "forest",
+      "require_r2_audio": true,
+      "exclude": [
+        "speech",
+        "scream",
+        "explosion",
+        "alarm"
+      ],
+      "max_results": 5
+    },
+    {
+      "id": "winter-cabin",
+      "intent": "sleep",
+      "query": "snow cabin soft fireplace wind outside",
+      "expected_family": "fireplace",
+      "expected_role": "CONTINUOUS_BED",
+      "expected_habitat": "cabin",
+      "require_r2_audio": true,
+      "exclude": [
+        "speech",
+        "scream",
+        "explosion",
+        "alarm"
+      ],
+      "max_results": 5
+    },
+    {
+      "id": "ocean-sleep",
+      "intent": "sleep",
+      "query": "soft distant ocean waves at night",
+      "expected_family": "ocean",
+      "expected_role": "CONTINUOUS_BED",
+      "expected_habitat": "coast",
+      "require_r2_audio": true,
+      "exclude": [
+        "speech",
+        "scream",
+        "explosion",
+        "alarm"
+      ],
+      "max_results": 5
+    },
+    {
+      "id": "gentle-piano",
+      "intent": "relaxation",
+      "query": "minimal gentle piano ambient no percussion",
+      "expected_family": "piano",
+      "expected_role": "TEXTURE",
+      "expected_habitat": "interior",
+      "require_r2_audio": true,
+      "exclude": [
+        "speech",
+        "scream",
+        "explosion",
+        "alarm"
+      ],
+      "max_results": 5
+    },
+    {
+      "id": "lake-night",
+      "intent": "sleep",
+      "query": "still lake lapping water pine breeze distant owl",
+      "expected_family": "lake",
+      "expected_role": "CONTINUOUS_BED",
+      "expected_habitat": "lake",
+      "require_r2_audio": true,
+      "exclude": [
+        "speech",
+        "scream",
+        "explosion",
+        "alarm"
+      ],
+      "max_results": 5
+    },
+    {
+      "id": "roof-rain",
+      "intent": "sleep",
+      "query": "steady rain on wooden cabin roof",
+      "expected_family": "rain",
+      "expected_role": "CONTINUOUS_BED",
+      "expected_habitat": "cabin",
+      "require_r2_audio": true,
+      "exclude": [
+        "speech",
+        "scream",
+        "explosion",
+        "alarm"
+      ],
+      "max_results": 5
+    },
+    {
+      "id": "brown-noise",
+      "intent": "sleep",
+      "query": "deep brown noise constant unchanging",
+      "expected_family": "brown noise",
+      "expected_role": "CONTINUOUS_BED",
+      "expected_habitat": "interior",
+      "require_r2_audio": true,
+      "exclude": [
+        "speech",
+        "scream",
+        "explosion",
+        "alarm"
+      ],
+      "max_results": 5
+    },
+    {
+      "id": "forest-wind",
+      "intent": "sleep",
+      "query": "soft wind in conifer forest no gusts",
+      "expected_family": "wind",
+      "expected_role": "CONTINUOUS_BED",
+      "expected_habitat": "conifer forest",
+      "require_r2_audio": true,
+      "exclude": [
+        "speech",
+        "scream",
+        "explosion",
+        "alarm"
+      ],
+      "max_results": 5
+    },
+    {
+      "id": "stream-birds",
+      "intent": "relaxation",
+      "query": "stream flowing with sparse distant forest birds",
+      "expected_family": "stream",
+      "expected_role": "CONTINUOUS_BED",
+      "expected_habitat": "forest",
+      "require_r2_audio": true,
+      "exclude": [
+        "speech",
+        "scream",
+        "explosion",
+        "alarm"
+      ],
+      "max_results": 5
+    },
+    {
+      "id": "rain-window",
+      "intent": "sleep",
+      "query": "rain on window distant thunder absent",
+      "expected_family": "rain",
+      "expected_role": "CONTINUOUS_BED",
+      "expected_habitat": "interior",
+      "require_r2_audio": true,
+      "exclude": [
+        "speech",
+        "scream",
+        "explosion",
+        "alarm"
+      ],
+      "max_results": 5
+    },
+    {
+      "id": "distant-owl",
+      "intent": "relaxation",
+      "query": "single distant owl hoot at night",
+      "expected_family": "owl",
+      "expected_role": "EVENT",
+      "expected_habitat": "forest",
+      "require_r2_audio": true,
+      "exclude": [
+        "speech",
+        "scream",
+        "explosion",
+        "alarm"
+      ],
+      "max_results": 5
+    },
+    {
+      "id": "night-crickets",
+      "intent": "sleep",
+      "query": "soft consistent crickets far away",
+      "expected_family": "cricket",
+      "expected_role": "TEXTURE",
+      "expected_habitat": "meadow",
+      "require_r2_audio": true,
+      "exclude": [
+        "speech",
+        "scream",
+        "explosion",
+        "alarm"
+      ],
+      "max_results": 5
+    },
+    {
+      "id": "waterfall-far",
+      "intent": "relaxation",
+      "query": "faraway waterfall diffuse rumble",
+      "expected_family": "waterfall",
+      "expected_role": "CONTINUOUS_BED",
+      "expected_habitat": "forest",
+      "require_r2_audio": true,
+      "exclude": [
+        "speech",
+        "scream",
+        "explosion",
+        "alarm"
+      ],
+      "max_results": 5
+    },
+    {
+      "id": "river-calm",
+      "intent": "sleep",
+      "query": "slow calm river continuous water flow",
+      "expected_family": "river",
+      "expected_role": "CONTINUOUS_BED",
+      "expected_habitat": "river",
+      "require_r2_audio": true,
+      "exclude": [
+        "speech",
+        "scream",
+        "explosion",
+        "alarm"
+      ],
+      "max_results": 5
+    },
+    {
+      "id": "ocean-wind",
+      "intent": "relaxation",
+      "query": "seashore with soft wind and gentle surf",
+      "expected_family": "ocean",
+      "expected_role": "CONTINUOUS_BED",
+      "expected_habitat": "coast",
+      "require_r2_audio": true,
+      "exclude": [
+        "speech",
+        "scream",
+        "explosion",
+        "alarm"
+      ],
+      "max_results": 5
+    },
+    {
+      "id": "fireplace-close",
+      "intent": "sleep",
+      "query": "soft fireplace crackle no loud pops",
+      "expected_family": "fireplace",
+      "expected_role": "CONTINUOUS_BED",
+      "expected_habitat": "cabin",
+      "require_r2_audio": true,
+      "exclude": [
+        "speech",
+        "scream",
+        "explosion",
+        "alarm"
+      ],
+      "max_results": 5
+    },
+    {
+      "id": "fan-hum",
+      "intent": "sleep",
+      "query": "steady electric fan humming indoors",
+      "expected_family": "fan",
+      "expected_role": "CONTINUOUS_BED",
+      "expected_habitat": "interior",
+      "require_r2_audio": true,
+      "exclude": [
+        "speech",
+        "scream",
+        "explosion",
+        "alarm"
+      ],
+      "max_results": 5
+    },
+    {
+      "id": "airplane-cabin",
+      "intent": "sleep",
+      "query": "steady airplane cabin engine hum no announcements",
+      "expected_family": "airplane",
+      "expected_role": "CONTINUOUS_BED",
+      "expected_habitat": "aircraft",
+      "require_r2_audio": true,
+      "exclude": [
+        "speech",
+        "scream",
+        "explosion",
+        "alarm"
+      ],
+      "max_results": 5
+    },
+    {
+      "id": "train-night",
+      "intent": "sleep",
+      "query": "smooth overnight train rumble no horn",
+      "expected_family": "train",
+      "expected_role": "CONTINUOUS_BED",
+      "expected_habitat": "train",
+      "require_r2_audio": true,
+      "exclude": [
+        "speech",
+        "scream",
+        "explosion",
+        "alarm"
+      ],
+      "max_results": 5
+    },
+    {
+      "id": "snow-wind",
+      "intent": "relaxation",
+      "query": "soft winter wind in snowy pine trees",
+      "expected_family": "wind",
+      "expected_role": "CONTINUOUS_BED",
+      "expected_habitat": "winter forest",
+      "require_r2_audio": true,
+      "exclude": [
+        "speech",
+        "scream",
+        "explosion",
+        "alarm"
+      ],
+      "max_results": 5
+    },
+    {
+      "id": "marsh-frogs",
+      "intent": "relaxation",
+      "query": "distant gentle frogs wetland at dusk",
+      "expected_family": "frog",
+      "expected_role": "EVENT",
+      "expected_habitat": "wetland",
+      "require_r2_audio": true,
+      "exclude": [
+        "speech",
+        "scream",
+        "explosion",
+        "alarm"
+      ],
+      "max_results": 5
+    },
+    {
+      "id": "morning-birds",
+      "intent": "relaxation",
+      "query": "gentle birdsong distant forest dawn",
+      "expected_family": "bird",
+      "expected_role": "EVENT",
+      "expected_habitat": "forest",
+      "require_r2_audio": true,
+      "exclude": [
+        "speech",
+        "scream",
+        "explosion",
+        "alarm"
+      ],
+      "max_results": 5
+    },
+    {
+      "id": "rain-leaves",
+      "intent": "sleep",
+      "query": "gentle steady rainfall on leaves",
+      "expected_family": "rain",
+      "expected_role": "CONTINUOUS_BED",
+      "expected_habitat": "forest",
+      "require_r2_audio": true,
+      "exclude": [
+        "speech",
+        "scream",
+        "explosion",
+        "alarm"
+      ],
+      "max_results": 5
+    },
+    {
+      "id": "cave-drips",
+      "intent": "relaxation",
+      "query": "sparse water drops in quiet cave",
+      "expected_family": "water",
+      "expected_role": "EVENT",
+      "expected_habitat": "cave",
+      "require_r2_audio": true,
+      "exclude": [
+        "speech",
+        "scream",
+        "explosion",
+        "alarm"
+      ],
+      "max_results": 5
+    },
+    {
+      "id": "harp-soft",
+      "intent": "relaxation",
+      "query": "quiet harp ambient long sustained tones",
+      "expected_family": "harp",
+      "expected_role": "TEXTURE",
+      "expected_habitat": "interior",
+      "require_r2_audio": true,
+      "exclude": [
+        "speech",
+        "scream",
+        "explosion",
+        "alarm"
+      ],
+      "max_results": 5
+    },
+    {
+      "id": "ambient-pad",
+      "intent": "sleep",
+      "query": "slow soft ambient drone no melody",
+      "expected_family": "ambient",
+      "expected_role": "TEXTURE",
+      "expected_habitat": "interior",
+      "require_r2_audio": true,
+      "exclude": [
+        "speech",
+        "scream",
+        "explosion",
+        "alarm"
+      ],
+      "max_results": 5
+    },
+    {
+      "id": "wind-chimes",
+      "intent": "relaxation",
+      "query": "very sparse gentle wind chimes",
+      "expected_family": "chime",
+      "expected_role": "EVENT",
+      "expected_habitat": "garden",
+      "require_r2_audio": true,
+      "exclude": [
+        "speech",
+        "scream",
+        "explosion",
+        "alarm"
+      ],
+      "max_results": 5
+    },
+    {
+      "id": "city-night",
+      "intent": "sleep",
+      "query": "distant city rain muted traffic no horns",
+      "expected_family": "rain",
+      "expected_role": "CONTINUOUS_BED",
+      "expected_habitat": "city",
+      "require_r2_audio": true,
+      "exclude": [
+        "speech",
+        "scream",
+        "explosion",
+        "alarm"
+      ],
+      "max_results": 5
+    },
+    {
+      "id": "desert-night",
+      "intent": "relaxation",
+      "query": "desert night breeze sparse insects",
+      "expected_family": "wind",
+      "expected_role": "CONTINUOUS_BED",
+      "expected_habitat": "desert",
+      "require_r2_audio": true,
+      "exclude": [
+        "speech",
+        "scream",
+        "explosion",
+        "alarm"
+      ],
+      "max_results": 5
+    }
+  ]
+}
