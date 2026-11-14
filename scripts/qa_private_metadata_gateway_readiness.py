@@ -61,4 +61,34 @@ def main():
  Path("audits").mkdir(exist_ok=True)
  Path("audits/metadata-gateway-readiness.json").write_text(json.dumps(report,ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
  print("AI_METADATA_GATEWAY_PREFLIGHT "+json.dumps(report,ensure_ascii=False),flush=True)
-if __name__=="__main__":main()
+if __name__=="__main__":
+ try:
+  main()
+ except Exception as exc:
+  # Always preserve a sanitized checkpoint artifact, even on R2/Cloudflare failure.
+  # Do not serialize exception strings: SDK errors may contain private object paths.
+  from botocore.exceptions import ClientError
+  code = ""
+  if isinstance(exc, ClientError):
+   code = str(exc.response.get("ResponseMetadata",{}).get("HTTPStatusCode",""))
+   if not code:
+    code = str(exc.response.get("Error",{}).get("Code",""))
+  if code in ("429","TooManyRequests","SlowDown","Throttling"):
+   reason="RATE_LIMITED"
+  elif code in ("401","403","AccessDenied","Unauthorized","Forbidden"):
+   reason="ACCESS_DENIED"
+  elif isinstance(exc, KeyError):
+   reason="MISSING_CONFIGURATION_OR_MANIFEST_FIELD"
+  else:
+   reason="PREFLIGHT_FAILED"
+  report={"schema":"wnc_ai_metadata_deployment_readiness_v1",
+   "checked_at":datetime.datetime.now(datetime.timezone.utc).isoformat(),
+   "deployment_status":"BLOCKED_"+reason,
+   "error_category":reason,
+   "production_worker_tested":False,"gpt_live_search_tested":False,
+   "next_action":"Inspect private CI logs and fix the blocking prerequisite; do not deploy"}
+  Path("audits").mkdir(exist_ok=True)
+  Path("audits/metadata-gateway-readiness.json").write_text(json.dumps(report,indent=2)+"\\n",encoding="utf-8")
+  print("AI_METADATA_GATEWAY_PREFLIGHT "+json.dumps(report),flush=True)
+  raise SystemExit(1)
+
