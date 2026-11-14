@@ -136,6 +136,10 @@ def main():
    if r["composition"]["sleep_suitability"]!="UNVERIFIED" or r["composition"]["relaxation_suitability"]!="UNVERIFIED":
     raise RuntimeError("Unsupported suitability claim")
   roles=collections.Counter(r["composition"]["role_hint"] for r in results)
+  # Distinguish lexical ambiguity from insufficient evidence without guessing acoustic facts.
+  role_evidence_counts=collections.Counter(r["composition"]["role_evidence"] for r in results)
+  if sum(role_evidence_counts.values())!=len(results):
+   raise RuntimeError("Role evidence audit mismatch")
   batch_key=root+"batches/"+f"{offset:06d}-{offset+len(results):06d}.json"
   put(batch_key,{"schema":"wnc_ws2_batch_v1","source_index_sha256":digest,"offset":offset,"records":results})
   # Commit checkpoint only after batch object upload/HEAD verified.
@@ -155,6 +159,6 @@ def main():
   put(root+"checkpoint.json",checkpoint)
   print("WS2_ENRICHMENT_FINAL "+json.dumps({"processed_this_run":len(results),
    "processed_total":checkpoint["processed"],"remaining":total-checkpoint["processed"],
-   "roles_this_run":dict(roles),"errors":0,"sleep_audio_verified":0,
+   "roles_this_run":dict(roles),"role_evidence_this_run":dict(role_evidence_counts),"errors":0,"sleep_audio_verified":0,
    "audio_downloaded":False,"source_mutated":False,"sqlite_audit":audits,"query_checks":query_checks,"retrieval_probe_counts":retrieval_counts,"complete":checkpoint["complete"]}),flush=True)
 if __name__=="__main__":main()
