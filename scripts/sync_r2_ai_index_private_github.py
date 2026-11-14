@@ -129,6 +129,8 @@ def export(s3,where):
         classes[cls]+=1
         status[item["availability"]]+=1
     db.close()
+    if classes["nature"]<15000 or classes["music"]<2000:
+        raise RuntimeError("Canonical source classes incomplete (nature/music)")
     index=Path(where)/"index"
     index.mkdir(parents=True,exist_ok=True)
     folders=[]
