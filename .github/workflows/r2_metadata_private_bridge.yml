@@ -61,7 +61,7 @@ jobs:
       # No public GitHub Action artifacts, PR comments, or logs contain metadata rows.
       # Once the first private sync succeeds, add schedule: cron: '17 */4 * * *'
   readonly-canonical-preflight:
-    if: github.event_name == 'push' && github.ref == 'refs/heads/feature/private-index-canonical-ws1-ws2-bridge-20261114'
+    if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && github.head_ref == 'feature/private-index-canonical-ws1-ws2-bridge-20261114'
     needs: offline-security-tests
     runs-on: ubuntu-latest
     timeout-minutes: 18
