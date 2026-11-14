@@ -39,7 +39,10 @@ jobs:
           python -m unittest discover -s scripts -p 'test_r2_metadata_private_bridge.py' -v
           python -m unittest discover -s scripts -p 'test_r2_ai_index_private_bridge.py' -v
   sync:
-    if: (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main') || (github.event_name == 'push' && github.ref == 'refs/heads/main' && startsWith(github.event.head_commit.message, 'chore(metadata): sync-request'))
+    if: >-
+      (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main') ||
+      (github.event_name == 'push' && github.ref == 'refs/heads/main' &&
+       startsWith(github.event.head_commit.message, 'chore(metadata): sync-request'))
     needs: offline-security-tests
     runs-on: ubuntu-latest
     timeout-minutes: 35
