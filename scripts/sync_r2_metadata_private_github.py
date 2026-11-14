@@ -133,6 +133,27 @@ def git(args,cwd,env):
     if r.returncode:raise RuntimeError("Private GitHub repository sync failed; verify token, repository and branch permissions")
     return r.stdout.strip()
 
+def snapshot_unchanged(source_dir, target_dir):
+    """Skip unchanged index snapshots while ignoring only generated timestamps."""
+    import filecmp
+    source_dir=Path(source_dir)
+    target_dir=Path(target_dir)
+    if not source_dir.is_dir() or not target_dir.is_dir():return False
+    left={str(p.relative_to(source_dir)):p for p in source_dir.rglob("*") if p.is_file()}
+    right={str(p.relative_to(target_dir)):p for p in target_dir.rglob("*") if p.is_file()}
+    if left.keys()!=right.keys() or "manifest.json" not in left:return False
+    for key in left:
+        if key=="manifest.json":continue
+        if not filecmp.cmp(left[key],right[key],shallow=False):return False
+    try:
+        a=json.loads(left["manifest.json"].read_text())
+        b=json.loads(right["manifest.json"].read_text())
+    except (OSError,ValueError):return False
+    for record in (a,b):
+        record.pop("generated_utc",None)
+        record.pop("generated_at_utc",None)
+    return a==b
+
 def publish(stage,token):
     import requests
     res=requests.get("https://api.github.com/repos/"+DEST,
@@ -151,6 +172,7 @@ def publish(stage,token):
         git(["clone","--quiet","--depth=1","--branch",branch,"https://github.com/"+DEST+".git",str(dest)],None,env)
         index=dest/"index"
         if index.is_symlink():raise RuntimeError("Unsafe symlink")
+        if snapshot_unchanged(Path(stage)/"index",index):return False
         if index.exists():shutil.rmtree(index)
         shutil.copytree(Path(stage)/"index",index)
         shutil.copy2(Path(stage)/"README.md",dest/"README.md")
