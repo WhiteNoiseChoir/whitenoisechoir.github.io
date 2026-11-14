@@ -1,8 +1,9 @@
 name: WNC R2 metadata to PRIVATE GitHub index (manual until configured)
 on:
   push:
-    branches: [feature/wnc-r2-private-index-bridge-20261114, feature/private-index-canonical-ws1-ws2-bridge-20261114]
+    branches: [main, feature/wnc-r2-private-index-bridge-20261114, feature/private-index-canonical-ws1-ws2-bridge-20261114]
     paths:
+      - 'ops/metadata_sync_request.json'
       - 'scripts/sync_r2_metadata_private_github.py'
       - 'scripts/sync_r2_ai_index_private_github.py'
       - 'scripts/test_r2_ai_index_private_bridge.py'
@@ -38,7 +39,10 @@ jobs:
           python -m unittest discover -s scripts -p 'test_r2_metadata_private_bridge.py' -v
           python -m unittest discover -s scripts -p 'test_r2_ai_index_private_bridge.py' -v
   sync:
-    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'
+    if: >-
+      (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main') ||
+      (github.event_name == 'push' && github.ref == 'refs/heads/main' &&
+       startsWith(github.event.head_commit.message, 'chore(metadata): sync-request'))
     needs: offline-security-tests
     runs-on: ubuntu-latest
     timeout-minutes: 35
@@ -59,6 +63,7 @@ jobs:
       - name: PRIVATE repository visibility guard, R2 metadata scan and sync
         run: python scripts/sync_r2_ai_index_private_github.py
       # No public GitHub Action artifacts, PR comments, or logs contain metadata rows.
+      # Only the explicit sync-request commit or manual dispatch can push private rows.
       # Once the first private sync succeeds, add schedule: cron: '17 */4 * * *'
   readonly-canonical-preflight:
     if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && github.head_ref == 'feature/private-index-canonical-ws1-ws2-bridge-20261114'
