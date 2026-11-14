@@ -1,0 +1,22 @@
+name: WS4 Composition QA Static Regression
+on:
+  push:
+    branches:
+      - feature/ws4-composition-qa-20261114
+    paths:
+      - 'qa/ws4/**'
+      - 'scripts/ws4_composition_qa.py'
+      - '.github/workflows/ws4_composition_qa.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  static-regression:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Validate benchmark and evaluator regression
+        run: python -m unittest discover -s qa/ws4 -p 'test_*.py' -v
