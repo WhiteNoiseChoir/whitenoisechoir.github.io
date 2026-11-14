@@ -3,7 +3,7 @@
 ## Thực trạng và phạm vi
 - Repo source: `WhiteNoiseChoir/whitenoisechoir.github.io` (**Public**), GitHub App của ChatGPT đã cài cho mọi repository của organization WhiteNoiseChoir.
 - Bucket R2: `whitenoisechoir-media`. GitHub Actions đã có quyền đọc qua R2 secrets hiện hữu.
-- Chỉ xuất **metadata sidecar JSON** và danh sách tên object R2 (không copy audio); chỉ mục JSONL dạng nhóm 250 bản ghi mỗi tệp.
+- Chỉ xuất **chỉ mục SQLite FTS5 canonical của WS1 trên R2** (19.680 thiên nhiên SHA unique + 2.559 ứng viên âm nhạc theo snapshot 13/11; số thực phải qua checksum/count), kết hợp role hints WS2 đã hoàn thành theo checkpoint R2. Không copy audio, không công khai chỉ mục. Mỗi JSONL chứa tối đa 100 bản ghi để GPT đọc nhanh.
 - Đích là **duy nhất** `WhiteNoiseChoir/wnc-metadata-index` và bắt buộc **Private**. Script xác minh GitHub API trước khi đọc R2, và xác minh lần nữa trước khi push; nếu repository Public hoặc thiếu quyền, dừng và không upload.
 - Không dùng `GITHUB_TOKEN` của repo Public để giả định ghi xuyên repo (token mặc định chỉ dùng cho source repo).
 
@@ -14,6 +14,13 @@
 4. Mở Actions → workflow `WNC R2 metadata to PRIVATE GitHub index (manual until configured)` → Run workflow trên `main`.
 5. Kiểm tra repo Private có `index/manifest.json`, `index/groups/<group>/part-001.jsonl`. ChatGPT dùng GitHub connector đọc/tìm kiếm file từ repository Private.
 6. Chỉ khi đã xác nhận không lộ dữ liệu, mới bật schedule đồng bộ 4 giờ/lần.
+
+## Nguồn canonical và giới hạn bao phủ
+- Script active: `scripts/sync_r2_ai_index_private_github.py` (workflow chạy manual). Script sidecar đời đầu được giữ để tham chiếu, không còn là entrypoint đồng bộ.
+- Manifest source: R2 `internal/ai-metadata-index/v1/current.json` -> SQLite FTS5 SHA256 verified; full source classes `nature` + `music`, từ chối nếu thiếu một nhóm.
+- WS2 overlay: R2 `internal/ws2-sleep-relax-enrichment/v1/source-<index_sha_prefix>/` gồm checkpoint và từng lô 500; chỉ role hint lexical, không coi là đã nghe kiểm định.
+- WS3 discovery: các ứng viên khám phá mới **chưa** có trong WS1 canonical sẽ chưa xuất hiện cho đến khi WS1 index refresh; không cộng trùng và không tự tuyên bố toàn bộ metadata nghiên cứu đã được đồng bộ.
+- QA an toàn đọc thực từ R2 có thể chạy mà không xuất dữ liệu; chỉ xuất số liệu tổng hợp vào log.
 
 ## Phân biệt trạng thái
 - `R2_OBJECT_LISTED`: tên object xuất hiện trong danh sách R2, **không** bảo đảm bytes đúng SHA, trình duyệt giải mã được hoặc quyền phát hành đã duyệt.
@@ -28,4 +35,4 @@
 - Giữ nguyên Studio asset catalog mã hóa trong R2. Cầu nối không làm lộ toàn bộ metadata qua repo Public.
 - Không thể tự thao tác trên R2 trực tiếp chỉ với GitHub connector; mọi thay đổi R2 phải đi qua workflow có secret và kiểm định.
 - Metadata nghiên cứu chưa có sidecar SHA trong các prefix liệt kê sẽ chưa xuất hiện. Muốn phủ hết các kho metadata discovery khác phải bổ sung trình xuất cho từng schema sau khi kiểm kê thực tế.
-- Script chưa có snapshot thực tế cho tới khi tạo repo Private và thêm token.
+- Script đã qua kiểm thử mock/QA nguồn R2 theo run kiểm định; chưa có snapshot private GitHub cho đến khi tạo repo Private và thêm token. Đừng nhầm kiểm tra read-only với kết nối GPT đã sẵn sàng.
