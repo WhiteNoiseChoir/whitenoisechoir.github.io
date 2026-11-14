@@ -1,0 +1,6 @@
+{
+  "schema": "wnc_private_metadata_sync_request_v1",
+  "status": "not_requested",
+  "requested_at_utc": null,
+  "reason": "Do not change to requested until GitHub PRIVATE index repository and WNC_METADATA_REPO_TOKEN secret are confirmed."
+}
