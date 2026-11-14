@@ -42,3 +42,9 @@
 - Commit lên main với tiền tố chính xác `chore(metadata): sync-request` và chỉ sửa marker sẽ chạy workflow theo nhánh push.
 - Workflow kiểm tra private-target và PAT bắt buộc trước khi đọc/upload R2; nếu không, từ chối an toàn.
 - Không kích hoạt tự động WS2/WS3/WS4, không tạo lịch song song; schedule đồng bộ riêng chỉ bật sau nghiệm thu thành công.
+
+## WS5 — acoustic signal evidence
+- Sau khi workflow WS5 phân tích các file R2 thật, bộ xuất sang GitHub Private ghép các metric đo được từ `internal/ws5-acoustic-intelligence/v1/source-<ws1_sha16>/` vào từng bản ghi theo SHA.
+- Các trường `acoustic_analysis.status`, `acoustic_metrics.rms_dbfs`, `sample_peak_dbfs`, `max_rms_jump_db_per_100ms`, `centroid_hz`, `highband_energy_ratio_gt4khz`, `sample_coverage_seconds` chỉ xuất hiện với nguồn đã có kết quả WS5.
+- Không gán nhãn tiếng người/động vật/âm nhạc từ tín hiệu DSP đơn thuần. Không tự duyệt file phù hợp ngủ, không thay `playback: UNVERIFIED` và `sleep_suitability: UNVERIFIED`.
+- Manifest Private bổ sung `ws5_acoustic_overlay` với attempted/analyzed/flagged; các kết quả tiếp theo được đồng bộ theo lịch index riêng 4 giờ/lần.

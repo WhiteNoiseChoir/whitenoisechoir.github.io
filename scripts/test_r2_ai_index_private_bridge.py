@@ -31,7 +31,8 @@ class FakeS3:
   self.exceptions=type("Exc",(),{"NoSuchKey":KeyError})
  def get_object(self,**kwargs):
   key=kwargs["Key"]
-  if key=="internal/ws2-sleep-relax-enrichment/v1/source-"+self.digest[:16]+"/checkpoint.json":
+  if key in ("internal/ws2-sleep-relax-enrichment/v1/source-"+self.digest[:16]+"/checkpoint.json",
+             "internal/ws5-acoustic-intelligence/v1/source-"+self.digest[:16]+"/checkpoint.json"):
    raise ClientError({"Error":{"Code":"NoSuchKey","Message":"No such key"}},"GetObject")
   return {"Body":io.BytesIO(self.data[key])}
  def download_file(self,bucket,key,dest):Path(dest).write_bytes(self.data[key])
@@ -98,6 +99,25 @@ class CanonicalIndexTests(unittest.TestCase):
   self.assertEqual(len(hints),500)
   self.assertEqual(state["status"],"PARTIAL")
   self.assertEqual(hints["nature:499"],"CONTINUOUS_BED")
+ def test_ws5_real_features_not_sleep_certification(self):
+  sha="f"*64;digest="b"*64
+  prefix="internal/ws5-acoustic-intelligence/v1/source-"+digest[:16]+"/"
+  data={
+   prefix+"checkpoint.json":{"schema":"wnc_ws5_acoustic_v1","source_index_sha256":digest,
+      "attempted":1,"analyzed":1,"batch_keys":[prefix+"batches/000000-000001.json"]},
+   prefix+"batches/000000-000001.json":{"schema":"wnc_ws5_acoustic_v1","source_index_sha256":digest,
+      "rows":[{"sha256":sha,"status":"SAMPLED_SIGNAL_ANALYZED",
+        "features":{"rms_dbfs":-32.1,"centroid_hz":470.3,"highband_energy_ratio_gt4khz":0.05},
+        "sample_coverage_seconds":75.0,"heuristic_screening":"NO_FLAG_IN_SAMPLED_WINDOWS","flags":[]}]}
+  }
+  class S:
+   def get_object(self,**kwargs):
+    return {"Body":io.BytesIO(json.dumps(data[kwargs["Key"]]).encode())}
+  records,state=m.ws5_metrics(S(),digest,3)
+  self.assertEqual(state["attempted"],1)
+  self.assertEqual(state["analyzed"],1)
+  self.assertEqual(records[sha]["acoustic_metrics"]["rms_dbfs"],-32.1)
+  self.assertNotIn("sleep_approved",records[sha])
  def test_public_repo_guard_precedes_r2_access(self):
   class Response:
    status_code=200
