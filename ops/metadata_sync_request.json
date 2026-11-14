@@ -1,6 +1,6 @@
 {
   "schema": "wnc_private_metadata_sync_request_v1",
   "status": "requested",
-  "requested_at_utc": "2026-11-14T03:12:00Z",
-  "reason": "User confirmed the scoped secret was saved; destination WhiteNoiseChoir/wnc-metadata-index independently verified Private; initiate first private canonical WS1+WS2 sync."
+  "requested_at_utc": "2026-11-14T03:40:00Z",
+  "reason": "Include WS5 pilot measured signal features in GitHub Private metadata index; independent of WS2/WS3/WS4."
 }
