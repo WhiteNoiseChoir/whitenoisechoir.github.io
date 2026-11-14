@@ -58,6 +58,61 @@ def ws2_roles(s3,digest,total):
     if len(hints)!=end:raise RuntimeError("WS2 overlay missing records")
     return hints,{"processed":end,"status":"COMPLETE" if end==total else "PARTIAL"}
 
+def ws5_metrics(s3,digest,total):
+    """Read only trusted WS5 private R2 checkpoint/batches. Never invent acoustic evidence."""
+    root="internal/ws5-acoustic-intelligence/v1/source-"+digest[:16]+"/"
+    try:
+        checkpoint=get_json(s3,root+"checkpoint.json")
+    except ClientError as exc:
+        if exc.response.get("Error",{}).get("Code") in ("404","NoSuchKey","NotFound"):
+            return {},{"status":"NOT_STARTED","attempted":0,"analyzed":0,"flagged":0}
+        raise
+    if checkpoint.get("schema")!="wnc_ws5_acoustic_v1" or checkpoint.get("source_index_sha256")!=digest:
+        raise RuntimeError("WS5 checkpoint index/schema mismatch")
+    attempted=int(checkpoint.get("attempted",0))
+    analyzed=int(checkpoint.get("analyzed",0))
+    keys=checkpoint.get("batch_keys",[])
+    if attempted<0 or attempted>total or analyzed>attempted or not isinstance(keys,list) or len(keys)>20000:
+        raise RuntimeError("WS5 checkpoint counters invalid")
+    records={}
+    flagged=0
+    for key in keys:
+        if not isinstance(key,str) or not key.startswith(root+"batches/") or not key.endswith(".json"):
+            raise RuntimeError("WS5 batch path outside private prefix")
+        batch=get_json(s3,key,5000000)
+        if batch.get("schema")!="wnc_ws5_acoustic_v1" or batch.get("source_index_sha256")!=digest:
+            raise RuntimeError("WS5 batch provenance mismatch")
+        for item in batch.get("rows",[]):
+            sha=str(item.get("sha256","")).lower()
+            if not re.fullmatch(r"[a-f0-9]{64}",sha) or sha in records:
+                raise RuntimeError("Duplicate/invalid WS5 source SHA")
+            status=item.get("status","")
+            if status not in ("SAMPLED_SIGNAL_ANALYZED","SKIPPED_LARGE","SKIPPED_INVALID","ERROR"):
+                raise RuntimeError("Unknown WS5 analysis status")
+            features=item.get("features")
+            if status=="SAMPLED_SIGNAL_ANALYZED" and not isinstance(features,dict):
+                raise RuntimeError("WS5 claimed analyzed without measured features")
+            # Publish only explicit numerically measured values; no inferred labels.
+            clean_features={}
+            for label in ("rms_dbfs","sample_peak_dbfs","silent_window_fraction",
+                          "max_rms_jump_db_per_100ms","peak_to_rms_db_p95",
+                          "centroid_hz","highband_energy_ratio_gt4khz"):
+                value=(features or {}).get(label)
+                if isinstance(value,(float,int)) and not isinstance(value,bool):
+                    clean_features[label]=round(float(value),4)
+            flags=item.get("flags") or []
+            if not isinstance(flags,list):raise RuntimeError("WS5 flags not list")
+            flags=[str(z)[:80] for z in flags[:10]]
+            if flags:flagged+=1
+            records[sha]={"status":status,"acoustic_metrics":clean_features if status=="SAMPLED_SIGNAL_ANALYZED" else None,
+                         "sample_coverage_seconds":item.get("sample_coverage_seconds") or None,
+                         "screening":str(item.get("heuristic_screening") or "UNVERIFIED")[:50],
+                         "flags":flags}
+    if len(records)!=attempted or sum(x["status"]=="SAMPLED_SIGNAL_ANALYZED" for x in records.values())!=analyzed:
+        raise RuntimeError("WS5 batch count differs from checkpoint")
+    return records,{"status":"PARTIAL" if attempted<total else "COMPLETE",
+                    "attempted":attempted,"analyzed":analyzed,"flagged":flagged}
+
 def export(s3,where):
     manifest=get_json(s3,SOURCE)
     digest=str(manifest.get("index_sha256") or "").lower()
@@ -77,6 +132,7 @@ def export(s3,where):
     if n!=int(manifest.get("indexed_total",0)) or n<MIN_ROWS:
         raise RuntimeError("Canonical WS1 SQLite row count mismatch")
     overlay,ws2=ws2_roles(s3,digest,n)
+    ws5_rows,ws5_state=ws5_metrics(s3,digest,n)
     media=defaultdict(dict)
     for obj in common.objects(s3,common.AUDIO_PREFIXES):
         m=common.AUDIO.search(obj["Key"])
@@ -124,6 +180,7 @@ def export(s3,where):
             "qa_status":common.clean(r["qa_status"],50),
             "composition_role":role,
             "role_evidence":"LEXICAL_UNVERIFIED" if rid in overlay and role!="UNKNOWN" else "UNKNOWN_OR_UNENRICHED",
+            "acoustic_analysis":ws5_rows.get(h) if ok else None,
             "sleep_suitability":"UNVERIFIED",
             "relaxation_suitability":"UNVERIFIED"
         }
@@ -151,10 +208,11 @@ def export(s3,where):
         "source":"Private canonical WS1 SQLite FTS5; WS2 lexical role overlay",
         "ws1_sha256":digest,"ws1_total":n,"index_unique_records":sum(classes.values()),
         "source_class_counts":dict(classes),"availability":dict(status),
-        "ws2_role_overlay":ws2,"groups":folders,
+        "ws2_role_overlay":ws2,"ws5_acoustic_overlay":ws5_state,"groups":folders,
         "caveats":["R2_OBJECT_LISTED != checksum verified, WebAudio playable or approved",
                    "Music candidates may not have an R2 audio object",
                    "Role and sleep suitability have NOT been acoustically verified",
+                   "WS5 acoustic signals use sampled windows; speech/music/content detection and full playback not verified",
                    "WS3 new discoveries are not included until canonical WS1 is refreshed"]
     }
     if report["index_unique_records"]!=n:raise RuntimeError("Export loss")
@@ -189,6 +247,8 @@ def main():
             "classes":result["source_class_counts"],
             "r2_listed":result["availability"].get("R2_OBJECT_LISTED",0),
             "ws2_processed":result["ws2_role_overlay"]["processed"],
+            "ws5_attempted":result["ws5_acoustic_overlay"]["attempted"],
+            "ws5_analyzed":result["ws5_acoustic_overlay"]["analyzed"],
             "private_sync_done":not local,"updated":updated
         },ensure_ascii=False))
 if __name__=="__main__":main()
