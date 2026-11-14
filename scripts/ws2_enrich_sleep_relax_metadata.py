@@ -74,6 +74,19 @@ def main():
    "nature_inventory":db.execute("SELECT COUNT(*) FROM assets WHERE source_class='nature'").fetchone()[0]==audits["source_class_counts"].get("nature",0),
    "duration_audit":db.execute("SELECT COUNT(*) FROM assets WHERE duration>0").fetchone()[0]+audits["missing_duration"]==total
   }
+  # Three realistic read-only discovery probes; report counts, never private rows.
+  # This validates SQL retrieval plumbing, not acoustic or semantic suitability.
+  retrieval_probes={
+   "forest_stream":("forest","stream"),
+   "night_rain":("night","rain"),
+   "ambient_piano":("ambient","piano")
+  }
+  retrieval_counts={}
+  for probe,terms in retrieval_probes.items():
+   predicates=["(LOWER(COALESCE(name,'')) LIKE ? OR LOWER(COALESCE(sound_family,'')) LIKE ? OR LOWER(COALESCE(description,'')) LIKE ?)" for _ in terms]
+   params=[f"%{term}%" for term in terms for _ in range(3)]
+   retrieval_counts[probe]=db.execute("SELECT COUNT(*) FROM assets WHERE "+" AND ".join(predicates),params).fetchone()[0]
+  query_checks["retrieval_probe_counts_valid"]=all(0<=n<=total for n in retrieval_counts.values())
   if not all(query_checks.values()):
    raise RuntimeError("Read-only retrieval smoke tests failed")
   if sum(audits["source_class_counts"].values())!=total:
@@ -128,5 +141,5 @@ def main():
   print("WS2_ENRICHMENT_FINAL "+json.dumps({"processed_this_run":len(results),
    "processed_total":checkpoint["processed"],"remaining":total-checkpoint["processed"],
    "roles_this_run":dict(roles),"errors":0,"sleep_audio_verified":0,
-   "audio_downloaded":False,"source_mutated":False,"sqlite_audit":audits,"query_checks":query_checks,"complete":checkpoint["complete"]}),flush=True)
+   "audio_downloaded":False,"source_mutated":False,"sqlite_audit":audits,"query_checks":query_checks,"retrieval_probe_counts":retrieval_counts,"complete":checkpoint["complete"]}),flush=True)
 if __name__=="__main__":main()
