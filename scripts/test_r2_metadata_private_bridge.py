@@ -63,6 +63,20 @@ class ExportTests(unittest.TestCase):
             self.assertEqual(len(data.splitlines()),125)
             self.assertNotIn("SECRET",data)
             self.assertEqual(json.loads(data.splitlines()[0])["playback"],"NOT_VERIFIED_BY_INDEX")
+    def test_snapshot_noop_only_if_rows_unchanged(self):
+        with tempfile.TemporaryDirectory() as d:
+            a=Path(d)/"staging";b=Path(d)/"remote"
+            for root in (a,b):
+                (root/"groups/nature").mkdir(parents=True)
+                (root/"groups/nature/part-001.jsonl").write_text('{"id":"nature:abc"}\n')
+            (a/"manifest.json").write_text(json.dumps({"schema_version":2,"generated_utc":"T2","ws2_role_overlay":{"processed":1000}}))
+            (b/"manifest.json").write_text(json.dumps({"schema_version":2,"generated_utc":"T1","ws2_role_overlay":{"processed":1000}}))
+            self.assertTrue(m.snapshot_unchanged(a,b))
+            (a/"groups/nature/part-001.jsonl").write_text('{"id":"nature:changed"}\n')
+            self.assertFalse(m.snapshot_unchanged(a,b))
+            (a/"groups/nature/part-001.jsonl").write_text('{"id":"nature:abc"}\n')
+            (a/"manifest.json").write_text(json.dumps({"schema_version":2,"generated_utc":"T2","ws2_role_overlay":{"processed":1500}}))
+            self.assertFalse(m.snapshot_unchanged(a,b))
     def test_public_destination_rejected_before_git_clone(self):
         class R:
             status_code=200

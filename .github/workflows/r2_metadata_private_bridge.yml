@@ -17,6 +17,8 @@ on:
       - 'scripts/test_r2_metadata_private_bridge.py'
       - '.github/workflows/r2_metadata_private_bridge.yml'
   workflow_dispatch:
+  schedule:
+    - cron: '17 */4 * * *'
 permissions:
   contents: read
 concurrency:
@@ -40,7 +42,7 @@ jobs:
           python -m unittest discover -s scripts -p 'test_r2_ai_index_private_bridge.py' -v
   sync:
     if: >-
-      (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main') ||
+      ((github.event_name == 'workflow_dispatch' || github.event_name == 'schedule') && github.ref == 'refs/heads/main') ||
       (github.event_name == 'push' && github.ref == 'refs/heads/main' &&
        startsWith(github.event.head_commit.message, 'chore(metadata): sync-request'))
     needs: offline-security-tests
@@ -64,7 +66,7 @@ jobs:
         run: python scripts/sync_r2_ai_index_private_github.py
       # No public GitHub Action artifacts, PR comments, or logs contain metadata rows.
       # Only the explicit sync-request commit or manual dispatch can push private rows.
-      # Once the first private sync succeeds, add schedule: cron: '17 */4 * * *'
+      # Enabled after first private sync verified. Cron is UTC; never changes WS2/WS3/WS4.
   readonly-canonical-preflight:
     if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && github.head_ref == 'feature/private-index-canonical-ws1-ws2-bridge-20261114'
     needs: offline-security-tests
