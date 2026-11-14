@@ -50,11 +50,12 @@ class CanonicalIndexTests(unittest.TestCase):
  def test_all_ws1_classes_exported_without_audio_claims(self):
   with tempfile.TemporaryDirectory() as d:
    s3,sha1,sha2,key=self.make(d)
-   old=m.MIN_ROWS;m.MIN_ROWS=3
+   old=m.MIN_ROWS,m.MIN_NATURE,m.MIN_MUSIC
+   m.MIN_ROWS=3;m.MIN_NATURE=2;m.MIN_MUSIC=1
    try:
     with patch.object(m.common,"objects",return_value=[{"Key":key,"Size":4321}]):
      result=m.export(s3,d)
-   finally:m.MIN_ROWS=old
+   finally:m.MIN_ROWS,m.MIN_NATURE,m.MIN_MUSIC=old
    self.assertEqual(result["index_unique_records"],3)
    self.assertEqual(result["source_class_counts"],{"nature":2,"music":1})
    self.assertEqual(result["availability"],{"R2_OBJECT_LISTED":1,"METADATA_ONLY":2})
