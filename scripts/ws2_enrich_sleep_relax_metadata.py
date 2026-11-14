@@ -124,8 +124,17 @@ def main():
   rows=db.execute("SELECT * FROM assets ORDER BY id LIMIT ? OFFSET ?",(BATCH,offset)).fetchall()
   results=[infer(r) for r in rows]
   if len(results)!=len({r["id"] for r in results}):raise RuntimeError("Duplicate IDs in batch")
+  # Fail closed on unsupported source classes, missing provenance, or acoustic claims.
+  allowed_classes={"nature","music"}
   for r in results:
-   if r["composition"]["sleep_suitability"]!="UNVERIFIED":raise RuntimeError("Unsupported sleep claim")
+   if r["source_class"] not in allowed_classes or not r["id"]:
+    raise RuntimeError("Invalid source classification or ID")
+   if not r["source"]["provider"] or not r["source"]["license_raw"]:
+    raise RuntimeError("Missing required source provenance")
+   if r["audio"]["r2_object_verified"] is not False or r["audio"]["acoustic_measurements"]!="UNVERIFIED":
+    raise RuntimeError("Unsupported audio verification claim")
+   if r["composition"]["sleep_suitability"]!="UNVERIFIED" or r["composition"]["relaxation_suitability"]!="UNVERIFIED":
+    raise RuntimeError("Unsupported suitability claim")
   roles=collections.Counter(r["composition"]["role_hint"] for r in results)
   batch_key=root+"batches/"+f"{offset:06d}-{offset+len(results):06d}.json"
   put(batch_key,{"schema":"wnc_ws2_batch_v1","source_index_sha256":digest,"offset":offset,"records":results})
