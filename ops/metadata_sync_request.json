@@ -1,6 +1,6 @@
 {
   "schema": "wnc_private_metadata_sync_request_v1",
-  "status": "not_requested",
-  "requested_at_utc": null,
-  "reason": "Do not change to requested until GitHub PRIVATE index repository and WNC_METADATA_REPO_TOKEN secret are confirmed."
+  "status": "requested",
+  "requested_at_utc": "2026-11-14T03:12:00Z",
+  "reason": "User confirmed the scoped secret was saved; destination WhiteNoiseChoir/wnc-metadata-index independently verified Private; initiate first private canonical WS1+WS2 sync."
 }
