@@ -123,7 +123,11 @@ def main():
    print("WS2_ENRICHMENT_FINAL "+json.dumps({"state":"COMPLETE","processed":offset,"total":total,"checkpoint":True}));return
   rows=db.execute("SELECT * FROM assets ORDER BY id LIMIT ? OFFSET ?",(BATCH,offset)).fetchall()
   results=[infer(r) for r in rows]
+  if len(rows)!=min(BATCH,total-offset) or len(results)!=len(rows):
+   raise RuntimeError("Batch cardinality mismatch")
   if len(results)!=len({r["id"] for r in results}):raise RuntimeError("Duplicate IDs in batch")
+  if any(r["composition"]["role_hint"] not in {"CONTINUOUS_BED","TEXTURE","EVENT","UNKNOWN"} for r in results):
+   raise RuntimeError("Unexpected role classification")
   # Fail closed on unsupported source classes, missing provenance, or acoustic claims.
   allowed_classes={"nature","music"}
   for r in results:
