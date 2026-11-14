@@ -146,6 +146,12 @@ def main():
    "errors":0,"role_counts":dict(cumulative),"total":total,
    "last_batch":batch_key,"updated_at":datetime.datetime.now(datetime.timezone.utc).isoformat(),
    "complete":offset+len(results)==total}
+  # Detect checkpoint advancement by another writer before publishing this offset.
+  # This is a best-effort stale-writer guard, not an atomic R2 compare-and-swap.
+  try:latest=read(root+"checkpoint.json")
+  except s3.exceptions.NoSuchKey:latest={"offset":0,"source_index_sha256":digest}
+  if int(latest.get("offset",-1))!=offset or latest.get("source_index_sha256",digest)!=digest:
+   raise RuntimeError("Checkpoint advanced during batch; refusing stale checkpoint write")
   put(root+"checkpoint.json",checkpoint)
   print("WS2_ENRICHMENT_FINAL "+json.dumps({"processed_this_run":len(results),
    "processed_total":checkpoint["processed"],"remaining":total-checkpoint["processed"],
