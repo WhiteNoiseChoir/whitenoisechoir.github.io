@@ -1,0 +1,379 @@
+{
+  "schema": "wnc_ws4_music_overlay_benchmark_v1",
+  "description": "Editorial retrieval tests; not measured results, not audio suitability certifications. Rights verified means composition AND master cleared.",
+  "baseline_benchmark": "qa/ws4/benchmark_30.json",
+  "cases": [
+    {
+      "id": "heavy-rain-soft-piano-fireplace",
+      "intent": "sleep",
+      "query": "heavy rain soft minimal piano fireplace",
+      "required_families": [
+        "rain",
+        "piano",
+        "fireplace"
+      ],
+      "music_family": "piano",
+      "expected_music_role": "TEXTURE",
+      "requires_music": true,
+      "requires_playable_rights_verified": true,
+      "max_results": 5,
+      "exclusions": [
+        "vocals",
+        "speech",
+        "sudden_peaks"
+      ],
+      "audio_only_checks": [
+        "loop_seam",
+        "loudness_balance",
+        "peak_detection",
+        "vocal_detection"
+      ],
+      "rights_checks": [
+        "composition",
+        "master",
+        "attribution",
+        "commercial_use"
+      ]
+    },
+    {
+      "id": "rain-no-melody",
+      "intent": "sleep",
+      "query": "heavy rain no melody no vocals",
+      "required_families": [
+        "rain"
+      ],
+      "music_family": null,
+      "expected_music_role": "CONTINUOUS_BED",
+      "requires_music": false,
+      "requires_playable_rights_verified": true,
+      "max_results": 5,
+      "exclusions": [
+        "vocals",
+        "speech",
+        "sudden_peaks"
+      ],
+      "audio_only_checks": [
+        "loop_seam",
+        "loudness_balance",
+        "peak_detection",
+        "vocal_detection"
+      ],
+      "rights_checks": [
+        "composition",
+        "master",
+        "attribution",
+        "commercial_use"
+      ]
+    },
+    {
+      "id": "forest-flute",
+      "intent": "relaxation",
+      "query": "forest ambience gentle flute",
+      "required_families": [
+        "forest",
+        "flute"
+      ],
+      "music_family": "flute",
+      "expected_music_role": "TEXTURE",
+      "requires_music": true,
+      "requires_playable_rights_verified": true,
+      "max_results": 5,
+      "exclusions": [
+        "vocals",
+        "speech",
+        "sudden_peaks"
+      ],
+      "audio_only_checks": [
+        "loop_seam",
+        "loudness_balance",
+        "peak_detection",
+        "vocal_detection"
+      ],
+      "rights_checks": [
+        "composition",
+        "master",
+        "attribution",
+        "commercial_use"
+      ]
+    },
+    {
+      "id": "ocean-ambient-pad",
+      "intent": "sleep",
+      "query": "ocean waves soft ambient pad",
+      "required_families": [
+        "ocean",
+        "ambient-pads"
+      ],
+      "music_family": "ambient-pads",
+      "expected_music_role": "TEXTURE",
+      "requires_music": true,
+      "requires_playable_rights_verified": true,
+      "max_results": 5,
+      "exclusions": [
+        "vocals",
+        "speech",
+        "sudden_peaks"
+      ],
+      "audio_only_checks": [
+        "loop_seam",
+        "loudness_balance",
+        "peak_detection",
+        "vocal_detection"
+      ],
+      "rights_checks": [
+        "composition",
+        "master",
+        "attribution",
+        "commercial_use"
+      ]
+    },
+    {
+      "id": "snowy-cabin-cello",
+      "intent": "sleep",
+      "query": "snowy cabin wind fireplace warm cello",
+      "required_families": [
+        "wind",
+        "fireplace",
+        "cello"
+      ],
+      "music_family": "cello",
+      "expected_music_role": "TEXTURE",
+      "requires_music": true,
+      "requires_playable_rights_verified": true,
+      "max_results": 5,
+      "exclusions": [
+        "vocals",
+        "speech",
+        "sudden_peaks"
+      ],
+      "audio_only_checks": [
+        "loop_seam",
+        "loudness_balance",
+        "peak_detection",
+        "vocal_detection"
+      ],
+      "rights_checks": [
+        "composition",
+        "master",
+        "attribution",
+        "commercial_use"
+      ]
+    },
+    {
+      "id": "baby-lullaby-isolated",
+      "intent": "baby_sleep",
+      "query": "baby lullaby gentle instrumental separate from adult sleep",
+      "required_families": [
+        "lullaby"
+      ],
+      "music_family": "lullaby",
+      "expected_music_role": "TEXTURE",
+      "requires_music": true,
+      "requires_playable_rights_verified": true,
+      "max_results": 5,
+      "exclusions": [
+        "vocals",
+        "speech",
+        "sudden_peaks"
+      ],
+      "audio_only_checks": [
+        "loop_seam",
+        "loudness_balance",
+        "peak_detection",
+        "vocal_detection"
+      ],
+      "rights_checks": [
+        "composition",
+        "master",
+        "attribution",
+        "commercial_use"
+      ]
+    },
+    {
+      "id": "high-nature-low-music",
+      "intent": "sleep",
+      "query": "dominant rain ambience barely audible soft piano",
+      "required_families": [
+        "rain",
+        "piano"
+      ],
+      "music_family": "piano",
+      "expected_music_role": "TEXTURE",
+      "requires_music": true,
+      "requires_playable_rights_verified": true,
+      "max_results": 5,
+      "exclusions": [
+        "vocals",
+        "speech",
+        "sudden_peaks"
+      ],
+      "audio_only_checks": [
+        "loop_seam",
+        "loudness_balance",
+        "peak_detection",
+        "vocal_detection"
+      ],
+      "rights_checks": [
+        "composition",
+        "master",
+        "attribution",
+        "commercial_use"
+      ]
+    },
+    {
+      "id": "seamless-ten-hour-extension",
+      "intent": "sleep",
+      "query": "10h continuous rain and minimal piano seamless no short loop",
+      "required_families": [
+        "rain",
+        "piano"
+      ],
+      "music_family": "piano",
+      "expected_music_role": "TEXTURE",
+      "requires_music": true,
+      "requires_playable_rights_verified": true,
+      "max_results": 5,
+      "exclusions": [
+        "vocals",
+        "speech",
+        "sudden_peaks"
+      ],
+      "audio_only_checks": [
+        "loop_seam",
+        "loudness_balance",
+        "peak_detection",
+        "vocal_detection"
+      ],
+      "rights_checks": [
+        "composition",
+        "master",
+        "attribution",
+        "commercial_use"
+      ]
+    },
+    {
+      "id": "no-sudden-peaks-vocals",
+      "intent": "sleep",
+      "query": "ambient sleep no sudden peaks no speech or singing",
+      "required_families": [
+        "ambient-pads"
+      ],
+      "music_family": "ambient-pads",
+      "expected_music_role": "TEXTURE",
+      "requires_music": true,
+      "requires_playable_rights_verified": true,
+      "max_results": 5,
+      "exclusions": [
+        "vocals",
+        "speech",
+        "sudden_peaks"
+      ],
+      "audio_only_checks": [
+        "loop_seam",
+        "loudness_balance",
+        "peak_detection",
+        "vocal_detection"
+      ],
+      "rights_checks": [
+        "composition",
+        "master",
+        "attribution",
+        "commercial_use"
+      ]
+    },
+    {
+      "id": "forest-no-music",
+      "intent": "sleep",
+      "query": "forest wind crickets nature only no music",
+      "required_families": [
+        "forest",
+        "wind",
+        "cricket"
+      ],
+      "music_family": null,
+      "expected_music_role": "CONTINUOUS_BED",
+      "requires_music": false,
+      "requires_playable_rights_verified": true,
+      "max_results": 5,
+      "exclusions": [
+        "vocals",
+        "speech",
+        "sudden_peaks"
+      ],
+      "audio_only_checks": [
+        "loop_seam",
+        "loudness_balance",
+        "peak_detection",
+        "vocal_detection"
+      ],
+      "rights_checks": [
+        "composition",
+        "master",
+        "attribution",
+        "commercial_use"
+      ]
+    },
+    {
+      "id": "rain-soft-guitar",
+      "intent": "relaxation",
+      "query": "steady rain gentle acoustic guitar",
+      "required_families": [
+        "rain",
+        "acoustic-guitar"
+      ],
+      "music_family": "acoustic-guitar",
+      "expected_music_role": "TEXTURE",
+      "requires_music": true,
+      "requires_playable_rights_verified": true,
+      "max_results": 5,
+      "exclusions": [
+        "vocals",
+        "speech",
+        "sudden_peaks"
+      ],
+      "audio_only_checks": [
+        "loop_seam",
+        "loudness_balance",
+        "peak_detection",
+        "vocal_detection"
+      ],
+      "rights_checks": [
+        "composition",
+        "master",
+        "attribution",
+        "commercial_use"
+      ]
+    },
+    {
+      "id": "lake-harp",
+      "intent": "relaxation",
+      "query": "calm lake water gentle harp",
+      "required_families": [
+        "lake",
+        "harp"
+      ],
+      "music_family": "harp",
+      "expected_music_role": "TEXTURE",
+      "requires_music": true,
+      "requires_playable_rights_verified": true,
+      "max_results": 5,
+      "exclusions": [
+        "vocals",
+        "speech",
+        "sudden_peaks"
+      ],
+      "audio_only_checks": [
+        "loop_seam",
+        "loudness_balance",
+        "peak_detection",
+        "vocal_detection"
+      ],
+      "rights_checks": [
+        "composition",
+        "master",
+        "attribution",
+        "commercial_use"
+      ]
+    }
+  ]
+}
