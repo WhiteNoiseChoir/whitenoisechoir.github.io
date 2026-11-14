@@ -11,7 +11,9 @@ const report={slug:title,uniqueSourcesExpected:5,tracks:0,summary:null,errors:[]
 const browser=await chromium.launch({headless:true,executablePath:chrome,args:['--no-sandbox','--disable-dev-shm-usage','--autoplay-policy=no-user-gesture-required']});
 const context=await browser.newContext({viewport:{width:1440,height:900}});
 const page=await context.newPage();
-const failures=[];
+const failures=[],badResponses=[],consoleErrors=[];
+page.on('response',r=>{if(r.status()>=400)badResponses.push({url:r.url(),status:r.status()});});
+page.on('console',m=>{if(m.type()==='error')consoleErrors.push(m.text());});
 page.on('pageerror',error=>failures.push(error.message));
 try{
  await page.route('https://whitenoisechoir.com/**',async route=>{
@@ -24,7 +26,8 @@ try{
   return route.fulfill({status:200,contentType:type,body:fs.readFileSync(file)});
  });
  await page.goto('https://whitenoisechoir.com/vi/'+title+'/',{waitUntil:'domcontentloaded',timeout:40000});
- await page.waitForFunction(()=>document.querySelectorAll('#tracks .timeline-row').length===10,{timeout:40000});
+ report.beforeWait=await page.evaluate(()=>({url:location.href,title:document.title,readyState:document.readyState,tracks:document.querySelectorAll('#tracks .timeline-row').length,hasTracks:!!document.querySelector('#tracks'),scripts:[...document.scripts].map(x=>x.src||x.id),bodyText:document.body?.innerText?.slice(0,400)}));
+ await page.waitForFunction(()=>document.querySelectorAll('#tracks .timeline-row').length===10,null,{timeout:45000});
  report.tracks=await page.locator('#tracks .timeline-row').count();
  await page.click('#play',{timeout:12000});
  await page.waitForFunction(()=>{
@@ -41,8 +44,8 @@ try{
  report.pass=report.tracks===10 && info.errors.length===0 && info.summary.includes('5/5 nguồn đã tải') && info.playButton.includes('Tạm dừng') && failures.length===0;
  if(!report.pass)throw Error('Studio did not reach playing without source errors');
  await page.click('#play');
-}catch(e){report.error=String(e.message||e);report.pass=false;}
-finally{report.pageErrors=failures.slice(0,10);await context.close();await browser.close();}
+}catch(e){report.error=String(e.message||e);report.pass=false;report.afterFailure=await page.evaluate(()=>({url:location.href,title:document.title,tracks:document.querySelectorAll('#tracks .timeline-row').length,bodyText:document.body?.innerText?.slice(0,1000),status:document.querySelector('#status')?.textContent})).catch(()=>null);}
+finally{report.pageErrors=failures.slice(0,10);report.badResponses=badResponses.slice(0,10);report.consoleErrors=consoleErrors.slice(0,10);await context.close();await browser.close();}
 fs.writeFileSync('cabin-waterfall-studio-browser-qa.json',JSON.stringify(report,null,2));
 fs.writeFileSync('cabin-waterfall-studio-browser-qa.md',
  '## Cabin Beside Waterfall V1 · real Studio + R2 browser test\n\n- Tracks: '+report.tracks+
