@@ -1,0 +1,29 @@
+name: WS3 Private Targeted Cross Index Dedup
+on:
+  push:
+    branches: [feature/ws3-sleep-relax-coverage-20261114]
+    paths:
+      - scripts/ws3_targeted_cross_index_dedup.py
+      - .github/workflows/ws3_targeted_cross_index_dedup.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: ws3-private-targeted-cross-index-dedup
+  cancel-in-progress: false
+jobs:
+  dedup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install boto3
+      - run: python -m py_compile scripts/ws3_targeted_cross_index_dedup.py
+      - name: Compare targeted metadata against private index
+        env:
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+        run: python -u scripts/ws3_targeted_cross_index_dedup.py
