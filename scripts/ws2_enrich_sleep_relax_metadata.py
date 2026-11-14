@@ -68,8 +68,18 @@ def main():
    "missing_duration":db.execute("SELECT COUNT(*) FROM assets WHERE duration IS NULL OR duration<=0").fetchone()[0],
    "missing_species":db.execute("SELECT COUNT(*) FROM assets WHERE scientific_name IS NULL OR TRIM(scientific_name)=''").fetchone()[0]
   }
+  # Read-only retrieval smoke tests: check cardinality without exposing private records.
+  query_checks={
+   "unique_ids":db.execute("SELECT COUNT(DISTINCT id) FROM assets").fetchone()[0]==total,
+   "nature_inventory":db.execute("SELECT COUNT(*) FROM assets WHERE source_class='nature'").fetchone()[0]==audits["source_class_counts"].get("nature",0),
+   "duration_audit":db.execute("SELECT COUNT(*) FROM assets WHERE duration>0").fetchone()[0]+audits["missing_duration"]==total
+  }
+  if not all(query_checks.values()):
+   raise RuntimeError("Read-only retrieval smoke tests failed")
   if sum(audits["source_class_counts"].values())!=total:
    raise RuntimeError("Source class audit count mismatch")
+  if int(checkpoint.get("offset",0))>0 and checkpoint.get("schema")!="wnc_ws2_checkpoint_v1":
+   raise RuntimeError("Checkpoint schema mismatch")
   offset=int(checkpoint["offset"])
   # Reject corrupt/stale checkpoints rather than silently skipping records.
   if checkpoint.get("source_index_sha256",digest)!=digest:
@@ -118,5 +128,5 @@ def main():
   print("WS2_ENRICHMENT_FINAL "+json.dumps({"processed_this_run":len(results),
    "processed_total":checkpoint["processed"],"remaining":total-checkpoint["processed"],
    "roles_this_run":dict(roles),"errors":0,"sleep_audio_verified":0,
-   "audio_downloaded":False,"source_mutated":False,"sqlite_audit":audits,"complete":checkpoint["complete"]}),flush=True)
+   "audio_downloaded":False,"source_mutated":False,"sqlite_audit":audits,"query_checks":query_checks,"complete":checkpoint["complete"]}),flush=True)
 if __name__=="__main__":main()
