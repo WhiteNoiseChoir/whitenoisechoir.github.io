@@ -29,11 +29,13 @@ def main():
  keys=[x["Key"] for p in s3.get_paginator("list_objects_v2").paginate(Bucket=BUCKET,Prefix=ROOT+"d1-staging/")
        for x in p.get("Contents",[]) if x["Key"].endswith("/manifest.json")]
  latest=read(sorted(keys)[-1]) if keys else None
+ if not latest:raise RuntimeError("D1 staging manifest missing; fail closed before deployment")
  staging_files=0
  if latest:
   prefix=latest["private_sql_prefix"]
   staging_files=sum(1 for p in s3.get_paginator("list_objects_v2").paginate(Bucket=BUCKET,Prefix=prefix)
    for x in p.get("Contents",[]) if x["Key"].endswith(".sql"))
+  if staging_files==0:raise RuntimeError("D1 staged SQL files missing; fail closed before deployment")
   if staging_files!=latest["sql_files"]:raise RuntimeError("D1 staged SQL count mismatch")
   if latest["source_index_sha256"]!=summary["index_sha256"]:raise RuntimeError("D1 export stale for current index")
  token=bool(os.getenv("CLOUDFLARE_API_TOKEN") or os.getenv("CF_API_TOKEN"))
