@@ -651,8 +651,12 @@ async function encodeStage(ffmpeg,args,step,message,length,start,end,errorMessag
   progressStage(step,end,message);
 }
 const exportFps=24;
+// Browser-side packet looping currently requires a B-frame-free H.264 intermediate.
+// Preserve 1080p rain, fire and foliage detail: the former 3 Mbps + ultrafast cap
+// caused severe block artifacts compared with the 26 Mbps AI source videos.
+// Keep VBR with a generous VBV budget; the final mux only copies these packets.
 const clipArgs=()=>['-i','/source/clip','-map','0:v:0','-an','-vf','scale=trunc(iw/2)*2:trunc(ih/2)*2',
-  '-r',String(exportFps),'-c:v','libx264','-preset','ultrafast','-crf','21','-maxrate','3M','-bufsize','6M',
+  '-r',String(exportFps),'-c:v','libx264','-preset','superfast','-crf','17','-maxrate','14M','-bufsize','28M',
   '-bf','0','-pix_fmt','yuv420p','short.mp4'];
 const audioArgs=()=>['-i','/source/mix.wav','-map','0:a:0','-c:a','aac','-b:a','192k','sound.m4a'];
 async function mountEncoderInput(ffmpeg,name,blob){
