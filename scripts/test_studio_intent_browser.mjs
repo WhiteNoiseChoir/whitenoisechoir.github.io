@@ -83,6 +83,9 @@ try{
   await page.waitForFunction(()=>document.querySelector('#audio-status')?.textContent.includes('Đã xuất WAV'),{timeout:90000});
   const status=await page.locator('#audio-status').textContent();
   assert(!status.includes('đỉnh âm bị cắt'),status);
+  await page.goto(url+'#mix=cabin-rain-night-v3',{waitUntil:'domcontentloaded'});
+  await page.waitForFunction(()=>document.querySelector('#layer-count')?.textContent==='24 lớp',{timeout:20000});
+  assert.equal(await page.locator('#tracks .timeline-row').count(),24);
   assert.deepEqual(errors,[], 'No page exception permitted');
   console.log('STUDIO_INTENT_BROWSER_PASS',JSON.stringify({filters:6,babyTracks:2,generatedTone:true,
     savedTracks:3,roundtrip:true,wavSixSeconds:true,errors:0}));
