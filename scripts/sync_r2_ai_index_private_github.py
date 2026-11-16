@@ -139,7 +139,7 @@ def intent_annotations(item):
         if any(x in title for x in ("rain","forest","water","nature")):baby.append("baby-nature-sounds")
         if "toddler" in title: baby.append("toddler-bedtime")
     freq=[]
-    for found in re.finditer(r"(?<!\\d)([1-9][0-9]{1,3})(?:\\s*)(?:hz|hertz)\\b",title):
+    for found in re.finditer(r"(?<!\d)([1-9][0-9]{1,3})(?:\s*)(?:hz|hertz)\b",title):
         value=int(found.group(1))
         if 20<=value<=4000 and value not in freq:freq.append(value)
     if "binaural beat" in title:method="BINAURAL_BEAT_DECLARED_UNVERIFIED"
