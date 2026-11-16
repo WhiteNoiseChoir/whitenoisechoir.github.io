@@ -1,0 +1,89 @@
+name: WNC R2 Full Source Audio Inventory — Read Only 20261116
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/r2_full_source_audio_inventory_20261116.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: wnc-read-only-full-r2-inventory-20261116
+  cancel-in-progress: false
+jobs:
+  inventory:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      AWS_EC2_METADATA_DISABLED: 'true'
+      R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+      R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install read-only R2 list client
+        run: python -m pip install -q 'boto3>=1.36,<2'
+      - name: Count all source audio objects and dedupe by claimed SHA keys
+        run: |
+          python - <<'PY'
+          import os,json,re,collections,datetime,pathlib
+          import boto3
+          from botocore.config import Config
+          bucket="whitenoisechoir-media"
+          exts={".mp3",".wav",".flac",".ogg",".oga",".opus",".m4a",".aiff",".aif",".aac",".wma",".au"}
+          sources={"raw":"asset-library/raw/sha256/","commons":"asset-library/commons/sha256/",
+                   "kenney":"asset-library/kenney/sha256/","mirror":"asset-library/cc0-github-mirror/sha256/",
+                   "licensed_batch":"internal/licensed-batch/v1/sha256/"}
+          hash_suffix=re.compile(r"(?:^|/)([0-9a-f]{64})\.[a-z0-9]+$",re.I)
+          s3=boto3.client("s3",endpoint_url="https://7483501ad8365fe26b0448b96b54fb9f.r2.cloudflarestorage.com",
+                          region_name="auto",aws_access_key_id=os.environ["R2_ACCESS_KEY_ID"],
+                          aws_secret_access_key=os.environ["R2_SECRET_ACCESS_KEY"],
+                          config=Config(signature_version="s3v4",s3={"addressing_style":"path"},
+                                        retries={"max_attempts":3,"mode":"standard"}))
+          per=collections.Counter();size=collections.Counter();source_sha=set();sha_frequencies=collections.Counter()
+          source_audio_keys_not_hashed=[];bucket_objects=0;bucket_audio=0
+          for page in s3.get_paginator("list_objects_v2").paginate(Bucket=bucket):
+            for item in page.get("Contents",[]):
+              bucket_objects+=1
+              key=item["Key"];ext=pathlib.PurePosixPath(key).suffix.lower()
+              if ext not in exts:continue
+              bucket_audio+=1
+              source_label=next((label for label,p in sources.items() if key.startswith(p)),None)
+              if source_label is None and key.startswith("asset-library/"):source_label="asset_library_other"
+              if source_label is None:continue
+              per[source_label]+=1;size[source_label]+=item["Size"]
+              m=hash_suffix.search(key)
+              if m:
+                digest=m.group(1).lower();source_sha.add(digest);sha_frequencies[digest]+=1
+              else:
+                source_audio_keys_not_hashed.append(key)
+          report={
+            "schema":"wnc_r2_full_source_audio_inventory_v1",
+            "checked_at":datetime.datetime.now(datetime.timezone.utc).isoformat(),
+            "bucket":bucket,
+            "bucket_all_objects_including_metadata_and_hls":bucket_objects,
+            "bucket_all_audio_extension_objects_anywhere":bucket_audio,
+            "source_audio_objects_in_library_and_staging":sum(per.values()),
+            "unique_sha256_across_source_audio_keys":len(source_sha),
+            "source_audio_objects_without_sha_in_key":len(source_audio_keys_not_hashed),
+            "duplicate_sha_object_count":sum(n-1 for n in sha_frequencies.values()),
+            "source_audio_by_namespace":dict(per),
+            "source_audio_bytes_by_namespace":dict(size),
+            "staging_audio_objects":per["licensed_batch"],
+            "limitations":["Key-based SHA dedup, does not download and recompute hashes",
+               "Other audio outside asset-library and licensed staging may be outputs, not source assets",
+               "Unhashed source objects may overlap SHA-keyed objects; total unique recordings cannot be asserted without hashing",
+               "A listed R2 object is not an approved or playable Studio file"]
+          }
+          print("WNC_R2_FULL_INVENTORY "+json.dumps(report,ensure_ascii=False),flush=True)
+          with open("wnc-r2-full-source-audio-inventory-20261116.json","w") as out:json.dump(report,out,indent=2)
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: wnc-r2-full-source-audio-inventory-20261116
+          path: wnc-r2-full-source-audio-inventory-20261116.json
+          retention-days: 30
