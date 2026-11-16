@@ -122,6 +122,7 @@ function normalizeProject(saved) {
     : (/suối|stream/i.test(title) ? streamPrompt : '');
   return {
     title, videoPrompt, length:clamp(saved.length,6,10800),
+    ...(saved.intent==='baby'?{intent:'baby'}:{}),
     ...(Number.isFinite(saved.master)?{master:clamp(saved.master,0,1)}:{}),
     tracks:saved.tracks.slice(0,32)
       .filter(t=>t && Number.isFinite(t.start) && Number.isFinite(t.gain))
@@ -661,6 +662,14 @@ function exportBusy(value){
 $('render').onclick=async()=>{
   if(exporting) return;
   const project=restrictHomeMix(structuredClone(mix));
+  if(project.intent==='baby'){
+    const risks=project.tracks.filter(t=>{
+      const asset=assets[t.asset]||{};
+      return asset.synthetic || /thunder|storm|sấm|sói|wolf|alarm|crash/i.test(asset.name||'');
+    });
+    const notes=risks.length?' Có '+risks.length+' lớp cần kiểm tra nguy cơ âm đột ngột hoặc âm tần.':'';
+    if(!window.confirm('Đây là bản phối Baby thử nghiệm, CHƯA được kiểm chứng an toàn thính giác. Hệ thống không đo được mức dB SPL tại tai trẻ. Hãy nghe thử ở mức nhỏ và kiểm tra nguồn phát, khoảng cách, thời lượng.'+notes+' Tiếp tục xuất WAV?'))return;
+  }
   audioExport=null;clearResult('audio');resetVideo();exportBusy(true);
   progressStage('audio',0,tr('Đang chuẩn bị xuất ')+durationLabel(project.length)+tr(' âm thanh'));
   try {
