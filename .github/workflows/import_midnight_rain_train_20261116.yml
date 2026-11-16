@@ -1,0 +1,42 @@
+name: WNC Midnight Rain Train - Import Licensed Music and Train SFX
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/import_midnight_rain_train_20261116.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: wnc-midnight-rain-train-single-intake
+  cancel-in-progress: false
+jobs:
+  single-project-intake:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    env:
+      AWS_EC2_METADATA_DISABLED: 'true'
+      R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+      R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Setup
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq ffmpeg
+          python -m pip install -q 'boto3>=1.36,<2'
+      - name: Download original tracks, decode completely and upload SHA-verified R2 objects
+        run: python -u scripts/import_midnight_rain_train_20261116.py
+      - name: Upload QA report without modifying production Studio
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: midnight-rain-train-intake-report
+          path: midnight-rain-train-import-report.json
+          if-no-files-found: warn
+          retention-days: 14
