@@ -1,0 +1,53 @@
+name: WNC Licensed Audio Intake — Bounded Commons Pilot
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/pilot_licensed_audio_intake_20261116.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: wnc-licensed-commons-intake-pilot
+  cancel-in-progress: false
+jobs:
+  licensed-audio-private-staging:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      AWS_EC2_METADATA_DISABLED: 'true'
+      PYTHONUNBUFFERED: '1'
+      R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+      R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install source and audio-probe dependencies
+        run: |
+          command -v ffprobe >/dev/null || (sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg)
+          python -m pip install -q 'boto3>=1.36,<2'
+      - name: Rights gate regression (no remote I/O)
+        run: python scripts/test_licensed_batch_intake_v2.py -v
+      - name: Bounded per-file licensed audio download and R2 stage (never Studio publish)
+        run: |
+          python -u scripts/harvest_commons_cc0_to_r2.py \
+            --allow-cc-by \
+            --private-staging \
+            --max-files 10 \
+            --max-per-query 2 \
+            --per-query 15 \
+            --max-file-mb 25 \
+            --max-total-mb 150 \
+            --report audits/commons-licensed-pilot-20261116.json
+      - name: Preserve actual batch results without secrets
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: wnc-licensed-commons-pilot-20261116
+          path: audits/commons-licensed-pilot-20261116.json
+          if-no-files-found: warn
+          retention-days: 30
