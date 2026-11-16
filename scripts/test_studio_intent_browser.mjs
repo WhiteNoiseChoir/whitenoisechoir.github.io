@@ -67,6 +67,7 @@ try{
   assert.equal(saved.tracks.at(-1).generated.mode,'binaural');
   await page.locator('.project-menu summary').click();
   await page.locator('#open-project').setInputFiles({name:'saved.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(saved))});
+  await page.waitForFunction(()=>/Đã mở dự án|không hợp lệ/i.test(document.querySelector('#status')?.textContent||''),{timeout:15000});
   assert.match(await page.locator('#status').textContent(),/định danh nguồn ổn định/i);
   assert.equal(await page.locator('#layer-count').textContent(),'3 lớp');
   // A pure synthesized track can render locally without ever fetching a remote asset.
