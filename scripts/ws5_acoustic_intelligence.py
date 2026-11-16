@@ -86,7 +86,16 @@ def profile(x):
     freqs=np.fft.rfftfreq(16000,1/16000)
     high=float(np.sum(spectra[:,freqs>4000])/max(np.sum(spectra),1e-16))
     centroid=float(np.sum(spectra*freqs)/max(np.sum(spectra),1e-16))
-    return {"rms_dbfs":round(20*math.log10(float(np.sqrt(np.mean(x*x,dtype=np.float64))+1e-12)),2),
+    # Sampled spectral descriptors are NOT an exact frequency claim or binaural verification.
+    rms_db=20*np.log10(np.maximum(rms,1e-8))
+    freq_region=(freqs>=40)&(freqs<=4000)
+    spectral_mean=np.mean(spectra,axis=0)
+    peak_index=np.flatnonzero(freq_region)[int(np.argmax(spectral_mean[freq_region]))]
+    peak_fraction=float(spectral_mean[peak_index]/max(np.sum(spectral_mean[freq_region]),1e-16))
+    return {"sampled_spectral_peak_hz_approx":round(float(freqs[peak_index]),1),
+      "sampled_peak_energy_fraction":round(peak_fraction,6),
+      "rms_variation_p90_p10_db":round(float(np.percentile(rms_db,90)-np.percentile(rms_db,10)),2),
+      "rms_dbfs":round(20*math.log10(float(np.sqrt(np.mean(x*x,dtype=np.float64))+1e-12)),2),
       "sample_peak_dbfs":round(20*math.log10(max(float(np.max(np.abs(x))),1e-9)),2),
       "silent_window_fraction":round(float(np.mean(rms<10**(-48/20))),3),
       "max_rms_jump_db_per_100ms":round(float(np.max(drms)) if len(drms) else 0,2),
