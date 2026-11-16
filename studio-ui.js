@@ -639,6 +639,33 @@ function renderInspector() {
   addNumber(fields, tr('Pan cuối (%)'), track, 'panEnd', {...stereo, placeholder: tr('Theo pan đầu')});
   addNumber(fields, tr('Cắt tần số thấp (Hz)'), track, 'highpass', {min: 20, max: 20000, step: 10, placeholder: tr('Tắt')});
   addNumber(fields, tr('Cắt tần số cao (Hz)'), track, 'lowpass', {min: 80, max: 20000, step: 10, placeholder: tr('Tắt')});
+  if(asset.synthetic){
+    const panel=node('div','','frequency-track-panel');
+    const modeLabel=node('label','Phương pháp tạo tín hiệu');
+    const mode=document.createElement('select');mode.id='frequency-track-mode';
+    for(const [key,name] of [['pure','Pure tone'],['binaural','Binaural · tai nghe'],['monaural','Monaural beats'],['isochronic','Isochronic']])
+      mode.append(new Option(name,key));
+    mode.value=asset.synthetic.mode;modeLabel.append(mode);panel.append(modeLabel);
+    const field=(id,name,value)=>{
+      const label=node('label',name),input=document.createElement('input');
+      input.type='number';input.min=id==='frequency-track-beat'?'0.5':'40';
+      input.max=id==='frequency-track-beat'?'30':'1500';input.step='.1';input.value=value;input.id=id;
+      label.append(input);panel.append(label);return input;
+    };
+    const carrier=field('frequency-track-carrier','Tần số nền (Hz)',asset.synthetic.carrierHz);
+    const beat=field('frequency-track-beat','Nhịp chênh (Hz)',asset.synthetic.beatHz||6);
+    const updateEnabled=()=>{beat.disabled=mode.value==='pure';};
+    mode.onchange=updateEnabled;updateEnabled();
+    const apply=button('Áp dụng tần số cho lớp này',()=>{
+      const id=assetForGenerated({mode:mode.value,carrierHz:Number(carrier.value),beatHz:Number(beat.value)});
+      if(!Number.isInteger(id)){$('status').textContent='Tần số không hợp lệ (40–1500 Hz; nhịp 0,5–30 Hz).';return;}
+      change(()=>{track.asset=id;delete track.assetRef;track.loop=true;});
+      rebuildCatalog();refreshLibraryGroups();renderLibrary();
+    });
+    apply.id='frequency-track-apply';panel.append(apply);
+    panel.append(node('p','Điều chỉnh lớp tổng hợp cục bộ. Không ghi file R2 và không bảo đảm tác dụng sinh lý.','hint muted'));
+    fields.append(panel);
+  }
   fields.append(node('p', tr('Pan: −100 trái, 0 giữa, +100 phải. Solo chỉ dùng khi nghe thử. Fade tự giới hạn tối đa nửa độ dài lớp; gain không phải LUFS.'), 'hint muted'));
   inspector.append(source, actions, fields);
 }
