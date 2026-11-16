@@ -10,8 +10,67 @@ const studioGroups = {
   human: tr('Nhịp cơ thể'),
   hum: tr('Âm nền & rung'),
   music: studioEnglish ? 'Music instruments' : 'Nhạc cụ & âm nhạc',
+  frequency: studioEnglish ? 'Frequency synthesis' : 'Âm tần tổng hợp',
   other: studioEnglish ? 'Other recordings' : 'Âm thanh khác',
 };
+const intentModes = {
+  all: [['all','Tất cả']],
+  sleep: [['all','Tất cả'],['rain','Mưa êm'],['noise','Nền tiếng ồn'],['music','Nhạc nhẹ']],
+  relaxing: [['all','Tất cả'],['nature','Thiên nhiên'],['music','Âm nhạc'],['ambience','Không gian êm']],
+  meditation: [['all','Tất cả'],['soundbath','Sound bath / nhạc cụ'],['drone','Drone / ambient'],['nature','Thiên nhiên'],['frequency','Âm tần tổng hợp']],
+  focus: [['all','Tất cả'],['steady','Âm ổn định'],['nature','Thiên nhiên'],['music','Nhạc không lời']],
+  baby: [['all','Gợi ý tổng quan'],['noise','Nền âm đều'],['calming','Shushing / womb-like'],['lullaby','Nhạc ru / piano'],['nature','Thiên nhiên êm']]
+};
+let libraryIntent='all',libraryMode='all';
+// Relevance filter only; NEVER mark a recording as clinically safe or QA-approved.
+function matchesIntent(asset,intent,mode){
+  if(intent==='all') return true;
+  const name=searchable([asset.name,asset.aliases,asset.group].filter(Boolean).join(' '));
+  const group=asset.group||'other';
+  const has=pattern=>pattern.test(name);
+  const rain=group==='rain'&&!has(/thunder|storm|sam|hail|lightning/);
+  const water=group==='water'&&!has(/crash|rushing|xi[ei]t|violent/);
+  const music=group==='music';
+  const ambient=group==='hum'||group==='fan'||group==='noise';
+  const nature=rain||water||group==='wind'||group==='wildlife';
+  if(intent==='baby'){
+    if(has(/thunder|sam|storm|wolf|owl|coi|firework|alarm|shout|scream/) || group==='frequency') return false;
+    const steady=group==='noise'&&!has(/violet|blue noise|tim|xanh duong|nhi[eễ]u radio/);
+    const calming=group==='human'&&has(/womb|su[yị]t|shush|heart|nhip tim|breath|hoi tho|bung me/);
+    const lullaby=music&&(has(/lullab|piano|music box|ru ngu|music/) || asset.babyIntent==='lullaby');
+    const quietNature=rain||group==='wind'||water&&!has(/rush|crash|xi[eế]t/);
+    return mode==='all' ? steady||calming||lullaby||quietNature||group==='fan'
+      : mode==='noise' ? steady||group==='fan'
+      : mode==='calming' ? calming
+      : mode==='lullaby' ? lullaby
+      : quietNature;
+  }
+  if(intent==='meditation'){
+    const bath=music&&has(/bowl|gong|handpan|chime|bell|singing|harp|flute|sao|chuong|tambura|tanpura/);
+    const drone=music&&has(/ambient|drone|pad|synth|organ|sustain/);
+    if(mode==='frequency')return group==='frequency';
+    if(mode==='soundbath')return bath;
+    if(mode==='drone')return drone;
+    if(mode==='nature')return nature;
+    return nature||music||group==='frequency';
+  }
+  if(intent==='focus'){
+    if(mode==='steady')return ambient||rain;
+    if(mode==='nature')return nature;
+    if(mode==='music')return music;
+    return ambient||nature||music;
+  }
+  if(intent==='sleep'){
+    if(mode==='rain')return rain;
+    if(mode==='noise')return ambient;
+    if(mode==='music')return music;
+    return rain||ambient||music||group==='wind';
+  }
+  if(mode==='nature')return nature;
+  if(mode==='music')return music;
+  if(mode==='ambience')return ambient||rain||group==='wind';
+  return nature||music||ambient;
+}
 const originalFacets = [
   ['water', 'stream creek brook water suối rừng'], ['wildlife', 'frog amphibian ếch suối'],
   ['wildlife', 'bird robin chim hót'], ['wildlife', 'owl bird cú đêm'],
@@ -36,6 +95,7 @@ let zoom = 1;
 let previewId = -1;
 let previewTimer;
 let previewRequest = 0;
+let tonePreview = null;
 const libraryPageSize = 80;
 let libraryPage = 1;
 
@@ -117,7 +177,9 @@ function addSource(index) {
   }
   change(() => {
     selected = mix.tracks.length;
-    mix.tracks.push({asset:index,...(assets[index].id?{assetRef:assets[index].id}:{}),start: Math.min(position, mix.length - .01), gain: .35, loop: false, mute: false});
+    mix.tracks.push({asset:index,...(assets[index].id?{assetRef:assets[index].id}:{}),
+      start:Math.min(position,mix.length-.01),gain:assets[index].synthetic?.mode? .15:.35,
+      loop:!!assets[index].synthetic,mute:false});
   });
   $('tracks').lastElementChild?.scrollIntoView({block: 'nearest', inline: 'nearest'});
 }
@@ -131,6 +193,11 @@ function refreshPreviewButtons() {
 }
 
 function stopPreview() {
+  if(tonePreview){
+    try{tonePreview.source.stop();}catch{}
+    tonePreview.context.close().catch(()=>{});
+    tonePreview=null;
+  }
   previewRequest++;
   clearTimeout(previewTimer);
   const audio = $('library-audio');
@@ -151,6 +218,22 @@ async function audition(index) {
   refreshPreviewButtons();
   setSourceHealth(index,'loading','Đang kiểm tra bản nghe thử');
   const ticket = previewRequest;
+  if(assets[index].synthetic){
+    try{
+      const Engine=window.AudioContext||window.webkitAudioContext;
+      const engine=new Engine();
+      const buffer=await decodeRecording(index,engine);
+      if(ticket!==previewRequest){engine.close();return;}
+      const source=engine.createBufferSource();
+      source.buffer=buffer;source.loop=true;
+      const volume=engine.createGain();volume.gain.value=.3;
+      source.connect(volume);volume.connect(engine.destination);
+      tonePreview={source,context:engine};await engine.resume();source.start();
+      $('library-status').textContent=tr('Nghe thử tín hiệu tổng hợp · âm lượng nhỏ · không phải điều trị');
+      previewTimer=setTimeout(stopPreview,8000);
+    }catch(err){setSourceHealth(index,'failed',String(err?.message||err));}
+    return;
+  }
   const audio = $('library-audio');
   for (const address of sourceAddresses(index)) {
     audio.src = address;
@@ -178,7 +261,8 @@ function renderLibrary() {
   const words = query.split(/\s+/).filter(Boolean);
   const group = $('library-group').value;
   const matches = catalog.map((entry, i) => ({...entry, i}))
-    .filter(entry => !assets[entry.i].pending && (!group || group === entry.group) && words.every(word => entry.text.includes(word)));
+    .filter(entry=>!assets[entry.i].pending && (!group||group===entry.group)
+      && matchesIntent(assets[entry.i],libraryIntent,libraryMode) && words.every(word=>entry.text.includes(word)));
   if (query) {
     const rank = entry => {
       const name = entry.name;
@@ -551,7 +635,7 @@ function renderInspector() {
   addNumber(fields, tr('Pan cuối (%)'), track, 'panEnd', {...stereo, placeholder: tr('Theo pan đầu')});
   addNumber(fields, tr('Cắt tần số thấp (Hz)'), track, 'highpass', {min: 20, max: 20000, step: 10, placeholder: tr('Tắt')});
   addNumber(fields, tr('Cắt tần số cao (Hz)'), track, 'lowpass', {min: 80, max: 20000, step: 10, placeholder: tr('Tắt')});
-  fields.append(node('p', tr('Pan: −100 trái, 0 giữa, +100 phải. Solo chỉ dùng khi nghe thử.'), 'hint muted'));
+  fields.append(node('p', tr('Pan: −100 trái, 0 giữa, +100 phải. Solo chỉ dùng khi nghe thử. Fade tự giới hạn tối đa nửa độ dài lớp; gain không phải LUFS.'), 'hint muted'));
   inspector.append(source, actions, fields);
 }
 
@@ -639,7 +723,7 @@ $('share').onclick = async () => {
   catch { $('status').textContent = tr('Sao chép liên kết bản phối từ thanh địa chỉ.'); }
 };
 $('save-project').onclick = () => {
-  const url = URL.createObjectURL(new Blob([JSON.stringify(mix, null, 2)], {type: 'application/json'}));
+  const url = URL.createObjectURL(new Blob([JSON.stringify(projectForDownload(mix), null, 2)], {type: 'application/json'}));
   const link = node('a');
   link.href = url;
   link.download = (mix.title.replace(/[\\/:*?"<>|]/g, '-').trim() || 'ban-phoi') + '.json';
@@ -658,12 +742,92 @@ $('open-project').onchange = async () => {
     const project = normalizeProject(raw);
     if (project.tracks.length !== raw.tracks.length) throw Error();
     replaceProject(project);
-    $('status').textContent = tr('Đã mở dự án.');
+    const legacy=raw.tracks.some(t=>!t.generated&&!t.assetKey&&!t.assetRef);
+    $('status').textContent = legacy
+      ? tr('Đã mở JSON cũ theo ID số: vui lòng xác minh từng nguồn âm thanh trước khi xuất WAV.')
+      : tr('Đã mở dự án với định danh nguồn ổn định.');
     input.closest('details').open = false;
   } catch {
     $('status').textContent = tr('Tệp dự án không hợp lệ hoặc chứa nguồn âm thanh chưa có trong thư viện.');
   }
 };
+// Intent-aware discovery is a local catalog filter; the private metadata index is not exposed here.
+(function setupIntentAudioControls(){
+  const group=$('library-group');
+  const container=node('div','','intent-controls');
+  const label=node('label',studioEnglish?'Listening intent':'Mục đích nghe');
+  const intent=document.createElement('select');
+  intent.id='library-intent';
+  for(const [id,title] of [['all','Tất cả'],['sleep','Sleep / Ngủ'],['relaxing','Relaxing / Thư giãn'],
+    ['meditation','Meditation / Thiền'],['focus','Focus / Tập trung'],['baby','Baby Sleep & Calming']])
+    intent.append(new Option(title,id));
+  label.append(intent);
+  const modeLabel=node('label',studioEnglish?'Style':'Phong cách âm');
+  const mode=document.createElement('select');mode.id='library-intent-mode';modeLabel.append(mode);
+  const warning=node('p','','intent-caution');
+  warning.textContent='Bộ lọc chỉ gợi ý nguồn đã hiển thị trong Studio; không xác nhận QA hay quyền phát hành.';
+  function updateModes(){
+    mode.replaceChildren(...intentModes[libraryIntent].map(([id,title])=>new Option(title,id)));
+    libraryMode='all'; mode.value='all';
+    warning.textContent=libraryIntent==='baby'
+      ? 'Baby: chỉ là gợi ý sơ bộ; không bảo đảm an toàn thính giác. Giữ âm lượng thiết bị thấp, đặt nguồn phát xa trẻ và kiểm tra thời lượng nghe.'
+      : libraryIntent==='meditation'
+      ? 'Meditation: âm tần tổng hợp cần kiểm tra stereo và tần số, không phải liệu pháp chữa bệnh.'
+      : 'Gợi ý theo intent, chưa xác nhận nghe QA hoặc quyền phát hành. Metadata private không tải vào trình duyệt.';
+    libraryPage=1;renderLibrary();
+  }
+  intent.onchange=()=>{libraryIntent=intent.value;updateModes();};
+  mode.onchange=()=>{libraryMode=mode.value;libraryPage=1;renderLibrary();};
+  container.append(label,modeLabel,warning);
+  group.insertAdjacentElement('afterend',container);
+  updateModes();
+  const lab=document.createElement('details');lab.className='frequency-lab';
+  lab.innerHTML='<summary>Acoustic Lab · Tạo âm tần</summary>';
+  const body=node('div','','frequency-lab-fields');
+  const make=(name,type,min,max,step,value)=>{
+    const label=node('label',name);
+    const input=document.createElement('input');input.type=type;
+    if(min!==null)input.min=min;if(max!==null)input.max=max;
+    if(step!==null)input.step=step;input.value=value;label.append(input);body.append(label);return input;
+  };
+  const typeLabel=node('label','Loại tín hiệu');
+  const type=document.createElement('select');
+  for(const [id,title] of [['pure','Pure tone'],['binaural','Binaural beats · cần tai nghe'],
+    ['monaural','Monaural beats'],['isochronic','Isochronic tones']])type.append(new Option(title,id));
+  typeLabel.append(type);body.append(typeLabel);
+  const carrier=make('Tần số nền (Hz)','number',40,1500,.1,432);
+  const beat=make('Nhịp chênh (Hz)','number',.5,30,.1,6);
+  beat.disabled=true;
+  type.onchange=()=>{beat.disabled=type.value==='pure';};
+  const buttonEl=button('Thêm âm tần vào timeline',()=>{
+    if(libraryIntent==='baby'){ $('status').textContent='Baby Mode không thêm tín hiệu âm tần tự động.';return;}
+    const id=assetForGenerated({mode:type.value,carrierHz:Number(carrier.value),beatHz:Number(beat.value)});
+    if(!Number.isInteger(id)){ $('status').textContent='Tần số phải từ 40–1500 Hz, bước 0,1 Hz; nhịp 0,5–30 Hz.';return;}
+    rebuildCatalog();refreshLibraryGroups();addSource(id);renderLibrary();
+    $('status').textContent='Đã tạo tín hiệu cục bộ. Kiểm tra bằng tai nghe và đo WAV; không có file R2 được tạo.';
+  });
+  body.append(buttonEl,node('p','Mỗi tín hiệu là sóng tổng hợp cục bộ 10 giây nối vòng, không phải tài sản âm thanh đã nhập R2 hoặc chứng nhận hiệu quả y khoa.','hint muted'));
+  lab.append(body);container.insertAdjacentElement('afterend',lab);
+  const babyDemo=button('Bản mẫu Baby 10 phút (cần QA)',()=>{
+    if(!window.confirm('Tạo bản mẫu Baby mới? Dự án đang mở sẽ được thay thế; hãy tải JSON trước khi đổi.'))return;
+    const pink=assets.findIndex(x=>x.key==='audio/pink-noise.mp3');
+    const rain=assets.findIndex(x=>x.key==='audio/light-rain-real.mp3');
+    if(pink<0||rain<0){$('status').textContent='Thiếu nguồn Baby mẫu trong catalog.';return;}
+    const project={title:'Gentle Night Nursery · Draft / Needs QA',length:600,master:.35,tracks:[
+      {asset:pink,start:0,duration:600,gain:.16,loop:true,mute:false,fadeIn:2,fadeOut:2,label:'Pink Noise · nhẹ'},
+      {asset:rain,start:0,duration:600,gain:.085,loop:true,mute:false,fadeIn:3,fadeOut:3,label:'Mưa nhẹ · nền'}
+    ]};
+    replaceProject(project);
+    $('status').textContent='Bản mẫu chỉ dành để nghe QA, không phải chứng nhận an toàn cho trẻ.';
+  });
+  babyDemo.className='baby-demo-action';
+  container.append(babyDemo);
+  const toggleBaby=()=>{babyDemo.hidden=libraryIntent!=='baby';lab.hidden=libraryIntent==='baby';};
+  const originalChange=intent.onchange;
+  intent.onchange=()=>{originalChange();toggleBaby();};
+  toggleBaby();
+})();
+
 $('library-query').oninput = $('library-group').onchange = () => {libraryPage=1;renderLibrary();};
 $('library-more').onclick=()=>{libraryPage++;renderLibrary();};
 $('library-audio').onended = stopPreview;
