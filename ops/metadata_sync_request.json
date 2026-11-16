@@ -1,6 +1,7 @@
 {
   "schema": "wnc_private_metadata_sync_request_v1",
   "status": "requested",
-  "requested_at_utc": "2026-11-14T03:40:00Z",
-  "reason": "Include WS5 pilot measured signal features in GitHub Private metadata index; independent of WS2/WS3/WS4."
+  "requested_at_utc": "2026-11-16T08:08:57.686Z",
+  "reason": "Refresh Private canonical GitHub index with owner-approved Meditation/Baby/Frequency intent facets and WS5 sampled spectral metrics; keep R2 originals untouched and never publish private rows.",
+  "source_commit": "abdb366d541d162fc8fc0d99068415e93f9b9ec3"
 }
