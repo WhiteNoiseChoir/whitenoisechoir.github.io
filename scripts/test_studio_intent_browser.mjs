@@ -58,6 +58,16 @@ try{
   assert.equal(last.asset.synthetic.mode,'binaural');
   assert.equal(last.track.loop,true);
   assert(!last.track.assetRef,'Synthesized sources must never claim R2 SHA');
+  await page.locator('#frequency-track-mode').selectOption('isochronic');
+  await page.locator('#frequency-track-carrier').fill('220');
+  await page.locator('#frequency-track-beat').fill('8');
+  await page.locator('#frequency-track-apply').click();
+  assert.equal(await page.evaluate(()=>assets[mix.tracks.at(-1).asset].synthetic.mode),'isochronic');
+  await page.locator('#frequency-track-mode').selectOption('binaural');
+  await page.locator('#frequency-track-carrier').fill('200');
+  await page.locator('#frequency-track-beat').fill('6');
+  await page.locator('#frequency-track-apply').click();
+  assert.equal(await page.evaluate(()=>assets[mix.tracks.at(-1).asset].synthetic.beatHz),6);
   await page.locator('#minutes').fill('0.1');
   await page.locator('#minutes').press('Tab');
   await page.locator('.project-menu summary').click();
