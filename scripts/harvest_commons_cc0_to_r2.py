@@ -16,6 +16,9 @@ ACCOUNT_ID="7483501ad8365fe26b0448b96b54fb9f"
 BUCKET="whitenoisechoir-media"
 USER_AGENT="WhiteNoiseChoirSoundArchive/1.0 (https://whitenoisechoir.com; audio-asset-library; respectful Wikimedia API client)"
 PREFIX="asset-library/commons/sha256/"
+RECORDS_PREFIX="asset-library/commons/records/"
+RUNS_PREFIX="asset-library/commons/runs/"
+PRIVATE_STAGING=False
 EXT={".ogg":"audio/ogg",".oga":"audio/ogg",".opus":"audio/ogg",".wav":"audio/wav",".mp3":"audio/mpeg",".flac":"audio/flac",".m4a":"audio/mp4",".aiff":"audio/aiff"}
 # Distinct queries; each is an audio-concept seed, NOT an SEO page target.
 QUERIES=[
@@ -94,7 +97,7 @@ def decide(p,category,max_bytes,*,allow_cc_by=False):
           and license_name=="ccby"+cc_by.group(1)):
         source_license="CC-BY-"+cc_by.group(1)
     else:
-        result.update(state="SKIP_LICENSE_NOT_CC0",license_name=val(meta,"LicenseShortName"));return result
+        result.update(state="SKIP_LICENSE_NOT_ALLOWED",license_name=val(meta,"LicenseShortName"));return result
     restrictions=val(meta,"Restrictions")
     if restrictions:
         result.update(state="SKIP_RESTRICTIONS",restrictions=plain(restrictions));return result
@@ -150,26 +153,29 @@ def upload(s3,row,path,size,digest,dur,stream):
     else:
         with path.open("rb") as data:
             s3.put_object(Bucket=BUCKET,Key=key,Body=data,ContentLength=size,ContentType=EXT[row["extension"]],
-              Metadata={"sha256":digest,"license":"cc0-1.0","provider":"wikimedia-commons"},
-              CacheControl="public, max-age=31536000, immutable")
+              Metadata={"sha256":digest,"license":row["source_license"].lower(),"provider":"wikimedia-commons"},
+              CacheControl="private, no-store" if PRIVATE_STAGING else "public, max-age=31536000, immutable")
         state="UPLOADED_R2"
     h2=head(s3,key)
     if not h2 or int(h2.get("ContentLength",0))!=size or h2.get("Metadata",{}).get("sha256")!=digest:
         raise ValueError("R2 write/readback verification failed")
     # Durable per-file provenance, not an expiring CI artifact. Each source may
     # be retrieved by SHA ID from this small JSON sidecar without rescanning.
-    metadata_key="asset-library/commons/records/"+digest[:2]+"/"+digest+".json"
+    metadata_key=RECORDS_PREFIX+digest[:2]+"/"+digest+".json"
     meta={
       "schema_version":1,"audio_sha256":digest,"audio_storage_key":key,
       "file_title":row["title"],"source_page":row["source_url"],
       "original_filename":row["file_name"],"uploader":row.get("uploader"),
       "creator":row.get("author"),"taxonomy_query_category":row["category"],
-      "license":"CC0-1.0","license_evidence_url":row["rights_evidence_url"],
+      "license":row["source_license"],"license_url":row["license_url"],
+      "attribution":row.get("attribution"),
+      "license_evidence_url":row["rights_evidence_url"],
+      "license_grant_status":"SOURCE_DECLARED_PROVENANCE_CAPTURED_NOT_PUBLICATION_APPROVED",
       "license_checked_at":row["license_checked_at"],"file_bytes":size,
       "duration_seconds":dur,"codec":stream.get("codec_name"),
       "sample_rate_hz":stream.get("sample_rate"),"channels":stream.get("channels"),
       "source_metadata_not_subjectively_listened":True,
-      "ready_for_public_website":False,"ready_for_mixer":False
+      "ready_for_public_website":False,"ready_for_mixer":False,"publicationApproved":False
     }
     if not head(s3,metadata_key):
         encoded=(json.dumps(meta,ensure_ascii=False,sort_keys=True)+"\n").encode("utf-8")
@@ -188,17 +194,29 @@ def main():
     ap.add_argument("--max-file-mb",type=int,default=20)
     ap.add_argument("--max-total-mb",type=int,default=250)
     ap.add_argument("--report",default="audits/commons-first-harvest-report.json")
+    ap.add_argument("--allow-cc-by",action="store_true",help="Allow source-declared CC BY 3.0/4.0 in addition to CC0; never auto-publication-approved")
+    ap.add_argument("--private-staging",action="store_true",help="Store files under isolated internal R2 prefix; network ACL must be verified separately")
+    ap.add_argument("--max-per-query",type=int,default=0,help="Limit newly uploaded assets per query to improve family coverage")
     args=ap.parse_args()
     assert 1<=args.max_files<=200 and 1<=args.per_query<=50 and 0<=args.offset<=950
-    assert 1<=args.max_file_mb<=50 and 1<=args.max_total_mb<=1200
+    assert 1<=args.max_file_mb<=100 and 1<=args.max_total_mb<=1200
+    assert 0<=args.max_per_query<=args.max_files
+    global PREFIX,RECORDS_PREFIX,RUNS_PREFIX,PRIVATE_STAGING
+    PRIVATE_STAGING=args.private_staging
+    if PRIVATE_STAGING:
+        PREFIX="internal/licensed-batch/v1/sha256/"
+        RECORDS_PREFIX="internal/licensed-batch/v1/records/"
+        RUNS_PREFIX="internal/licensed-batch/v1/runs/"
     assert os.getenv("R2_ACCESS_KEY_ID") and os.getenv("R2_SECRET_ACCESS_KEY"),"Missing approved R2 credentials"
     s3=boto3.session.Session().client("s3",region_name="auto",endpoint_url="https://"+ACCOUNT_ID+".r2.cloudflarestorage.com",
         aws_access_key_id=os.environ["R2_ACCESS_KEY_ID"],aws_secret_access_key=os.environ["R2_SECRET_ACCESS_KEY"],
         config=Config(signature_version="s3v4",s3={"addressing_style":"path"},retries={"max_attempts":5,"mode":"standard"},
           connect_timeout=15,read_timeout=100,request_checksum_calculation="when_required",
           response_checksum_validation="when_required"))
-    report={"status":"RUNNING","source":"Wikimedia Commons CC0 audio","bucket":BUCKET,
-      "object_prefix":PREFIX,"public_api_page_license_filter":"CC0 1.0 only","no_listening_qa":True,
+    report={"status":"RUNNING","source":"Wikimedia Commons CC0 / eligible CC BY audio","bucket":BUCKET,
+      "object_prefix":PREFIX,"accepted_license_policy":"CC0+source-declared CC BY" if args.allow_cc_by else "CC0 only",
+      "internal_prefix_not_proof_of_access_restriction":PRIVATE_STAGING,
+      "no_listening_qa":True,
       "no_existing_production_changes":True,"max_files":args.max_files,"per_query":args.per_query,
       "offset":args.offset,"queried":[],"files":[],"counts":{},"errors":[]}
     count=0;remote_bytes=0;seen_urls=set();seen_hashes=set()
@@ -210,15 +228,15 @@ def main():
         try:pages=candidates(query,args.offset,args.per_query)
         except Exception as exc:
             report["errors"].append({"query":query,"error":repr(exc)[:180]});continue
-        candidates_count=0
+        candidates_count=0;new_in_query=0
         for p in pages:
-            record=decide(p,cat,max_bytes)
+            record=decide(p,cat,max_bytes,allow_cc_by=args.allow_cc_by)
             status=record["state"];report["counts"][status]=report["counts"].get(status,0)+1
             if status!="ELIGIBLE":continue
             url=record["direct_file_url"]
             if url in seen_urls:continue
             seen_urls.add(url);candidates_count+=1
-            if count>=args.max_files:break
+            if count>=args.max_files or (args.max_per_query and new_in_query>=args.max_per_query):break
             if remote_bytes+record["size"]>args.max_total_mb*1024**2:continue
             local=None
             try:
@@ -231,6 +249,7 @@ def main():
                 if result["state"]=="UPLOADED_R2":
                     remote_bytes+=size
                     count+=1
+                    new_in_query+=1
                 row={**{k:v for k,v in record.items() if k!="direct_file_url"},**result,"size_bytes":size}
                 report["files"].append(row)
                 report["counts"][result["state"]]=report["counts"].get(result["state"],0)+1
@@ -247,7 +266,7 @@ def main():
     out=pathlib.Path(args.report);out.parent.mkdir(parents=True,exist_ok=True)
     out.write_text(json.dumps(report,ensure_ascii=False,indent=2)+"\n",encoding="utf8")
     # Store full run provenance durably in R2; Actions artifacts expire.
-    run_key="asset-library/commons/runs/"+datetime.datetime.now(datetime.timezone.utc).strftime("%Y%m%dT%H%M%S%f")+".json"
+    run_key=RUNS_PREFIX+datetime.datetime.now(datetime.timezone.utc).strftime("%Y%m%dT%H%M%S%f")+".json"
     s3.put_object(Bucket=BUCKET,Key=run_key,Body=out.read_bytes(),
       ContentType="application/json",Metadata={"kind":"source-harvest-report"})
     assert head(s3,run_key),"R2 run-report object not saved"
