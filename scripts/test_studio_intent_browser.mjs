@@ -41,6 +41,8 @@ try{
   await page.evaluate(()=>{window.confirm=()=>true;});
   await page.locator('.baby-demo-action').click();
   assert.equal(await page.locator('#layer-count').textContent(),'2 lớp');
+  assert.equal(await page.evaluate(()=>mix.intent),'baby');
+  assert.match(await page.locator('#mix-review').textContent(),/không bảo đảm mức âm an toàn/i);
   const sources=await page.evaluate(()=>mix.tracks.map(t=>assets[t.asset].name));
   assert(sources.some(s=>/hồng|pink/i.test(s))&&sources.some(s=>/mưa nhẹ/i.test(s)));
   await page.locator('#library-intent').selectOption('meditation');
