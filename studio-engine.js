@@ -5,6 +5,32 @@ if (!oldPlayerRequest.hash.startsWith('#mix=') && oldPlayerRequest.searchParams.
 }
 const assets = [{"name":"Suối chảy gần","key":"asset-library/raw/sha256/be/be201d2fd0d110fc3ef5d8af060e5ac48439fd54e9f26ce6b69825182748a95b.wav","duration":68.889,"source":"https://commons.wikimedia.org/wiki/File:433589_jackthemurray_stream-river-water-up-close.wav"},{"name":"Ếch suối kêu","key":"asset-library/raw/sha256/0a/0a3c133128b94306396567cfc22ded8363645869d762c2bbc76b5c3519017cff.m4a","duration":11.865011,"source":"https://www.inaturalist.org/observations/111319279"},{"name":"Chim cổ đỏ Mỹ","key":"asset-library/raw/sha256/0b/0bf24b2b08299380add4e29b6ed0c9ed37ffaa26a19e3908e5b572d75ef7cabe.m4a","duration":24.960998,"source":"https://www.inaturalist.org/observations/402220192"},{"name":"Cú vằn","key":"asset-library/raw/sha256/06/06c95f291596cfc813ff54d636ae926493ed6cd9c8a10d30f049a70460048af1.mp3","duration":62.261875,"source":"https://www.inaturalist.org/observations/349447210"},{"name":"Ong nghệ","key":"asset-library/raw/sha256/2b/2b5e3902314cbb5d54c26164dc4264a1fdebf61f5012e6f378f6f3e313c7e91a.m4a","duration":23.04,"source":"https://www.inaturalist.org/observations/243621492"},{"name":"Lò sưởi tí tách","key":"audio/fireplace-real.mp3","duration":600,"source":"https://freesound.org/people/visionear/sounds/501417/","license":"CC0","studioLoopKey":"asset-library/studio-loop/sha256/be/be28cfade62766d75b4e7efb7e439540b4ee79633fe024ad3a727d9dd5575227.mp3","studioLoopSeconds":92,"studioLoopQuality":"browser preview from SHA-verified approved 10-minute master, circular crossfade 4s, WAV mix uses loop"},{"name":"Mưa trên cửa kính","key":"audio/rain-on-window-real.mp3","duration":600,"source":"https://freesound.org/people/ikayuka/sounds/273333/","license":"CC0","studioLoopKey":"asset-library/studio-loop/sha256/53/5352c5e4d9f5c06dc0809625aecb528c07df10360327bec7cb2e8e1d37d0defe.mp3","studioLoopSeconds":92,"studioLoopQuality":"browser preview from SHA-verified approved 10-minute master, circular crossfade 4s, WAV mix uses loop"},{"name":"Sói tru ở Denali","key":"asset-library/raw/sha256/bf/bfc073e6226f2a21a87567b898c5e5674a53284353128da0d1e0f69b97e8b62f.mp3","duration":8.36,"source":"https://www.nps.gov/subjects/sound/sounds-wolf.htm","license":"NPS recording"},{"name":"Tàu hỏa đi qua ở xa","url":"https://upload.wikimedia.org/wikipedia/commons/transcoded/6/67/Train_passing_by_in_the_Wirikuta_Desert_(Mexico%2C_SLP).wav/Train_passing_by_in_the_Wirikuta_Desert_(Mexico%2C_SLP).wav.mp3","duration":154.25,"source":"https://commons.wikimedia.org/wiki/File:Train_passing_by_in_the_Wirikuta_Desert_(Mexico,_SLP).wav","license":"CC0"},{"name":"Mưa trên tán cây","key":"audio/rain-leaves-real.mp3","duration":600,"source":"https://freesound.org/people/Garuda1982/sounds/757276/","studioLoopKey":"asset-library/studio-loop/sha256/fa/fa83a81dfe7ff995e107cd7f4f716343725347e66d970dd91964460faceb208a.mp3","studioLoopSeconds":92,"studioLoopQuality":"browser preview from SHA-verified approved 10-minute master, circular crossfade 4s, WAV mix uses loop"},{"name":"Mưa trên mái","key":"audio/rain-tin-roof-real.mp3","duration":600,"source":"https://freesound.org/people/archerjosiah/sounds/843483/"},{"name":"Sấm lăn từ xa","key":"audio/distant-thunder-real.mp3","duration":600,"source":"https://freesound.org/people/moxobna/sounds/107518/"},{"name":"Gỗ kẽo kẹt gần","duration":1.709,"source":"https://freesound.org/people/Rudmer_Rotteveel/sounds/506660/","license":"CC0","previewUrl":"https://cdn.freesound.org/previews/506/506660_4921277-hq.mp3","key":"asset-library/raw/sha256/ea/ea2144a09b42a4e518fc83e3c1dc60de138029dec1cc8455ee2fb31884701c17.mp3","sha256":"ea2144a09b42a4e518fc83e3c1dc60de138029dec1cc8455ee2fb31884701c17","assetStatus":"STORED_R2_TECHNICAL_PASS_LISTENING_PENDING","quality":"CC0 MP3 preview stored R2; full quality source not yet obtained","importedAt":"2026-11-12"},{"name":"Nước nhỏ từ mái hiên","duration":33.226,"source":"https://freesound.org/people/jc144940/sounds/180948/","license":"CC0","previewUrl":"https://cdn.freesound.org/previews/180/180948_2596329-hq.mp3","key":"asset-library/raw/sha256/d5/d511520722dfdd79808d45f086c39b1b729282894800bf0dfac671297639d492.mp3","sha256":"d511520722dfdd79808d45f086c39b1b729282894800bf0dfac671297639d492","assetStatus":"STORED_R2_TECHNICAL_PASS_LISTENING_PENDING","quality":"CC0 MP3 preview stored R2; full quality source not yet obtained","importedAt":"2026-11-12"},{"name":"Sói tru đáp từ xa","url":"https://upload.wikimedia.org/wikipedia/commons/transcoded/8/87/Wolf_howls.ogg/Wolf_howls.ogg.mp3","duration":28.35,"source":"https://commons.wikimedia.org/wiki/File:Wolf_howls.ogg","license":"Public domain"}];
 assets.push(...studioPublishedAssets);
+// Generated tones stay local: they are NEVER represented as R2 assets or licensed recordings.
+// 10s oscillator buffers are phase-coherent because allowed frequencies use 0.1Hz increments.
+const generatedToneIds = new Map();
+function toneSpec(input) {
+  if(!input || typeof input !== 'object') return null;
+  const mode = String(input.mode || '');
+  if(!['pure','binaural','isochronic','monaural'].includes(mode)) return null;
+  const carrierHz = Number(input.carrierHz), beatHz = mode==='pure' ? 0 : Number(input.beatHz);
+  if(!Number.isFinite(carrierHz) || !Number.isFinite(beatHz) ||
+      carrierHz<40 || carrierHz>1500 || Math.round(carrierHz*10)!==carrierHz*10 ||
+      (mode!=='pure' && (beatHz<0.5 || beatHz>30 || Math.round(beatHz*10)!==beatHz*10))) return null;
+  return {mode,carrierHz,beatHz};
+}
+function assetForGenerated(spec) {
+  const tone=toneSpec(spec);
+  if(!tone) return undefined;
+  const key=[tone.mode,tone.carrierHz,tone.beatHz].join(':');
+  if(generatedToneIds.has(key)) return generatedToneIds.get(key);
+  const index=assets.length;
+  const modeLabel={pure:'Pure Tone',binaural:'Binaural Beat',isochronic:'Isochronic',monaural:'Monaural Beat'}[tone.mode];
+  assets.push({name:modeLabel+' · '+tone.carrierHz+' Hz'+(tone.beatHz?' / '+tone.beatHz+' Hz':''),duration:600,
+    group:'frequency',synthetic:tone,assetStatus:'LOCAL_SYNTHESIS_NOT_R2'});
+  generatedToneIds.set(key,index);
+  if(typeof rebuildCatalog==='function') rebuildCatalog();
+  return index;
+}
 const rawAssetIndex = new Map();
 const rawDigest = key => /\/([a-f0-9]{64})\.[a-z0-9]+$/i.exec(key || '')?.[1]?.toLowerCase();
 assets.forEach((asset, index) => {
@@ -16,6 +42,27 @@ assets.forEach((asset, index) => {
     asset.name = title;
   }
 });
+function assetForKey(key) {
+  if(typeof key!=='string' || key.length>300) return undefined;
+  const index=assets.findIndex(asset=>asset.key===key);
+  return index===-1?undefined:index;
+}
+function projectForDownload(project) {
+  return {...project,tracks:project.tracks.map(track=>{
+    const asset=assets[track.asset]||{};
+    const stable={...track};
+    if(asset.synthetic) {
+      stable.generated={...asset.synthetic};
+      delete stable.assetRef;
+      delete stable.assetKey;
+    } else {
+      if(asset.key) stable.assetKey=asset.key;
+      const digest=rawDigest(asset.key);
+      if(digest) stable.assetRef='r2-'+digest;
+    }
+    return stable;
+  })};
+}
 function assetForRef(ref) {
   if (!/^r2-[a-f0-9]{64}$/.test(ref || '')) return undefined;
   let index = rawAssetIndex.get(ref);
@@ -78,10 +125,12 @@ function normalizeProject(saved) {
     ...(Number.isFinite(saved.master)?{master:clamp(saved.master,0,1)}:{}),
     tracks:saved.tracks.slice(0,32)
       .filter(t=>t && Number.isFinite(t.start) && Number.isFinite(t.gain))
-      .map(t=>({t,index:t.assetRef ? assetForRef(t.assetRef) : Number(t.asset)}))
+      .map(t=>({t,index:t.generated ? assetForGenerated(t.generated)
+        : (t.assetRef ? assetForRef(t.assetRef)
+        : (typeof t.assetKey==='string' ? assetForKey(t.assetKey) : Number(t.asset)))}))
       .filter(({index})=>Number.isInteger(index) && assets[index])
       .map(({t,index})=>({
-        asset:index,...(t.assetRef?{assetRef:t.assetRef}:{}),start:clamp(t.start,0,10800),gain:clamp(t.gain,0,1),loop:!!t.loop,mute:!!t.mute,
+        asset:index,...(t.assetRef&&!t.generated?{assetRef:t.assetRef}:{}),start:clamp(t.start,0,10800),gain:clamp(t.gain,0,1),loop:!!t.loop,mute:!!t.mute,
         ...(typeof t.label==='string'?{label:t.label.slice(0,100)}:{}),
         ...readClipOptions(t)
       }))
@@ -246,6 +295,7 @@ const approvedAudioFallbacks = {
 };
 function sourceAddresses(i){
   const asset=assets[i];
+  if(asset.synthetic) return [];
   if(asset.pending) return [];
   // Use a verified 92s seamless R2 proxy instead of decoding an entire 600s
   // master in the browser (~200MB of PCM per stereo source at 44.1kHz).
@@ -266,6 +316,31 @@ function sourceAddresses(i){
 async function decodeRecording(i,decoder,onSource){
   setSourceHealth(i,'loading','Đang tải và giải mã âm thanh');
   const asset=assets[i];
+  if(asset.synthetic){
+    const {mode,carrierHz,beatHz}=asset.synthetic;
+    const rate=decoder.sampleRate;
+    const frames=Math.round(rate*10);
+    const buffer=decoder.createBuffer(2,frames,rate);
+    const left=buffer.getChannelData(0),right=buffer.getChannelData(1);
+    // All coherent loops use period 10s and frequency precision of 0.1Hz.
+    for(let n=0;n<frames;n++){
+      const t=n/rate, carrier=Math.sin(2*Math.PI*carrierHz*t);
+      if(mode==='binaural'){
+        left[n]=.13*carrier;
+        right[n]=.13*Math.sin(2*Math.PI*(carrierHz+beatHz)*t);
+      }else if(mode==='monaural'){
+        const b=.065*(carrier+Math.sin(2*Math.PI*(carrierHz+beatHz)*t));
+        left[n]=right[n]=b;
+      }else if(mode==='isochronic'){
+        const envelope=.5-.5*Math.cos(2*Math.PI*beatHz*t);
+        left[n]=right[n]=.13*carrier*envelope;
+      }else{
+        left[n]=right[n]=.13*carrier;
+      }
+    }
+    setSourceHealth(i,'ready','Tín hiệu tổng hợp cục bộ; chưa phải asset R2 hoặc nội dung chữa bệnh');
+    return buffer;
+  }
   if(asset.pending) throw Error(studioEnglish?'Unlock the source catalog in Vietnamese Studio.':'Mở kho âm thanh trong Studio tiếng Việt để tải nguồn.');
   const attempts=[];
   for(const address of sourceAddresses(i)){
