@@ -6,6 +6,9 @@ on:
       - 'studio-engine.js'
       - 'studio-ui.js'
       - 'studio.css'
+      - 'index.html'
+      - 'vi/**/index.html'
+      - 'scripts/build_studio_routes.cjs'
       - 'scripts/test_studio_intent_frequency_v1.cjs'
       - 'scripts/test_studio_intent_browser.mjs'
       - 'scripts/ws5_acoustic_intelligence.py'
@@ -43,6 +46,7 @@ jobs:
         run: |
           node --check studio-engine.js
           node --check studio-ui.js
+          node --check scripts/build_studio_routes.cjs
           node scripts/test_studio_intent_frequency_v1.cjs
       - name: Install headless browser test harness
         run: |
