@@ -178,7 +178,8 @@ function renderSourceDiagnostics(){
   const quietTracks=mix.tracks.filter(t=>!t.mute&&t.gain>0&&t.gain<.10);
   const waiting=activeIds.length-ready.length-loadingFiles.length-errors.length;
   const summary=studioEnglish?'Audio diagnostics':'Kiểm tra âm thanh';
-  sourceSummary.textContent=summary+' · '+ready.length+'/'+activeIds.length+' '+(studioEnglish?'sources loaded':'nguồn đã tải')+
+  sourceSummary.textContent=summary+' · '+ready.length+'/'+activeIds.length+' '+(studioEnglish?'sources decoded':'nguồn đã giải mã')+
+    (waiting>0?' · '+waiting+' '+(studioEnglish?'NOT TESTED':'CHƯA KIỂM TRA'):'')+
     (errors.length?' · '+errors.length+' LỖI':'')+
     (muted.length?' · '+muted.length+' lớp tắt':'')+
     (quietTracks.length?' · '+quietTracks.length+' lớp rất nhỏ':'')+
