@@ -58,12 +58,14 @@ try{
   assert(!last.track.assetRef,'Synthesized sources must never claim R2 SHA');
   await page.locator('#minutes').fill('0.1');
   await page.locator('#minutes').press('Tab');
+  await page.locator('.project-menu summary').click();
   const [download]=await Promise.all([page.waitForEvent('download'),page.click('#save-project')]);
   const save=path.join(tmp,'mix.json');await download.saveAs(save);
   const saved=JSON.parse(await readFile(save,'utf8'));
   assert.equal(saved.length,6);
   assert(saved.tracks[0].assetKey && saved.tracks[1].assetKey,'Legacy catalog export must contain stable assetKey');
   assert.equal(saved.tracks.at(-1).generated.mode,'binaural');
+  await page.locator('.project-menu summary').click();
   await page.locator('#open-project').setInputFiles({name:'saved.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(saved))});
   assert.match(await page.locator('#status').textContent(),/định danh nguồn ổn định/i);
   assert.equal(await page.locator('#layer-count').textContent(),'3 lớp');
