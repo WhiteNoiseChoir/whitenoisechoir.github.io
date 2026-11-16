@@ -514,3 +514,22 @@ kbd { font: 11px var(--mono); border: 1px solid var(--line); color: var(--muted)
   .av-preview-actions { gap: 7px; }
   .av-preview-help { flex-basis: 100%; }
 }
+
+/* Intent-aware source discovery & local frequency lab (internal Studio, additive). */
+.intent-controls { display:grid; gap:7px; padding:10px; margin:5px 0 10px; border:1px solid var(--line); border-radius:9px; background:var(--raised); }
+.intent-controls label,.frequency-lab-fields label { display:grid; gap:4px; font-size:12px; color:var(--muted); }
+.intent-controls select,.frequency-lab select,.frequency-lab input { min-width:0; width:100%; padding:7px 8px; border:1px solid var(--line); border-radius:6px; background:var(--input); color:inherit; }
+.intent-caution { font-size:11px; line-height:1.45; color:var(--muted); margin:2px 0; }
+.baby-demo-action { min-height:35px; text-align:left; border:1px solid var(--line); border-radius:6px; }
+.frequency-lab { border:1px solid var(--line); border-radius:8px; padding:9px; margin-bottom:8px; }
+.frequency-lab summary { cursor:pointer; color:var(--accent); font-weight:600; }
+.frequency-lab-fields { display:grid; gap:8px; padding-top:10px; }
+.frequency-lab-fields button { min-height:37px; }
+.frequency-lab-fields .hint { font-size:11px; color:var(--muted); margin:0; }
+
+.frequency-track-panel { grid-column:1/-1; display:grid; gap:7px; padding:9px; border:1px solid var(--line); border-radius:8px; background:var(--raised); }
+.frequency-track-panel label { display:grid; gap:5px; }
+.frequency-track-panel select,.frequency-track-panel input { width:100%; }
+.frequency-track-panel button { min-height:35px; }
+.frequency-track-panel p { margin:0; }
+.mix-review { padding:8px 10px; border:1px solid #9a8261; border-radius:8px; background:#3b3225; line-height:1.5; }

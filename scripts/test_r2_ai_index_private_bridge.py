@@ -76,6 +76,24 @@ class CanonicalIndexTests(unittest.TestCase):
    music=next(x for x in data if x["class"]=="music")
    self.assertEqual(music["availability"],"METADATA_ONLY")
    self.assertNotIn("SECRET","".join(x.read_text() for x in files))
+ def test_intent_frequency_and_baby_are_unverified_research_facets(self):
+  row={"class":"music","family":"ambient-pads","name":"528 Hz Baby Lullaby",
+       "description":"Soft bedtime music", "tags":"binaural beat advertised",
+       "availability":"METADATA_ONLY","acoustic_analysis":None}
+  result=m.intent_annotations(row)
+  self.assertIn("baby",result["intent_candidates"])
+  self.assertIn("baby-lullabies",result["baby_intent_candidates"])
+  self.assertEqual(result["frequency_declared_hz_candidates"],[528])
+  self.assertEqual(result["frequency_method"],"BINAURAL_BEAT_DECLARED_UNVERIFIED")
+  self.assertFalse(result["frequency_verified"])
+  self.assertFalse(result["binaural_stereo_verified"])
+  self.assertEqual(result["baby_audio_qa"],"NOT_ASSESSED")
+  self.assertEqual(result["medical_or_sleep_approval"],"NOT_APPROVED")
+  row["name"]="Beehive Geyser binaural field recording";row["tags"]="nature"
+  result=m.intent_annotations(row)
+  self.assertEqual(result["frequency_method"],"UNKNOWN")
+  self.assertEqual(result["frequency_declared_hz_candidates"],[])
+
  def test_reject_broken_index_sha(self):
   with tempfile.TemporaryDirectory() as d:
    s3,_,__,key=self.make(d)
