@@ -24,6 +24,9 @@ class AcousticTests(unittest.TestCase):
   self.assertTrue(result["silent_window_fraction"]<.01)
   self.assertTrue(0<=result["highband_energy_ratio_gt4khz"]<.002)
   self.assertTrue(result["centroid_hz"]<300)
+  self.assertAlmostEqual(result["sampled_spectral_peak_hz_approx"],150,delta=1)
+  self.assertLess(result["rms_variation_p90_p10_db"],1)
+  self.assertGreater(result["sampled_peak_energy_fraction"],.1)
  def test_jump_detects_transient(self):
   x=np.full(16000*25,.00004,dtype="<f4")
   x[16000*10:16000*11]=.35
