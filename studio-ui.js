@@ -71,6 +71,10 @@ function matchesIntent(asset,intent,mode){
   if(mode==='ambience')return ambient||rain||group==='wind';
   return nature||music||ambient;
 }
+const mixReview=node('p','','message mix-review');
+mixReview.id='mix-review';
+mixReview.hidden=true;
+$('status').insertAdjacentElement('beforebegin',mixReview);
 const originalFacets = [
   ['water', 'stream creek brook water suối rừng'], ['wildlife', 'frog amphibian ếch suối'],
   ['wildlife', 'bird robin chim hót'], ['wildlife', 'owl bird cú đêm'],
@@ -648,6 +652,18 @@ function render(keepInspector = false) {
   $('master-value').value = $('master').value + '%';
   renderTimeline();
   renderSourceDiagnostics();
+  const review=$('mix-review');
+  if(review){
+    const baby=mix.intent==='baby';
+    const alerts=baby?mix.tracks.filter(t=>{
+      const source=assets[t.asset]||{};
+      return source.synthetic||/thunder|storm|sấm|wolf|sói|alarm|crash/i.test(source.name||'');
+    }).length:0;
+    review.hidden=!baby;
+    if(baby)review.textContent='Baby QA: chỉ dùng để thử nghiệm, không bảo đảm mức âm an toàn. '+(alerts
+      ? alerts+' lớp có nguy cơ âm tần/sự kiện đột ngột cần xem lại. '
+      : 'Chưa đo SPL tại vị trí trẻ. ')+'Giữ loa xa trẻ, giảm âm lượng, giới hạn thời gian và kiểm nghe điểm lặp.';
+  }
   if (!keepInspector) renderInspector();
   refreshHistory();
   syncWorkflow();
@@ -813,7 +829,7 @@ $('open-project').onchange = async () => {
     const pink=assets.findIndex(x=>x.key==='audio/pink-noise.mp3');
     const rain=assets.findIndex(x=>x.key==='audio/light-rain-real.mp3');
     if(pink<0||rain<0){$('status').textContent='Thiếu nguồn Baby mẫu trong catalog.';return;}
-    const project={title:'Gentle Night Nursery · Draft / Needs QA',length:600,master:.35,tracks:[
+    const project={title:'Gentle Night Nursery · Draft / Needs QA',intent:'baby',length:600,master:.35,tracks:[
       {asset:pink,start:0,duration:600,gain:.16,loop:true,mute:false,fadeIn:2,fadeOut:2,label:'Pink Noise · nhẹ'},
       {asset:rain,start:0,duration:600,gain:.085,loop:true,mute:false,fadeIn:3,fadeOut:3,label:'Mưa nhẹ · nền'}
     ]};
