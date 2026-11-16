@@ -4,6 +4,7 @@ on:
     branches: [main]
     paths:
       - '.github/workflows/import_midnight_rain_train_20261116.yml'
+      - 'scripts/import_midnight_rain_train_20261116.py'
   workflow_dispatch:
 permissions:
   contents: read
