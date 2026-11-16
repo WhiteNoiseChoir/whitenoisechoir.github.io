@@ -59,6 +59,12 @@ function studio(locale,trial) {
     template=template.replace('<script src="/studio-catalog.js"></script>','<script src="/studio-catalog.js?v='+trial.assetCacheVersion+'"></script>');
     template=template.replace('<script src="/studio-ui.js"></script>','<script src="/studio-ui.js?v='+trial.assetCacheVersion+'"></script>');
   }
+  // Force cache refresh for updated intent/frequency Studio while keeping per-trial catalog cache tokens.
+  const studioCache=trial?.assetCacheVersion
+    ? trial.assetCacheVersion+'-intent-audio-20261116' : 'intent-audio-20261116';
+  template=template.replace(/(href="\/studio\.css)(?:\?v=[^"]*)?"/g,'$1?v='+studioCache+'"')
+    .replace(/(src="\/studio-engine\.js)(?:\?v=[^"]*)?"/g,'$1?v='+studioCache+'"')
+    .replace(/(src="\/studio-ui\.js)(?:\?v=[^"]*)?"/g,'$1?v='+studioCache+'"');
   const keys = {
     LANG:locale, ROUTE_HEAD:'<link rel="canonical" href="'+origin+route+'">'+
       (trial?'<!-- Generated Studio trial --><meta name="robots" content="noindex,nofollow">':alternate),
