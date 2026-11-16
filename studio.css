@@ -526,3 +526,10 @@ kbd { font: 11px var(--mono); border: 1px solid var(--line); color: var(--muted)
 .frequency-lab-fields { display:grid; gap:8px; padding-top:10px; }
 .frequency-lab-fields button { min-height:37px; }
 .frequency-lab-fields .hint { font-size:11px; color:var(--muted); margin:0; }
+
+.frequency-track-panel { grid-column:1/-1; display:grid; gap:7px; padding:9px; border:1px solid var(--line); border-radius:8px; background:var(--raised); }
+.frequency-track-panel label { display:grid; gap:5px; }
+.frequency-track-panel select,.frequency-track-panel input { width:100%; }
+.frequency-track-panel button { min-height:35px; }
+.frequency-track-panel p { margin:0; }
+.mix-review { padding:8px 10px; border:1px solid #9a8261; border-radius:8px; background:#3b3225; line-height:1.5; }
