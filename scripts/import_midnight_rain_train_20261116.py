@@ -79,8 +79,47 @@ def main():
                     action="uploaded"
                 hd=cli.head_object(Bucket=BUCKET,Key=key)
                 if hd["ContentLength"]!=n:raise RuntimeError("R2 HEAD bytes mismatch")
+                # Studio-friendly 44.1kHz 192kbps stereo MP3 derivative, keeping source master intact
+                mp3=os.path.join(d,item["slug"]+"-studio.mp3")
+                trans=subprocess.run(["ffmpeg","-hide_banner","-nostdin","-y","-v","error","-i",dst,
+                    "-map","0:a:0","-ar","44100","-ac","2","-c:a","libmp3lame","-b:a","192k",mp3],
+                    capture_output=True,text=True,timeout=300)
+                if trans.returncode:raise RuntimeError("Studio MP3 transcode failed: "+trans.stderr[-250:])
+                studio_info=probe(mp3,item["expected_duration_s"])
+                hs=hashlib.sha256()
+                with open(mp3,"rb") as f:
+                    while True:
+                        b=f.read(1024*1024)
+                        if not b:break
+                        hs.update(b)
+                studio_sha=hs.hexdigest()
+                studio_key=f"asset-library/raw/sha256/{studio_sha[:2]}/{studio_sha}.mp3"
+                studio_bytes=os.stat(mp3).st_size
+                try:
+                    dh=cli.head_object(Bucket=BUCKET,Key=studio_key)
+                    if dh["ContentLength"]!=studio_bytes:raise RuntimeError("Studio R2 existing bytes mismatch")
+                    studio_action="reused"
+                except ClientError as e:
+                    if str(e.response.get("Error",{}).get("Code")) not in ("404","NoSuchKey","NotFound"):raise
+                    cli.upload_file(mp3,BUCKET,studio_key,ExtraArgs={"ContentType":"audio/mpeg",
+                        "Metadata":{"sha256":studio_sha,"source-master-sha256":sha,"license":item["license"].lower()}})
+                    studio_action="uploaded"
+                dh=cli.head_object(Bucket=BUCKET,Key=studio_key)
+                if dh["ContentLength"]!=studio_bytes:raise RuntimeError("Studio object HEAD failed")
+                playback_url="https://media.whitenoisechoir.com/"+studio_key
+                request=urllib.request.Request(playback_url,headers={"Range":"bytes=0-127",
+                    "Origin":"https://whitenoisechoir.com","User-Agent":"WhiteNoiseChoir-Audio-Intake/1.0"})
+                with urllib.request.urlopen(request,timeout=40) as test:
+                    code=test.status
+                    cors=test.headers.get("Access-Control-Allow-Origin","")
+                    content=test.read(128)
+                if code!=206 or len(content)!=128 or cors not in ("*","https://whitenoisechoir.com"):
+                    raise RuntimeError(f"Public playback Range/CORS verification failed: status={code}, cors={cors}")
                 rec={k:item[k] for k in ("slug","filename","license","creator","source_url","group","composition_rights")}
-                rec.update({"status":"R2_STORED_QA_TECHNICAL_PASS_LISTENING_PENDING","assetRef":"r2-"+sha,"sha256":sha,"r2_key":key,"public_url":"https://media.whitenoisechoir.com/"+key,"bytes":n,"action":action,"downloaded_url":downloaded_url,**info})
+                rec.update({"status":"R2_STORED_QA_TECHNICAL_PASS_LISTENING_PENDING","assetRef":"r2-"+sha,"sha256":sha,"r2_key":key,"public_url":"https://media.whitenoisechoir.com/"+key,"bytes":n,"action":action,"downloaded_url":downloaded_url,
+                    "studio_asset_ref":"r2-"+studio_sha,"studio_sha256":studio_sha,"studio_key":studio_key,
+                    "studio_public_url":playback_url,"studio_bytes":studio_bytes,"studio_action":studio_action,
+                    "studio_range_cors_verified":True,"studio_audio":studio_info,**info})
                 print("WNC_INTAKE_OK "+json.dumps(rec,ensure_ascii=False),flush=True)
                 results.append(rec)
             except Exception as exc:
