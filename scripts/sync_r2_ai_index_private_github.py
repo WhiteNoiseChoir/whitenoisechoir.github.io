@@ -96,7 +96,9 @@ def ws5_metrics(s3,digest,total):
             clean_features={}
             for label in ("rms_dbfs","sample_peak_dbfs","silent_window_fraction",
                           "max_rms_jump_db_per_100ms","peak_to_rms_db_p95",
-                          "centroid_hz","highband_energy_ratio_gt4khz"):
+                          "centroid_hz","highband_energy_ratio_gt4khz",
+                          "sampled_spectral_peak_hz_approx","sampled_peak_energy_fraction",
+                          "rms_variation_p90_p10_db"):
                 value=(features or {}).get(label)
                 if isinstance(value,(float,int)) and not isinstance(value,bool):
                     clean_features[label]=round(float(value),4)
@@ -112,6 +114,62 @@ def ws5_metrics(s3,digest,total):
         raise RuntimeError("WS5 batch count differs from checkpoint")
     return records,{"status":"PARTIAL" if attempted<total else "COMPLETE",
                     "attempted":attempted,"analyzed":analyzed,"flagged":flagged}
+
+def intent_annotations(item):
+    """Lexical candidates only. Never infer verified frequency, infant safety or treatment."""
+    title=" ".join(str(item.get(field) or "") for field in ("name","description","family","tags")).lower()
+    family=(item.get("family") or "").lower()
+    clazz=item.get("class")
+    intents=set()
+    baby=[]
+    if any(x in title for x in ("rain","wind","water","stream","forest","ocean","nature","ambient")):
+        intents.add("relaxing")
+    if any(x in title for x in ("bowl","gong","handpan","tanpura","drone","meditation","sound bath","chime","flute","shakuhachi")):
+        intents.add("meditation")
+    if any(x in title for x in ("noise","fan","steady","drone","ambient","focus","rain")):
+        intents.add("focus")
+    if any(x in title for x in ("sleep","lullaby","soft piano","gentle rain","brown noise","pink noise")):
+        intents.add("sleep")
+    if any(x in title for x in ("baby","infant","newborn","lullaby","nursery","shushing","womb")):
+        intents.add("baby")
+        if "lullaby" in title: baby.append("baby-lullabies")
+        if "shush" in title or "womb" in title: baby.append("newborn-calming")
+        if "nap" in title: baby.append("baby-nap-time")
+        if any(x in title for x in ("white noise","pink noise","brown noise")): baby.append("baby-white-noise")
+        if any(x in title for x in ("rain","forest","water","nature")):baby.append("baby-nature-sounds")
+        if "toddler" in title: baby.append("toddler-bedtime")
+    freq=[]
+    for found in re.finditer(r"(?<!\\d)([1-9][0-9]{1,3})(?:\\s*)(?:hz|hertz)\\b",title):
+        value=int(found.group(1))
+        if 20<=value<=4000 and value not in freq:freq.append(value)
+    if "binaural beat" in title:method="BINAURAL_BEAT_DECLARED_UNVERIFIED"
+    elif "isochronic" in title:method="ISOCHRONIC_DECLARED_UNVERIFIED"
+    elif "monaural beat" in title:method="MONAURAL_BEAT_DECLARED_UNVERIFIED"
+    elif "pure tone" in title:method="PURE_TONE_DECLARED_UNVERIFIED"
+    else:method="UNKNOWN"
+    measured=item.get("acoustic_analysis") or {}
+    values=measured.get("acoustic_metrics") or {}
+    flags=measured.get("flags") or []
+    return {
+      "intent_candidates":sorted(intents),
+      "intent_evidence":"LEXICAL_UNVERIFIED",
+      "baby_intent_candidates":sorted(set(baby)),
+      "baby_audio_qa":"NOT_ASSESSED",
+      "age_context":"UNSPECIFIED",
+      "sound_continuity":"NOT_ASSESSED",
+      "transient_risk":"SAMPLED_REVIEW_FLAG" if any("JUMP" in f or "PEAK" in f for f in flags) else "UNVERIFIED",
+      "spectral_harshness":"NOT_ASSESSED",
+      "loudness_variation_db":values.get("rms_variation_p90_p10_db"),
+      "loop_seam_quality":"NOT_TESTED",
+      "vocal_presence":"UNVERIFIED",
+      "source_availability":item["availability"],
+      "frequency_method":method,
+      "frequency_declared_hz_candidates":freq,
+      "frequency_verified":False,
+      "measured_spectral_peak_hz_approx":values.get("sampled_spectral_peak_hz_approx"),
+      "binaural_stereo_verified":False,
+      "medical_or_sleep_approval":"NOT_APPROVED",
+    }
 
 def export(s3,where):
     manifest=get_json(s3,SOURCE)
@@ -184,6 +242,7 @@ def export(s3,where):
             "sleep_suitability":"UNVERIFIED",
             "relaxation_suitability":"UNVERIFIED"
         }
+        item.update(intent_annotations(item))
         groups[(cls,family)].append(item)
         classes[cls]+=1
         status[item["availability"]]+=1
@@ -213,7 +272,9 @@ def export(s3,where):
                    "Music candidates may not have an R2 audio object",
                    "Role and sleep suitability have NOT been acoustically verified",
                    "WS5 acoustic signals use sampled windows; speech/music/content detection and full playback not verified",
-                   "WS3 new discoveries are not included until canonical WS1 is refreshed"]
+                   "WS3 new discoveries are not included until canonical WS1 is refreshed",
+                   "Intent tags are lexical research candidates, NOT infant safety, medicine or verified acoustic frequencies",
+                   "Binaural field recordings do NOT imply binaural beats"]
     }
     if report["index_unique_records"]!=n:raise RuntimeError("Export loss")
     (index/"manifest.json").write_text(json.dumps(report,ensure_ascii=False,indent=2)+"\n",encoding="utf8")
