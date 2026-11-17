@@ -307,7 +307,7 @@ function sourceAddresses(i){
     const sha=rawDigest(asset.key);
     if(!sha || asset.id!=='r2-'+sha ||
        asset.key!==`internal/licensed-music/v1/sha256/${sha.slice(0,2)}/${sha}.mp3` ||
-       asset.url!==`https://music.whitenoisechoir.com/v1/audio/${sha}`)
+       asset.url!==`https://wnc-private-music-gateway.whitescreen-dev.workers.dev/v1/audio/${sha}`)
       return [];
     return [asset.url];
   }
