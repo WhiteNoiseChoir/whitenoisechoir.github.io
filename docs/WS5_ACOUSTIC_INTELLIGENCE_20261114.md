@@ -25,3 +25,27 @@ Do not claim WebAudio playback success, rights to publish, or owner listening ap
 
 ## Status
 Source code and workflow PR include unit tests. The first R2 acoustic run requires passing the merge activation workflow; log metrics verify only batch counts, not individual private file content.
+## Phase 2 — CLAP semantic pilot (17 Nov 2026)
+
+**Status: code + deterministic tests added; live model/R2 evaluation must pass before any schedule is enabled.** The v1 hourly DSP job (minute 37 UTC) is unchanged.
+
+- Entry point: `scripts/ws5_semantic_intelligence.py`. Workflow: `.github/workflows/ws5_semantic_pilot.yml`.
+- Manually dispatch the new workflow from **main** with `max_files=1–4` (default 2). It has **no schedule**, writes no GitHub artifacts and does not activate on PRs. The PR runs offline contract tests only.
+- Model: Hugging Face `laion/clap-htsat-unfused`, pinned revision `84bcbbd1d619e407a8216371ddef36e458d95d93`, CPU inference using Transformers 4.55.4.
+- Source inputs: real nature audio files whose content-addressed R2 key matches a canonical WS1 record. No invented assets. SHA-256 of each original is verified before inference. Files above 16 MB are skipped; compressed originals are never overwritten.
+- Audio is **decoded to mono 48 kHz**, using up to three deterministic **10-second windows** at beginning, middle, end. This differs from the 16-kHz v1 DSP path because the chosen CLAP model expects 48 kHz. Short files use a single window.
+- Output: cosine similarity against a curated, versioned 20-prompt vocabulary (rain, water, wind, wildlife, fire, instrumental music, human speech, traffic, sudden sounds). These are **relative, uncalibrated model similarities**, NOT probabilities, definitive sound-event detection, real listening, or QA approval. Probable acoustic roles and contamination are explicitly unverified hints. Even a clean-looking result never clears speech, safety, rights or YouTube publication.
+- Storage: private R2 prefix `internal/ws5-acoustic-intelligence/v2-clap/source-<ws1-sha16>/` with individual SHA records, batch JSON and an independently resumable checkpoint. Legacy v1 records/checkpoints under `.../v1/`, the Studio and original media are untouched.
+- Logs print only aggregate batch counts/status, not source titles, object keys or individual model predictions. If the model cannot load, the run stops without moving the checkpoint.
+
+### Rollout gates
+
+1. CI must pass both v1 and v2 offline unit tests; inspect the code and PR.
+2. Manually run **one** R2 source; confirm model download/inference, actual 48 kHz sample decoding, schema and SHA verification. Inspect private sample-level predictions, failures and approximate CPU/R2 cost.
+3. Pilot a diverse sample (rain, stream, birds, music if imported) and **manually validate** false positives/negatives, particularly speech/music. Calibrate category thresholds against labeled data before reporting probabilistic confidence or sleep suitability.
+4. Only after measured success should an independent scheduled batch be considered. Do not copy private predictions into the public repository or trigger public publishing automatically. Music ingestion and the 16 MB long-file limit remain separate open work.
+5. For larger scale, implement streaming/partial R2 access or bounded download, model caching, deduplication and checkpoint-level retry policy; verify real total cost before increasing concurrency.
+
+### Rollback
+
+Disable or remove `ws5_semantic_pilot.yml`. The v1 hourly workflow continues unchanged. V2 data is isolated in private R2; no cleanup or destructive migration is required.
