@@ -26,7 +26,8 @@ jobs:
       - name: Resolve exact per-file R2 SHA keys from immutable source ledgers
         run: |
           python - <<'PY'
-          import os,json,datetime
+          import os,json,datetime,sys
+          sys.path.insert(0,'scripts')
           import boto3
           from botocore.config import Config
           from scripts.harvest_opengameart_cc0_to_r2 import request,parse_page,ident,BUCKET,ACCOUNT_ID,ROOT
