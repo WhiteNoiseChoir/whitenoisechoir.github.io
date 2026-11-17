@@ -44,6 +44,11 @@ figcaption{font-size:.85rem;color:#c7d2d8;margin:5px 0}.help{font-size:.9rem;col
 </div>
 <p id="clip-sync-status" class="help" role="status" aria-live="polite">Chọn video trong từng mixer để tự đọc thời lượng thật. Mixer A = thời lượng MP4 A, Mixer B = thời lượng MP4 B. Tổng bằng A + B (không cố định 10 phút). Khi thay đổi timeline phải xuất WAV lại.</p>
 <div class="row"><button id="check-seams" class="secondary" type="button">Kiểm tra điểm nối A → B</button><span id="seam-status" aria-live="polite"></span></div>
+<div class="row">
+<button id="check-audio-phase" class="secondary" type="button">Kiểm tra pha piano / sóng / lửa</button>
+<button id="repair-audio-phase" class="secondary" type="button">Căn pha âm A → B</button>
+</div>
+<p id="audio-phase-status" class="help" role="status" aria-live="polite">Nếu A dài hơn thời lượng thiết kế ban đầu, các offset trong Mixer B phải được cập nhật theo thời lượng thực tế rồi xuất lại WAV B. Chức năng này chỉ điều chỉnh các lớp âm giống nhau, không thay đổi video.</p>
 <div id="seam-pictures">
 <figure><canvas id="exit-a" width="320" height="180"></canvas><figcaption>Frame cuối phân cảnh A</figcaption></figure>
 <figure><canvas id="start-b" width="320" height="180"></canvas><figcaption>Frame đầu phân cảnh B</figcaption></figure>
@@ -58,4 +63,4 @@ figcaption{font-size:.85rem;color:#c7d2d8;margin:5px 0}.help{font-size:.9rem;col
 <a id="download" class="hide" download="WhiteNoiseChoir-Dual-Scene.mp4">Tải MP4 đã ghép</a>
 <video id="joined-preview" controls playsinline preload="metadata" hidden style="width:100%;max-width:900px;display:block;margin-top:12px" aria-label="Kiểm tra điểm nối MP4 thành phẩm"></video>
 </section>
-</main><script defer src="/vi/dual-scene/dual-studio.js?v=20261117-preserve-b1"></script></body></html>
+</main><script defer src="/vi/dual-scene/dual-studio.js?v=20261117-audio-phase1"></script></body></html>

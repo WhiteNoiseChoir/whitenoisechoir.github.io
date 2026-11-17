@@ -86,6 +86,59 @@ $('sync-from-clip').onclick=async()=>{
     catch(e){$('clip-sync-status').textContent='Video '+id+': '+String(e.message||e);}
   }
 };
+// Compare the source phase of persistent ambience tracks in the two independent mixers.
+async function inspectAudioSeam(){
+  const [a,b]=await Promise.all([request('A','phase-tracks'),request('B','phase-tracks')]);
+  const relevant=t=>t.key&&t.loop&&!t.mute&&t.gain>0&&t.start<.001&&t.duration===null;
+  const aTracks=a.tracks.filter(relevant),bTracks=b.tracks.filter(relevant);
+  const issues=[],aligned=[],warnings=[];
+  for(const at of aTracks){
+    const ca=aTracks.filter(x=>x.key===at.key);
+    const cb=bTracks.filter(x=>x.key===at.key);
+    if(ca.length!==1||cb.length!==1)continue; // Repeated-layer setups must be reviewed manually.
+    const bt=cb[0],duration=Math.min(Number(at.sourceDuration),Number(bt.sourceDuration));
+    if(!Number.isFinite(duration)||duration<=0.1)continue;
+    const expected=((Number(at.offset||0)+a.duration)%duration+duration)%duration;
+    const actual=((Number(bt.offset||0)%duration)+duration)%duration;
+    const direct=Math.abs(expected-actual),delta=Math.min(direct,duration-direct);
+    const record={key:at.key,index:bt.index,expected,actual,delta};
+    if(delta>.055)issues.push(record);else aligned.push(record);
+    if(Math.abs(at.gain-bt.gain)>.04)warnings.push('Gain khác nhau: '+at.key.split('/').pop());
+    if(Math.abs((at.pan||0)-(bt.pan||0))>.15)warnings.push('Vị trí stereo khác nhau: '+at.key.split('/').pop());
+  }
+  if(Math.abs(a.master-b.master)>.03)warnings.push('Master gain A và B khác nhau.');
+  return {issues,aligned,warnings,shared:issues.length+aligned.length,seconds:a.duration};
+}
+async function showAudioSeam(){
+  const result=await inspectAudioSeam();
+  const label=$('audio-phase-status');
+  if(result.issues.length){
+    const first=result.issues[0];
+    label.textContent='Chưa liền pha: '+result.issues.length+' lớp âm. B offset '
+      +round(first.actual)+'s, cần '+round(first.expected)+'s (A dài '+round(result.seconds)+'s). '
+      +'Hãy bấm Căn pha âm A → B rồi xuất WAV B lại.';
+  }else if(result.shared){
+    label.textContent='Đã khớp pha '+result.shared+' lớp âm dùng chung.'
+      +(result.warnings.length?' Lưu ý: '+result.warnings.join('; '):'');
+  }else label.textContent='Không tìm thấy lớp âm chung để so pha. Hãy kiểm tra WAV bằng tai trước khi ghép.';
+  return result;
+}
+$('check-audio-phase').onclick=()=>showAudioSeam().catch(e=>{$('audio-phase-status').textContent=e.message;});
+$('repair-audio-phase').onclick=async()=>{
+  const btn=$('repair-audio-phase');btn.disabled=true;
+  try{
+    const audit=await inspectAudioSeam();
+    if(!audit.issues.length){await showAudioSeam();return;}
+    if(!confirm('Chỉnh '+audit.issues.length+' offset trên Mixer B để âm nối tiếp từ A? WAV B cũ sẽ hết hiệu lực và phải xuất lại.'))return;
+    const items=audit.issues.map(x=>({index:x.index,key:x.key,offset:x.expected}));
+    const result=await request('B','sync-phase',{items});
+    await showAudioSeam();
+    $('audio-phase-status').textContent='Đã căn pha '+result.updated+' lớp trên Mixer B. '
+      +'BẮT BUỘC xuất lại WAV B trước khi ghép.';
+    await getStatuses();
+  }catch(e){$('audio-phase-status').textContent='Không căn pha được: '+e.message;}
+  finally{btn.disabled=false;}
+};
 async function viewFrame(file,kind){
   const video=document.createElement('video'),url=URL.createObjectURL(file);
   video.preload='auto';video.muted=true;video.playsInline=true;
@@ -153,7 +206,7 @@ async function loadEncoder(){
     return {ffmpeg,release:()=>{ffmpeg.terminate();URL.revokeObjectURL(worker);}};
   }catch(e){ffmpeg.terminate();URL.revokeObjectURL(worker);throw Error('Không nạp được FFmpeg để mã hóa WAV thành AAC.');}
 }
-async function encodeAudio(a,b){
+async function encodeAudio(a,b,phaseAligned){
   report('Đang mã hóa hai bản WAV thành một luồng AAC…',5);
   const encoder=await loadEncoder(),f=encoder.ffmpeg;
   try{
@@ -163,7 +216,13 @@ async function encodeAudio(a,b){
     if(!mounted)for(const item of files)await f.writeFile('/source/'+item.name,new Uint8Array(await item.data.arrayBuffer()));
     const durA=a.duration,durB=b.duration;
     const fade=Math.min(0.04,durA/4,durB/4);
-    const af='[0:a]aresample=44100,aformat=channel_layouts=stereo,atrim=0:'+durA.toFixed(6)+',afade=t=out:st='+(durA-fade).toFixed(6)+':d='+fade.toFixed(6)+'[x];[1:a]aresample=44100,aformat=channel_layouts=stereo,atrim=0:'+durB.toFixed(6)+',afade=t=in:st=0:d='+fade.toFixed(6)+'[y];[x][y]concat=n=2:v=0:a=1[out]';
+    const chainA='[0:a]aresample=44100,aformat=channel_layouts=stereo,atrim=0:'+durA.toFixed(6);
+    const chainB='[1:a]aresample=44100,aformat=channel_layouts=stereo,atrim=0:'+durB.toFixed(6);
+    // No fade-to-silence for a phase-aligned, shared ambience: fades cause an audible dip.
+    const af=phaseAligned
+      ?chainA+',asetpts=PTS-STARTPTS[x];'+chainB+',asetpts=PTS-STARTPTS[y];[x][y]concat=n=2:v=0:a=1[out]'
+      :chainA+',afade=t=out:st='+(durA-fade).toFixed(6)+':d='+fade.toFixed(6)+'[x];'
+        +chainB+',afade=t=in:st=0:d='+fade.toFixed(6)+'[y];[x][y]concat=n=2:v=0:a=1[out]';
     const args=['-i','/source/a.wav','-i','/source/b.wav','-filter_complex',af,'-map','[out]','-vn','-c:a','aac','-b:a','192k','-ar','44100','-ac','2','sound.m4a'];
     if(await f.exec(args)!==0)throw Error('FFmpeg không ghép được hai bản WAV.');
     const bytes=await f.readFile('sound.m4a');
@@ -256,6 +315,10 @@ $('join').onclick=async()=>{
       throw Error('Cần tải hai clip A và B và chờ hệ thống đọc thời lượng thực tế.');
     if(Math.abs(a.duration-a.videoRawDuration)>.02||Math.abs(b.duration-b.videoRawDuration)>.02)
       throw Error('Timeline âm thanh chưa khớp video. Hãy bấm Đồng bộ theo video A/B, rồi xuất lại WAV.');
+    const seam=await showAudioSeam();
+    if(seam.issues.length)
+      throw Error('Phát hiện '+seam.issues.length+' lớp sóng/lửa/piano chưa khớp pha. Bấm Căn pha âm A → B và xuất WAV B lại trước khi xuất MP4.');
+    const phaseAligned=seam.shared>0&&!seam.warnings.length;
     const mp4=await loadMp4();
     // Preflight before expensive AAC conversion. Never silently transcode B.
     const [checkA,checkB]=await Promise.all([videoSource(mp4,a.video),videoSource(mp4,b.video)]);
@@ -265,7 +328,7 @@ $('join').onclick=async()=>{
       for(const clip of [checkA,checkB]){await clip.reader.return?.();clip.input.dispose();}
     }
     if(!compatible)throw Error('A/B có thông số H.264 khác nhau. Hãy chuẩn hóa file A và B cùng codec, độ phân giải và SPS/PPS bằng công cụ ngoài, sau đó tải lại. WhiteNoiseChoir không render lại video B.');
-    const sound=await encodeAudio(a,b);
+    const sound=await encodeAudio(a,b,phaseAligned);
     report('Đang ghép A + B không mã hóa lại video…',22);
     const file=await remux(mp4,a,b,sound);
     if(downloadUrl)URL.revokeObjectURL(downloadUrl);

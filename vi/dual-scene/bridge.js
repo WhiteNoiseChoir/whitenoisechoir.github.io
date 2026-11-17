@@ -103,6 +103,32 @@
         // updates localStorage and re-renders the timeline.
         if(Math.abs(mix.length-seconds)>0.000001)change(()=>{mix.length=seconds;});
         respond({requestId:msg.requestId,ok:true,data:status()});
+      }else if(msg.action==='phase-tracks'){
+        const entries=mix.tracks.map((t,index)=>{
+          const src=assets[t.asset]||{};
+          return {index,key:src.key||null,sourceDuration:src.duration||0,
+            start:t.start||0,offset:t.offset||0,gain:t.gain||0,loop:!!t.loop,
+            mute:!!t.mute,pan:t.pan||0,duration:t.duration??null};
+        });
+        respond({requestId:msg.requestId,ok:true,data:{scene,duration:mix.length,
+          master:mix.master??1,tracks:entries}});
+      }else if(msg.action==='sync-phase'){
+        if(scene!=='B')throw Error('Căn pha chỉ áp dụng cho Mixer B.');
+        if(exporting)throw Error('Mixer B đang xuất WAV. Hãy thử lại sau.');
+        const items=msg.items;
+        if(!Array.isArray(items)||items.length>32)throw Error('Danh sách điều chỉnh pha không hợp lệ.');
+        const edits=[];
+        for(const item of items){
+          const t=mix.tracks[item?.index],src=t&&assets[t.asset];
+          const offset=Number(item?.offset);
+          if(!t||!src?.key||src.key!==item.key||!t.loop||t.mute||
+              !Number.isFinite(offset)||offset<0||offset>=src.duration)
+            throw Error('Dữ liệu căn pha không còn khớp, hãy kiểm tra lại Mixer B.');
+          if(Math.abs((t.offset||0)-offset)>.0001)edits.push({t,offset});
+        }
+        if(edits.length)change(()=>{for(const e of edits)e.t.offset=e.offset;});
+        respond({requestId:msg.requestId,ok:true,data:{updated:edits.length,
+          hasWav:Boolean(audioExport&&audioExport.signature===audioSignature(mix))}});
       }else if(msg.action==='collect-video'){
         const file=input?.files?.[0]||null;
         if(!file)throw Error('Mixer '+scene+': chưa chọn clip video.');
