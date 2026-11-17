@@ -257,6 +257,14 @@ $('join').onclick=async()=>{
     if(Math.abs(a.duration-a.videoRawDuration)>.02||Math.abs(b.duration-b.videoRawDuration)>.02)
       throw Error('Timeline âm thanh chưa khớp video. Hãy bấm Đồng bộ theo video A/B, rồi xuất lại WAV.');
     const mp4=await loadMp4();
+    // Preflight before expensive AAC conversion. Never silently transcode B.
+    const [checkA,checkB]=await Promise.all([videoSource(mp4,a.video),videoSource(mp4,b.video)]);
+    let compatible=false;
+    try{compatible=sameConfiguration(checkA.cfg,checkB.cfg);}
+    finally{
+      for(const clip of [checkA,checkB]){await clip.reader.return?.();clip.input.dispose();}
+    }
+    if(!compatible)throw Error('A/B có thông số H.264 khác nhau. Hãy chuẩn hóa file A và B cùng codec, độ phân giải và SPS/PPS bằng công cụ ngoài, sau đó tải lại. WhiteNoiseChoir không render lại video B.');
     const sound=await encodeAudio(a,b);
     report('Đang ghép A + B không mã hóa lại video…',22);
     const file=await remux(mp4,a,b,sound);
