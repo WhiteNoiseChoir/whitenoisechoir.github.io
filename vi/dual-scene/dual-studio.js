@@ -42,7 +42,7 @@ window.addEventListener('message',event=>{
   const job=waiting.get(msg.requestId);if(!job)return;
   waiting.delete(msg.requestId);clearTimeout(job.timer);
   if(!msg.ok)job.reject(Error(msg.error||'Mixer không trả lời.'));
-  else {if(msg.action==='status'||msg.action==='set-duration')state[id]=msg.data;paint();job.resolve(msg.data);}
+  else {if(job.action==='status'||job.action==='set-duration')state[id]=msg.data;paint();job.resolve(msg.data);}
 });
 function paint(){
   for(const id of ['A','B']){
