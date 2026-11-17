@@ -8,7 +8,7 @@ const $=id=>document.getElementById(id);
 const TOTAL_SECONDS=600, FPS=24;
 const waiting=new Map(), state={A:null,B:null};
 const pause=()=>new Promise(resolve=>setTimeout(resolve,0));
-const format=n=>Number(n).toFixed(2).replace(/\\.00$/,'');
+const format=n=>Number(n).toFixed(2).replace(/\.00$/,'');
 const report=(message,progress)=>{
   $('join-status').textContent=message;
   if(Number.isFinite(progress))$('join-progress').value=Math.max(0,Math.min(100,progress));
@@ -84,7 +84,7 @@ async function frameImage(file,kind){
   const url=URL.createObjectURL(file);
   const load=new Promise((resolve,reject)=>{
     const timer=setTimeout(()=>reject(Error('Không giải mã được frame để kiểm tra.')),20000);
-    video.onloadedmetadata=()=>{clearTimeout(timer);resolve();};
+    video.onloadeddata=()=>{clearTimeout(timer);resolve();};
     video.onerror=()=>{clearTimeout(timer);reject(Error('Không xem được video trên trình duyệt.'));};
   });
   try{
