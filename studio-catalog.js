@@ -1209,7 +1209,7 @@ const studioPublishedAssets = [
     "assetStatus": "STORED_R2_SHA_FULL_DECODE_RANGE_CORS_PASS_LISTENING_PENDING",
     "quality": "2026-11-16 original OGG and 44.1kHz/192kbps MP3 SHA checked, ffmpeg full decode, R2 HEAD and HTTP Range/CORS verified; listening QA pending.",
     "publicationApproved": false
-  ,
+  },
   {
     "name": "Giọt nước vọng trong hang · CC0 FLAC",
     "key": "asset-library/raw/sha256/24/247c0ef181c8ba8d190a6194f6ea02d9defb23b70194c52c7f9187b5b7b1cc61.flac",
