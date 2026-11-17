@@ -208,8 +208,9 @@ async function remux(mp4,a,b,soundFile){
     async function pushSound(until){
       while(audioNext&&audioNext.timestamp<=until){
         const p=audioNext;
-        if(p.duration>0){
-          await audio.add(p.clone({duration:Math.min(p.duration,Math.max(0,total-p.timestamp))}),hasAudio?undefined:{decoderConfig:audioConfig});
+        const usable=Math.min(p.duration,Math.max(0,total-p.timestamp));
+        if(usable>0){
+          await audio.add(p.clone({duration:usable}),hasAudio?undefined:{decoderConfig:audioConfig});
           hasAudio=true;
         }
         audioNext=(await iterator.next()).value;
