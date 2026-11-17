@@ -40,7 +40,7 @@ jobs:
   analyze-real-r2:
     if: >-
       (github.event_name == 'workflow_dispatch' || github.event_name == 'schedule' ||
-       (github.event_name == 'push' && startsWith(github.event.head_commit.message, 'feat(ws5): activate'))) &&
+       (github.event_name == 'push' && startsWith(github.event.head_commit.message, 'feat(ws5): activate acoustic v1'))) &&
       github.ref == 'refs/heads/main'
     needs: offline-tests
     runs-on: ubuntu-latest
