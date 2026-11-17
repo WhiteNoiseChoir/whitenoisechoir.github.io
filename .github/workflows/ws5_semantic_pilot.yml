@@ -14,11 +14,11 @@ on:
   workflow_dispatch:
     inputs:
       max_files:
-        description: 'Small manual pilot only (1–4 SHA-verified originals)'
+        description: 'Metadata-diversity pilot only (1–8 SHA-verified nature originals)'
         type: choice
         required: true
-        default: '2'
-        options: ['1', '2', '3', '4']
+        default: '4'
+        options: ['1', '2', '3', '4', '6', '8']
 permissions:
   contents: read
 concurrency:
@@ -59,7 +59,7 @@ jobs:
       TRANSFORMERS_NO_ADVISORY_WARNINGS: '1'
       TOKENIZERS_PARALLELISM: 'false'
       OMP_NUM_THREADS: '2'
-      MAX_FILES: ${{ github.event_name == 'push' && '1' || inputs.max_files }}
+      MAX_FILES: ${{ github.event_name == 'push' && '8' || inputs.max_files }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -72,7 +72,8 @@ jobs:
           sudo apt-get update -qq && sudo apt-get install -qq -y ffmpeg
           python -m pip install -q 'torch==2.7.1' --index-url https://download.pytorch.org/whl/cpu
           python -m pip install -q 'transformers==4.55.4' 'librosa>=0.10,<0.12' 'numpy>=1.26,<3' 'boto3>=1.36,<2'
-      - name: Identify up to four real audio files, preserve originals
-        run: python -u scripts/ws5_semantic_intelligence.py --max-files "$MAX_FILES" --max-scan 12
+      - name: Diversified semantic pilot, max eight real files, keep source originals
+        run: python -u scripts/ws5_semantic_intelligence.py --max-files "$MAX_FILES" --max-scan 24 --diversity-pilot
       # No private file data uploaded as public Actions artifacts.
-      # No schedule. One activation commit may run exactly one real file. Never touches the existing WS5 v1 checkpoint or Studio.
+      # No schedule. Exact activation commit may run at most eight stratified source files.
+      # Independent checkpoint prevents changing the original v2 pilot, v1 and Studio.
