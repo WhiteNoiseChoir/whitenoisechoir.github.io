@@ -714,7 +714,7 @@ $('zoom').onchange = () => { zoom = Number($('zoom').value); renderTimeline(); }
 $('title').onchange = () => change(() => { mix.title = $('title').value.trim() || tr('Bản phối chưa đặt tên'); });
 $('minutes').onchange = () => {
   if(homepageWavOnly){$('minutes').value='10';return;}
-  change(() => { mix.length = clamp(Number($('minutes').value) * 60, 6, 10800); });
+  change(() => { mix.length = clamp(Number($('minutes').value) * 60, dualSceneSlot==='A'?1:6, 10800); });
 };
 if ($('video-prompt')) $('video-prompt').onchange = () => change(() => { mix.videoPrompt = $('video-prompt').value; });
 $('master').oninput = () => {
