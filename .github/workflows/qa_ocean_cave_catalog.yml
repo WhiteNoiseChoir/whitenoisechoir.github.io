@@ -1,0 +1,29 @@
+name: WNC Ocean Cave Catalog Append-Only QA
+on:
+  push:
+    branches: [feature/c013-ocean-cave-cc0-catalog-20261117]
+    paths:
+      - 'studio-catalog.js'
+      - 'scripts/test_ocean_cave_catalog_append_only.cjs'
+      - '.github/workflows/qa_ocean_cave_catalog.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'studio-catalog.js'
+      - 'scripts/test_ocean_cave_catalog_append_only.cjs'
+      - '.github/workflows/qa_ocean_cave_catalog.yml'
+permissions:
+  contents: read
+jobs:
+  catalog-qa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node --check studio-catalog.js
+      - run: node scripts/test_ocean_cave_catalog_append_only.cjs
