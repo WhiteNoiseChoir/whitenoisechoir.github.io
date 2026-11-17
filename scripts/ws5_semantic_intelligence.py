@@ -12,6 +12,7 @@ from datetime import datetime, timezone
 import json
 import math
 import os
+import re
 from pathlib import Path
 import subprocess
 import tempfile
@@ -69,11 +70,11 @@ DIVERSITY_PREFIX = PREFIX + "diversity-pilot-v1/"
 MAX_DIVERSITY_FILES = 8
 # Only metadata-based sampling strata. Never treat hints as verified audio labels.
 DIVERSITY_VOCAB = {
-    "rain_storm": ("rain", "storm", "thunder", "mưa"),
+    "rain_storm": ("rain", "rainfall", "raining", "storm", "thunderstorm", "thunder", "mưa"),
     "freshwater": ("river", "stream", "creek", "waterfall", "lake", "brook", "suối", "thác"),
     "ocean": ("ocean", "wave", "sea", "surf", "sóng", "biển"),
-    "wildlife": ("bird", "owl", "frog", "insect", "cricket", "forest", "wolf",
-                 "animal", "nature", "chim", "cú", "ếch", "rừng"),
+    "wildlife": ("bird", "birds", "birdsong", "owl", "frog", "insect", "cricket",
+                 "forest", "wolf", "animal", "chim", "cú", "ếch", "rừng"),
     "wind_fire_fan": ("wind", "fire", "fan", "air", "windy", "crackle", "gió", "lửa"),
 }
 DIVERSITY_ORDER = (*DIVERSITY_VOCAB, "other")
@@ -82,7 +83,7 @@ def metadata_hint_group(item):
     """A stratification heuristic, not a claim about the actual recorded sound."""
     hint = (str(item.get("title", "")) + " " + str(item.get("family", ""))).lower()
     for group, words in DIVERSITY_VOCAB.items():
-        if any(word in hint for word in words):
+        if any(re.search(r"(?<![a-z])" + re.escape(word) + r"(?![a-z])", hint) for word in words):
             return group
     return "other"
 
