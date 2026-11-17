@@ -10,10 +10,9 @@
   const respond=data=>window.parent.postMessage({scope:'wnc-dual',scene,...data},origin);
   document.querySelector('.studio-nav a[href="/vi/dual-scene/"]')?.remove();
   // The A mixer may have a sub-six-second clip. Normal /vi/ is untouched.
-  if (scene==='A') {
-    document.getElementById('minutes')?.setAttribute('min','0.0166667');
-    document.getElementById('minutes')?.setAttribute('step','any');
-  }
+  if (scene==='A') document.getElementById('minutes')?.setAttribute('min','0.0166667');
+  // Both externally rendered clips may have fractional-second durations.
+  document.getElementById('minutes')?.setAttribute('step','any');
   let videoInfo=null,probeTicket=0;
 
   try {
