@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="vi"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Dual Scene Studio · WhiteNoiseChoir</title>
+<style>
+:root{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color-scheme:dark;background:#111820;color:#ecf3f5}
+*{box-sizing:border-box}body{margin:0}header{display:flex;gap:15px;align-items:center;justify-content:space-between;padding:15px max(20px,calc((100vw - 1550px)/2));background:#17222c;border-bottom:1px solid #38444a}
+a{color:#a7d7ed}h1{font-size:1.4rem;margin:0}h2{font-size:1.15rem;margin:0}
+main{max-width:1550px;margin:auto;padding:20px}p{line-height:1.55;color:#cbd5dc}
+.card{border:1px solid #394e5a;border-radius:13px;overflow:hidden;margin-bottom:18px;background:#18232d}
+.card-top{padding:15px 18px;display:flex;align-items:center;justify-content:space-between;gap:15px;cursor:pointer}
+.card-top small{color:#b5cbd3} .card[open]>.card-top{border-bottom:1px solid #394e5a}
+iframe{display:block;width:100%;height:980px;border:0;background:#111820}
+.controls{padding:20px}.row{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin:12px 0}
+button,select,input{font:inherit}button{border:1px solid #4d7f8c;border-radius:8px;background:#20657e;color:#fff;padding:10px 14px;cursor:pointer}
+button:disabled{opacity:.5;cursor:not-allowed}button.secondary{background:#263d4a}
+input[type=number]{width:75px;border:1px solid #71818d;border-radius:5px;background:#121d26;color:#fff;padding:9px}
+select{border:1px solid #71818d;border-radius:5px;background:#121d26;color:#fff;padding:9px}
+label{color:#deebee}output{white-space:pre-wrap;word-break:break-word}progress{width:100%;height:15px}
+#seam-pictures{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:12px}
+#seam-pictures figure{margin:0}#seam-pictures canvas{display:block;width:100%;max-width:440px;border:1px solid #455660;border-radius:6px}
+figcaption{font-size:.85rem;color:#c7d2d8;margin:5px 0}.help{font-size:.9rem;color:#b9c6cd}
+#download{display:inline-block;margin:10px 0;color:#b1e7ff;font-weight:700}.hide{display:none}
+@media(max-width:700px){main{padding:12px}iframe{height:920px}#seam-pictures{grid-template-columns:1fr}header{padding:12px}h1{font-size:1.05rem}}
+</style>
+</head><body>
+<header><h1>WhiteNoiseChoir · Dual Scene Studio</h1><a href="/vi/">Trở về Studio cũ</a></header>
+<main>
+<p><strong>Chế độ thử nghiệm:</strong> Hai bộ phối hoàn toàn độc lập. Mỗi bộ có đủ công cụ cũ (kho, timeline, WAV, xem trước video). Chỉ khi cả hai đã xuất WAV và chọn clip, hãy ghép ở phần cuối. Mọi tệp vẫn xử lý trên thiết bị của bạn.</p>
+<details class="card" open><summary class="card-top"><h2>A · Mở đầu — chỉ phát một lần</h2><small id="state-A">Đang tải…</small></summary>
+<iframe id="scene-A" title="Mixer cảnh A" src="/vi/?dual-scene=A" loading="eager" allow="autoplay"></iframe></details>
+<details class="card" open><summary class="card-top"><h2>B · Cảnh chính — lặp liên tục</h2><small id="state-B">Đang tải…</small></summary>
+<iframe id="scene-B" title="Mixer cảnh B" src="/vi/?dual-scene=B" loading="eager" allow="autoplay"></iframe></details>
+<section class="card controls" aria-labelledby="join-title">
+<h2 id="join-title">3 · Kiểm tra và nối 2 video</h2>
+<p>Cảnh A được phát đúng một lần. Cảnh B lặp đến hết 10 phút. Hệ thống chuẩn hóa cả hai clip trong <strong>một lần mã hóa video ngắn</strong>, bảo đảm một cấu hình H.264 đồng nhất và chỉ mã hóa AAC một lần cho hai bản WAV.</p>
+<div class="row">
+<button id="refresh" class="secondary" type="button">Đọc trạng thái hai mixer</button>
+<button id="sync-length" class="secondary" type="button">Đặt thời lượng B = 10 phút − A</button>
+<span id="duration-status" aria-live="polite">Đang chờ hai mixer.</span>
+</div>
+<div class="row"><button id="check-seams" class="secondary" type="button">Kiểm tra hình cuối A / đầu B và vòng B</button><span id="seam-status" aria-live="polite"></span></div>
+<div id="seam-pictures">
+<figure><canvas id="exit-a" width="320" height="180"></canvas><figcaption>Frame cuối phân cảnh A</figcaption></figure>
+<figure><canvas id="start-b" width="320" height="180"></canvas><figcaption>Frame đầu phân cảnh B</figcaption></figure>
+<figure><canvas id="exit-b" width="320" height="180"></canvas><figcaption>Frame cuối phân cảnh B</figcaption></figure>
+<figure><canvas id="loop-b" width="320" height="180"></canvas><figcaption>Frame đầu vòng lặp tiếp theo</figcaption></figure>
+</div>
+<p class="help">Chỉ số khác biệt ảnh là tín hiệu cảnh báo, không bảo đảm chuyển động sẽ liền mạch. Vẫn cần xem và nghe thử quanh điểm nối.</p>
+<div class="row">
+<label>Độ phân giải <select id="resolution"><option value="1280x720">720p · thử nhanh</option><option value="1920x1080" selected>1080p · chất lượng cao</option></select></label>
+<button id="join" type="button">Ghép 2 video + âm thanh, xuất MP4 10 phút</button>
+</div>
+<progress id="join-progress" max="100" value="0"></progress>
+<p id="join-status" role="status">Chưa xuất video. Khuyến nghị máy tính để xử lý 1080p; trình duyệt di động có thể thiếu bộ nhớ.</p>
+<a id="download" class="hide" download="WhiteNoiseChoir-Dual-Scene.mp4">Tải MP4 đã ghép</a>
+</section>
+</main><script defer src="/vi/dual-scene/dual-studio.js?v=20261117"></script></body></html>
