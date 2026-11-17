@@ -6,6 +6,11 @@ on:
       - 'scripts/ws5_semantic_intelligence.py'
       - 'scripts/test_ws5_semantic_intelligence.py'
       - '.github/workflows/ws5_semantic_pilot.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/ws5_semantic_intelligence.py'
+      - '.github/workflows/ws5_semantic_pilot.yml'
   workflow_dispatch:
     inputs:
       max_files:
@@ -38,7 +43,11 @@ jobs:
           python -m unittest discover -s scripts -p 'test_ws5_semantic_intelligence.py' -v
           python -m py_compile scripts/ws5_acoustic_intelligence.py scripts/ws5_semantic_intelligence.py
   semantic-pilot:
-    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'
+    if: >-
+      github.ref == 'refs/heads/main' &&
+      (github.event_name == 'workflow_dispatch' ||
+       (github.event_name == 'push' &&
+        startsWith(github.event.head_commit.message, 'feat(ws5): activate semantic pilot')))
     needs: offline-contract-tests
     runs-on: ubuntu-latest
     timeout-minutes: 48
@@ -50,7 +59,7 @@ jobs:
       TRANSFORMERS_NO_ADVISORY_WARNINGS: '1'
       TOKENIZERS_PARALLELISM: 'false'
       OMP_NUM_THREADS: '2'
-      MAX_FILES: ${{ inputs.max_files }}
+      MAX_FILES: ${{ github.event_name == 'push' && '1' || inputs.max_files }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -66,4 +75,4 @@ jobs:
       - name: Identify up to four real audio files, preserve originals
         run: python -u scripts/ws5_semantic_intelligence.py --max-files "$MAX_FILES" --max-scan 12
       # No private file data uploaded as public Actions artifacts.
-      # Not scheduled. Never touches the existing WS5 v1 checkpoint or Studio.
+      # No schedule. One activation commit may run exactly one real file. Never touches the existing WS5 v1 checkpoint or Studio.
