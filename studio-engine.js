@@ -113,8 +113,10 @@ function restrictHomeMix(project){
     .map(t=>({...t,...(Number.isFinite(t.duration)?{duration:Math.min(t.duration,600-t.start)}:{})}))};
 }
 const trialData = JSON.parse(document.getElementById('studio-trial')?.textContent || 'null');
-const projectStorageKey = studioEnglish ? 'wnc.studio.project.en.v1'
-  : (trialData ? 'wnc.studio.trial.' + trialData.slug : 'wnc.studio.project.v1');
+const dualSceneSlot = new URLSearchParams(location.search).get('dual-scene');
+const projectStorageKey = (studioEnglish ? 'wnc.studio.project.en.v1'
+  : (trialData ? 'wnc.studio.trial.' + trialData.slug : 'wnc.studio.project.v1'))
+  + (['A','B'].includes(dualSceneSlot) && location.pathname.startsWith('/vi/') ? '.dual.' + dualSceneSlot : '');
 function normalizeProject(saved) {
   if (!saved || !Number.isFinite(saved.length) || !Array.isArray(saved.tracks)) throw Error('Invalid project');
   const title = typeof saved.title === 'string' && saved.title.trim() ? saved.title.slice(0,100) : tr('Bản phối chưa đặt tên');
