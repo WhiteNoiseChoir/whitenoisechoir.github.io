@@ -46,7 +46,14 @@ class CLAPReviewTests(unittest.TestCase):
         self.assertIs(a["publication_approved"], False)
 
     def test_top3_metadata_only(self):
-        a = qa.inspect_record(sample(winner="ocean_waves"), "rain_storm")
+        s = sample(winner="ocean_waves")
+        unrelated = ["ocean_waves", "river_stream", "waterfall", "wind_trees", "forest_birds", "owl_call"]
+        s["top_matches"] = [
+            {"label": label, "cosine_similarity": round(.7 - idx * .03, 4)}
+            for idx, label in enumerate(unrelated)
+        ]
+        s["window_top_matches"] = [s["top_matches"][:4]]
+        a = qa.inspect_record(s, "rain_storm")
         self.assertIsNone(a["best_expected_rank"])
         self.assertIn("METADATA_CLAP_DISAGREEMENT", a["review_flags"])
         self.assertFalse(a["semantic_accuracy_verified"])
@@ -82,7 +89,7 @@ class CLAPReviewTests(unittest.TestCase):
     def test_summary_no_false_claim(self):
         rows = [
             {"audit_status": "AUDITED", "assessment": qa.inspect_record(sample(), "rain_storm")},
-            {"audit_status": "AUDITED", "assessment": qa.inspect_record(sample(winner="traffic"), "rain_storm")},
+            {"audit_status": "AUDITED", "assessment": qa.inspect_record(sample(winner="traffic"), "other")},
             {"audit_status": "INVALID_MODEL_RESULT", "invalid_reason": "not valid"}
         ]
         out = qa.summarize(rows)
