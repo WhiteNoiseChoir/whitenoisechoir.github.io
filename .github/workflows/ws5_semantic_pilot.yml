@@ -1,0 +1,78 @@
+name: WS5 Semantic Intelligence — CLAP private R2 pilot
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/ws5_semantic_intelligence.py'
+      - 'scripts/test_ws5_semantic_intelligence.py'
+      - '.github/workflows/ws5_semantic_pilot.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/ws5_semantic_intelligence.py'
+      - '.github/workflows/ws5_semantic_pilot.yml'
+  workflow_dispatch:
+    inputs:
+      max_files:
+        description: 'Small manual pilot only (1–4 SHA-verified originals)'
+        type: choice
+        required: true
+        default: '2'
+        options: ['1', '2', '3', '4']
+permissions:
+  contents: read
+concurrency:
+  group: wnc-ws5-semantic-pilot
+  cancel-in-progress: false
+jobs:
+  offline-contract-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install small numeric/test dependencies only
+        run: python -m pip install -q 'numpy>=1.26,<3' 'boto3>=1.36,<2'
+      - name: Validate legacy WS5 and semantic pilot contracts
+        run: |
+          python -m unittest discover -s scripts -p 'test_ws5_acoustic_intelligence.py' -v
+          python -m unittest discover -s scripts -p 'test_ws5_semantic_intelligence.py' -v
+          python -m py_compile scripts/ws5_acoustic_intelligence.py scripts/ws5_semantic_intelligence.py
+  semantic-pilot:
+    if: >-
+      github.ref == 'refs/heads/main' &&
+      (github.event_name == 'workflow_dispatch' ||
+       (github.event_name == 'push' &&
+        startsWith(github.event.head_commit.message, 'feat(ws5): activate semantic pilot')))
+    needs: offline-contract-tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 48
+    env:
+      R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+      R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+      AWS_EC2_METADATA_DISABLED: 'true'
+      HF_HUB_DISABLE_TELEMETRY: '1'
+      TRANSFORMERS_NO_ADVISORY_WARNINGS: '1'
+      TOKENIZERS_PARALLELISM: 'false'
+      OMP_NUM_THREADS: '2'
+      MAX_FILES: ${{ github.event_name == 'push' && '1' || inputs.max_files }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install FFmpeg and CPU-only CLAP dependencies
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -qq -y ffmpeg
+          python -m pip install -q 'torch==2.7.1' --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install -q 'transformers==4.55.4' 'librosa>=0.10,<0.12' 'numpy>=1.26,<3' 'boto3>=1.36,<2'
+      - name: Identify up to four real audio files, preserve originals
+        run: python -u scripts/ws5_semantic_intelligence.py --max-files "$MAX_FILES" --max-scan 12
+      # No private file data uploaded as public Actions artifacts.
+      # No schedule. One activation commit may run exactly one real file. Never touches the existing WS5 v1 checkpoint or Studio.
