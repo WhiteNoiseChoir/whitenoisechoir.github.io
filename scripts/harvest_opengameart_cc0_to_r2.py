@@ -110,7 +110,11 @@ def main():
     ap.add_argument("--max-files",type=int,default=5000)
     ap.add_argument("--max-total-mb",type=int,default=4096)
     ap.add_argument("--report",default="audits/opengameart-harvest.json")
+    ap.add_argument("--seed-page",action="append",default=[],help="Limit this run to named OpenGameArt submission slug(s); targeted owner-approved intake")
+    ap.add_argument("--max-workers",type=int,default=2,help="Maximum worker count for audio file probing")
     args=ap.parse_args()
+    if not (1<=args.max_workers<=2): raise ValueError("max-workers must be 1 or 2")
+    if args.seed_page and any(not re.fullmatch(r"[a-z0-9]+(?:-[a-z0-9]+)*", slug) for slug in args.seed_page): raise ValueError("Invalid submission slug")
     s3=boto3.client("s3",region_name="auto",endpoint_url="https://"+ACCOUNT_ID+".r2.cloudflarestorage.com",
         aws_access_key_id=os.environ["R2_ACCESS_KEY_ID"],aws_secret_access_key=os.environ["R2_SECRET_ACCESS_KEY"],
         config=Config(signature_version="s3v4",max_pool_connections=16,
@@ -227,9 +231,9 @@ def main():
             json_put(s3,ledger,{"complete":not failures,"download_url":url,"source_page":meta["source_page"],
                 "payload_sha256":sha256(payload),"assets":assets,"errors":failures,"updated_at":now()})
             if failures: raise ValueError(str(failures[:3]))
-    queue=deque(ORIGIN+"/content/"+s for s in SEEDS)
+    queue=deque(ORIGIN+"/content/"+s for s in (args.seed_page or SEEDS))
     visited=set()
-    with cf.ThreadPoolExecutor(max_workers=8) as audio_pool,cf.ThreadPoolExecutor(max_workers=2) as download_pool:
+    with cf.ThreadPoolExecutor(max_workers=args.max_workers) as audio_pool,cf.ThreadPoolExecutor(max_workers=2) as download_pool:
         while queue and len(visited)<args.max_pages:
             url=queue.popleft()
             if url in visited: continue
