@@ -4,11 +4,12 @@
   const scene=new URLSearchParams(location.search).get('dual-scene');
   if(!['A','B'].includes(scene)||window.parent===window) return;
   const origin=location.origin;
+  document.querySelector('.studio-nav a[href="/vi/dual-scene/"]')?.remove();
   const respond=(data)=>window.parent.postMessage({scope:'wnc-dual',scene,...data},origin);
   try{
     // The namespaced key is declared by studio-engine.js. Only initialize empty projects.
     if(!localStorage.getItem(projectStorageKey)){
-      const seconds=scene==='A'?8:592;
+      const seconds=scene==='A'?12:588;
       mix={title:scene==='A'?'Intro · Phân cảnh A':'Ambience · Phân cảnh B',length:seconds,master:1,tracks:[],videoPrompt:''};
       saveLocal();render();
     }
