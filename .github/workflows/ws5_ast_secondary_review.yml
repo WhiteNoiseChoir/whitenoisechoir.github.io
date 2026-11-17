@@ -1,0 +1,71 @@
+name: WS5 Independent AudioSet Audit — six flagged sources
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/ws5_ast_secondary_review.py'
+      - 'scripts/test_ws5_ast_secondary_review.py'
+      - '.github/workflows/ws5_ast_secondary_review.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/ws5_ast_secondary_review.py'
+      - '.github/workflows/ws5_ast_secondary_review.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: wnc-ws5-ast-secondary-six
+  cancel-in-progress: false
+jobs:
+  offline-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install lightweight offline dependencies
+        run: python -m pip install -q 'numpy>=1.26,<3' 'boto3>=1.36,<2'
+      - name: Validate AST output, exact six-item selection and private data guards
+        run: |
+          python -m unittest discover -s scripts -p 'test_ws5_ast_secondary_review.py' -v
+          python -m unittest discover -s scripts -p 'test_ws5_semantic_review.py' -v
+          python -m py_compile scripts/ws5_ast_secondary_review.py
+  inspect-six:
+    if: >-
+      github.ref == 'refs/heads/main' &&
+      (github.event_name == 'workflow_dispatch' ||
+       (github.event_name == 'push' &&
+        startsWith(github.event.head_commit.message, 'feat(ws5): activate ast secondary review')))
+    needs: offline-tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 38
+    env:
+      R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+      R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+      AWS_EC2_METADATA_DISABLED: 'true'
+      HF_HUB_DISABLE_TELEMETRY: '1'
+      TRANSFORMERS_NO_ADVISORY_WARNINGS: '1'
+      TOKENIZERS_PARALLELISM: 'false'
+      OMP_NUM_THREADS: '2'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install FFmpeg and pinned CPU AudioSet dependencies
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -qq -y ffmpeg
+          python -m pip install -q 'torch==2.7.1' 'torchaudio==2.7.1' --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install -q 'transformers==4.55.4' 'numpy>=1.26,<3' 'boto3>=1.36,<2' 'safetensors>=0.4,<1'
+      - name: Independently sample at most six flagged SHA-verified R2 originals
+        run: python -u scripts/ws5_ast_secondary_review.py --max-files 6
+      # No recurring schedule, no public artifacts, no publication approval.
+      # A pinned 346MB AST model is downloaded once per run; SHA-verified source downloads
+      # are bounded by 6 x 16MB. Only private R2 JSON records are written.
