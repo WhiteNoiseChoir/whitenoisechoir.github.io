@@ -19,6 +19,15 @@ Entry point: `/vi/dual-scene/`. This is a separate noindex tool; the original `/
 5. Click *Kiểm tra điểm nối A → B* to view endpoint frames; no WAV is needed for this preview.
 6. Click *Ghép video A + B, giữ nguyên thời lượng*. The A and B images are not decoded or re-encoded by the compositor when compatible. The output length is A+B. Review the resulting MP4 preview and audio.
 
+## Audio join diagnostics (2026-11-17)
+
+- A and B are separate mixer sessions; therefore preserving image duration does **not** automatically preserve audio source phase.
+- If A's real MP4 duration is 15.125 seconds while an older B project was created with 8-second offsets, a common source (piano, ocean, fire) will jump backward by 7.125 seconds at the seam.
+- **Kiểm tra pha piano / sóng / lửa** examines common active, looping tracks that begin at 0 in both scenes and reports the expected B offset: `(A.sourceOffset + A.duration) modulo sourceDuration`.
+- **Căn pha âm A → B** edits B offsets for those uniquely matched looping tracks only; it invalidates B WAV and requires a fresh WAV export. It cannot automatically fix unrelated effects, a wrong piano source, different master gain, mismatched track gain, or generative video motion.
+- Export is blocked if these unique common tracks have a phase mismatch greater than ~55ms. When they are phase-matched with the same gain/pan/master, FFmpeg concatenates WAVs continuously rather than fading both to zero for 40ms.
+- A verified audio seam still does **not** prove a visually seamless A→B transition. The video stream-copy pipeline performs no optical-flow interpolation or frame blending. Inspect the image endpoint comparison and a short exported seam video.
+
 ## Limitations and QA
 
 - **Strict stream-copy compatibility:** Both videos must have the same H.264 AVC decoder configuration (codec, coded width and height, AVC description/SPS-PPS). Otherwise the compositor refuses instead of silently re-encoding B or writing a potentially broken MP4. Convert to matching specs outside the tool if necessary.
