@@ -1,7 +1,7 @@
 // PRIVATE Music: optional authenticated Studio integration.
 // This module is NOT referenced from HTML until the protected Cloudflare Worker
 // and its Access policy pass browser QA. There are no credentials in this file.
-export const MUSIC_GATEWAY_ORIGIN = "https://music.whitenoisechoir.com";
+export const MUSIC_GATEWAY_ORIGIN = "https://wnc-private-music-gateway.whitescreen-dev.workers.dev";
 const ROOT = MUSIC_GATEWAY_ORIGIN + "/v1";
 const SHA_RE = /^[a-f0-9]{64}$/;
 const BUCKET = "wnc-music-private";
