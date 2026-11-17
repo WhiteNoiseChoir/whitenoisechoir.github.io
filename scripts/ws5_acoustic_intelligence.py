@@ -26,6 +26,20 @@ MAX_BYTES=16_000_000
 MAX_COUNT=24
 MAX_SCAN=50
 def now():return datetime.now(timezone.utc).isoformat()
+def is_recent_checkpoint(checkpoint, at, gap_minutes):
+    """Scheduled-run cooldown; missing checkpoint timestamp is not a skip."""
+    if not 0<=gap_minutes<=120:raise ValueError("invalid cooldown")
+    stamp=checkpoint.get("updated_at")
+    if not gap_minutes or not stamp:return False
+    try:
+        last=datetime.fromisoformat(stamp.replace("Z","+00:00"))
+        if last.tzinfo is None:raise ValueError("timestamp must have timezone")
+        elapsed=(at.astimezone(timezone.utc)-last.astimezone(timezone.utc)).total_seconds()
+    except (TypeError,ValueError) as exc:
+        raise ValueError("Invalid checkpoint updated_at UTC") from exc
+    if elapsed < -120:raise ValueError("checkpoint timestamp in future")
+    return elapsed < gap_minutes*60
+
 def command(args,timeout=100):
     p=subprocess.run(args,capture_output=True,timeout=timeout)
     if p.returncode:raise RuntimeError("Audio decoder returned nonzero code")
@@ -161,8 +175,11 @@ def main():
     ap=argparse.ArgumentParser()
     ap.add_argument("--max-files",type=int,default=MAX_COUNT)
     ap.add_argument("--max-scan",type=int,default=MAX_SCAN)
+    ap.add_argument("--min-gap-minutes",type=int,default=0,
+        help="Skip schedule if existing WS1-version checkpoint was updated recently; dispatch default 0")
     args=ap.parse_args()
     if not 1<=args.max_files<=64 or not 1<=args.max_scan<=100:raise ValueError("Batch exceeds safety cap")
+    if not 0<=args.min_gap_minutes<=120:raise ValueError("invalid min-gap-minutes")
     s3=boto3.client("s3",region_name="auto",endpoint_url=ENDPOINT,
        aws_access_key_id=os.environ["R2_ACCESS_KEY_ID"],aws_secret_access_key=os.environ["R2_SECRET_ACCESS_KEY"],
        config=Config(signature_version="s3v4",s3={"addressing_style":"path"},retries={"max_attempts":4,"mode":"standard"}))
@@ -182,6 +199,12 @@ def main():
             checkpoint={"schema":SCHEMA,"source_index_sha256":sha,"cursor":0,"attempted":0,"analyzed":0,
                  "status_counts":{},"batch_keys":[],"started_utc":now()}
         if checkpoint.get("source_index_sha256")!=sha:raise RuntimeError("WS1 checkpoint version mismatch")
+        if is_recent_checkpoint(checkpoint,datetime.now(timezone.utc),args.min_gap_minutes):
+            # Backup schedule may fire soon after primary; do not advance or rewrite checkpoint.
+            print("WS5_ACOUSTIC_SKIPPED_RECENT",json.dumps({
+                "min_gap_minutes":args.min_gap_minutes,"cursor":checkpoint.get("cursor",0),
+                "updated_at":checkpoint.get("updated_at")}),flush=True)
+            return
         start=int(checkpoint.get("cursor",0));end=min(len(candidates),start+args.max_scan)
         rows=[];evaluated=0
         statuses=Counter(checkpoint.get("status_counts",{}))
