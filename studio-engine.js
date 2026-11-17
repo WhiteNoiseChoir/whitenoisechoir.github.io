@@ -301,6 +301,16 @@ function sourceAddresses(i){
   const asset=assets[i];
   if(asset.synthetic) return [];
   if(asset.pending) return [];
+  // PRIVATE Music preview has a separate Access-authenticated gateway.
+  // Never use the public `media` prefix or a fallback for these assets.
+  if(asset.privateMusic === true) {
+    const sha=rawDigest(asset.key);
+    if(!sha || asset.id!=='r2-'+sha ||
+       asset.key!==`internal/licensed-music/v1/sha256/${sha.slice(0,2)}/${sha}.mp3` ||
+       asset.url!==`https://music.whitenoisechoir.com/v1/audio/${sha}`)
+      return [];
+    return [asset.url];
+  }
   // Use a verified 92s seamless R2 proxy instead of decoding an entire 600s
   // master in the browser (~200MB of PCM per stereo source at 44.1kHz).
   // Do not silently try another 600s file when a proxy fails: report that
@@ -349,7 +359,10 @@ async function decodeRecording(i,decoder,onSource){
   const attempts=[];
   for(const address of sourceAddresses(i)){
     try{
-      const response=await fetch(address,{cache:'no-store',signal:AbortSignal.timeout(60000)});
+      const response=await fetch(address,{
+        cache:'no-store',
+        credentials:asset.privateMusic===true?'include':'same-origin',
+        signal:AbortSignal.timeout(60000)});
       if(!response.ok){attempts.push('HTTP '+response.status+' · '+new URL(address,location.href).pathname);continue;}
       const type=(response.headers.get('content-type')||'').toLowerCase();
       if(type.includes('text/html')||type.includes('application/json')){
