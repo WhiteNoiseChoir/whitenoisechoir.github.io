@@ -30,7 +30,7 @@ Source code and workflow PR include unit tests. The first R2 acoustic run requir
 **Status: code + deterministic tests added; live model/R2 evaluation must pass before any schedule is enabled.** The v1 hourly DSP job (minute 37 UTC) is unchanged.
 
 - Entry point: `scripts/ws5_semantic_intelligence.py`. Workflow: `.github/workflows/ws5_semantic_pilot.yml`.
-- Manually dispatch the new workflow from **main** with `max_files=1–4` (default 2). It has **no schedule**, writes no GitHub artifacts and does not activate on PRs. The PR runs offline contract tests only.
+- Manually dispatch the new workflow from **main** with `max_files=1–4` (default 2). It has **no schedule**, writes no GitHub artifacts and does not activate the model on PRs. The PR runs offline contract tests only. A one-off main-branch commit whose message starts with `feat(ws5): activate semantic pilot` additionally runs a **single file** after tests succeed; normal pushes never execute the model.
 - Model: Hugging Face `laion/clap-htsat-unfused`, pinned revision `84bcbbd1d619e407a8216371ddef36e458d95d93`, CPU inference using Transformers 4.55.4.
 - Source inputs: real nature audio files whose content-addressed R2 key matches a canonical WS1 record. No invented assets. SHA-256 of each original is verified before inference. Files above 16 MB are skipped; compressed originals are never overwritten.
 - Audio is **decoded to mono 48 kHz**, using up to three deterministic **10-second windows** at beginning, middle, end. This differs from the 16-kHz v1 DSP path because the chosen CLAP model expects 48 kHz. Short files use a single window.
@@ -41,7 +41,7 @@ Source code and workflow PR include unit tests. The first R2 acoustic run requir
 ### Rollout gates
 
 1. CI must pass both v1 and v2 offline unit tests; inspect the code and PR.
-2. Manually run **one** R2 source; confirm model download/inference, actual 48 kHz sample decoding, schema and SHA verification. Inspect private sample-level predictions, failures and approximate CPU/R2 cost.
+2. Run **one** R2 source using the explicitly named activation merge commit (or manually dispatch from main); confirm model download/inference, actual 48 kHz sample decoding, schema and SHA verification. Inspect private sample-level predictions, failures and approximate CPU/R2 cost.
 3. Pilot a diverse sample (rain, stream, birds, music if imported) and **manually validate** false positives/negatives, particularly speech/music. Calibrate category thresholds against labeled data before reporting probabilistic confidence or sleep suitability.
 4. Only after measured success should an independent scheduled batch be considered. Do not copy private predictions into the public repository or trigger public publishing automatically. Music ingestion and the 16 MB long-file limit remain separate open work.
 5. For larger scale, implement streaming/partial R2 access or bounded download, model caching, deduplication and checkpoint-level retry policy; verify real total cost before increasing concurrency.
