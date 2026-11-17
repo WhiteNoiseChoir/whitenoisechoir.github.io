@@ -80,6 +80,9 @@ class SemanticContractTests(unittest.TestCase):
         self.assertEqual(semantic.metadata_hint_group(synthetic[0]), "rain_storm")
         self.assertEqual(semantic.metadata_hint_group(synthetic[4]), "wildlife")
         self.assertEqual(semantic.metadata_hint_group(synthetic[6]), "other")
+        self.assertEqual(semantic.metadata_hint_group({"title":"A train passing", "family":"Traffic"}), "other")
+        self.assertEqual(semantic.metadata_hint_group({"title":"Rainfall on a roof", "family":"Weather"}), "rain_storm")
+        self.assertEqual(semantic.metadata_hint_group({"title":"Fire crackling", "family":"Nature"}), "wind_fire_fan")
 
     def test_diverse_checkpoint_is_separate(self):
         self.assertNotEqual(semantic.DIVERSITY_PREFIX, semantic.PREFIX)
