@@ -28,6 +28,11 @@ export function validateMusicEntry(item) {
       !Number.isFinite(item.duration_seconds) || item.duration_seconds<=0 ||
       item.duration_seconds>7200) return null;
   return Object.freeze({
+    sha256:sha,assetRef:item.assetRef,r2_bucket:BUCKET,r2_key:item.r2_key,
+    source_url:item.source_url,creator:item.creator.trim(),attribution:item.attribution,
+    duration_seconds:item.duration_seconds,
+    technical_status:item.technical_status,playback_status:item.playback_status,
+    studio_ready:false,publication_approved:false,
     id:item.assetRef,
     key:item.r2_key,
     url:`${ROOT}/audio/${sha}`,
@@ -89,17 +94,7 @@ export function registerMusicRows(rows,{assets,rawAssetIndex,rebuildCatalog,refr
      !(rawAssetIndex instanceof Map)) throw new Error("Invalid Studio registration");
   let added=0;
   for (const item of rows) {
-    const verified=validateMusicEntry({
-      ...item,
-      sha256:item.id?.slice(3),assetRef:item.id,r2_bucket:BUCKET,
-      r2_key:item.key,group:item.group,license:item.license,
-      technical_status:"MEASURED_NOT_LISTENING_APPROVED",
-      playback_status:"PRIVATE_AUTH_GATEWAY_REQUIRED",
-      studio_ready:false,publication_approved:false,
-      name:item.name,creator:item.creator || "Scott Buckley",
-      attribution:item.credit,source_url:item.source,
-      duration_seconds:item.duration
-    });
+    const verified=validateMusicEntry(item);
     if(!verified || verified.url!==item.url)continue;
     if (rawAssetIndex.has(verified.id)) continue; // never overwrite existing assets
     rawAssetIndex.set(verified.id,assets.length);
