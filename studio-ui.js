@@ -910,3 +910,42 @@ document.addEventListener('keydown', event => {
 });
 renderLibrary();
 render();
+// Explicitly opt-in to Cloudflare Access-protected Music only on /vi/?private-music=1.
+// No cross-site request is made until the owner clicks the import button.
+// The Nature catalog, existing mixer and all production URLs remain unchanged.
+(function setupPrivateMusicAudition() {
+  const enabled = !studioEnglish && location.pathname.replace(/\/+$/, '') === '/vi' &&
+    new URLSearchParams(location.search).get('private-music') === '1';
+  if (!enabled) return;
+  const gateway='https://wnc-private-music-gateway.whitescreen-dev.workers.dev/v1/catalog';
+  const holder=document.createElement('div');
+  holder.className='private-music-optin';
+  holder.style.cssText='padding:12px;margin:12px 0;border:1px solid #7775;border-radius:8px;';
+  const caption=document.createElement('p');
+  caption.textContent='Music Private — chỉ nghe thử và phối nội bộ, chưa duyệt xuất bản.';
+  const auth=document.createElement('a');
+  auth.href=gateway;auth.target='_blank';auth.rel='noopener noreferrer';
+  auth.textContent='1. Đăng nhập Music Gateway (mở tab riêng)';
+  const load=document.createElement('button');
+  load.type='button';load.textContent='2. Tải 2 bản Music Private';
+  const status=document.createElement('p');status.setAttribute('role','status');
+  status.setAttribute('aria-live','polite');status.textContent='Chưa kết nối Music Gateway.';
+  holder.append(caption,auth,load,status);
+  $('library-status').insertAdjacentElement('beforebegin',holder);
+  load.addEventListener('click',async()=>{
+    load.disabled=true;
+    status.textContent='Đang xác thực và đọc catalog Music Private…';
+    try {
+      const {retrievePrivateMusic,registerMusicRows}=await import('/studio-private-music-optin.mjs?v=ws4-20261117');
+      const result=await retrievePrivateMusic({enabled:true,pageOrigin:location.origin});
+      const newlyAdded=registerMusicRows(result.rows,{
+        assets,rawAssetIndex,rebuildCatalog,refreshLibraryGroups,renderLibrary,render
+      });
+      status.textContent='Music Private: '+result.rows.length+' bản được xác minh; '+newlyAdded+
+        ' bản mới trong thư viện. Chưa được duyệt xuất bản.';
+    } catch(error) {
+      status.textContent='Chưa kết nối được Music Private. Mở tab đăng nhập Music Gateway rồi thử lại. Nếu vẫn lỗi, kiểm tra cookie bên thứ ba/CORS của Cloudflare Access.';
+      console.warn('Private Music opt-in not connected:',String(error?.message||error));
+    } finally { load.disabled=false; }
+  });
+})();
