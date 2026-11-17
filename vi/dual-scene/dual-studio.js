@@ -17,7 +17,7 @@ function request(id,action,extra={}){
     const requestId=crypto.randomUUID(),frame=sceneFrame(id);
     if(!frame)return reject(Error('Mixer '+id+' chưa tải xong.'));
     const timer=setTimeout(()=>{waiting.delete(requestId);reject(Error('Mixer '+id+' không phản hồi. Hãy tải lại trang.'));},20000);
-    waiting.set(requestId,{resolve,reject,timer});
+    waiting.set(requestId,{resolve,reject,timer,action});
     frame.postMessage({scope:'wnc-dual',requestId,action,...extra},location.origin);
   });
 }
