@@ -28,36 +28,34 @@ figcaption{font-size:.85rem;color:#c7d2d8;margin:5px 0}.help{font-size:.9rem;col
 <header><h1>WhiteNoiseChoir · Dual Scene Studio</h1><a href="/vi/">Trở về Studio cũ</a></header>
 <main>
 <p><strong>Chế độ thử nghiệm:</strong> Hai bộ phối hoàn toàn độc lập. Mỗi bộ có đủ công cụ cũ (kho, timeline, WAV, xem trước video). Chỉ khi cả hai đã xuất WAV và chọn clip, hãy ghép ở phần cuối. Mọi tệp vẫn xử lý trên thiết bị của bạn.</p>
-<details class="card" open><summary class="card-top"><h2>A · Mở đầu — chỉ phát một lần</h2><small id="state-A">Đang tải…</small></summary>
+<details class="card" open><summary class="card-top"><h2>A · Mở đầu — phát một lần</h2><small id="state-A">Đang tải…</small></summary>
 <iframe id="scene-A" title="Mixer cảnh A" src="/vi/?dual-scene=A" loading="eager" allow="autoplay"></iframe></details>
-<details class="card" open><summary class="card-top"><h2>B · Cảnh chính — lặp liên tục</h2><small id="state-B">Đang tải…</small></summary>
+<details class="card" open><summary class="card-top"><h2>B · Video hoàn chỉnh — giữ nguyên, không lặp</h2><small id="state-B">Đang tải…</small></summary>
 <iframe id="scene-B" title="Mixer cảnh B" src="/vi/?dual-scene=B" loading="eager" allow="autoplay"></iframe></details>
 <section class="card controls" aria-labelledby="join-title">
 <h2 id="join-title">3 · Kiểm tra và nối 2 video</h2>
-<p>Cảnh A được phát đúng một lần. Cảnh B lặp đến hết 10 phút. Hệ thống chuẩn hóa cả hai clip trong <strong>một lần mã hóa video ngắn</strong>, bảo đảm một cấu hình H.264 đồng nhất và chỉ mã hóa AAC một lần cho hai bản WAV.</p>
+<p>Video A và B được giữ nguyên thời lượng thực tế: nếu A = 8 giây và B = 10 phút thì video thành phẩm = 10 phút 8 giây. <strong>Không cắt, không lặp và không kéo giãn B.</strong> Hệ thống cố gắng nối trực tiếp các gói H.264 (stream-copy, không render lại hình ảnh), đồng thời kết hợp hai WAV thành một AAC mới. Hai MP4 cần có cùng cấu hình H.264; nếu không, hệ thống báo rõ để chuẩn hóa nguồn ngoài.</p>
 <div class="row">
-<label><input id="auto-clip-sync" type="checkbox" checked> Tự đồng bộ khi chọn clip A</label>
-<button id="sync-from-clip" type="button">Đồng bộ theo clip A</button>
+<label><input id="auto-clip-sync" type="checkbox" checked> Tự đồng bộ khi chọn video A hoặc B</label>
+<button id="sync-from-clip" type="button">Đồng bộ theo video A/B</button>
 <button id="refresh" class="secondary" type="button">Đọc trạng thái hai mixer</button>
-<button id="sync-length" class="secondary" type="button">Đặt thời lượng B = 10 phút − A</button>
+
 <span id="duration-status" aria-live="polite">Đang chờ hai mixer.</span>
 </div>
-<p id="clip-sync-status" class="help" role="status" aria-live="polite">Chọn MP4 trong Mixer A để hệ thống đọc thời lượng thật, làm tròn xuống frame 24 fps và tự đặt A + B = 600 giây. WAV đã xuất trước khi thay đổi thời lượng sẽ cần xuất lại.</p>
-<div class="row"><button id="check-seams" class="secondary" type="button">Kiểm tra hình cuối A / đầu B và vòng B</button><span id="seam-status" aria-live="polite"></span></div>
+<p id="clip-sync-status" class="help" role="status" aria-live="polite">Chọn video trong từng mixer để tự đọc thời lượng thật. Mixer A = thời lượng MP4 A, Mixer B = thời lượng MP4 B. Tổng bằng A + B (không cố định 10 phút). Khi thay đổi timeline phải xuất WAV lại.</p>
+<div class="row"><button id="check-seams" class="secondary" type="button">Kiểm tra điểm nối A → B</button><span id="seam-status" aria-live="polite"></span></div>
 <div id="seam-pictures">
 <figure><canvas id="exit-a" width="320" height="180"></canvas><figcaption>Frame cuối phân cảnh A</figcaption></figure>
 <figure><canvas id="start-b" width="320" height="180"></canvas><figcaption>Frame đầu phân cảnh B</figcaption></figure>
 <figure><canvas id="exit-b" width="320" height="180"></canvas><figcaption>Frame cuối phân cảnh B</figcaption></figure>
-<figure><canvas id="loop-b" width="320" height="180"></canvas><figcaption>Frame đầu vòng lặp tiếp theo</figcaption></figure>
 </div>
-<p class="help">Chỉ số khác biệt ảnh là tín hiệu cảnh báo, không bảo đảm chuyển động sẽ liền mạch. Vẫn cần xem và nghe thử quanh điểm nối.</p>
+<p class="help">Chỉ số khác biệt ảnh chỉ là tín hiệu cảnh báo. Hãy xem trực tiếp chuyển cảnh A → B và nghe âm thanh sau khi xuất.</p>
 <div class="row">
-<label>Độ phân giải <select id="resolution"><option value="1280x720">720p · thử nhanh</option><option value="1920x1080" selected>1080p · chất lượng cao</option></select></label>
-<button id="join" type="button">Ghép 2 video + âm thanh, xuất MP4 10 phút</button>
+<button id="join" type="button">Ghép video A + B, giữ nguyên thời lượng</button>
 </div>
 <progress id="join-progress" max="100" value="0"></progress>
-<p id="join-status" role="status">Chưa xuất video. Khuyến nghị máy tính để xử lý 1080p; trình duyệt di động có thể thiếu bộ nhớ.</p>
+<p id="join-status" role="status">Chưa xuất video. Hãy phối và xuất WAV A/B trước; video B đã render bên ngoài sẽ không bị mã hóa lại. Khuyên dùng Chrome/Edge trên máy tính, vì trình duyệt phải xử lý AAC và ghi file MP4.</p>
 <a id="download" class="hide" download="WhiteNoiseChoir-Dual-Scene.mp4">Tải MP4 đã ghép</a>
 <video id="joined-preview" controls playsinline preload="metadata" hidden style="width:100%;max-width:900px;display:block;margin-top:12px" aria-label="Kiểm tra điểm nối MP4 thành phẩm"></video>
 </section>
-</main><script defer src="/vi/dual-scene/dual-studio.js?v=20261117-auto-sync"></script></body></html>
+</main><script defer src="/vi/dual-scene/dual-studio.js?v=20261117-preserve-b1"></script></body></html>
