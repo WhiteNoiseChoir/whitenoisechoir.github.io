@@ -72,3 +72,18 @@ Source: eight-file stratified CLAP pilot in PRIVATE R2 `internal/ws5-acoustic-in
 - Rollback: disable `.github/workflows/ws5_semantic_review.yml`, or remove the audit script. The CLAP pilot source files, original records, earlier checkpoints and Studio are unaffected.
 
 Next validation gates: inspect the audit counts from an actual R2 run; verify evidence quality on at least a few targeted audio clips through authorized listening, optionally use public CC0/CC BY audio with reliable reference taxonomy for an independently evaluated calibration set. Only then discuss an unattended 30–50-file semantic sampling pilot.
+
+## Phase 2b — Independent AudioSet AST six-source QA (17 Nov 2026)
+
+After the eight-record CLAP pilot audit (`WS5_SEMANTIC_QA`), **six records were flagged for further examination**. These six are NOT established as erroneous. A second independently trained AudioSet event classifier can provide complementary, **unverified** evidence.
+
+- One-time, **no cron** workflow: `.github/workflows/ws5_ast_secondary_review.yml`. Script: `scripts/ws5_ast_secondary_review.py`.
+- Pinned AST: `MIT/ast-finetuned-audioset-10-10-0.4593` revision `f826b80d28226b62986cc218e5cec390b1096902`, declared model license BSD-3-Clause. About 346 MB of safetensors weights; model downloads are restricted to this explicit run. This adds temporary CPU time and network cost; no permanent service is provisioned.
+- **Exact six** flagged from `qa/v1/report-000000-000008.json` in private R2. The script fails closed if there are not between one and six flagged or if any record has already been marked as human listening PASS. It never touches nonflagged source files.
+- For each file: verify strict original key/digest from report, R2 HEAD 16MB maximum, SHA-256 of downloaded original, ffprobe, sample three <=10-second windows from start/middle/end, mono 16 kHz. The original is read-only.
+- AST returns AudioSet multi-label sigmoid scores, which are **not independently calibrated probabilities** and should NOT be equated to CLAP cosine similarity. Save ranked event hints, per-window hints, possible coarse event families and explicit `NOT_VERIFIED` status for speech, human listening, sound identity, license and sleep suitability. A second model's agreement is not validated accuracy.
+- Output stays private under `internal/ws5-acoustic-intelligence/v2-clap/secondary-audioset/v1/source-<ws1sha16>/`, with SHA records and aggregate summary. Any GitHub Action log contains counts and possible broad family totals only: no private SHA/title/key/individual predictions. Nothing copied to Studio or private Music R2.
+- There is no audio preview or human reference label yet. **Human-audition workflow must use an authenticated path**; never publish R2 objects or create publicly accessible raw preview URLs to bypass owner Access. The Music Access gateway has a separate bucket and permissions; it must NOT be treated as an authenticated Nature reviewer automatically.
+- After a first run: compare results of both models as triage, establish a small human-verified reference set through authenticated listening, measure per-label precision/recall and cross-scene false positives. Only then increase CLAP throughput or automatically use semantic labels for Studio.
+
+**Rollback:** remove/disable this secondary workflow. It does not alter original R2, v1 DSP, CLAP inference/checkpoint, private CLAP QA report, GitHub studio or public assets.
