@@ -239,6 +239,9 @@ async function audition(index) {
     return;
   }
   const audio = $('library-audio');
+  // Credentialed Access cookies are needed only for owner-initiated Music Private.
+  if(assets[index]?.privateMusic===true) audio.crossOrigin='use-credentials';
+  else audio.removeAttribute('crossorigin');
   for (const address of sourceAddresses(index)) {
     audio.src = address;
     try {
