@@ -13,6 +13,8 @@
   if (scene==='A') document.getElementById('minutes')?.setAttribute('min','0.0166667');
   // Both externally rendered clips may have fractional-second durations.
   document.getElementById('minutes')?.setAttribute('step','any');
+  const hint=document.querySelector('.av-preview-help');
+  if(hint)hint.textContent=scene==='B'?'MP4 B đã render bên ngoài · Không kéo dài hay lặp khi ghép':'MP4 A mở đầu · Chỉ phát một lần khi ghép';
   let videoInfo=null,probeTicket=0;
 
   try {
