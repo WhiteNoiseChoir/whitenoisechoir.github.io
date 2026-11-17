@@ -12,6 +12,7 @@ from datetime import datetime, timezone
 import json
 import math
 import os
+import re
 from pathlib import Path
 import subprocess
 import tempfile
@@ -64,6 +65,41 @@ ROLE_GROUPS = {
 REVIEW_LABELS = {"human_speech", "singing_voice", "traffic", "siren_alarm", "sharp_impact"}
 LABEL_VERSION = "wnc_clap_scene_labels_20261117_1"
 
+
+DIVERSITY_PREFIX = PREFIX + "diversity-pilot-v1/"
+MAX_DIVERSITY_FILES = 8
+# Only metadata-based sampling strata. Never treat hints as verified audio labels.
+DIVERSITY_VOCAB = {
+    "rain_storm": ("rain", "rainfall", "raining", "storm", "thunderstorm", "thunder", "mưa"),
+    "freshwater": ("river", "stream", "creek", "waterfall", "lake", "brook", "suối", "thác"),
+    "ocean": ("ocean", "wave", "sea", "surf", "sóng", "biển"),
+    "wildlife": ("bird", "birds", "birdsong", "owl", "frog", "insect", "cricket",
+                 "forest", "wolf", "animal", "chim", "cú", "ếch", "rừng"),
+    "wind_fire_fan": ("wind", "fire", "fan", "air", "windy", "crackle", "gió", "lửa"),
+}
+DIVERSITY_ORDER = (*DIVERSITY_VOCAB, "other")
+
+def metadata_hint_group(item):
+    """A stratification heuristic, not a claim about the actual recorded sound."""
+    hint = (str(item.get("title", "")) + " " + str(item.get("family", ""))).lower()
+    for group, words in DIVERSITY_VOCAB.items():
+        if any(re.search(r"(?<![a-z])" + re.escape(word) + r"(?![a-z])", hint) for word in words):
+            return group
+    return "other"
+
+def diverse_candidates(candidates):
+    """Stable round-robin by metadata hint without changing canonical WS1 rows."""
+    buckets = {group: [] for group in DIVERSITY_ORDER}
+    for item in candidates:
+        group = metadata_hint_group(item)
+        buckets[group].append({**item, "metadata_hint_group": group})
+    out = []
+    longest = max((len(values) for values in buckets.values()), default=0)
+    for idx in range(longest):
+        for group in DIVERSITY_ORDER:
+            if idx < len(buckets[group]):
+                out.append(buckets[group][idx])
+    return out
 
 def now():
     return datetime.now(timezone.utc).isoformat()
@@ -211,9 +247,13 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--max-files", type=int, default=MAX_FILES)
     parser.add_argument("--max-scan", type=int, default=MAX_SCAN)
+    parser.add_argument("--diversity-pilot", action="store_true",
+                        help="Use separate R2 checkpoint and metadata-stratified small pilot")
     args = parser.parse_args()
-    if not 1 <= args.max_files <= 4 or not args.max_files <= args.max_scan <= 12:
-        raise ValueError("v2 pilot maximum four files, twelve scan rows")
+    max_allowed = MAX_DIVERSITY_FILES if args.diversity_pilot else 4
+    scan_allowed = 24 if args.diversity_pilot else 12
+    if not 1 <= args.max_files <= max_allowed or not args.max_files <= args.max_scan <= scan_allowed:
+        raise ValueError("bounded semantic pilot budget exceeded")
 
     s3 = boto3.client("s3", region_name="auto", endpoint_url=base.ENDPOINT,
                      aws_access_key_id=os.environ["R2_ACCESS_KEY_ID"],
@@ -235,7 +275,9 @@ def main():
             raise RuntimeError("WS1_INDEX_SHA256_MISMATCH")
 
         candidates, total = base.media_sources(index_path)
-        prefix = PREFIX + "source-" + index_sha[:16] + "/"
+        if args.diversity_pilot:
+            candidates = diverse_candidates(candidates)
+        prefix = (DIVERSITY_PREFIX if args.diversity_pilot else PREFIX) + "source-" + index_sha[:16] + "/"
         checkpoint_key = prefix + "checkpoint.json"
         try:
             cp = base.jsonget(s3, checkpoint_key)
@@ -258,6 +300,7 @@ def main():
         scorer = ClapScorer()
         statuses = Counter(cp.get("status_counts", {}))
         rows = []
+        group_counts = Counter()
         cursor = start
         for idx in range(start, stop):
             if len(rows) >= args.max_files:
@@ -274,7 +317,10 @@ def main():
             if rec.get("schema") != SCHEMA or rec.get("sha256") != item["sha256"]:
                 raise RuntimeError("record identity mismatch")
             statuses[rec["status"]] += 1
+            if args.diversity_pilot:
+                group_counts[item["metadata_hint_group"]] += 1
             rows.append({"sha256": item["sha256"], "status": rec["status"],
+                         "metadata_hint_group": item.get("metadata_hint_group"),
                          "top_matches": rec.get("top_matches", [])[:3],
                          "possible_contamination_review": rec.get("possible_contamination_review", [])})
             cursor = idx + 1
@@ -292,6 +338,8 @@ def main():
         # Never print private titles, keys, model label predictions, or individual SHA values.
         print("WS5_V2_PILOT", json.dumps({"start": start, "end": cursor,
                "attempted": len(rows), "status_counts": dict(statuses),
+               "metadata_hint_groups_this_run": dict(group_counts),
+               "diversity_pilot": args.diversity_pilot,
                "completed": cp["completed"]}), flush=True)
 
 

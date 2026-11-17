@@ -59,6 +59,37 @@ class SemanticContractTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             semantic.ranking([])
 
+    def test_metadata_diversity_selection(self):
+        synthetic = [
+            {"sha256": "1" * 64, "title": "Rain falling in forest", "family": "Weather"},
+            {"sha256": "2" * 64, "title": "Rainfall on leaves", "family": "Weather"},
+            {"sha256": "3" * 64, "title": "River flowing", "family": "Water"},
+            {"sha256": "4" * 64, "title": "Ocean surf", "family": "Water"},
+            {"sha256": "5" * 64, "title": "Birds singing", "family": "Forest"},
+            {"sha256": "6" * 64, "title": "Fire crackling", "family": "Nature"},
+            {"sha256": "7" * 64, "title": "Unknown source", "family": "Other"},
+        ]
+        selected = semantic.diverse_candidates(synthetic)
+        self.assertEqual(len(selected), len(synthetic))
+        self.assertEqual([x["sha256"] for x in selected[:6]],
+                         ["1"*64, "3"*64, "4"*64, "5"*64, "6"*64, "7"*64])
+        self.assertEqual(selected[6]["sha256"], "2"*64)
+        self.assertEqual(selected, semantic.diverse_candidates(synthetic))
+        self.assertEqual(len({x["sha256"] for x in selected}), 7)
+        self.assertEqual(semantic.diverse_candidates([]), [])
+        self.assertEqual(semantic.metadata_hint_group(synthetic[0]), "rain_storm")
+        self.assertEqual(semantic.metadata_hint_group(synthetic[4]), "wildlife")
+        self.assertEqual(semantic.metadata_hint_group(synthetic[6]), "other")
+        self.assertEqual(semantic.metadata_hint_group({"title":"A train passing", "family":"Traffic"}), "other")
+        self.assertEqual(semantic.metadata_hint_group({"title":"Rainfall on a roof", "family":"Weather"}), "rain_storm")
+        self.assertEqual(semantic.metadata_hint_group({"title":"Fire crackling", "family":"Nature"}), "wind_fire_fan")
+
+    def test_diverse_checkpoint_is_separate(self):
+        self.assertNotEqual(semantic.DIVERSITY_PREFIX, semantic.PREFIX)
+        self.assertTrue(semantic.DIVERSITY_PREFIX.startswith(semantic.PREFIX))
+        self.assertTrue(semantic.DIVERSITY_PREFIX.endswith("/"))
+        self.assertEqual(semantic.MAX_DIVERSITY_FILES, 8)
+
     def test_storage_and_budget_isolated_from_v1(self):
         self.assertIn("/v2-clap/", semantic.PREFIX)
         self.assertNotEqual(semantic.PREFIX, semantic.base.WS5)

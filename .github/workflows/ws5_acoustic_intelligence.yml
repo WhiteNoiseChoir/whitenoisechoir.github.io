@@ -13,6 +13,9 @@ on:
       - '.github/workflows/ws5_acoustic_intelligence.yml'
   workflow_dispatch:
   schedule:
+    # GitHub scheduled runs are best-effort and may be delayed or dropped.
+    # Two off-peak-minute opportunities; private R2 checkpoint prevents duplicate batches.
+    - cron: '11 * * * *'
     - cron: '37 * * * *'
 permissions:
   contents: read
@@ -37,7 +40,7 @@ jobs:
   analyze-real-r2:
     if: >-
       (github.event_name == 'workflow_dispatch' || github.event_name == 'schedule' ||
-       (github.event_name == 'push' && startsWith(github.event.head_commit.message, 'feat(ws5): activate'))) &&
+       (github.event_name == 'push' && startsWith(github.event.head_commit.message, 'feat(ws5): activate acoustic v1'))) &&
       github.ref == 'refs/heads/main'
     needs: offline-tests
     runs-on: ubuntu-latest
@@ -58,5 +61,9 @@ jobs:
           sudo apt-get update -qq && sudo apt-get install -qq -y ffmpeg
           python -m pip install -q 'boto3>=1.36,<2' 'numpy>=1.26,<3'
       - name: Analyze up to 24 real R2 files; never overwrite audio
-        run: python -u scripts/ws5_acoustic_intelligence.py --max-files 24 --max-scan 50
+        env:
+          # On scheduled triggers the last successful checkpoint must be >=45 minutes old.
+          # Manual dispatch and explicitly activated push are never blocked.
+          MIN_GAP_MINUTES: ${{ github.event_name == 'schedule' && '45' || '0' }}
+        run: python -u scripts/ws5_acoustic_intelligence.py --max-files 24 --max-scan 50 --min-gap-minutes "$MIN_GAP_MINUTES"
       # Private R2 metrics only. No artifacts or GitHub PR comments with raw file data.

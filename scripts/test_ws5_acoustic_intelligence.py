@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """WS5 deterministic offline contract tests, no R2 or original media access."""
 import math,unittest
+from datetime import datetime, timezone, timedelta
 from pathlib import Path
 import importlib.util
 import numpy as np
@@ -38,6 +39,20 @@ class AcousticTests(unittest.TestCase):
   self.assertIn("rms_dbfs",metrics)
   self.assertNotIn("speech_detected",metrics)
   self.assertNotIn("sleep_approved",metrics)
+ def test_checkpoint_schedule_cooldown(self):
+  time=datetime(2026,11,17,8,0,tzinfo=timezone.utc)
+  prior=lambda minutes: {"updated_at":(time-timedelta(minutes=minutes)).isoformat()}
+  self.assertTrue(ws5.is_recent_checkpoint(prior(10),time,45))
+  self.assertFalse(ws5.is_recent_checkpoint(prior(45),time,45))
+  self.assertFalse(ws5.is_recent_checkpoint(prior(60),time,45))
+  self.assertFalse(ws5.is_recent_checkpoint(prior(1),time,0))
+  self.assertFalse(ws5.is_recent_checkpoint({},time,45))
+  with self.assertRaises(ValueError):
+   ws5.is_recent_checkpoint({"updated_at":"bad"},time,45)
+  with self.assertRaises(ValueError):
+   ws5.is_recent_checkpoint({"updated_at":(time+timedelta(minutes=10)).isoformat()},time,45)
+  with self.assertRaises(ValueError):
+   ws5.is_recent_checkpoint({},time,150)
  def test_priority_terms(self):
   self.assertIsNotNone(ws5.PREFER.search("mild rain forest creek"))
   self.assertIsNone(ws5.PREFER.search("piano sample remix"))
