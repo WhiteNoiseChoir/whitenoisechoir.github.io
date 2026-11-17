@@ -47,7 +47,7 @@ test("catalog requests only protected gateway with credentials and no redirect",
 });
 test("Access refusal never mutates data",async()=>{
   await assert.rejects(retrievePrivateMusic({enabled:true,pageOrigin:"https://whitenoisechoir.com",
-    fetcher:async()=>({ok:false,status:403})}),/Access/);
+    fetcher:async()=>({ok:false,status:403})}),/access/i);
 });
 test("login HTML is not accepted as Music JSON",async()=>{
   await assert.rejects(retrievePrivateMusic({enabled:true,pageOrigin:"https://whitenoisechoir.com",
