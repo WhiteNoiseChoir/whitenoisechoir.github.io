@@ -36,10 +36,13 @@ figcaption{font-size:.85rem;color:#c7d2d8;margin:5px 0}.help{font-size:.9rem;col
 <h2 id="join-title">3 · Kiểm tra và nối 2 video</h2>
 <p>Cảnh A được phát đúng một lần. Cảnh B lặp đến hết 10 phút. Hệ thống chuẩn hóa cả hai clip trong <strong>một lần mã hóa video ngắn</strong>, bảo đảm một cấu hình H.264 đồng nhất và chỉ mã hóa AAC một lần cho hai bản WAV.</p>
 <div class="row">
+<label><input id="auto-clip-sync" type="checkbox" checked> Tự đồng bộ khi chọn clip A</label>
+<button id="sync-from-clip" type="button">Đồng bộ theo clip A</button>
 <button id="refresh" class="secondary" type="button">Đọc trạng thái hai mixer</button>
 <button id="sync-length" class="secondary" type="button">Đặt thời lượng B = 10 phút − A</button>
 <span id="duration-status" aria-live="polite">Đang chờ hai mixer.</span>
 </div>
+<p id="clip-sync-status" class="help" role="status" aria-live="polite">Chọn MP4 trong Mixer A để hệ thống đọc thời lượng thật, làm tròn xuống frame 24 fps và tự đặt A + B = 600 giây. WAV đã xuất trước khi thay đổi thời lượng sẽ cần xuất lại.</p>
 <div class="row"><button id="check-seams" class="secondary" type="button">Kiểm tra hình cuối A / đầu B và vòng B</button><span id="seam-status" aria-live="polite"></span></div>
 <div id="seam-pictures">
 <figure><canvas id="exit-a" width="320" height="180"></canvas><figcaption>Frame cuối phân cảnh A</figcaption></figure>
@@ -57,4 +60,4 @@ figcaption{font-size:.85rem;color:#c7d2d8;margin:5px 0}.help{font-size:.9rem;col
 <a id="download" class="hide" download="WhiteNoiseChoir-Dual-Scene.mp4">Tải MP4 đã ghép</a>
 <video id="joined-preview" controls playsinline preload="metadata" hidden style="width:100%;max-width:900px;display:block;margin-top:12px" aria-label="Kiểm tra điểm nối MP4 thành phẩm"></video>
 </section>
-</main><script defer src="/vi/dual-scene/dual-studio.js?v=20261117"></script></body></html>
+</main><script defer src="/vi/dual-scene/dual-studio.js?v=20261117-auto-sync"></script></body></html>

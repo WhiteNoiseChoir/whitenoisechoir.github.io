@@ -2,6 +2,16 @@
 
 Route: `/vi/dual-scene/`. This is a separate, non-indexed experimental UI. The original `/vi/` remains the unchanged single-mixer workflow except a navigation link and a no-op bridge script.
 
+## Automatic clip-duration sync (2026-11-17)
+
+- Selecting any MP4 in Mixer A reads its **actual media duration** in the browser (`loadedmetadata`). No length is inferred from the Luma duration selector.
+- The bridge floors the measured time to complete 24fps frames: `frames=Math.floor(seconds*24+0.00001)`, `A=frames/24`. Flooring avoids requiring a frame beyond the available source footage.
+- The parent automatically sets `Mixer A=A` and `Mixer B=600-A`. The user can disable automatic updates or run **Đồng bộ theo clip A** manually.
+- Existing mixer `change()` logic invalidates previously exported WAVs when the timeline changes; source layers and their gain/positions are preserved.
+- Supported A duration: 1–60 seconds (including native 5-second Luma clips). The independent B mixer remains at least 6 seconds. Normal non-dual Studio behavior is unchanged.
+- The interface displays the real MP4 duration, frame-aligned duration, both timeline lengths and whether old WAV exports became invalid.
+- Do not claim a duration is frame-exact from raw MP4 metadata alone; verify rendered clip and seam visually before upload.
+
 ## Workflow
 
 1. Mixer A: choose a generated introduction clip (e.g. 12s), set its timeline length to match, mix any required movement/steps/sea/fire, click **Xuất WAV**.

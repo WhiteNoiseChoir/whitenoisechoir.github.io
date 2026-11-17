@@ -123,7 +123,7 @@ function normalizeProject(saved) {
   const videoPrompt = typeof saved.videoPrompt === 'string' ? saved.videoPrompt.slice(0,3000)
     : (/suối|stream/i.test(title) ? streamPrompt : '');
   return {
-    title, videoPrompt, length:clamp(saved.length,6,10800),
+    title, videoPrompt, length:clamp(saved.length,dualSceneSlot==='A'?1:6,10800),
     ...(saved.intent==='baby'?{intent:'baby'}:{}),
     ...(Number.isFinite(saved.master)?{master:clamp(saved.master,0,1)}:{}),
     tracks:saved.tracks.slice(0,32)
