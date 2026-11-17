@@ -7,6 +7,7 @@
 const $=id=>document.getElementById(id);
 const TOTAL_SECONDS=600, FPS=24;
 const waiting=new Map(), state={A:null,B:null};
+let observedClip=null, syncToken=0, syncTask=Promise.resolve();
 const pause=()=>new Promise(resolve=>setTimeout(resolve,0));
 const format=n=>Number(n).toFixed(2).replace(/\.00$/,'');
 const report=(message,progress)=>{
@@ -29,12 +30,64 @@ window.addEventListener('message',event=>{
   if(!['A','B'].includes(id)||event.source!==sceneFrame(id)||event.data?.scope!=='wnc-dual')return;
   const message=event.data;
   if(message.type==='ready'){state[id]=message.data;paintStatus();return;}
+  if(message.type==='clip-cleared'&&id==='A'){
+    observedClip=null;syncToken++;
+    $('clip-sync-status').textContent='Clip A đã gỡ. Chọn video mới để tự đồng bộ.';
+    state.A=message.data;paintStatus();return;
+  }
+  if(message.type==='clip-error'&&id==='A'){
+    $('clip-sync-status').textContent='Lỗi đọc MP4 A: '+message.error;return;
+  }
+  if(message.type==='clip-duration'&&id==='A'){
+    observedClip=message.data;
+    state.A=message.data;paintStatus();
+    $('clip-sync-status').textContent='Đã đọc '+format(message.data.videoRawDuration)+'s → '
+      +message.data.videoFrameCount+' frame (24 fps). '
+      +($('auto-clip-sync').checked?'Đang đồng bộ A/B…':'Bấm Đồng bộ theo clip A.');
+    if($('auto-clip-sync').checked)queueClipSync(message.data);
+    return;
+  }
   const item=waiting.get(message.requestId);
   if(!item)return;
   waiting.delete(message.requestId);clearTimeout(item.timer);
   if(message.ok){state[id]=message.data;paintStatus();item.resolve(message.data);}
   else item.reject(Error(message.error||'Không nhận được trạng thái mixer.'));
 });
+// Serialise sync events; newer clip selections supersede earlier metadata.
+function queueClipSync(info){
+  const ticket=++syncToken;
+  syncTask=syncTask.catch(()=>{}).then(async()=>{
+    if(ticket!==syncToken)return;
+    try{await applyClipSync(info,ticket);}
+    catch(error){if(ticket===syncToken)$('clip-sync-status').textContent='Không đồng bộ được: '+String(error.message||error);}
+  });
+  return syncTask;
+}
+async function applyClipSync(info,ticket){
+  const raw=Number(info?.videoRawDuration),aligned=Number(info?.videoAlignedDuration),frames=Number(info?.videoFrameCount);
+  if(!Number.isFinite(raw)||!Number.isInteger(frames)||frames<24||frames>60*FPS||Math.abs(frames/FPS-aligned)>1e-5)
+    throw Error('Clip A phải có 1–60 giây hình ảnh hợp lệ (24 fps).');
+  const remain=TOTAL_SECONDS-aligned;
+  if(remain<6)throw Error('Cảnh B phải còn ít nhất 6 giây.');
+  $('clip-sync-status').textContent='Đang đồng bộ clip A ('+format(raw)+'s) theo '+frames+' frame…';
+  const a=await request('A','status'),b=await request('B','status');
+  if(ticket!==syncToken)return;
+  if(a.videoName!==info.videoName||Math.abs(Number(a.videoRawDuration)-raw)>0.001)
+    throw Error('Clip A đã thay đổi trong lúc đồng bộ. Hãy thử lại.');
+  const changedA=Math.abs(a.duration-aligned)>0.000001;
+  const changedB=Math.abs(b.duration-remain)>0.000001;
+  if(changedA)await request('A','set-duration',{seconds:aligned});
+  if(ticket!==syncToken)return;
+  if(changedB)await request('B','set-duration',{seconds:remain});
+  if(ticket!==syncToken)return;
+  await getStatuses();
+  const invalidated=[changedA&&a.hasWav?'A':null,changedB&&b.hasWav?'B':null].filter(Boolean);
+  $('clip-sync-status').textContent='Clip A thực tế '+format(raw)+'s → '
+    +format(aligned)+'s ('+frames+' frame @24 fps); Mixer A '+format(aligned)+'s; Mixer B '
+    +format(remain)+'s; Tổng 600s. '
+    +(invalidated.length?'WAV cũ '+invalidated.join(' và ')+' đã hết hiệu lực, cần Xuất WAV lại.':
+      (changedA||changedB?'Timeline đã cập nhật. Xuất WAV của hai mixer trước khi ghép.':'Thời lượng đã khớp, WAV hợp lệ không thay đổi.'));
+}
 function paintStatus(){
   for(const id of ['A','B']){
     const s=state[id];
@@ -50,9 +103,25 @@ async function getStatuses(){
   return [a,b];
 }
 $('refresh').onclick=()=>getStatuses().catch(e=>report(e.message));
+$('sync-from-clip').onclick=async()=>{
+  try{
+    $('clip-sync-status').textContent='Đang đọc thời lượng MP4 cảnh A…';
+    const info=await request('A','probe-clip');
+    observedClip=info;
+    await queueClipSync(info);
+  }catch(error){$('clip-sync-status').textContent=String(error.message||error);}
+};
+$('auto-clip-sync').onchange=()=>{
+  if($('auto-clip-sync').checked&&observedClip)queueClipSync(observedClip);
+  else if(!$('auto-clip-sync').checked)$('clip-sync-status').textContent='Tự đồng bộ đã tắt. Dùng nút Đồng bộ theo clip A để áp dụng.';
+};
 $('sync-length').onclick=async()=>{
   try{
     const a=await request('A','status');
+    if(a.videoAlignedDuration!==null && Math.abs(a.duration-a.videoAlignedDuration)>0.000001){
+      await queueClipSync(a);
+      return;
+    }
     const length=TOTAL_SECONDS-a.duration;
     if(!(length>=6&&length<=600))throw Error('Cảnh A phải ngắn hơn 594 giây.');
     const b=await request('B','status');
@@ -256,7 +325,9 @@ $('join').onclick=async()=>{
   try{
     const [a,b]=await Promise.all([request('A','collect'),request('B','collect')]);
     const intro=a.duration,main=b.duration;
-    if(intro<6||intro>60||Math.abs(intro+main-TOTAL_SECONDS)>.045)throw Error('Yêu cầu A 6–60 giây và A+B đúng 600 giây. Dùng nút đồng bộ B.');
+    if(a.videoAlignedDuration!==null && Math.abs(intro-a.videoAlignedDuration)>0.000001)
+      throw Error('Timeline A chưa khớp MP4. Đồng bộ theo clip A rồi Xuất WAV lại.');
+    if(intro<1||intro>60||Math.abs(intro+main-TOTAL_SECONDS)>.045)throw Error('Yêu cầu A 1–60 giây và A+B đúng 600 giây. Dùng nút đồng bộ B.');
     if(Math.abs(intro*FPS-Math.round(intro*FPS))>.02)throw Error('Thời lượng A cần khớp khung hình 24 fps (ví dụ 6, 12, 18 giây).');
     report('Đọc thời lượng clip AI…',2);
     const [metaA,metaB]=await Promise.all([metadata(a.video),metadata(b.video)]);
