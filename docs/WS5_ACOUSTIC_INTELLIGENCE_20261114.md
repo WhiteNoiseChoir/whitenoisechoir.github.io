@@ -87,3 +87,16 @@ After the eight-record CLAP pilot audit (`WS5_SEMANTIC_QA`), **six records were 
 - After a first run: compare results of both models as triage, establish a small human-verified reference set through authenticated listening, measure per-label precision/recall and cross-scene false positives. Only then increase CLAP throughput or automatically use semantic labels for Studio.
 
 **Rollback:** remove/disable this secondary workflow. It does not alter original R2, v1 DSP, CLAP inference/checkpoint, private CLAP QA report, GitHub studio or public assets.
+
+## Phase 2c — Cross-model private listening queue
+
+After the 6-item independent AST run, create a one-time PRIVATE summary that joins the original CLAP audit with AST records by *exact verified SHA*. This does not establish sound identity.
+
+- Workflow: `.github/workflows/ws5_cross_model_triage.yml`. Script: `scripts/ws5_cross_model_triage.py`; deterministic offline tests.
+- Reads just the private eight-record CLAP QA report and six existing AST records. Refuses missing/duplicate SHA, noncanonical original R2 path, unverified source digest, unexpectedly approved status or nonflagged sources.
+- Flags possible CLAP/AST speech and traffic warnings and temporal disagreement for prioritized **human review**, not automated content rejection. Priorities 1–4 are ordinal workflow order; they are **not calibrated confidence probabilities**.
+- Creates one private, authenticated-only listening queue under `internal/ws5-acoustic-intelligence/v2-clap/secondary-audioset/v1/source-<ws1sha16>/human-review/v1/queue.json`. Each of six rows records SHA, title, labels/model scores, manual-review status, and up to three exact 10-second windows. Source paths are restricted to private R2, never public GitHub artifacts.
+- This is NOT an audio playback or secure preview website. No original files transferred or copied. A future listener will need a properly authenticated access route before actual listening; do not assume the Music bucket's access gateway can read Nature R2.
+- Model agreement/mismatch, rights/license clearance, sleep suitability, publication approval and **human reference accuracy** all remain unverified. Next step is authorized listening of these at most 18 short windows; use verified human labels to calibrate the broader semantic model.
+
+Rollback: disable this one-shot workflow; no changes to Studio, source audio, CLAP checkpoints or AST source records.
