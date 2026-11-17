@@ -5,6 +5,8 @@ on:
     paths:
       - 'studio-private-music-optin.mjs'
       - 'studio-engine.js'
+      - 'studio-ui.js'
+      - 'vi/index.html'
       - 'test/studio-private-music-optin.test.mjs'
       - '.github/workflows/studio_private_music_optin_qa.yml'
   workflow_dispatch:
@@ -23,8 +25,16 @@ jobs:
           node-version: '22'
       - name: Validate optional Music loader without external Access
         run: node --test test/studio-private-music-optin.test.mjs
-      - name: Validate legacy Studio code parses
-        run: node --check studio-engine.js
+      - name: Validate Studio JavaScript parses
+        run: |
+          node --check studio-engine.js
+          node --check studio-ui.js
+          node --check studio-private-music-optin.mjs
+      - name: Verify explicit opt-in and no automatic catalog request
+        run: |
+          grep -Fq 'private-music' studio-ui.js
+          grep -Fq "get('private-music') === '1'" studio-ui.js
+          grep -Fq "wnc-private-music-gateway.whitescreen-dev.workers.dev" studio-engine.js
       - name: Prevent automatic activation in site HTML
         run: |
           if grep -R --include="*.html" -l 'studio-private-music-optin.mjs' vi index.html; then
