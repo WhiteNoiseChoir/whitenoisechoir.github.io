@@ -59,3 +59,16 @@ Disable or remove `ws5_semantic_pilot.yml`. The v1 hourly workflow continues unc
 **Validation limitations.** CI tests cover checkpoint cooldown/bypass/malformed timestamps and stratification determinism; real GitHub logs verify job execution and aggregate counts only. Report actual stratification counts and semantic scoring statuses, never an accuracy percentage without human-verified reference labels. CLAP similarities are uncalibrated and can be wrong; real recorded animal names and sleep suitability remain unverified. Preserve both v1 and original v2 checkpoints, model license and rights checks, original audio and the Studio.
 
 **Next gates:** independently confirm scheduled v1 cadence over several hours (backup does not guarantee on-time GitHub delivery); check batch results of diversified v2; use small listening-evaluated examples to validate semantic precision and assess costs before enabling scalable classification.
+
+## 17 Nov — CLAP eight-record post-inference audit
+
+Source: eight-file stratified CLAP pilot in PRIVATE R2 `internal/ws5-acoustic-intelligence/v2-clap/diversity-pilot-v1/`.
+
+- New one-shot gate: `.github/workflows/ws5_semantic_review.yml` and `scripts/ws5_semantic_review.py`. It reads canonical WS1 pointer, the original CLAP pilot checkpoint, its first eight-record batch and corresponding private SHA records. **No audio download**, no CLAP model invocation, no scheduled runs. Missing or stale source/checkpoints fail closed instead of guessing.
+- Checks record SHA/source path, CLAP model+prompt-vocabulary revision, sample-window ranking, expected `NOT_APPROVED/NOT_VERIFIED` clearance and correct R2 versioned path.
+- Evaluates weak *metadata-group* hints against the top CLAP labels. This is an **unverified agreement diagnostic**, not a measure of classification correctness; a dual-source soundscape could legitimately disagree. Flags unknown groups, possible contamination and changes of top match between windows, explicitly as *review needed*.
+- Keeps a per-source review queue, titles, SHA, private R2 paths, CLAP similarity values and unresolved reference labels **only in private R2** `.../qa/v1/report-000000-000008.json`. GitHub logs show only aggregate counts. No upload of private artifacts to this public repository.
+- Human reference truth, model accuracy, license checks, listening passes, sleep suitability and publication remain **UNKNOWN / NOT_APPROVED**.
+- Rollback: disable `.github/workflows/ws5_semantic_review.yml`, or remove the audit script. The CLAP pilot source files, original records, earlier checkpoints and Studio are unaffected.
+
+Next validation gates: inspect the audit counts from an actual R2 run; verify evidence quality on at least a few targeted audio clips through authorized listening, optionally use public CC0/CC BY audio with reliable reference taxonomy for an independently evaluated calibration set. Only then discuss an unattended 30–50-file semantic sampling pilot.
