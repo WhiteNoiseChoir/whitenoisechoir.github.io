@@ -19,7 +19,7 @@
   try {
     // Namespaced storage is provided by studio-engine.js; initialize only new slots.
     if (!localStorage.getItem(projectStorageKey)) {
-      const seconds=scene==='A'?12:588;
+      const seconds=scene==='A'?12:600;
       mix={title:scene==='A'?'Intro · Phân cảnh A':'Ambience · Phân cảnh B',
         length:seconds,master:1,tracks:[],videoPrompt:''};
       saveLocal();render();
@@ -52,7 +52,7 @@
         if(!Number.isFinite(duration)||duration<=0)finish(Error('Clip không có thời lượng hợp lệ.'));
         else finish(null,duration);
       };
-      probe.onerror=()=>finish(Error('Không đọc được clip. Hãy tải MP4 H.264 từ Luma.'));
+      probe.onerror=()=>finish(Error('Không đọc được clip. Hãy dùng MP4 H.264 hợp lệ.'));
       probe.src=url;
     });
   }
@@ -62,21 +62,20 @@
     videoInfo=null;
     if(!file){
       respond({type:'clip-cleared',data:status()});
-      throw Error('Chưa chọn clip A.');
+      throw Error('Chưa chọn clip '+scene+'.');
     }
     const rawDuration=await readDuration(file);
     if(ticket!==probeTicket||input.files?.[0]!==file)throw Error('Clip đã thay đổi trong lúc đọc metadata.');
-    // Floor to complete 24fps frames: never extend the scene beyond the source.
+    // Preserve full MP4 duration; frames are informative, never used to trim video.
     const frames=Math.floor(rawDuration*FPS+0.00001);
-    if(!frames)throw Error('Clip quá ngắn để trích một frame 24 fps.');
-    const alignedDuration=frames/FPS;
+    if(rawDuration<1)throw Error('Clip quá ngắn (cần ít nhất 1 giây).');
+    const alignedDuration=rawDuration;
     videoInfo={file,rawDuration,frames,alignedDuration};
     const data=status();
     respond({type:'clip-duration',data});
     return data;
   }
   input?.addEventListener('change',()=>{
-    if(scene!=='A')return;
     probeClip().catch(error=>{
       if(input?.files?.length)respond({type:'clip-error',error:String(error.message||error)});
     });
@@ -95,7 +94,7 @@
         respond({requestId:msg.requestId,ok:true,data});
       }else if(msg.action==='set-duration'){
         const seconds=Number(msg.seconds);
-        const min=scene==='A'?1:6,max=scene==='A'?60:600;
+        const min=scene==='A'?1:6,max=scene==='A'?60:10800;
         if(!Number.isFinite(seconds)||seconds<min||seconds>max)
           throw Error('Mixer '+scene+': thời lượng phải trong '+min+'–'+max+' giây.');
         if(exporting)throw Error('Mixer '+scene+' đang xuất file. Hãy thử lại sau khi xuất.');
@@ -103,6 +102,10 @@
         // updates localStorage and re-renders the timeline.
         if(Math.abs(mix.length-seconds)>0.000001)change(()=>{mix.length=seconds;});
         respond({requestId:msg.requestId,ok:true,data:status()});
+      }else if(msg.action==='collect-video'){
+        const file=input?.files?.[0]||null;
+        if(!file)throw Error('Mixer '+scene+': chưa chọn clip video.');
+        respond({requestId:msg.requestId,ok:true,data:{...status(),video:file}});
       }else if(msg.action==='collect'){
         const info=status(),file=input?.files?.[0];
         if(!info.hasWav)throw Error('Mixer '+scene+': timeline đã đổi hoặc chưa xuất WAV. Hãy Xuất WAV lại.');
