@@ -930,25 +930,29 @@ render();
   auth.href=gateway;auth.target='_blank';auth.rel='noopener noreferrer';
   auth.textContent='1. Đăng nhập Music Gateway (mở tab riêng)';
   const load=document.createElement('button');
-  load.type='button';load.textContent='2. Tải 2 bản Music Private';
+  load.type='button';load.textContent='Tải lại danh mục Music Private';
   const status=document.createElement('p');status.setAttribute('role','status');
-  status.setAttribute('aria-live','polite');status.textContent='Chưa kết nối Music Gateway.';
+  status.setAttribute('aria-live','polite');status.textContent='Đang tự kết nối Music Gateway…';
   holder.append(caption,auth,load,status);
   $('library-status').insertAdjacentElement('beforebegin',holder);
-  load.addEventListener('click',async()=>{
+  const loadPrivateCatalog=async()=>{
     load.disabled=true;
     status.textContent='Đang xác thực và đọc catalog Music Private…';
     try {
-      const {retrievePrivateMusic,registerMusicRows}=await import('/studio-private-music-optin.mjs?v=ws4-20261117');
+      const {retrievePrivateMusic,registerMusicRows}=await import('/studio-private-music-optin.mjs?v=chat-to-mix-20261118');
       const result=await retrievePrivateMusic({enabled:true,pageOrigin:location.origin});
       const newlyAdded=registerMusicRows(result.rows,{
         assets,rawAssetIndex,rebuildCatalog,refreshLibraryGroups,renderLibrary,render
       });
-      status.textContent='Music Private: '+result.rows.length+' bản được xác minh; '+newlyAdded+
-        ' bản mới trong thư viện. Chưa được duyệt xuất bản.';
+      status.textContent='Music Private: '+result.rows.length+' nguồn được xác minh; '+newlyAdded+
+        ' nguồn đã nạp hoặc mở khóa. Chưa được duyệt xuất bản.';
     } catch(error) {
       status.textContent='Chưa kết nối được Music Private. Mở tab đăng nhập Music Gateway rồi thử lại. Nếu vẫn lỗi, kiểm tra cookie bên thứ ba/CORS của Cloudflare Access.';
       console.warn('Private Music opt-in not connected:',String(error?.message||error));
     } finally { load.disabled=false; }
-  });
+  };
+  load.addEventListener('click',loadPrivateCatalog);
+  // Opening /vi/?private-music=1 explicitly opts into authenticated catalog retrieval.
+  // The existing login link remains available when Access authentication is required.
+  void loadPrivateCatalog();
 })();
