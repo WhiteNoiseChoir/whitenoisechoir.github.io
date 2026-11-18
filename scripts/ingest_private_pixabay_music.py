@@ -84,18 +84,34 @@ def probe(path):
 
 def main():
     parser = argparse.ArgumentParser()
-    for name in ("source_page", "download_url", "title", "creator", "license_evidence_url"):
+    for name in ("source_page", "title", "creator", "license_evidence_url"):
         parser.add_argument("--" + name.replace("_", "-"), required=True)
+    source = parser.add_mutually_exclusive_group(required=True)
+    source.add_argument("--download-url")
+    source.add_argument("--input-file", type=Path,
+                        help="Previously approved MP3 file supplied by the owner; avoid refetching Pixabay")
     args = parser.parse_args()
     validate_page(args.source_page)
-    validate_download_url(args.download_url)
+    if args.download_url:
+        validate_download_url(args.download_url)
     if not args.license_evidence_url.startswith("https://pixabay.com/"):
         raise ValueError("Provide a Pixabay license evidence URL")
     if not 1 <= len(args.title.strip()) <= 180 or not 1 <= len(args.creator.strip()) <= 180:
         raise ValueError("Invalid title or creator")
     with tempfile.TemporaryDirectory() as directory:
         path = Path(directory) / "music.mp3"
-        size = download(args.download_url, path)
+        if args.input_file is not None:
+            if not args.input_file.is_file() or args.input_file.is_symlink():
+                raise ValueError("Input must be a regular MP3 file")
+            size = args.input_file.stat().st_size
+            if size < 4096 or size > MAX_BYTES:
+                raise ValueError("Music file size outside permitted range")
+            # Copy into a private bounded temporary workspace; source file stays untouched.
+            with args.input_file.open("rb") as inp, path.open("wb") as out:
+                while block := inp.read(128 * 1024):
+                    out.write(block)
+        else:
+            size = download(args.download_url, path)
         sha = hashlib.sha256(path.read_bytes()).hexdigest()
         assert SHA_RE.fullmatch(sha)
         duration, stream = probe(path)
@@ -119,6 +135,7 @@ def main():
             "r2_bucket": BUCKET, "r2_key": key,
             "group": "music", "name": args.title.strip(), "creator": args.creator.strip(),
             "source_url": args.source_page, "download_origin": "Pixabay",
+            "input_method": "OWNER_APPROVED_FILE" if args.input_file else "PIXABAY_HTTPS",
             "license": "Pixabay Content License",
             "license_evidence_url": args.license_evidence_url,
             "license_review": "PENDING_HUMAN_PUBLICATION_REVIEW",
