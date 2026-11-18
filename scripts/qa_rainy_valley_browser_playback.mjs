@@ -25,7 +25,7 @@ try {
   page.on('pageerror',e=>logs.push(e.message.slice(0,240)));
   const response=await page.goto(base+'/vi/?qa=rainy-nature-'+Date.now(),{waitUntil:'domcontentloaded',timeout:75000});
   console.log('RAINY_BROWSER_PAGE',response?.status(),page.url());
-  await page.waitForSelector('#open-project',{timeout:30000});
+  await page.waitForSelector('#open-project',{state:'attached',timeout:30000});
   await page.locator('#open-project').setInputFiles({
     name:'rainy-nature-qa.json',mimeType:'application/json',
     buffer:Buffer.from(JSON.stringify(payload))
