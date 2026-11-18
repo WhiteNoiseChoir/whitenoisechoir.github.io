@@ -4,15 +4,31 @@ on:
     branches: [main]
     paths:
       - 'scripts/qa_rainy_valley_nature_sources.py'
+      - 'scripts/qa_rainy_valley_browser_playback.mjs'
       - '.github/workflows/qa_rainy_valley_nature_sources.yml'
 permissions:
   contents: read
 jobs:
   probe:
     runs-on: ubuntu-latest
-    timeout-minutes: 8
+    timeout-minutes: 12
     steps:
       - uses: actions/checkout@v4
         with:
           persist-credentials: false
       - run: python3 -u scripts/qa_rainy_valley_nature_sources.py
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install headless browser test harness
+        run: |
+          npm install --no-save --ignore-scripts --no-audit --no-fund 'playwright-core@1.57.0'
+          if command -v google-chrome >/dev/null; then
+            echo "CHROME_BIN=$(command -v google-chrome)" >> "$GITHUB_ENV"
+          elif command -v chromium >/dev/null; then
+            echo "CHROME_BIN=$(command -v chromium)" >> "$GITHUB_ENV"
+          else
+            echo "Missing chromium"; exit 1
+          fi
+      - name: Real browser decode and play all six nature tracks
+        run: node scripts/qa_rainy_valley_browser_playback.mjs
