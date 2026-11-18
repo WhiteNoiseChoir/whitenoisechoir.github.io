@@ -1,16 +1,15 @@
 // Optional owner-only local MP3 audition bridge.
 // This is a temporary AUDIO PREVIEW, not an R2 import or publication approval.
-// Operates only when the owner explicitly visits /vi/?local-piano=1.
+// Visible automatically for the approved Clavier-Music track in /vi/; no upload to server.
 (() => {
   const params = new URLSearchParams(location.search);
-  const enabled = location.pathname.replace(/\/+$/, "") === "/vi"
-    && params.get("local-piano") === "1";
-  if (!enabled) return;
+  if (location.pathname.replace(/\/+$/, "") !== "/vi") return;
 
   const expectedSha = "9756ade3d2f95a353cc82d5bd0cbad0ce450cada5bc6f1aca09192255e80254f";
   const expectedAssetRef = "r2-" + expectedSha;
   const panel = document.createElement("section");
   panel.className = "local-piano-audition";
+  panel.id = "local-piano-audition";
   panel.style.cssText = "padding:12px;margin:12px 0;border:1px solid #79ab9d80;border-radius:8px;";
   const heading = document.createElement("strong");
   heading.textContent = "Piano cục bộ – nghe thử (không lưu R2)";
@@ -23,11 +22,27 @@
   const status = document.createElement("p");
   status.setAttribute("role", "status");
   status.setAttribute("aria-live", "polite");
-  status.textContent = "Chưa chọn MP3. Hãy nhập JSON 7 lớp rồi chọn MP3 ở đây.";
+  status.textContent = "Chưa chọn MP3. Chọn file Clavier-Music đã tải để mở khóa piano.";
   panel.append(heading, explanation, picker, status);
-  const anchor = document.getElementById("library-status");
+  const anchor = document.getElementById("timeline-scroll") ||
+    document.getElementById("library-status");
   if (!anchor) return;
   anchor.insertAdjacentElement("beforebegin", panel);
+
+  const projectUsesPiano = () => mix.tracks.some(track => {
+    const asset = assets[track.asset];
+    return asset?.id === expectedAssetRef;
+  });
+  const refreshVisibility = () => {
+    panel.hidden = params.get("local-piano") !== "1" && !projectUsesPiano();
+  };
+  refreshVisibility();
+  const timeline = document.getElementById("tracks");
+  // A JSON import rebuilds the timeline. Reveal the picker automatically
+  // when an approved piano placeholder appears, without requiring a URL flag.
+  if (timeline && typeof MutationObserver !== "undefined") {
+    new MutationObserver(refreshVisibility).observe(timeline, {childList:true});
+  }
 
   let currentUrl = null;
   picker.addEventListener("change", async () => {
@@ -97,7 +112,7 @@
       if (typeof render === "function") render();
       const included = mix.tracks.some(track => track.asset===registeredIndex);
       if(!included && typeof addSource==="function") addSource(registeredIndex);
-      status.textContent = "Đã mở khóa piano từ MP3 cục bộ. Bấm Phát để nghe toàn bộ 7 lớp. Chỉ dùng trong phiên trình duyệt hiện tại; chưa nhập R2.";
+      status.textContent = "Đã nạp MP3 Clavier-Music cục bộ. Bấm Phát để kiểm tra piano cùng tiếng mưa. File chưa được lưu R2.";
     } catch (error) {
       status.textContent = "Không thể nạp piano: "+String(error?.message || error);
     } finally { picker.disabled=false; }
