@@ -20,7 +20,7 @@ ENDPOINT = "https://7483501ad8365fe26b0448b96b54fb9f.r2.cloudflarestorage.com"
 MAX_BYTES = 60_000_000
 MAX_REDIRECTS = 4
 SHA_RE = re.compile(r"^[a-f0-9]{64}$")
-PAGE_RE = re.compile(r"^https://pixabay\.com/music/[a-z0-9-]+/[a-z0-9-]+/?(?:\?.*)?$", re.I)
+PAGE_RE = re.compile(r"^https://pixabay\.com/music/[a-z0-9-]+/?(?:\?.*)?$", re.I)
 ALLOWED_DOWNLOAD_HOSTS = {"cdn.pixabay.com", "pixabay.com", "www.pixabay.com"}
 
 
