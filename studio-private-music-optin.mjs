@@ -6,7 +6,7 @@ const ROOT = MUSIC_GATEWAY_ORIGIN + "/v1";
 const SHA_RE = /^[a-f0-9]{64}$/;
 const BUCKET = "wnc-music-private";
 const PAGE_ORIGIN = "https://whitenoisechoir.com";
-const PIXABAY_MUSIC_PAGE = /^https:\/\/pixabay\.com\/music\/[a-z0-9-]+\/[a-z0-9-]+\/?(?:\?.*)?$/i;
+const PIXABAY_MUSIC_PAGE = /^https:\/\/pixabay\.com\/music\/[a-z0-9-]+\/?(?:\?.*)?$/i;
 
 export function validateMusicEntry(item) {
   if (!item || typeof item !== "object") return null;
