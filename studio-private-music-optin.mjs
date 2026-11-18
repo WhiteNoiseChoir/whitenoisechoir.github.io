@@ -6,25 +6,34 @@ const ROOT = MUSIC_GATEWAY_ORIGIN + "/v1";
 const SHA_RE = /^[a-f0-9]{64}$/;
 const BUCKET = "wnc-music-private";
 const PAGE_ORIGIN = "https://whitenoisechoir.com";
+const PIXABAY_MUSIC_PAGE = /^https:\/\/pixabay\.com\/music\/[a-z0-9-]+\/?(?:\?.*)?$/i;
 
 export function validateMusicEntry(item) {
   if (!item || typeof item !== "object") return null;
   const sha=item.sha256;
+  const pixabay = item.license==="Pixabay Content License" &&
+    item.download_origin==="Pixabay" &&
+    typeof item.source_url==="string" && PIXABAY_MUSIC_PAGE.test(item.source_url) &&
+    typeof item.license_evidence_url==="string" &&
+    item.license_evidence_url.startsWith("https://pixabay.com/") &&
+    item.license_review==="PENDING_HUMAN_PUBLICATION_REVIEW" &&
+    item.technical_status==="DECODED_NOT_LISTENING_APPROVED";
+  const buckley = item.license==="CC BY 4.0" &&
+    item.technical_status==="MEASURED_NOT_LISTENING_APPROVED" &&
+    typeof item.source_url==="string" &&
+    item.source_url.startsWith("https://www.scottbuckley.com.au/library/");
   if (typeof sha!=="string" || !SHA_RE.test(sha) ||
       item.assetRef!=="r2-"+sha ||
       item.r2_bucket!==BUCKET ||
       item.r2_key!==`internal/licensed-music/v1/sha256/${sha.slice(0,2)}/${sha}.mp3` ||
       item.group!=="music" ||
-      item.license!=="CC BY 4.0" ||
-      item.technical_status!=="MEASURED_NOT_LISTENING_APPROVED" ||
+      !(pixabay || buckley) ||
       item.playback_status!=="PRIVATE_AUTH_GATEWAY_REQUIRED" ||
       item.studio_ready!==false ||
       item.publication_approved!==false ||
       typeof item.name!=="string" || !item.name.trim() ||
       typeof item.creator!=="string" || !item.creator.trim() ||
       typeof item.attribution!=="string" || !item.attribution.trim() ||
-      typeof item.source_url!=="string" ||
-      !item.source_url.startsWith("https://www.scottbuckley.com.au/library/") ||
       !Number.isFinite(item.duration_seconds) || item.duration_seconds<=0 ||
       item.duration_seconds>7200) return null;
   return Object.freeze({
@@ -32,12 +41,14 @@ export function validateMusicEntry(item) {
     source_url:item.source_url,creator:item.creator.trim(),attribution:item.attribution,
     duration_seconds:item.duration_seconds,
     technical_status:item.technical_status,playback_status:item.playback_status,
+    ...(pixabay?{download_origin:"Pixabay",license_review:item.license_review,
+      license_evidence_url:item.license_evidence_url}:{}),
     studio_ready:false,publication_approved:false,
     id:item.assetRef,
     key:item.r2_key,
     url:`${ROOT}/audio/${sha}`,
     name:item.name.trim().slice(0,180),
-    aliases:"piano instrumental relaxing music Scott Buckley",
+    aliases:"piano instrumental relaxing music "+item.creator.trim(),
     group:"music",
     source:item.source_url,
     duration:item.duration_seconds,
@@ -96,7 +107,16 @@ export function registerMusicRows(rows,{assets,rawAssetIndex,rebuildCatalog,refr
   for (const item of rows) {
     const verified=validateMusicEntry(item);
     if(!verified || verified.url!==item.url)continue;
-    if (rawAssetIndex.has(verified.id)) continue; // never overwrite existing assets
+    if (rawAssetIndex.has(verified.id)) {
+      const index=rawAssetIndex.get(verified.id);
+      // Resolve ONLY a placeholder created by assetForRef. Never overwrite a real asset.
+      if (Number.isInteger(index) && assets[index]?.pending===true &&
+          assets[index]?.id===verified.id) {
+        assets[index]=verified;
+        added++;
+      }
+      continue;
+    }
     rawAssetIndex.set(verified.id,assets.length);
     assets.push(verified);
     added++;

@@ -1,0 +1,28 @@
+name: WNC Music R2 Permission Probe (no production changes)
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/probe_private_music_r2_permissions.py'
+      - '.github/workflows/probe_private_music_r2_permissions.yml'
+permissions:
+  contents: read
+jobs:
+  probe:
+    if: github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.head.ref == 'feat/chat-to-mix-music-ingestion-20261118'
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    env:
+      R2_ACCESS_KEY_ID: ${{ secrets.R2_MUSIC_ACCESS_KEY_ID }}
+      R2_SECRET_ACCESS_KEY: ${{ secrets.R2_MUSIC_SECRET_ACCESS_KEY }}
+      AWS_EC2_METADATA_DISABLED: 'true'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install -q 'boto3>=1.36,<2'
+      - name: Probe ONLY dedicated private music bucket, then clean up
+        run: python scripts/probe_private_music_r2_permissions.py

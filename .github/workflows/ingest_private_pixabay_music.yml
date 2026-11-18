@@ -1,0 +1,67 @@
+name: WNC private Pixabay music ingest (manual, never publish)
+on:
+  workflow_dispatch:
+    inputs:
+      source_page:
+        description: Exact public Pixabay music page
+        required: true
+        type: string
+      download_url:
+        description: Exact authorized Pixabay MP3 download URL
+        required: true
+        type: string
+      title:
+        description: Track title
+        required: true
+        type: string
+      creator:
+        description: Track creator
+        required: true
+        type: string
+      license_evidence_url:
+        description: Pixabay license evidence URL
+        required: true
+        type: string
+      rights_checked:
+        description: I reviewed terms and authorize private acquisition only (no Public)
+        type: boolean
+        required: true
+        default: false
+permissions:
+  contents: read
+concurrency:
+  group: private-music-ingest
+  cancel-in-progress: false
+jobs:
+  ingest:
+    if: inputs.rights_checked == true
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    env:
+      R2_ACCESS_KEY_ID: ${{ secrets.R2_MUSIC_ACCESS_KEY_ID }}
+      R2_SECRET_ACCESS_KEY: ${{ secrets.R2_MUSIC_SECRET_ACCESS_KEY }}
+      AWS_EC2_METADATA_DISABLED: 'true'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install -q 'boto3>=1.36,<2' 'requests>=2.32,<3'
+      - name: Run private ingest validation tests
+        run: python -m unittest scripts.test_ingest_private_pixabay_music -v
+      - name: Validate inputs and import private asset
+        env:
+          SOURCE_PAGE: ${{ inputs.source_page }}
+          DOWNLOAD_URL: ${{ inputs.download_url }}
+          TRACK_TITLE: ${{ inputs.title }}
+          CREATOR: ${{ inputs.creator }}
+          LICENSE_EVIDENCE: ${{ inputs.license_evidence_url }}
+        run: |
+          python scripts/ingest_private_pixabay_music.py \
+            --source-page "$SOURCE_PAGE" \
+            --download-url "$DOWNLOAD_URL" \
+            --title "$TRACK_TITLE" \
+            --creator "$CREATOR" \
+            --license-evidence-url "$LICENSE_EVIDENCE"
