@@ -1,0 +1,24 @@
+name: WNC Local Piano Audition QA
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'studio-local-piano-audition.js'
+      - 'vi/index.html'
+      - 'scripts/test_local_piano_audition.cjs'
+      - '.github/workflows/qa_local_piano_audition.yml'
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node --check studio-local-piano-audition.js
+      - run: node scripts/test_local_piano_audition.cjs
