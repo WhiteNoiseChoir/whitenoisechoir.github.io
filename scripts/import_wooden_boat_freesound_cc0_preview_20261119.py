@@ -33,8 +33,8 @@ def resolve_preview(page,sound_id):
     if "Creative Commons 0" not in t and "CC0" not in t:raise ValueError("SOURCE_NOT_DECLARING_CC0")
     if "freesound" not in t.lower():raise ValueError("INVALID_SOURCE_PAGE")
     patterns=[
-        r'(https?://(?:cdn\\.)?freesound\\.org/(?:data/)?previews/\\d+/'+str(sound_id)+r'_[^"\\s<>]+?\\.mp3)',
-        r'((?:/data)?/previews/\\d+/'+str(sound_id)+r'_[^"\\s<>]+?\\.mp3)',
+        r'(https?://(?:cdn\.)?freesound\.org/(?:data/)?previews/\d+/'+str(sound_id)+r'_[^"\s<>]+?\.mp3)',
+        r'((?:/data)?/previews/\d+/'+str(sound_id)+r'_[^"\s<>]+?\.mp3)',
     ]
     matches=[]
     for pattern in patterns:
@@ -46,7 +46,7 @@ def resolve_preview(page,sound_id):
         candidate=candidate.replace("https://freesound.org/data/previews/","https://cdn.freesound.org/previews/")
         candidate=candidate.replace("https://freesound.org/previews/","https://cdn.freesound.org/previews/")
         u=urllib.parse.urlparse(candidate)
-        if u.scheme=="https" and u.hostname=="cdn.freesound.org" and re.search(r'/previews/\\d+/'+str(sound_id)+r'_',u.path):
+        if u.scheme=="https" and u.hostname=="cdn.freesound.org" and re.search(r'/previews/\d+/'+str(sound_id)+r'_',u.path):
             urls.append(candidate)
     urls=list(dict.fromkeys(urls))
     # Prefer HQ preview when source page actually provides one.
