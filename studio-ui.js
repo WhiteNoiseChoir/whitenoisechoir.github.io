@@ -777,6 +777,26 @@ $('save-project').onclick = () => {
   setTimeout(() => URL.revokeObjectURL(url), 1000);
   $('save-project').closest('details').open = false;
 };
+// Owner-generated AI Music is fetched only from the Access-protected Worker.
+// Never load raw private R2 into public script data or fall back to media R2.
+let ownerMusicLoadPromise=null;
+async function loadOwnerMusic({refresh=false}={}) {
+  if(studioEnglish || location.pathname.replace(/\/+$/,'')!=="/vi")
+    return {count:0,added:0};
+  if(refresh)ownerMusicLoadPromise=null;
+  if(!ownerMusicLoadPromise) {
+    ownerMusicLoadPromise=(async()=>{
+      const {retrieveOwnerMusic,registerOwnerMusicRows}=
+        await import("/studio-private-music-optin.mjs?v=owner-ai-20261119");
+      const result=await retrieveOwnerMusic({enabled:true,pageOrigin:location.origin});
+      const added=registerOwnerMusicRows(result.rows,{
+        assets,rawAssetIndex,rebuildCatalog,refreshLibraryGroups,renderLibrary,render
+      });
+      return {count:result.rows.length,added};
+    })().catch(err=>{ownerMusicLoadPromise=null;throw err});
+  }
+  return ownerMusicLoadPromise;
+}
 $('open-project').onchange = async () => {
   const input = $('open-project');
   const file = input.files[0];
@@ -785,6 +805,10 @@ $('open-project').onchange = async () => {
   try {
     if (file.size > 100000) throw Error();
     const raw = JSON.parse(await file.text());
+    const hasOwnerAI = Array.isArray(raw.tracks) && raw.tracks.some(t =>
+      typeof t?.assetKey==="string" &&
+      t.assetKey.startsWith("internal/owner-generated/flow-music/inbox/"));
+    if(hasOwnerAI)await loadOwnerMusic({refresh:true});
     const project = normalizeProject(raw);
     if (project.tracks.length !== raw.tracks.length) throw Error();
     replaceProject(project);
@@ -794,7 +818,7 @@ $('open-project').onchange = async () => {
       : tr('Đã mở dự án với định danh nguồn ổn định.');
     input.closest('details').open = false;
   } catch {
-    $('status').textContent = tr('Tệp dự án không hợp lệ hoặc chứa nguồn âm thanh chưa có trong thư viện.');
+    $('status').textContent = tr('Tệp dự án không hợp lệ hoặc chứa nguồn âm thanh chưa có trong thư viện. Nếu là nhạc AI riêng tư, hãy đăng nhập Music Gateway rồi nhấn Đồng bộ nhạc AI.');
   }
 };
 // Intent-aware discovery is a local catalog filter; the private metadata index is not exposed here.
@@ -951,4 +975,41 @@ render();
       console.warn('Private Music opt-in not connected:',String(error?.message||error));
     } finally { load.disabled=false; }
   });
+})();
+
+// Owner Music is not published: the only sound bytes are served through
+// authenticated Cloudflare Access. This control cannot circumvent Access.
+(function setupOwnerAIMusic(){
+  if(studioEnglish || location.pathname.replace(/\/+$/,"")!=="/vi")return;
+  const holder=document.createElement("section");
+  holder.className="owner-ai-music-sync";
+  holder.style.cssText="padding:10px;margin:10px 0;border:1px solid #79ab9d80;border-radius:8px;";
+  const title=document.createElement("strong");
+  title.textContent="Nhạc AI trong R2 riêng tư";
+  const text=document.createElement("p");
+  text.textContent="Tự đọc catalog nhạc AI đã tải lên; không phải chọn lại MP3 trên máy.";
+  const link=document.createElement("a");
+  link.href="https://wnc-private-music-gateway.whitescreen-dev.workers.dev/v1/owner/catalog";
+  link.target="_blank";link.rel="noopener noreferrer";
+  link.textContent="Đăng nhập Music Gateway";
+  const action=document.createElement("button");
+  action.type="button";action.textContent="Đồng bộ nhạc AI từ R2";
+  const state=document.createElement("p");
+  state.setAttribute("role","status");state.setAttribute("aria-live","polite");
+  state.textContent="Đang kiểm tra danh mục nhạc AI…";
+  holder.append(title,text,link,document.createTextNode(" · "),action,state);
+  $('library-status').insertAdjacentElement("beforebegin",holder);
+  async function sync(refresh=false){
+    action.disabled=true;
+    try{
+      const result=await loadOwnerMusic({refresh});
+      state.textContent="Đã nhận "+result.count+" bản AI trong R2 riêng tư (+"+
+        result.added+" mới). Chỉ nghe thử nội bộ, chưa duyệt phát hành.";
+    }catch(err){
+      state.textContent="Chưa kết nối Music Gateway được. Mở link đăng nhập phía trên "+
+        "rồi bấm Đồng bộ nhạc AI. Không cần tải lại MP3.";
+    }finally{action.disabled=false}
+  }
+  action.addEventListener("click",()=>sync(true));
+  void sync();
 })();
