@@ -143,6 +143,12 @@ export function validateOwnerMusicEntry(item) {
   return Object.freeze({
     id:item.assetRef,sha256:sha,assetRef:item.assetRef,
     r2_bucket:BUCKET,r2_key:key,key,
+    source_object_etag:item.source_object_etag,
+    source_object_size_bytes:item.source_object_size_bytes,
+    origin_type:"AI_GENERATED",generation_platform:"GOOGLE_FLOW_MUSIC",
+    technical_status:"MEASURED_NOT_LISTENING_APPROVED",
+    playback_status:"PRIVATE_AUTH_GATEWAY_REQUIRED",
+    audio_semantics_verified:false,studio_ready:false,publication_approved:false,
     url:ROOT+"/owner/audio/"+sha,
     name:item.name.trim().slice(0,180),
     aliases:"AI_GENERATED GOOGLE_FLOW_MUSIC piano relaxing sleep music "+
