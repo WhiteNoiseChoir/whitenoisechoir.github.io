@@ -11,6 +11,7 @@ import json
 import os
 from pathlib import Path
 import re
+import shutil
 import subprocess
 import tempfile
 import urllib.request
@@ -19,6 +20,8 @@ import urllib.parse
 import boto3
 from botocore.config import Config
 from botocore.exceptions import ClientError
+from mutagen.mp3 import MP3
+import imageio_ffmpeg
 
 ACCOUNT_ID = "7483501ad8365fe26b0448b96b54fb9f"
 BUCKET = "whitenoisechoir-media"
@@ -108,25 +111,24 @@ def download_preview(item: dict) -> tuple[bytes,str,str]:
 
 def audio_probe(raw: bytes, target: Path, expected: float) -> dict:
     target.write_bytes(raw)
-    probe=subprocess.run(["ffprobe","-v","error","-of","json","-show_entries",
-      "format=duration:stream=codec_type,codec_name,sample_rate,channels",str(target)],
-      capture_output=True,text=True,timeout=50)
-    if probe.returncode:
-        raise ValueError("FFPROBE_FAILED "+probe.stderr[-170:])
-    j=json.loads(probe.stdout)
-    streams=[s for s in j.get("streams",[]) if s.get("codec_type")=="audio"]
-    if len(streams)!=1 or streams[0].get("codec_name")!="mp3":
-        raise ValueError("AUDIO_CODEC_NOT_MP3")
-    duration=float(j.get("format",{}).get("duration") or 0)
-    if duration<8 or abs(duration-expected)>5:
+    # GitHub hosted images may not include ffprobe. Parse MP3 headers using
+    # mutagen and decode the ENTIRE file with a bundled ffmpeg executable.
+    try:
+        info = MP3(str(target)).info
+        duration = float(info.length)
+        samplerate = int(info.sample_rate or 0)
+        channels = int(info.channels or 0)
+    except Exception as ex:
+        raise ValueError("MP3_HEADER_PROBE_FAILED: "+str(ex)[:180])
+    if duration < 8 or abs(duration-expected) > 5:
         raise ValueError("AUDIO_DURATION_MISMATCH "+str(duration))
-    check=subprocess.run(["ffmpeg","-v","error","-nostdin","-i",str(target),
+    ffmpeg = shutil.which("ffmpeg") or imageio_ffmpeg.get_ffmpeg_exe()
+    check = subprocess.run([ffmpeg,"-v","error","-nostdin","-i",str(target),
         "-f","null","-"],capture_output=True,text=True,timeout=95)
     if check.returncode:
         raise ValueError("FULL_AUDIO_DECODE_FAILED "+check.stderr[-190:])
     return {"duration":round(duration,3),"codec":"mp3",
-      "sample_rate_hz":int(streams[0].get("sample_rate") or 0),
-      "channels":int(streams[0].get("channels") or 0)}
+      "sample_rate_hz":samplerate,"channels":channels}
 
 def put_append_only(s3, key: str, raw: bytes, content_type: str, metadata=None) -> str:
     try:
