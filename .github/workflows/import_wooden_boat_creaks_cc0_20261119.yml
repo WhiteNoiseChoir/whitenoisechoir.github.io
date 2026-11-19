@@ -1,0 +1,47 @@
+name: WNC Wooden Boat CC0 Supplemental SFX Intake
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/import_wooden_boat_creaks_cc0_20261119.py'
+      - '.github/workflows/import_wooden_boat_creaks_cc0_20261119.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: wnc-wooden-boat-cc0-sfx-intake
+  cancel-in-progress: false
+jobs:
+  scoped-cc0-boat-import:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      AWS_EC2_METADATA_DISABLED: 'true'
+      PYTHONUNBUFFERED: '1'
+      R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+      R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install dependencies and validate importer syntax
+        run: |
+          python -m py_compile scripts/import_wooden_boat_creaks_cc0_20261119.py
+          python -m pip install -q 'boto3>=1.36,<2'
+          if ! command -v ffprobe >/dev/null || ! command -v ffmpeg >/dev/null; then
+            sudo apt-get update -qq
+            sudo apt-get install -y -qq ffmpeg
+          fi
+      - name: Import verified CC0 small boat hull, mast, rigging SFX into R2 (append only)
+        run: python -u scripts/import_wooden_boat_creaks_cc0_20261119.py
+      - name: Preserve detailed provenance and R2 results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: wooden-boat-cc0-sfx-intake-report
+          path: audits/wooden-boat-cc0-intake-report.json
+          if-no-files-found: warn
+          retention-days: 30
