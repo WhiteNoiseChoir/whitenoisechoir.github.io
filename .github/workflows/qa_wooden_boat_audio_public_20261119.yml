@@ -1,0 +1,34 @@
+name: WNC Wooden Boat CC0 Public Audio Transport QA
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/qa_wooden_boat_audio_public_20261119.yml'
+      - 'studio-catalog.js'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  qa-public-audio:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Verify range 206 and browser-origin CORS for 3 boat MP3 assets
+        shell: bash
+        run: |
+          python - <<'PY'
+          import urllib.request,hashlib
+          hashes=["93baf111afc1e667a414ee4b4a22a368c07f71c7c05b9841d16f5b3619d1de0f","219d36cd8c6ca7af83df735e0e5ca678b71727ecf2206d139da2b8d29fca6fae","75ed4255728be6351e8125545438fa14031cecf7261dd082e1fd4d98cb4a92c4"]
+          for sha in hashes:
+           url=f"https://media.whitenoisechoir.com/asset-library/raw/sha256/{sha[:2]}/{sha}.mp3"
+           headers={"Origin":"https://whitenoisechoir.com","Range":"bytes=0-1023","User-Agent":"WhiteNoiseChoir-StudioQA/1.0"}
+           req=urllib.request.Request(url,headers=headers)
+           with urllib.request.urlopen(req,timeout=35) as r:
+            code=r.status;acao=r.headers.get("Access-Control-Allow-Origin","");cr=r.headers.get("Content-Range","");ct=r.headers.get("Content-Type","");b=r.read()
+           if code!=206 or not cr.startswith("bytes 0-1023/") or acao not in ("*","https://whitenoisechoir.com") or len(b)!=1024:raise RuntimeError(f"PUBLIC_RANGE_CORS_FAIL sha={sha} code={code} acao={acao} range={cr} bytes={len(b)} type={ct}")
+           print(f"BOAT_PUBLIC_RANGE_CORS_OK {sha} type={ct} CORS={acao}")
+          print("BOAT_PUBLIC_QA_SUMMARY 3/3")
+          PY
