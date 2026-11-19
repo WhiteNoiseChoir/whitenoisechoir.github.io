@@ -1,5 +1,17 @@
 # Studio Private Music opt-in — NOT ACTIVE
 
+## Update 2026-11-19 — Owner-generated AI Music
+
+This section supersedes the earlier "NOT ACTIVE" assessment **for Studio source code only**. The browser code now includes an owner-only R2 Music sync card on `/vi/`, authenticated catalog loader and JSON import-on-demand. All file bytes remain private.
+
+- 8 Google Flow Music MP3s have been analyzed and indexed in private R2; catalog `internal/owner-generated/flow-music/analysis/v1/gateway-catalog.json` contains 8 verified entries. Their owner MP3 SHA, durations and acoustics are real; emotional/music understanding remains unverified.
+- The browser now requests only `https://wnc-private-music-gateway.whitescreen-dev.workers.dev/v1/owner/catalog`, using credentials and redirect refusal; only strict SHA/ETag metadata can be registered, never public R2 fallback. Private Piano import JSON resolves sources after loading owner catalog.
+- Studio CI: https://github.com/WhiteNoiseChoir/whitenoisechoir.github.io/actions/runs/44439586075 (24 tests passed). Site Pages: https://github.com/WhiteNoiseChoir/whitenoisechoir.github.io/actions/runs/44439586408 (success).
+- **LIVE OWNER AUDIO IS NOT YET VERIFIED.** Private Worker source was changed in `WhiteNoiseChoir/wnc-metadata-index/workers/ws4-music-gateway/src/index.mjs`, with 14/14 offline tests, but **GitHub cannot deploy the existing Cloudflare Worker** without a separate Workers API deployment token/browser authorization. The available R2 API token is unrelated. Until the updated Worker is deployed from Cloudflare preserving Access, `GET /v1/owner/catalog` and `/v1/owner/audio/<sha>` might be unavailable. Never claim completed playback until a real authorized browser test confirms it.
+- End-user action after successful Gateway deployment: reload `/vi/`; owner Music will attempt authenticated auto-sync. If Access login needed, click the Music Gateway login link, then **Đồng bộ nhạc AI từ R2**; import the verified SHA-based mix JSON. No MP3 reupload or Clavier-Music file picker needed.
+- **Do not** activate public Music storage or weaken Cloudflare Access. Studio private audition is not YouTube monetization rights approval.
+
+
 This branch prepares a **separate, opt-in** browser transport for Cloudflare Access-protected Music. It is *not* loaded by `vi/index.html` or the English homepage and cannot add or play Music in current production.
 
 ## Current condition
