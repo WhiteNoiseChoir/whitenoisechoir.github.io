@@ -10,7 +10,7 @@ permissions:
   contents: read
 concurrency:
   group: wnc-forest-night-cc0-intake-20261119
-  cancel-in-progress: false
+  cancel-in-progress: true
 jobs:
   append-only-field-recording-import:
     runs-on: ubuntu-latest
@@ -28,13 +28,12 @@ jobs:
         with:
           python-version: '3.11'
       - name: Validate importer and initialize tools
+        timeout-minutes: 3
         run: |
           python -m py_compile scripts/ingest_night_forest_appalachian_cc0_20261119.py
-          python -m pip install -q 'boto3>=1.36,<2'
-          if ! command -v ffprobe >/dev/null || ! command -v ffmpeg >/dev/null; then
-            sudo apt-get update -qq
-            sudo apt-get install -y -qq ffmpeg
-          fi
+          python -m pip install --disable-pip-version-check --timeout 15 --retries 1 -q 'boto3>=1.36,<2'
+          command -v ffprobe
+          command -v ffmpeg
       - name: Verify CC0 and append verified field recordings to R2
         run: python -u scripts/ingest_night_forest_appalachian_cc0_20261119.py
       - name: Preserve SHA and provenance results
