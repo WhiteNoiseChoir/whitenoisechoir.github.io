@@ -1,0 +1,47 @@
+name: WNC CC0 Real Forest Night Field Recording Intake
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/ingest_night_forest_appalachian_cc0_20261119.py'
+      - '.github/workflows/ingest_night_forest_appalachian_cc0_20261119.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: wnc-forest-night-cc0-intake-20261119
+  cancel-in-progress: false
+jobs:
+  append-only-field-recording-import:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    env:
+      AWS_EC2_METADATA_DISABLED: 'true'
+      PYTHONUNBUFFERED: '1'
+      R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+      R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Validate importer and initialize tools
+        run: |
+          python -m py_compile scripts/ingest_night_forest_appalachian_cc0_20261119.py
+          python -m pip install -q 'boto3>=1.36,<2'
+          if ! command -v ffprobe >/dev/null || ! command -v ffmpeg >/dev/null; then
+            sudo apt-get update -qq
+            sudo apt-get install -y -qq ffmpeg
+          fi
+      - name: Verify CC0 and append verified field recordings to R2
+        run: python -u scripts/ingest_night_forest_appalachian_cc0_20261119.py
+      - name: Preserve SHA and provenance results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: wnc-forest-night-cc0-20261119-audit
+          path: audits/night-forest-appalachian-cc0-20261119.json
+          retention-days: 30
+          if-no-files-found: warn
