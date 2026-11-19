@@ -1,0 +1,47 @@
+name: WNC Wooden Boat Freesound CC0 Field Preview Intake
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/import_wooden_boat_freesound_cc0_preview_20261119.py'
+      - '.github/workflows/import_wooden_boat_freesound_cc0_preview_20261119.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: wnc-wooden-boat-freesound-cc0-preview-intake
+  cancel-in-progress: false
+jobs:
+  cc0-field-boat-previews:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      AWS_EC2_METADATA_DISABLED: 'true'
+      PYTHONUNBUFFERED: '1'
+      R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+      R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install audio decoder and S3 client
+        run: |
+          python -m py_compile scripts/import_wooden_boat_freesound_cc0_preview_20261119.py
+          python -m pip install -q 'boto3>=1.36,<2'
+          if ! command -v ffmpeg >/dev/null || ! command -v ffprobe >/dev/null; then
+            sudo apt-get update -qq
+            sudo apt-get install -y -qq ffmpeg
+          fi
+      - name: Import only public CC0 MP3 previews if freely obtainable
+        run: python -u scripts/import_wooden_boat_freesound_cc0_preview_20261119.py
+      - name: Preserve import results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: wooden-boat-field-cc0-preview-report
+          path: audits/wooden-boat-freesound-cc0-preview-report.json
+          if-no-files-found: warn
+          retention-days: 30
