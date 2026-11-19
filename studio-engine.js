@@ -59,6 +59,8 @@ function projectForDownload(project) {
       if(asset.key) stable.assetKey=asset.key;
       const digest=rawDigest(asset.key);
       if(digest) stable.assetRef='r2-'+digest;
+      else if(asset.privateMusic===true && /^r2-[a-f0-9]{64}$/.test(asset.id||""))
+        stable.assetRef=asset.id;
     }
     return stable;
   })};
@@ -304,10 +306,17 @@ function sourceAddresses(i){
   // PRIVATE Music preview has a separate Access-authenticated gateway.
   // Never use the public `media` prefix or a fallback for these assets.
   if(asset.privateMusic === true) {
-    const sha=rawDigest(asset.key);
-    if(!sha || asset.id!=='r2-'+sha ||
-       asset.key!==`internal/licensed-music/v1/sha256/${sha.slice(0,2)}/${sha}.mp3` ||
-       asset.url!==`https://wnc-private-music-gateway.whitescreen-dev.workers.dev/v1/audio/${sha}`)
+    const owner=asset.ownerGeneratedMusic===true;
+    const sha=owner ? asset.sha256 : rawDigest(asset.key);
+    if(!/^[a-f0-9]{64}$/.test(sha||"") || asset.id!=="r2-"+sha) return [];
+    if(owner) {
+      if(typeof asset.key!=="string" ||
+         !asset.key.startsWith("internal/owner-generated/flow-music/inbox/") ||
+         !asset.key.toLowerCase().endsWith(".mp3") ||
+         asset.url!==`https://wnc-private-music-gateway.whitescreen-dev.workers.dev/v1/owner/audio/${sha}`)
+        return [];
+    } else if(asset.key!==`internal/licensed-music/v1/sha256/${sha.slice(0,2)}/${sha}.mp3` ||
+              asset.url!==`https://wnc-private-music-gateway.whitescreen-dev.workers.dev/v1/audio/${sha}`)
       return [];
     return [asset.url];
   }
