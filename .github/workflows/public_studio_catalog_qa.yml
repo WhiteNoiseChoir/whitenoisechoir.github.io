@@ -1,0 +1,76 @@
+name: Public Studio catalog safety and syntax QA
+on:
+  pull_request:
+    paths:
+      - 'studio-public-catalog.js'
+      - 'studio-ui.js'
+      - 'studio-engine.js'
+      - 'index.html'
+      - 'vi/index.html'
+      - 'scripts/build_studio_asset_catalog.py'
+      - '.github/workflows/public_studio_catalog_qa.yml'
+permissions:
+  contents: read
+jobs:
+  public-catalog-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Validate browser JavaScript and Python syntax
+        run: |
+          node --check studio-public-catalog.js
+          node --check studio-ui.js
+          node --check studio-engine.js
+          python -m py_compile scripts/build_studio_asset_catalog.py
+      - name: Static HTML and private Music isolation checks
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          for name in ('index.html','vi/index.html'):
+              html=Path(name).read_text()
+              assert '<script src="/studio-public-catalog.js?v=public-20261120"></script>' in html
+              assert 'id="public-catalog-status"' in html
+              assert 'id="vault-key"' not in html
+          loader=Path('studio-public-catalog.js').read_text()
+          assert 'wnc-music-private' not in loader
+          assert 'studio-public-catalog/v1.json' in loader
+          builder=Path('scripts/build_studio_asset_catalog.py').read_text()
+          assert 'PUBLIC_DEST = "studio-public-catalog/v1.json"' in builder
+          assert 'DEST = "internal/studio-catalog/v1.json"' in builder
+          assert 'PUBLIC_PREFIXES' in builder
+          assert 'startswith(PUBLIC_PREFIXES)' in builder
+          assert '"source", "license", "licenseUrl"' in builder
+          print('PASS: public only, private backup retained, no unlock UI, license provenance included')
+          PY
+      - name: Verify public catalog filters private and unlicensed keys
+        run: |
+          python -m pip install --disable-pip-version-check -q 'boto3>=1.36,<2' 'cryptography>=44,<47'
+          python - <<'PY'
+          import importlib.util
+          from pathlib import Path
+          import sys
+          sys.path.insert(0, str(Path('scripts').resolve()))
+          s=importlib.util.spec_from_file_location('catalog','scripts/build_studio_asset_catalog.py')
+          m=importlib.util.module_from_spec(s)
+          s.loader.exec_module(m)
+          good=[]
+          for i in range(1100):
+              d=f'{i:064x}'
+              good.append(dict(id='r2-'+d,key=f'asset-library/raw/sha256/{d[:2]}/{d}.mp3',name=f'Nature {i}',duration=12,
+                 source='https://example.org/audio',license='CC0-1.0',licenseUrl='https://creativecommons.org/publicdomain/zero/1.0/',credit='Example'))
+          extra=[dict(good[0],key='internal/private-music/asset.mp3'),
+                 dict(good[0],license='ALL_RIGHTS_RESERVED'),
+                 dict(good[0],license='CC-BY-4.0',credit='',licenseUrl='')]
+          payload=m.public_catalog(good+extra,'2026-11-20T00:00:00Z')
+          assert len(payload['rows']) == 1100
+          assert all(x['key'].startswith(m.PUBLIC_PREFIXES) for x in payload['rows'])
+          assert all(x['license'] == 'CC0-1.0' for x in payload['rows'])
+          print('PASS: 1100 public assets; private/unlicensed assets excluded')
+          PY

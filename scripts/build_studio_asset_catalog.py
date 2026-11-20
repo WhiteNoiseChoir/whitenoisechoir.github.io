@@ -20,6 +20,10 @@ from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 from audit_r2_asset_inventory import ACCOUNT_ID, BUCKET, PREFIXES
 
 DEST = "internal/studio-catalog/v1.json"
+# Public catalog is additive. Never replace the encrypted private backup or touch Music Private.
+PUBLIC_DEST = "studio-public-catalog/v1.json"
+PUBLIC_PREFIXES = ("asset-library/commons/sha256/", "asset-library/raw/sha256/",
+                   "asset-library/kenney/sha256/", "asset-library/cc0-github-mirror/sha256/")
 MEDIA = re.compile(r"/([a-f0-9]{64})\.(wav|mp3|m4a|aac|flac|ogg|oga|opus|webm|aif|aiff|au|caf|wma|mp4)$", re.I)
 BROWSER_MEDIA = {"wav", "mp3", "m4a", "aac", "flac", "ogg", "oga", "opus", "webm", "mp4"}
 SIDECARS = (
@@ -123,6 +127,55 @@ def seal(payload, jwk):
     }
 
 
+def public_catalog(rows, generated_at):
+    """Only share a tightly whitelisted, license-declared index from the PUBLIC nature R2 bucket.
+
+    This is catalog availability, NOT listening QA or an approval of private Music sources.
+    No internal/private R2 paths, metadata sidecar bodies, credentials or identity data.
+    """
+    safe = []
+    for row in rows:
+        key = row.get("key", "")
+        if not isinstance(key, str) or not key.startswith(PUBLIC_PREFIXES):
+            continue
+        license_name = row.get("license", "").upper()
+        if license_name not in LICENSES:
+            continue
+        if license_name.startswith("CC-BY") and not (row.get("credit") and row.get("licenseUrl")):
+            continue
+        safe.append({field: row[field] for field in
+                     ("id", "key", "name", "duration", "source", "license", "licenseUrl",
+                      "credit", "provider", "taxon", "aliases") if field in row})
+    if len(safe) < 1000:
+        raise RuntimeError("Public catalog unexpectedly small; existing catalog preserved")
+    return {
+        "schema": "wnc_public_studio_catalog_v1",
+        "version": 1,
+        "generatedAt": generated_at,
+        "notice": "Source licenses are declared in provenance metadata; individual listening QA and onward reuse requirements remain the user's responsibility.",
+        "rows": safe,
+    }
+
+
+def publish_public_catalog(s3, payload):
+    data = gzip.compress(json.dumps(payload, ensure_ascii=False,
+                                   separators=(",", ":")).encode("utf-8"), compresslevel=6)
+    digest = hashlib.sha256(data).hexdigest()
+    s3.put_object(Bucket=BUCKET, Key=PUBLIC_DEST, Body=data,
+                  ContentType="application/json; charset=utf-8",
+                  ContentEncoding="gzip",
+                  CacheControl="public, max-age=300",
+                  Metadata={"sha256": digest, "schema": "wnc-public-studio-catalog-v1"})
+    result = s3.head_object(Bucket=BUCKET, Key=PUBLIC_DEST)
+    if (result["ContentLength"] != len(data) or
+            result["Metadata"].get("sha256") != digest):
+        raise RuntimeError("Public catalog failed R2 readback verification")
+    print("STUDIO_PUBLIC_CATALOG_READY " + json.dumps({
+        "listed": len(payload["rows"]), "gzip_bytes": len(data),
+        "path": PUBLIC_DEST, "generated_at": payload["generatedAt"],
+    }), flush=True)
+
+
 def main():
     s3 = boto3.client(
         "s3", region_name="auto", endpoint_url=f"https://{ACCOUNT_ID}.r2.cloudflarestorage.com",
@@ -176,6 +229,9 @@ def main():
         "inventory": len(stored), "browser_formats": len(catalog), "indexed": len(rows),
         "generated_at": payload["generatedAt"], "encrypted_bytes": len(encoded),
     }), flush=True)
+    # Keep this public projection separate from the existing encrypted owner catalog.
+    # Source Music in the private wnc-music-private bucket cannot enter this projection.
+    publish_public_catalog(s3, public_catalog(rows, payload["generatedAt"]))
 
 
 if __name__ == "__main__":

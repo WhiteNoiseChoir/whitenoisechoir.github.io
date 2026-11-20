@@ -292,6 +292,22 @@ function renderLibrary() {
     const item = node('div', '', 'library-item');
     const name = node('div');
     name.append(node('strong', asset.name), node('small', studioGroups[category] + ' · ' + durationText(asset.duration)));
+    // Source attribution remains visible in the public Studio for CC BY audio.
+    // A license declaration is not listening QA or YouTube release clearance.
+    if (asset.license) {
+      const credit = node('small', asset.license + (asset.credit ? ' · ' + asset.credit : ''));
+      credit.className = 'library-license';
+      name.append(credit);
+      if (asset.source && /^https:\/\//.test(asset.source)) {
+        const source = document.createElement('a');
+        source.href = asset.source;
+        source.textContent = studioEnglish ? 'Source & rights' : 'Nguồn và giấy phép';
+        source.target = '_blank';
+        source.rel = 'noopener noreferrer';
+        source.className = 'library-license-source';
+        name.append(source);
+      }
+    }
     const controls = node('div', '', 'library-buttons');
     const preview = button(tr('Nghe'), () => audition(i), tr('Nghe thử ') + asset.name);
     preview.dataset.preview = i;
