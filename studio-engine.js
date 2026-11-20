@@ -178,12 +178,14 @@ function renderSourceDiagnostics(){
   const quietFiles=activeIds.filter(id=>sourceHealth.get(id)?.status==='quiet');
   const ready=activeIds.filter(id=>['ready','quiet'].includes(sourceHealth.get(id)?.status));
   const loadingFiles=activeIds.filter(id=>sourceHealth.get(id)?.status==='loading');
+  const lockedFiles=activeIds.filter(id=>assets[id]?.pending);
   const muted=mix.tracks.filter(t=>t.mute||t.gain<=0);
   const quietTracks=mix.tracks.filter(t=>!t.mute&&t.gain>0&&t.gain<.10);
   const waiting=activeIds.length-ready.length-loadingFiles.length-errors.length;
   const summary=studioEnglish?'Audio diagnostics':'Kiểm tra âm thanh';
   sourceSummary.textContent=summary+' · '+ready.length+'/'+activeIds.length+' '+(studioEnglish?'sources decoded':'nguồn đã giải mã')+
     (waiting>0?' · '+waiting+' '+(studioEnglish?'NOT TESTED':'CHƯA KIỂM TRA'):'')+
+    (lockedFiles.length?' · '+lockedFiles.length+' '+(studioEnglish?'LOCKED':'CHƯA MỞ KHÓA'):'')+
     (errors.length?' · '+errors.length+' LỖI':'')+
     (muted.length?' · '+muted.length+' lớp tắt':'')+
     (quietTracks.length?' · '+quietTracks.length+' lớp rất nhỏ':'')+
@@ -205,7 +207,11 @@ function renderSourceDiagnostics(){
     line('🔉 '+assets[id].name,sourceHealth.get(id)?.detail||'Bản gốc có mức tín hiệu thấp','quiet');
   }
   for(const id of loadingFiles)line('⏳ '+assets[id].name,'Đang tải và giải mã nguồn','loading');
-  if(waiting>0)line('○ '+waiting+' nguồn','Chưa thử tải. Nhấn Phát để kiểm tra các lớp đang bật.','waiting');
+  if(lockedFiles.length)line('🔒 '+lockedFiles.length+' nguồn',
+    studioEnglish?'Unlock the private audio catalog in Vietnamese Studio before playing.':
+      'Mở mục Kho âm thanh nội bộ ở cột trái để mở khóa nguồn R2. Sau đó nhấn Phát để kiểm tra âm thanh.','waiting');
+  if(waiting>lockedFiles.length)line('○ '+(waiting-lockedFiles.length)+' nguồn',
+    'Chưa thử tải. Nhấn Phát để kiểm tra các lớp đang bật.','waiting');
   for(const t of muted){
     const reason=t.mute
       ? (assets[t.asset]?.url&&!assets[t.asset].url.startsWith(media)
