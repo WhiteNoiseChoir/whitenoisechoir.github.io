@@ -7,7 +7,7 @@ const root=__dirname+'/..';
 const engine=fs.readFileSync(root+'/studio-engine.js','utf8');
 const ui=fs.readFileSync(root+'/studio-ui.js','utf8');
 const page=fs.readFileSync(root+'/vi/index.html','utf8');
-assert(page.includes('studio-ui.js?v=intent-audio-20261116'),'Studio must bust JS cache on deployment');
+assert(/studio-ui\.js\?v=[^"']*track128-20261120/.test(page),'Studio must bust JS cache on deployment');
 const catalog=fs.readFileSync(root+'/studio-catalog.js','utf8');
 const matches=catalog.match(/const studioPublishedAssets\s*=\s*(\[[\s\S]*?\]);/);
 assert(matches,'Catalog must be parseable');
