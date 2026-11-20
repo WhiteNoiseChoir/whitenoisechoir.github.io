@@ -61,8 +61,9 @@ function studio(locale,trial) {
   }
   // Force cache refresh for updated intent/frequency Studio while keeping per-trial catalog cache tokens.
   const studioCache=trial?.assetCacheVersion
-    ? trial.assetCacheVersion+'-intent-audio-20261116' : 'intent-audio-20261116';
-  template=template.replace(/(href="\/studio\.css)(?:\?v=[^"]*)?"/g,'$1?v='+studioCache+'"')
+    ? trial.assetCacheVersion+'-intent-audio-20261116-track128-20261120' : 'intent-audio-20261116-track128-20261120';
+  template=template.replace(/(src="\/studio-locale\.js)(?:\?v=[^"]*)?"/g,'$1?v='+studioCache+'"')
+    .replace(/(href="\/studio\.css)(?:\?v=[^"]*)?"/g,'$1?v='+studioCache+'"')
     .replace(/(src="\/studio-engine\.js)(?:\?v=[^"]*)?"/g,'$1?v='+studioCache+'"')
     .replace(/(src="\/studio-ui\.js)(?:\?v=[^"]*)?"/g,'$1?v='+studioCache+'"');
   const keys = {

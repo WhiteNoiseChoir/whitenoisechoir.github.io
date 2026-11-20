@@ -174,9 +174,13 @@ function selectTrack(index) {
   renderInspector();
 }
 
+const trackLimitNotice = () => studioEnglish
+  ? 'A mix supports up to ' + MAX_MIX_TRACKS + ' tracks.'
+  : 'Mỗi bản phối có tối đa ' + MAX_MIX_TRACKS + ' lớp.';
+
 function addSource(index) {
-  if (mix.tracks.length >= 32) {
-    $('status').textContent = tr('Mỗi bản phối có tối đa 32 lớp.');
+  if (mix.tracks.length >= MAX_MIX_TRACKS) {
+    $('status').textContent = trackLimitNotice();
     return;
   }
   change(() => {
@@ -612,7 +616,7 @@ function renderInspector() {
   solo.setAttribute('aria-pressed', soloTrack === track);
   solo.title = tr('Solo chỉ áp dụng khi nghe thử');
   const duplicate = button(tr('Nhân bản'), () => {
-    if (mix.tracks.length >= 32) { $('status').textContent = tr('Mỗi bản phối có tối đa 32 lớp.'); return; }
+    if (mix.tracks.length >= MAX_MIX_TRACKS) { $('status').textContent = trackLimitNotice(); return; }
     change(() => { mix.tracks.splice(selected + 1, 0, structuredClone(track)); selected++; });
   });
   actions.append(mute, loop, solo, duplicate, button(tr('Xóa'), removeSelected, tr('Xóa lớp đã chọn')));
@@ -803,7 +807,7 @@ $('open-project').onchange = async () => {
   input.value = '';
   if (!file) return;
   try {
-    if (file.size > 100000) throw Error();
+    if (file.size > MAX_PROJECT_IMPORT_BYTES) throw Error();
     const raw = JSON.parse(await file.text());
     const hasOwnerAI = Array.isArray(raw.tracks) && raw.tracks.some(t =>
       typeof t?.assetKey==="string" &&

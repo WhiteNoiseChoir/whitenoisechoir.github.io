@@ -93,6 +93,34 @@ try{
   await page.waitForFunction(()=>document.querySelector('#audio-status')?.textContent.includes('Đã xuất WAV'),{timeout:90000});
   const status=await page.locator('#audio-status').textContent();
   assert(!status.includes('đỉnh âm bị cắt'),status);
+  // Larger soundscapes: 128 clips must survive JSON roundtrip and the 129th must be blocked.
+  await page.evaluate(()=>{
+    mix={title:'128-track timeline QA',length:600,master:.35,
+      tracks:Array.from({length:128},(_,i)=>({
+        asset:5,start:(i*4.5)%595,duration:1,gain:.08,loop:false,mute:false,
+        label:'Nature event '+(i+1)
+      }))};
+    selected=0;render();
+  });
+  assert.equal(await page.locator('#layer-count').textContent(),'128 lớp');
+  assert.equal(await page.locator('#tracks .timeline-row').count(),128);
+  await page.evaluate(()=>addSource(5));
+  assert.match(await page.locator('#status').textContent(),/128 lớp/);
+  assert.equal(await page.locator('#tracks .timeline-row').count(),128);
+  const capJson=await page.evaluate(()=>JSON.stringify(projectForDownload(mix)));
+  await page.locator('#open-project').setInputFiles({
+    name:'cap128.json',mimeType:'application/json',buffer:Buffer.from(capJson)
+  });
+  await page.waitForFunction(()=>/Đã mở dự án với định danh nguồn ổn định/.test(document.querySelector('#status')?.textContent||''),{timeout:15000});
+  assert.equal(await page.locator('#layer-count').textContent(),'128 lớp');
+  const tooMany=JSON.parse(capJson);
+  tooMany.tracks.push({...tooMany.tracks.at(-1),label:'Overflow'});
+  await page.locator('#open-project').setInputFiles({
+    name:'cap129.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(tooMany))
+  });
+  await page.waitForFunction(()=>/Tệp dự án không hợp lệ/.test(document.querySelector('#status')?.textContent||''),{timeout:15000});
+  assert.equal(await page.locator('#layer-count').textContent(),'128 lớp');
+
   await page.goto(url+'#mix=cabin-rain-night-v3',{waitUntil:'domcontentloaded'});
   await page.waitForFunction(()=>document.querySelector('#layer-count')?.textContent==='24 lớp',{timeout:20000});
   assert.equal(await page.locator('#tracks .timeline-row').count(),24);
