@@ -77,7 +77,6 @@ const englishText = {
   "Nhịp cơ thể": "Body rhythms",
   "Âm nền & rung": "Drones & rumble",
   "Trình duyệt không lưu được dự án. Có thể tải dự án JSON để giữ bản sao.": "Could not save the project in this browser. Download the project JSON to keep a copy.",
-  "Mỗi bản phối có tối đa 32 lớp.": "A mix supports up to 32 tracks.",
   "Dừng": "Stop",
   "Nghe": "Preview",
   "Dừng nghe ": "Stop previewing ",
