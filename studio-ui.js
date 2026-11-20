@@ -464,12 +464,20 @@ function trackRow(track, index) {
   clip.append(visual);
 
   const place = time => {
-    const length = clipDuration({...track, start: time}, asset.duration, mix.length);
+    // A JSON file may be imported before the private catalog is unlocked.
+    // Keep its declared timeline visible, but never pretend that the audio
+    // has loaded or that the source has been verified.
+    const length = asset.pending
+      ? (Number.isFinite(track.duration) && track.duration > 0
+          ? Math.max(0, Math.min(mix.length - time, track.duration)) : 0)
+      : clipDuration({...track, start: time}, asset.duration, mix.length);
     clip.hidden = length <= 0;
+    clip.classList.toggle('source-locked', Boolean(asset.pending));
     clip.style.left = 100 * Math.min(time, mix.length) / mix.length + '%';
     clip.style.width = 100 * length / mix.length + '%';
     const positionText = format(time) + ' · ' + durationText(length);
-    clip.title = label + ' · ' + positionText;
+    clip.title = label + ' · ' + positionText + (asset.pending
+      ? ' · CHƯA MỞ KHÓA: mở Kho âm thanh nội bộ để tải nguồn' : '');
   };
   place(track.start);
   let drag;
