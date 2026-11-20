@@ -1,0 +1,45 @@
+name: WNC Rainy Tent CC0 Field Recording Safe Intake
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/ingest_rainy_tent_cc0_20261120.py'
+      - '.github/workflows/ingest_rainy_tent_cc0_20261120.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: wnc-rainy-tent-cc0-intake-20261120
+  cancel-in-progress: false
+jobs:
+  ingest-and-index:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    env:
+      AWS_EC2_METADATA_DISABLED: 'true'
+      PYTHONUNBUFFERED: '1'
+      R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+      R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Compile independent importer and install pinned dependencies
+        run: |
+          python -m py_compile scripts/ingest_rainy_tent_cc0_20261120.py
+          python -m pip install --disable-pip-version-check --timeout 25 --retries 1 -q 'boto3>=1.36,<2' 'mutagen>=1.47,<2' 'imageio-ffmpeg>=0.5,<1' 'cryptography>=44,<47'
+      - name: Verify CC0 source and SHA-256 R2 readback before registering metadata
+        run: python -u scripts/ingest_rainy_tent_cc0_20261120.py
+      - name: Refresh private encrypted backup AND public Studio catalog from verified R2 objects
+        run: python -u scripts/build_studio_asset_catalog.py
+      - name: Save source and ingest status report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: wnc-rainy-tent-cc0-ingest
+          path: audits/rainy-tent-cc0-20261120.json
+          retention-days: 30
+          if-no-files-found: warn
