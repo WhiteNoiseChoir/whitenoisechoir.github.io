@@ -20,6 +20,16 @@ WS5="internal/ws5-acoustic-intelligence/v1/"
 DIGEST=re.compile(r"^[0-9a-f]{64}$")
 KEY_RE=re.compile(r"^asset-library/(?:raw|commons|kenney|cc0-github-mirror)/sha256/[0-9a-f]{2}/([0-9a-f]{64})\.(?:mp3|wav|ogg|oga|flac|m4a|opus|aiff?)$",re.I)
 PREFER=re.compile(r"rain|lake|water|river|creek|stream|forest|wind|ocean|wave|thunder|fire|owl|frog|insect|night|bird|sleep|nature|ambient|noise",re.I)
+# Conservative metadata gate: run before R2 HEAD/download. This is NOT an audio classifier.
+# Keep PREFER and candidate ordering unchanged so existing R2 checkpoint cursors remain valid.
+MUSIC_TERMS=re.compile(r"\b(?:music|musical|piano|guitar|instrumental|melody|melodic|lullab(?:y|ies)|song|songs|soundtrack|score|remix|beat|beats|synth|synthesizer|orchestra|violin|flute|harp|keyboard|vocal|vocals|singing|lofi|lo-fi)\b",re.I)
+NATURE_SFX_TERMS=re.compile(r"\b(?:rain|water|river|creek|stream|waterfall|ocean|wave|sea|lake|wind|forest|bird|owl|frog|insect|cricket|thunder|storm|fire|fireplace|crackle|fan|air\s*condition(?:er|ing)|ac|train|boat|ship|engine|footstep|traffic|vehicle|animal|wildlife|nature|sfx|sound\s*effect|white\s*noise|pink\s*noise|brown\s*noise|ambient\s*noise|environmental\s*sound)\b",re.I)
+def metadata_content_gate(title,family):
+    """Conservative title/family gate; unknown content is skipped, not certified."""
+    value=str(title or "")+" "+str(family or "")
+    if MUSIC_TERMS.search(value):return "EXCLUDED_MUSIC"
+    if not NATURE_SFX_TERMS.search(value):return "SKIPPED_UNCERTAIN_CONTENT"
+    return "NATURE_SFX_METADATA_ONLY"
 SCHEMA="wnc_ws5_acoustic_v1"
 SAMPLE_SECONDS=25
 MAX_BYTES=16_000_000
@@ -127,6 +137,11 @@ def inspect_one(s3,record,tmp):
         "analyzed_at_utc":now(),"audio_source":"R2_ORIGINAL","model_audio_content_classifier":"NOT_RUN",
         "speech_detection":"NOT_RUN","music_detection":"NOT_RUN","sleep_approval":"NOT_APPROVED",
         "listening_qa":"PENDING","analysis_scope":"SAMPLED_WINDOWS_NOT_FULL_SIGNAL"}
+    gate=metadata_content_gate(record["title"],record["family"])
+    if gate!="NATURE_SFX_METADATA_ONLY":
+        meta["status"]=gate
+        meta["reason"]="Metadata pre-download content gate; no R2 audio read"
+        return meta
     try:
         h=s3.head_object(Bucket=BUCKET,Key=key)
         bytecount=int(h["ContentLength"]);meta["file_bytes"]=bytecount
