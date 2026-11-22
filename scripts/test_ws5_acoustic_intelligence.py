@@ -60,6 +60,11 @@ class AcousticTests(unittest.TestCase):
   self.assertEqual(ws5.metadata_content_gate("Forest creek and birds","Nature"),"NATURE_SFX_METADATA_ONLY")
   self.assertEqual(ws5.metadata_content_gate("Ambient noise fan","Mechanical SFX"),"NATURE_SFX_METADATA_ONLY")
   self.assertEqual(ws5.metadata_content_gate("Unknown recording","Unknown"),"SKIPPED_UNCERTAIN_CONTENT")
+  self.assertEqual(ws5.metadata_content_gate("Bird song in forest","Nature"),"NATURE_SFX_METADATA_ONLY")
+  self.assertEqual(ws5.metadata_content_gate("Singing birds in forest","Nature"),"NATURE_SFX_METADATA_ONLY")
+  self.assertEqual(ws5.metadata_content_gate("Whale song underwater","Ocean"),"NATURE_SFX_METADATA_ONLY")
+  self.assertEqual(ws5.metadata_content_gate("Bird song with piano","Nature"),"EXCLUDED_MUSIC")
+  self.assertEqual(ws5.metadata_content_gate("Whale song remix","Ocean"),"EXCLUDED_MUSIC")
  def test_priority_terms(self):
   self.assertIsNotNone(ws5.PREFER.search("mild rain forest creek"))
   self.assertIsNone(ws5.PREFER.search("piano sample remix"))
