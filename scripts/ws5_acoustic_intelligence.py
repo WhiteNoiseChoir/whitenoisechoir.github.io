@@ -27,7 +27,11 @@ NATURE_SFX_TERMS=re.compile(r"\b(?:rain|water|river|creek|stream|waterfall|ocean
 def metadata_content_gate(title,family):
     """Conservative title/family gate; unknown content is skipped, not certified."""
     value=str(title or "")+" "+str(family or "")
-    if MUSIC_TERMS.search(value):return "EXCLUDED_MUSIC"
+    # Animal vocalizations are natural sounds, not music terms by themselves.
+    # Mask only the specific animal phrase; any other music cue still excludes.
+    animal_song=re.compile(r"\b(?:bird|birds|whale|whales|dolphin|dolphins|frog|frogs|insect|insects)\s+(?:song|songs|singing)\b|\bsinging\s+(?:bird|birds|whale|whales|dolphin|dolphins|frog|frogs)\b",re.I)
+    music_scan=animal_song.sub("animal vocalization",value)
+    if MUSIC_TERMS.search(music_scan):return "EXCLUDED_MUSIC"
     if not NATURE_SFX_TERMS.search(value):return "SKIPPED_UNCERTAIN_CONTENT"
     return "NATURE_SFX_METADATA_ONLY"
 SCHEMA="wnc_ws5_acoustic_v1"
