@@ -162,6 +162,25 @@ let context, monitorGain, monitorAnalyser, monitorSamples, soloTrack;
 const buffers=new Map(), active=[];
 
 const sourceHealth = new Map();
+// Browser playback and WAV export use decoded audio, which can be much shorter
+// than the published master (e.g. a 92s Studio proxy for a 600s source).
+const decodedSourceDurations = new Map();
+function studioSourceSeconds(assetIndex){
+  const measured=decodedSourceDurations.get(assetIndex);
+  if(Number.isFinite(measured) && measured>0) return measured;
+  const asset=assets[assetIndex]||{};
+  const expected=asset.studioLoopKey ? asset.studioLoopSeconds : asset.duration;
+  return Number.isFinite(expected) && expected>0 ? expected : 0;
+}
+function studioEarlyEnd(track){
+  if(track.loop) return null;
+  const source=studioSourceSeconds(track.asset);
+  if(source<=0) return null;
+  const desired=Math.max(0,Math.min(mix.length-track.start,track.duration ?? Infinity));
+  const actual=clipDuration(track,source,mix.length);
+  if(desired-actual<=0.25) return null;
+  return {source,desired,actual,endAt:track.start+actual,verified:decodedSourceDurations.has(track.asset)};
+}
 const sourceDiagnostics = document.createElement('details');
 sourceDiagnostics.id = 'source-diagnostics';
 sourceDiagnostics.setAttribute('aria-label',studioEnglish?'Audio source diagnostics':'Kiểm tra tình trạng nguồn âm thanh');
@@ -180,6 +199,8 @@ function renderSourceDiagnostics(){
   const loadingFiles=activeIds.filter(id=>sourceHealth.get(id)?.status==='loading');
   const muted=mix.tracks.filter(t=>t.mute||t.gain<=0);
   const quietTracks=mix.tracks.filter(t=>!t.mute&&t.gain>0&&t.gain<.10);
+  const shortened=mix.tracks.map(track=>({track,issue:studioEarlyEnd(track)}))
+    .filter(({track,issue})=>issue && !track.mute && track.gain>0);
   const waiting=activeIds.length-ready.length-loadingFiles.length-errors.length;
   const summary=studioEnglish?'Audio diagnostics':'Kiểm tra âm thanh';
   sourceSummary.textContent=summary+' · '+ready.length+'/'+activeIds.length+' '+(studioEnglish?'sources decoded':'nguồn đã giải mã')+
@@ -187,7 +208,8 @@ function renderSourceDiagnostics(){
     (errors.length?' · '+errors.length+' LỖI':'')+
     (muted.length?' · '+muted.length+' lớp tắt':'')+
     (quietTracks.length?' · '+quietTracks.length+' lớp rất nhỏ':'')+
-    (loadingFiles.length?' · '+loadingFiles.length+' đang tải':'');
+    (loadingFiles.length?' · '+loadingFiles.length+' đang tải':'')+
+    (shortened.length?' · '+shortened.length+(studioEnglish?' clips end early':' lớp kết thúc sớm'):'');
   sourceDiagnostics.classList.toggle('has-audio-errors',errors.length>0);
   if(errors.length>previousAudioErrors)sourceDiagnostics.open=true;
   previousAudioErrors=errors.length;
@@ -203,6 +225,12 @@ function renderSourceDiagnostics(){
   }
   for(const id of quietFiles){
     line('🔉 '+assets[id].name,sourceHealth.get(id)?.detail||'Bản gốc có mức tín hiệu thấp','quiet');
+  }
+  for(const {track,issue} of shortened){
+    const label=track.label||assets[track.asset].name;
+    line('⚠ '+label,studioEnglish
+      ? 'Loop OFF: source '+issue.source.toFixed(1)+'s; sound stops at '+format(issue.endAt)+'. Select this clip to enable Loop.'
+      : 'Chưa bật Lặp: nguồn phát '+issue.source.toFixed(1)+' giây; tiếng dừng lúc '+format(issue.endAt)+'. Chọn lớp này để bật Lặp.','shortened');
   }
   for(const id of loadingFiles)line('⏳ '+assets[id].name,'Đang tải và giải mã nguồn','loading');
   if(waiting>0)line('○ '+waiting+' nguồn','Chưa thử tải. Nhấn Phát để kiểm tra các lớp đang bật.','waiting');
@@ -257,7 +285,7 @@ function syncTimelineActivity(){
     const track=mix.tracks[index];
     const clip=row.querySelector?.('.clip');
     if(!track || !clip)continue;
-    const duration=clipDuration(track,assets[track.asset].duration,mix.length);
+    const duration=clipDuration(track,studioSourceSeconds(track.asset),mix.length);
     const health=sourceHealth.get(track.asset)?.status;
     const active=playing && !loading && !track.mute && track.gain>0 &&
       (!soloTrack || soloTrack===track) && health!=='failed' &&
@@ -396,6 +424,15 @@ async function decodeRecording(i,decoder,onSource){
         }
       }
       if(decoded && decoded.duration>0 && decoded.numberOfChannels){
+        const previousLength=studioSourceSeconds(i);
+        decodedSourceDurations.set(i,decoded.duration);
+        // Refresh the visual timeline ONLY when decoding reveals a new duration.
+        // No edits to mix, recorded clips or export settings are made here.
+        if(!exporting && Math.abs(decoded.duration-previousLength)>0.25 &&
+            typeof renderTimeline==='function' && typeof renderInspector==='function'){
+          renderTimeline();
+          renderInspector();
+        }
         const samples=decoded.getChannelData(0),step=Math.max(1,Math.floor(samples.length/16000));
         let square=0,points=0;
         for(let j=0;j<samples.length;j+=step){square+=samples[j]*samples[j];points++;}
