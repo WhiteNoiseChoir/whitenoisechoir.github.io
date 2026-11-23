@@ -1,0 +1,29 @@
+name: Studio duration and WAV regression
+on:
+  pull_request:
+    paths:
+      - 'studio-engine.js'
+      - 'studio-ui.js'
+      - 'studio.css'
+      - 'index.html'
+      - 'vi/index.html'
+      - 'test/studio-source-duration.test.mjs'
+      - '.github/workflows/studio_source_duration_qa.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  studio-regression:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify JavaScript syntax
+        run: |
+          node --check studio-engine.js
+          node --check studio-ui.js
+      - name: Verify playable-duration warnings and edited WAV invariants
+        run: node --test test/studio-source-duration.test.mjs

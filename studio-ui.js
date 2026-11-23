@@ -480,7 +480,7 @@ function trackRow(track, index) {
   clip.append(visual);
 
   const place = time => {
-    const length = clipDuration({...track, start: time}, asset.duration, mix.length);
+    const length = clipDuration({...track, start: time}, studioSourceSeconds(track.asset), mix.length);
     clip.hidden = length <= 0;
     clip.style.left = 100 * Math.min(time, mix.length) / mix.length + '%';
     clip.style.width = 100 * length / mix.length + '%';
@@ -613,6 +613,31 @@ function renderInspector() {
     if(asset.credit) source.append(node('p',asset.credit,'message'));
     if(asset.licenseUrl){const rights=node('a',asset.license);rights.href=asset.licenseUrl;rights.target='_blank';rights.rel='noopener noreferrer';source.append(rights);}
   } else if (asset.license) source.append(node('small', asset.license));
+  const playable=studioSourceSeconds(track.asset);
+  if(playable>0 && Math.abs(playable-asset.duration)>0.25){
+    const info=node('p','', 'source-playable-duration');
+    const origin=decodedSourceDurations.has(track.asset)
+      ? (studioEnglish?'decoded audio':'âm thanh đã giải mã')
+      : (asset.studioLoopKey ? (studioEnglish?'Studio proxy':'bản preview Studio') : (studioEnglish?'catalog estimate':'ước tính từ catalog'));
+    info.textContent=studioEnglish
+      ? 'Actual Studio source: '+playable.toFixed(1)+'s ('+origin+'); catalog: '+Number(asset.duration||0).toFixed(1)+'s.'
+      : 'Nguồn thực tế Studio dùng: '+playable.toFixed(1)+' giây ('+origin+'); catalog: '+Number(asset.duration||0).toFixed(1)+' giây.';
+    source.append(info);
+  }
+  const earlyEnd=studioEarlyEnd(track);
+  let earlyEndNotice=null;
+  if(earlyEnd){
+    earlyEndNotice=node('div','','source-duration-warning');
+    earlyEndNotice.setAttribute('role','note');
+    earlyEndNotice.append(
+      node('strong',studioEnglish?'⚠ This clip will stop early':'⚠ Lớp âm thanh sẽ dừng sớm'),
+      node('p',studioEnglish
+        ? 'Loop is OFF. This clip requests '+durationText(earlyEnd.desired)+' but only '+durationText(earlyEnd.actual)+' is playable. Sound stops at '+format(earlyEnd.endAt)+'.'
+        : 'Chưa bật Lặp. Lớp được đặt '+durationText(earlyEnd.desired)+' nhưng nguồn chỉ phát '+durationText(earlyEnd.actual)+'. Âm thanh sẽ dừng lúc '+format(earlyEnd.endAt)+'.')
+    );
+    earlyEndNotice.append(button(studioEnglish?'Enable Loop for this clip':'Bật Lặp cho lớp này',
+      ()=>change(()=>{track.loop=true;})));
+  }
   const actions = node('div', '', 'inspector-actions');
   const mute = button(tr('Tắt tiếng'), () => change(() => { track.mute = !track.mute; }));
   mute.setAttribute('aria-pressed', track.mute);
@@ -686,7 +711,9 @@ function renderInspector() {
     fields.append(panel);
   }
   fields.append(node('p', tr('Pan: −100 trái, 0 giữa, +100 phải. Solo chỉ dùng khi nghe thử. Fade tự giới hạn tối đa nửa độ dài lớp; gain không phải LUFS.'), 'hint muted'));
-  inspector.append(source, actions, fields);
+  inspector.append(source, actions);
+  if(earlyEndNotice) inspector.append(earlyEndNotice);
+  inspector.append(fields);
 }
 
 function render(keepInspector = false) {
