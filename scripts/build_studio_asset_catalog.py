@@ -62,8 +62,14 @@ def url(value):
         return ""
 
 
+# Owner-confirmed speech contamination; deny exact recording and source, not species.
+REJECTED_NATURE_SHA256 = {"c7f275e6d02069f8f45f20b6c5e5dfdaa3cfc1d908e8498da111f158a15bf74b"}
+REJECTED_NATURE_SOURCE = {"https://www.inaturalist.org/observations/384097330"}
+
 def asset(s3, item, keys):
     digest, candidates = item
+    if digest in REJECTED_NATURE_SHA256:
+        return None
     for key in keys.get(digest, []):
         record = get_json(s3, key)
         if record.get("audio_sha256") != digest:
@@ -74,6 +80,8 @@ def asset(s3, item, keys):
         source = url(record.get("source_page") or record.get("license_evidence_url"))
         attribution = clean(record.get("attribution") or record.get("creator") or record.get("uploader"), 280)
         license_url = url(record.get("license_url"))
+        if source.rstrip("/") in REJECTED_NATURE_SOURCE:
+            continue
         if not source or (license_name.upper().startswith("CC-BY") and not (attribution and license_url)):
             continue
         try:
