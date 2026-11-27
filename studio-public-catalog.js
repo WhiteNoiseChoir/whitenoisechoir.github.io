@@ -28,6 +28,7 @@
     return 'other';
   };
   const validate = row => {
+    if (row && (row.id === 'r2-c7f275e6d02069f8f45f20b6c5e5dfdaa3cfc1d908e8498da111f158a15bf74b' || String(row.source || '').replace(/\/$/, '') === 'https://www.inaturalist.org/observations/384097330')) return null;
     if (!row || !sha.test(row.id || '') || !key.test(row.key || '') ||
       row.id !== 'r2-' + rawDigest(row.key) || !clean(row.name) ||
       !Number.isFinite(row.duration) || row.duration <= 0 || row.duration > 86400)
