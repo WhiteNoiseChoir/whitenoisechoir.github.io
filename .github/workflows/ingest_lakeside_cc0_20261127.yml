@@ -1,0 +1,108 @@
+name: WNC lakeside CC0 targeted intake 20261127
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/ingest_lakeside_cc0_20261127.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: wnc-lakeside-intake-20261127
+  cancel-in-progress: false
+jobs:
+  intake:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+      AWS_EC2_METADATA_DISABLED: 'true'
+    steps:
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: |
+          python -m pip install -q 'boto3>=1.36,<2'
+          command -v ffmpeg
+          command -v ffprobe
+      - name: Scoped CC0 preview verification and append-only R2 intake
+        run: |
+          python -u - <<'PY'
+          import boto3, hashlib, json, re, subprocess, tempfile, urllib.request, urllib.parse, os
+          from botocore.exceptions import ClientError
+          from botocore.config import Config
+          from pathlib import Path
+          from datetime import datetime, timezone
+          sources=[
+          ("Late Summer Loons","itinerantmonk108",751848,84.075,"Common Loon field recording, Maine, late summer; call type and background require listening"),
+          ("Campfire (Position 1)","SKrafft",681366,83.621,"Quiet late-night outdoor campfire; primary texture candidate"),
+          ("Campfire (Position 2)","SKrafft",681367,22.060,"Same recorder/session possible; alternate perspective, not independent ecology"),
+          ]
+          bucket="whitenoisechoir-media"
+          s3=boto3.client("s3",endpoint_url="https://7483501ad8365fe26b0448b96b54fb9f.r2.cloudflarestorage.com",region_name="auto",config=Config(signature_version="s3v4",s3={"addressing_style":"path"},retries={"max_attempts":3},request_checksum_calculation="when_required",response_checksum_validation="when_required"))
+          def get(url,limit,hosts):
+              req=urllib.request.Request(url,headers={"User-Agent":"WhiteNoiseChoir/1.0 (licensed sound preservation)","Accept":"*/*"})
+              with urllib.request.urlopen(req,timeout=20) as r:
+                  if urllib.parse.urlparse(r.geturl()).hostname not in hosts: raise ValueError("unexpected host")
+                  data=r.read(limit+1)
+                  if len(data)>limit or len(data)<1000: raise ValueError("invalid length")
+                  return data
+          def put(key,body,ctype):
+              try:
+                  r=s3.get_object(Bucket=bucket,Key=key)
+                  old=r["Body"].read();r["Body"].close()
+                  if old!=body: raise ValueError("existing object differs; preserved")
+                  return "already_exists"
+              except ClientError as e:
+                  if str(e.response["Error"]["Code"]) not in ("404","NoSuchKey","NotFound"): raise
+              s3.put_object(Bucket=bucket,Key=key,Body=body,ContentType=ctype,CacheControl="public,max-age=31536000,immutable",IfNoneMatch="*")
+              r=s3.get_object(Bucket=bucket,Key=key);old=r["Body"].read();r["Body"].close()
+              if old!=body: raise ValueError("readback mismatch")
+              return "uploaded"
+          result={"assets":[],"errors":[]}
+          for title,author,sid,duration,description in sources:
+              try:
+                  page=f"https://freesound.org/people/{author}/sounds/{sid}/"
+                  html=get(page,2000000,{"freesound.org","www.freesound.org"}).decode("utf8","replace")
+                  if author.lower() not in html.lower() or "creative commons 0" not in html.lower() or "creativecommons.org/publicdomain/zero/1.0" not in html.lower(): raise ValueError("CC0/author evidence missing")
+                  if not re.search(r'<link[^>]+canonical[^>]+/sounds/'+str(sid)+r'/',html,re.I) and title.lower() not in html.lower(): raise ValueError("identity mismatch")
+                  urls=re.findall(r'https://cdn\.freesound\.org/previews/\d+/'+str(sid)+r'_\d+-(?:hq|lq)\.mp3',html)
+                  urls=sorted(set(urls),key=lambda u:("-hq." not in u,u))
+                  if not urls: raise ValueError("published preview URL missing")
+                  raw=None
+                  for url in urls:
+                      try: raw=get(url,30000000,{"cdn.freesound.org"});break
+                      except Exception: pass
+                  if raw is None: raise ValueError("preview unavailable")
+                  with tempfile.TemporaryDirectory() as td:
+                      p=Path(td)/"sample.mp3";p.write_bytes(raw)
+                      probe=json.loads(subprocess.check_output(["ffprobe","-v","error","-show_format","-show_streams","-of","json",str(p)]))
+                      d=float(probe["format"]["duration"])
+                      if abs(d-duration)>3: raise ValueError("duration mismatch")
+                      subprocess.run(["ffmpeg","-v","error","-xerror","-i",str(p),"-f","null","-"],check=True,timeout=60)
+                      stat=subprocess.run(["ffmpeg","-hide_banner","-i",str(p),"-af","volumedetect","-f","null","-"],capture_output=True,text=True,timeout=60)
+                      vol=[x.strip() for x in stat.stderr.splitlines() if "mean_volume:" in x or "max_volume:" in x]
+                  sha=hashlib.sha256(raw).hexdigest()
+                  key=f"asset-library/raw/sha256/{sha[:2]}/{sha}.mp3"
+                  action=put(key,raw,"audio/mpeg")
+                  row={"audio_sha256":sha,"audio_storage_key":key,"file_bytes":len(raw),"duration_seconds":d,"title":title,"creator":author,"source_provider":"Freesound","source_page":page,"source_audio_url":url,"license":"CC0-1.0","license_url":"https://creativecommons.org/publicdomain/zero/1.0/","description":description,"quality_tier":"public MP3 preview, not original WAV","qa_status":"FULL_DECODE_AND_R2_READBACK_PASS_LISTENING_PENDING","release_approved":False,"volume_measurements":vol}
+                  side=f"asset-library/records/sha256/{sha[:2]}/{sha}.json"
+                  try: s3.head_object(Bucket=bucket,Key=side); side_action="existing_preserved"
+                  except ClientError as e:
+                      if str(e.response["Error"]["Code"]) not in ("404","NoSuchKey","NotFound"): raise
+                      side_action=put(side,json.dumps(row,sort_keys=True,ensure_ascii=False).encode(),"application/json")
+                  row.update({"assetRef":"r2-"+sha,"r2_action":action,"record_action":side_action})
+                  result["assets"].append(row); print("LAKESIDE_IMPORTED",json.dumps(row),flush=True)
+              except Exception as e:
+                  result["errors"].append({"id":sid,"error":str(e)[:300]});print("LAKESIDE_ERROR",sid,str(e)[:300],flush=True)
+          Path("lakeside-intake-report.json").write_text(json.dumps(result,indent=2))
+          print("LAKESIDE_SUMMARY",len(result["assets"]),len(result["errors"]),flush=True)
+          if result["errors"]: raise SystemExit(2)
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: lakeside-intake-audit-20261127
+          path: lakeside-intake-report.json
+          if-no-files-found: warn
