@@ -42,7 +42,9 @@ assets.forEach((asset, index) => {
     asset.name = title;
   }
 });
+const rejectedNatureRef = 'r2-c7f275e6d02069f8f45f20b6c5e5dfdaa3cfc1d908e8498da111f158a15bf74b';
 function assetForKey(key) {
+  if ('r2-' + rawDigest(key) === rejectedNatureRef) return undefined;
   if(typeof key!=='string' || key.length>300) return undefined;
   const index=assets.findIndex(asset=>asset.key===key);
   return index===-1?undefined:index;
@@ -66,6 +68,7 @@ function projectForDownload(project) {
   })};
 }
 function assetForRef(ref) {
+  if (ref === rejectedNatureRef) return undefined;
   if (!/^r2-[a-f0-9]{64}$/.test(ref || '')) return undefined;
   let index = rawAssetIndex.get(ref);
   if (index === undefined) {
